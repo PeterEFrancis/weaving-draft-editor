@@ -1,263 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Weaving Draft Tool</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<style>
-  body {
-    background: white;
-  }
-
-  table.draft {
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-
-  td {
-    padding: 0;
-    vertical-align: top;
-  }
-
-  .grid {
-    display: grid;
-    gap: 2px;
-  }
-
-  button.cell {
-    width: 20px;
-    height: 20px;
-    border: 1px solid #ddd;
-    padding: 0;
-    background: white;
-  }
-
-  .on {
-    background: black !important;
-  }
-
-  .controls {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center; /* 🔥 centers everything */
-    flex-wrap: wrap;
-  }
-
-  table, tr, td {
-    border: 2px solid black;
-  }
-</style>
-</head>
-
-<body class="p-2">
-  <h1 class="py-5 text-center">Weaving Draft Editor</h1>
-
-<div class="controls py-4">
-  <span>Shafts</span>
-  <input id="shafts" class="form-control form-control-sm" style="width:80px" type="number" value="4">
-
-  <span>Treadles</span>
-  <input id="treadles" class="form-control form-control-sm" style="width:80px" type="number" value="4">
-
-  <span>Warp</span>
-  <input id="warp" class="form-control form-control-sm" style="width:100px" type="number" value="16">
-
-  <span>Picks</span>
-  <input id="picks" class="form-control form-control-sm" style="width:100px" type="number" value="16">
-
-  <button class="btn btn-dark btn-sm" onclick="resetAll()">Reset</button>
-</div>
-
-<table class="draft my-5 m-auto">
-  <tr>
-    <td><div id="threading" class="grid"></div></td>
-    <td><div id="tieup" class="grid"></div></td>
-  </tr>
-  <tr>
-    <td><div id="drawdown" class="grid"></div></td>
-    <td><div id="treadling" class="grid"></div></td>
-  </tr>
-</table>
-
-<script>
-let shafts = 4, treadles = 4, warp = 16, picks = 16;
-let threading = [];
-let treadling = [];
-let tieup = [];
-
-function init() {
-  threading = Array.from({length: shafts}, () => Array(warp).fill(0));
-  treadling = Array.from({length: picks}, () => Array(treadles).fill(0));
-  tieup = Array.from({length: treadles}, () => Array(shafts).fill(0));
-  renderAll();
-}
-
-function resetAll() {
-  shafts = +document.getElementById("shafts").value;
-  treadles = +document.getElementById("treadles").value;
-  warp = +document.getElementById("warp").value;
-  picks = +document.getElementById("picks").value;
-  init();
-}
-
-function resizeFromControls() {
-  const newShafts = +document.getElementById("shafts").value;
-  const newTreadles = +document.getElementById("treadles").value;
-  const newWarp = +document.getElementById("warp").value;
-  const newPicks = +document.getElementById("picks").value;
-
-  threading = resizeThreading(threading, shafts, newShafts, warp, newWarp);
-  treadling = resizeTreadling(treadling, picks, newPicks, treadles, newTreadles);
-  tieup = resizeTieup(tieup, treadles, newTreadles, shafts, newShafts);
-
-  shafts = newShafts;
-  treadles = newTreadles;
-  warp = newWarp;
-  picks = newPicks;
-
-  renderAll();
-}
-
-function resizeThreading(old, oldS, newS, oldW, newW) {
-  const result = Array.from({length: newS}, () => Array(newW).fill(0));
-  for (let s = 0; s < Math.min(oldS, newS); s++) {
-    for (let i = 0; i < Math.min(oldW, newW); i++) {
-      result[s][i] = old[s]?.[i] || 0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weaving Draft Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #f7f1e3;
+      --bg-warm: #ead8bf;
+      --ink: #2f241d;
+      --accent: #aa4a2b;
+      --accent-dark: #7a321c;
+      --card: rgba(255, 252, 245, 0.88);
+      --line: rgba(47, 36, 29, 0.12);
     }
-  }
-  return result;
-}
 
-function resizeTreadling(old, oldP, newP, oldT, newT) {
-  const result = Array.from({length: newP}, () => Array(newT).fill(0));
-  for (let j = 0; j < Math.min(oldP, newP); j++) {
-    for (let t = 0; t < Math.min(oldT, newT); t++) {
-      result[j][t] = old[j]?.[t] || 0;
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+        radial-gradient(circle at right 20%, rgba(84, 115, 76, 0.12), transparent 28%),
+        linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 46%, var(--bg-warm) 100%);
     }
-  }
-  return result;
-}
 
-function resizeTieup(old, oldT, newT, oldS, newS) {
-  const result = Array.from({length: newT}, () => Array(newS).fill(0));
-  for (let t = 0; t < Math.min(oldT, newT); t++) {
-    for (let s = 0; s < Math.min(oldS, newS); s++) {
-      result[t][s] = old[t]?.[s] || 0;
+    .hero-shell {
+      max-width: 1120px;
     }
-  }
-  return result;
-}
 
-document.querySelectorAll("input").forEach(input => {
-  input.addEventListener("change", resizeFromControls);
-});
-
-function renderAll() {
-  renderThreading();
-  renderTieup();
-  renderTreadling();
-  renderDrawdown();
-}
-
-function renderThreading() {
-  const div = document.getElementById("threading");
-  div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${warp}, 20px)`;
-
-  for (let s = shafts - 1; s >= 0; s--) {
-    for (let i = 0; i < warp; i++) {
-      const b = document.createElement("button");
-      b.className = "cell " + (threading[s][i] ? "on" : "");
-
-      b.onclick = () => {
-        if (threading[s][i]) {
-          threading[s][i] = 0;
-        } else {
-          for (let k = 0; k < shafts; k++) threading[k][i] = 0;
-          threading[s][i] = 1;
-        }
-        renderAll();
-      };
-
-      div.appendChild(b);
+    .hero-card,
+    .info-card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 1.5rem;
+      box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.08);
     }
-  }
-}
 
-function renderTieup() {
-  const div = document.getElementById("tieup");
-  div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${treadles}, 20px)`;
-
-  for (let s = shafts - 1; s >= 0; s--) {
-    for (let t = 0; t < treadles; t++) {
-      const b = document.createElement("button");
-      b.className = "cell " + (tieup[t][s] ? "on" : "");
-
-      b.onclick = () => {
-        tieup[t][s] ^= 1;
-        renderAll();
-      };
-
-      div.appendChild(b);
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(170, 74, 43, 0.1);
+      color: var(--accent-dark);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
-  }
-}
 
-function renderTreadling() {
-  const div = document.getElementById("treadling");
-  div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${treadles}, 20px)`;
-
-  for (let j = 0; j < picks; j++) {
-    for (let t = 0; t < treadles; t++) {
-      const b = document.createElement("button");
-      b.className = "cell " + (treadling[j][t] ? "on" : "");
-
-      b.onclick = () => {
-        treadling[j][t] ^= 1;
-        renderAll();
-      };
-
-      div.appendChild(b);
+    .display-title {
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
     }
-  }
-}
 
-function renderDrawdown() {
-  const div = document.getElementById("drawdown");
-  div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${warp}, 20px)`;
+    .lead-copy {
+      max-width: 40rem;
+      font-size: 1.1rem;
+    }
 
-  for (let j = 0; j < picks; j++) {
-    for (let i = 0; i < warp; i++) {
+    .btn-drafter {
+      padding: 1rem 1.75rem;
+      border: 0;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, var(--accent), #c87137);
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 0.9rem 2rem rgba(170, 74, 43, 0.24);
+    }
 
-      let shaft = threading.findIndex(r => r[i] === 1);
+    .btn-drafter:hover,
+    .btn-drafter:focus {
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      color: white;
+    }
 
-      let val = 0;
-      if (shaft !== -1) {
-        for (let t = 0; t < treadles; t++) {
-          if (treadling[j][t] && tieup[t][shaft]) {
-            val = 1;
-            break;
-          }
-        }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .step-card {
+      height: 100%;
+      padding: 1.4rem;
+      border-radius: 1.25rem;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(47, 36, 29, 0.08);
+    }
+
+    .step-number {
+      width: 2.3rem;
+      height: 2.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(170, 74, 43, 0.12);
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .tip-list li + li {
+      margin-top: 0.65rem;
+    }
+
+    @media (max-width: 991.98px) {
+      .hero-card {
+        padding: 2rem !important;
       }
-
-      const b = document.createElement("button");
-      b.className = "cell " + (val ? "on" : "");
-      div.appendChild(b);
     }
-  }
-}
+  </style>
+</head>
+<body>
+  <main class="container py-5">
+    <section class="hero-shell mx-auto">
+      <div class="hero-card p-4 p-lg-5">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-12">
+            <div class="eyebrow mb-3">Weaving Tool</div>
+            <h1 class="display-title fw-semibold mb-3">Draft cloth structures with a cleaner starting point.</h1>
+            <p class="lead-copy text-secondary mb-4">
+              Open the latest drafter to build threading, tie-up, treadling, and drawdown in one place. You can also insert warp ends and picks without wiping your existing draft.
+            </p>
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+              <a class="btn btn-drafter" href="drafter6.html">Open Drafter</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-init();
-</script>
+    <section class="hero-shell mx-auto mt-5">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">How To Use It</p>
+            <h2 class="section-title mb-3">A quick weaving draft walkthrough.</h2>
+            <p class="text-secondary mb-0">
+              The editor is split into threading, tie-up, treadling, and drawdown. You build the structure by clicking directly inside those grids.
+            </p>
+          </div>
+          <div class="col-lg-8">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="step-card">
+                  <div class="step-number mb-3">1</div>
+                  <h3 class="h5">Set your draft size</h3>
+                  <p class="text-secondary mb-0">
+                    Use the controls at the top to choose the number of shafts, treadles, warp ends, and picks. Changing these values in the current editor preserves existing data when possible.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="step-card">
+                  <div class="step-number mb-3">2</div>
+                  <h3 class="h5">Build the threading and tie-up</h3>
+                  <p class="text-secondary mb-0">
+                    Click one shaft for each warp end in the threading area, then click tie-up cells to connect treadles to shafts.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="step-card">
+                  <div class="step-number mb-3">3</div>
+                  <h3 class="h5">Enter the treadling</h3>
+                  <p class="text-secondary mb-0">
+                    Click the treadling grid to assign treadles to each pick and build your sequence row by row.
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="step-card">
+                  <div class="step-number mb-3">4</div>
+                  <h3 class="h5">Insert ends and picks without losing work</h3>
+                  <p class="text-secondary mb-0">
+                    Use the small <code>+</code> and <code>-</code> controls above the threading grid and to the right of the treadling grid to insert or remove columns and rows while keeping the rest of the draft intact.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            <div class="row g-4 mt-1">
+              <div class="col-lg-7">
+                <div class="step-card">
+                  <h3 class="h5">What the panels mean</h3>
+                  <ul class="tip-list text-secondary mb-0 ps-3">
+                    <li><strong>Threading:</strong> which shaft each warp end is threaded through.</li>
+                    <li><strong>Tie-up:</strong> which shafts lift when a treadle is pressed.</li>
+                    <li><strong>Treadling:</strong> the order of treadles across picks.</li>
+                    <li><strong>Drawdown:</strong> the woven result calculated from the other three sections.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="step-card">
+                  <h3 class="h5">Useful note</h3>
+                  <p class="text-secondary mb-0">
+                    The <code>Reset</code> button clears the draft completely, so it’s helpful when you want a fresh start. For small structural changes, use the insert and delete controls instead.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drafter 6</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-cream: #f7f1e3;
+    --bg-warm: #ead8bf;
+    --ink: #2f241d;
+    --accent: #aa4a2b;
+    --accent-dark: #7a321c;
+    --card: rgba(255, 252, 245, 0.88);
+    --panel-bg: #fcf8f0;
+    --line: rgba(47, 36, 29, 0.12);
+    --cell-size: 20px;
+    --cell-gap: 2px;
+    --grid-gap: 0px;
+    --preview-cell-size: calc(var(--cell-size) / 2);
+    --control-gap: calc(5 * var(--cell-gap));
+    --toolbar-offset: var(--cell-gap);
+    --insert-gap: calc(var(--cell-size) / 20);
+    --insert-btn-width: calc((var(--cell-size) - var(--insert-gap)) / 2);
+    --insert-btn-height: calc((var(--cell-size) - var(--insert-gap)) / 2);
+    --insert-btn-nudge: 3.7px;
+    --toolbar-font-size: calc(var(--cell-size) / 2);
+  }
+
+  body {
+    min-height: 100vh;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+      radial-gradient(circle at right 20%, rgba(84, 115, 76, 0.12), transparent 28%),
+      linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 46%, var(--bg-warm) 100%);
+  }
+
+  .page-shell {
+    max-width: 1240px;
+  }
+
+  .hero-card,
+  .editor-card,
+  .controls-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.08);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(170, 74, 43, 0.1);
+    color: var(--accent-dark);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .page-title {
+    font-size: clamp(2.8rem, 6vw, 4.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+
+  .lead-copy {
+    max-width: 44rem;
+    font-size: 1.05rem;
+  }
+
+  .btn-drafter {
+    padding: 0.95rem 1.45rem;
+    border: 0;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--accent), #c87137);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 0.9rem 2rem rgba(170, 74, 43, 0.22);
+  }
+
+  .btn-drafter:hover,
+  .btn-drafter:focus {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+    color: white;
+  }
+
+  .btn-soft {
+    padding: 0.95rem 1.45rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(47, 36, 29, 0.14);
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .btn-soft:hover,
+  .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+  }
+
+  .control-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--accent-dark);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .form-control {
+    border-radius: 1rem;
+    border-color: rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    box-shadow: none;
+  }
+
+  .form-control:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .draft-stage {
+    overflow: auto;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    background: var(--panel-bg);
+  }
+
+  .draft-stage-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+
+  .draft-print-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: rgba(47, 36, 29, 0.45);
+    transition: color 140ms ease, opacity 140ms ease, transform 140ms ease;
+  }
+
+  .draft-print-button:hover,
+  .draft-print-button:focus-visible {
+    color: rgba(47, 36, 29, 0.72);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .draft-print-button svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: block;
+  }
+
+  .preview-stage {
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    background: var(--panel-bg);
+  }
+
+  .preview-stage h2 {
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .preview-stage p {
+    margin: 0;
+  }
+
+  .preview-scroll {
+    overflow: hidden;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    background: var(--panel-bg);
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    min-height: clamp(260px, 48vh, 520px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-canvas-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .repeat-canvas {
+    display: block;
+    background: #ffffff;
+    image-rendering: pixelated;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .preview-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .preview-control {
+    width: 96px;
+  }
+
+  .preview-control-label {
+    margin-bottom: 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  table.draft {
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+
+  th {
+    padding: 0;
+    border: 0;
+    font-weight: normal;
+  }
+
+  td {
+    padding: 0;
+    vertical-align: top;
+    border: var(--cell-gap) solid var(--ink);
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .ghost-cell {
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  button.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 1px solid rgba(47, 36, 29, 0.1);
+    border-radius: 0;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.94);
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+
+  button.cell:hover {
+    border-color: rgba(170, 74, 43, 0.42);
+  }
+
+  .on {
+    background: var(--ink) !important;
+    border-color: var(--ink) !important;
+  }
+
+  .warp-toolbar {
+    display: grid;
+    gap: var(--grid-gap);
+    margin: 0px;
+    margin-left: calc(-1 * var(--insert-btn-nudge));
+    width: fit-content;
+  }
+
+  .warp-insert-cell {
+    display: flex;
+    gap: var(--insert-gap);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .insert-btn {
+    width: var(--insert-btn-width);
+    height: var(--insert-btn-height);
+    font-size: var(--toolbar-font-size);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--accent-dark);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .insert-btn:hover {
+    color: var(--accent);
+    /*background: rgba(170, 74, 43, 0.08);*/
+  }
+
+  .pick-wrap {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .pick-toolbar {
+    display: grid;
+    gap: var(--grid-gap);
+    margin-left: var(--toolbar-offset);
+    margin-top: calc(-1 * var(--insert-btn-nudge));
+    width: fit-content;
+  }
+
+  .pick-insert-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--insert-gap);
+    align-items: center;
+    justify-content: center;
+    height: var(--cell-size);
+  }
+
+  @media (max-width: 991.98px) {
+    .hero-card,
+    .editor-card {
+      padding: 1.5rem !important;
+    }
+
+    .draft-stage {
+      padding: 0.9rem;
+    }
+  }
+
+  @media print {
+    @page {
+      margin: 0.5in;
+    }
+
+    body {
+      background: #ffffff !important;
+    }
+
+    body * {
+      visibility: hidden !important;
+    }
+
+    .draft-print-area,
+    .draft-print-area * {
+      visibility: visible !important;
+    }
+
+    .draft-print-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: max-content;
+      background: #ffffff !important;
+    }
+
+    .draft-stage {
+      overflow: visible !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #ffffff !important;
+    }
+
+    .toolbar-row,
+    .ghost-cell,
+    .draft-stage-actions {
+      display: none !important;
+    }
+
+    .draft-print-area td {
+      background: #ffffff !important;
+    }
+  }
+</style>
+</head>
+
+<body>
+<main class="container py-4 py-lg-5">
+
+
+      <div class="controls-card p-3 p-lg-4 mb-4">
+        <div class="row g-3 align-items-end">
+          <div class="col-6 col-md-3 col-xl-2">
+            <label class="control-label" for="shafts">Shafts</label>
+            <input id="shafts" class="form-control form-control-lg" type="number" value="4" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="col-6 col-md-3 col-xl-2">
+            <label class="control-label" for="treadles">Treadles</label>
+            <input id="treadles" class="form-control form-control-lg" type="number" value="4" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="col-6 col-md-3 col-xl-2">
+            <label class="control-label" for="warp">Warp Threads</label>
+            <input id="warp" class="form-control form-control-lg" type="number" value="16" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="col-6 col-md-3 col-xl-2">
+            <label class="control-label" for="picks">Picks</label>
+            <input id="picks" class="form-control form-control-lg" type="number" value="16" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="col-12 col-xl-4">
+            <button class="btn btn-drafter w-100" onclick="resetAll()">Reset Draft</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="draft-stage">
+        <div class="draft-print-area">
+          <table class="draft">
+            <tr class="toolbar-row">
+              <th>
+                <div id="warp-inserts" class="warp-toolbar"></div>
+              </th>
+              <th></th>
+              <th class="ghost-cell"></th>
+            </tr>
+
+            <tr>
+              <td><div id="threading" class="grid"></div></td>
+              <td><div id="tieup" class="grid"></div></td>
+              <td class="ghost-cell"></td>
+            </tr>
+
+            <tr>
+              <td><div id="drawdown" class="grid"></div></td>
+              <td>
+                <div class="pick-wrap">
+                  <div id="treadling" class="grid"></div>
+                </div>
+              </td>
+              <td class="ghost-cell">
+                <div id="pick-inserts" class="pick-toolbar"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="draft-stage-actions">
+          <button type="button" class="draft-print-button" onclick="printDraftGrid()" aria-label="Print grid" title="Print grid">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 9V4h10v5"></path>
+              <path d="M6 17H4a1 1 0 0 1-1-1v-5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v5a1 1 0 0 1-1 1h-2"></path>
+              <path d="M6 14h12v6H6z"></path>
+              <path d="M17 12.5h.01"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
+          <div>
+            <h2 class="fw-semibold">Repeated Fabric Preview</h2>
+            <p class="small text-secondary">A rendering of the current drawdown, repeated into a larger swatch with smaller cells.</p>
+          </div>
+          <div class="preview-controls">
+            <div>
+              <label class="control-label preview-control-label" for="preview-repeat-x">Repeat X</label>
+              <input id="preview-repeat-x" class="form-control preview-control" type="number" value="4" min="1" step="1" inputmode="numeric">
+            </div>
+            <div>
+              <label class="control-label preview-control-label" for="preview-repeat-y">Repeat Y</label>
+              <input id="preview-repeat-y" class="form-control preview-control" type="number" value="4" min="1" step="1" inputmode="numeric">
+            </div>
+            <p id="repeat-preview-meta" class="small text-secondary mb-0"></p>
+          </div>
+        </div>
+
+        <div id="repeat-preview-scroll" class="preview-scroll">
+          <div class="preview-canvas-wrap">
+            <canvas id="repeat-preview-canvas" class="repeat-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+
+</main>
+
+<script>
+let shafts = 4, treadles = 4, warp = 16, picks = 16;
+let threading = [];
+let treadling = [];
+let tieup = [];
+const controlIds = ["shafts", "treadles", "warp", "picks"];
+const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
+
+function sanitizePositiveIntegerInput(input) {
+  const digitsOnly = input.value.replace(/[^\d]/g, "");
+  const nextValue = Math.max(1, Number.parseInt(digitsOnly || "1", 10));
+  input.value = nextValue;
+  return nextValue;
+}
+
+function getControlValues() {
+  const [nextShafts, nextTreadles, nextWarp, nextPicks] = controlIds.map(id =>
+    sanitizePositiveIntegerInput(document.getElementById(id))
+  );
+
+  return {
+    shafts: nextShafts,
+    treadles: nextTreadles,
+    warp: nextWarp,
+    picks: nextPicks
+  };
+}
+
+function getPreviewRepeatValues() {
+  const [repeatX, repeatY] = previewControlIds.map(id =>
+    sanitizePositiveIntegerInput(document.getElementById(id))
+  );
+
+  return { repeatX, repeatY };
+}
+
+function printDraftGrid() {
+  window.print();
+}
+
+function init() {
+  threading = Array.from({length: shafts}, () => Array(warp).fill(0));
+  treadling = Array.from({length: picks}, () => Array(treadles).fill(0));
+  tieup = Array.from({length: treadles}, () => Array(shafts).fill(0));
+  renderAll();
+}
+
+function resetAll() {
+  const values = getControlValues();
+  shafts = values.shafts;
+  treadles = values.treadles;
+  warp = values.warp;
+  picks = values.picks;
+  init();
+}
+
+function resizeFromControls() {
+  const values = getControlValues();
+  const newShafts = values.shafts;
+  const newTreadles = values.treadles;
+  const newWarp = values.warp;
+  const newPicks = values.picks;
+
+  threading = resizeThreading(threading, shafts, newShafts, warp, newWarp);
+  treadling = resizeTreadling(treadling, picks, newPicks, treadles, newTreadles);
+  tieup = resizeTieup(tieup, treadles, newTreadles, shafts, newShafts);
+
+  shafts = newShafts;
+  treadles = newTreadles;
+  warp = newWarp;
+  picks = newPicks;
+
+  renderAll();
+}
+
+function resizeThreading(old, oldS, newS, oldW, newW) {
+  const result = Array.from({length: newS}, () => Array(newW).fill(0));
+  for (let s = 0; s < Math.min(oldS, newS); s++) {
+    for (let i = 0; i < Math.min(oldW, newW); i++) {
+      result[s][i] = old[s]?.[i] || 0;
+    }
+  }
+  return result;
+}
+
+function resizeTreadling(old, oldP, newP, oldT, newT) {
+  const result = Array.from({length: newP}, () => Array(newT).fill(0));
+  for (let j = 0; j < Math.min(oldP, newP); j++) {
+    for (let t = 0; t < Math.min(oldT, newT); t++) {
+      result[j][t] = old[j]?.[t] || 0;
+    }
+  }
+  return result;
+}
+
+function resizeTieup(old, oldT, newT, oldS, newS) {
+  const result = Array.from({length: newT}, () => Array(newS).fill(0));
+  for (let t = 0; t < Math.min(oldT, newT); t++) {
+    for (let s = 0; s < Math.min(oldS, newS); s++) {
+      result[t][s] = old[t]?.[s] || 0;
+    }
+  }
+  return result;
+}
+
+function bindPositiveIntegerInput(input, onChange) {
+  input.addEventListener("keydown", event => {
+    if (["-", "+", ".", ",", "e", "E"].includes(event.key)) {
+      event.preventDefault();
+    }
+  });
+  input.addEventListener("blur", () => {
+    sanitizePositiveIntegerInput(input);
+    onChange();
+  });
+  input.addEventListener("change", onChange);
+}
+
+controlIds.forEach(id => {
+  bindPositiveIntegerInput(document.getElementById(id), resizeFromControls);
+});
+
+previewControlIds.forEach(id => {
+  const input = document.getElementById(id);
+  bindPositiveIntegerInput(input, renderRepeatPreview);
+  input.addEventListener("input", () => {
+    sanitizePositiveIntegerInput(input);
+    renderRepeatPreview();
+  });
+});
+
+const repeatPreviewScroll = document.getElementById("repeat-preview-scroll");
+
+if ("ResizeObserver" in window) {
+  const repeatPreviewResizeObserver = new ResizeObserver(() => {
+    renderRepeatPreview();
+  });
+  repeatPreviewResizeObserver.observe(repeatPreviewScroll);
+} else {
+  window.addEventListener("resize", renderRepeatPreview);
+}
+
+function renderAll() {
+  renderWarpToolbar();
+  renderPickToolbar();
+  renderThreading();
+  renderTieup();
+  renderTreadling();
+  renderDrawdown();
+  renderRepeatPreview();
+}
+
+function getDrawdownCellValue(pickIndex, warpIndex) {
+  const shaft = threading.findIndex(row => row[warpIndex] === 1);
+
+  if (shaft === -1) {
+    return 0;
+  }
+
+  for (let t = 0; t < treadles; t++) {
+    if (treadling[pickIndex]?.[t] && tieup[t]?.[shaft]) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+function renderWarpToolbar() {
+  const div = document.getElementById("warp-inserts");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+
+  for (let i = 0; i < warp; i++) {
+    const cell = document.createElement("div");
+    cell.className = "warp-insert-cell";
+
+    const plus = document.createElement("button");
+    plus.className = "insert-btn";
+    plus.textContent = "+";
+
+    const minus = document.createElement("button");
+    minus.className = "insert-btn";
+    minus.textContent = "−";
+
+    plus.onclick = () => {
+      for (let s = 0; s < shafts; s++) {
+        threading[s].splice(i, 0, 0);
+      }
+      warp++;
+      document.getElementById("warp").value = warp;
+      renderAll();
+    };
+
+    minus.onclick = () => {
+      if (warp <= 1) return;
+      for (let s = 0; s < shafts; s++) {
+        if (threading[s].length > i) threading[s].splice(i, 1);
+      }
+      warp--;
+      document.getElementById("warp").value = warp;
+      renderAll();
+    };
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    div.appendChild(cell);
+  }
+}
+
+function renderPickToolbar() {
+  const div = document.getElementById("pick-inserts");
+  div.innerHTML = "";
+  div.style.gridTemplateRows = `repeat(${picks}, var(--cell-size))`;
+
+  for (let j = 0; j < picks; j++) {
+    const cell = document.createElement("div");
+    cell.className = "pick-insert-cell";
+
+    const plus = document.createElement("button");
+    plus.className = "insert-btn";
+    plus.textContent = "+";
+
+    const minus = document.createElement("button");
+    minus.className = "insert-btn";
+    minus.textContent = "−";
+
+    plus.onclick = () => {
+      treadling.splice(j, 0, Array(treadles).fill(0));
+      picks++;
+      document.getElementById("picks").value = picks;
+      renderAll();
+    };
+
+    minus.onclick = () => {
+      if (picks <= 1) return;
+      if (treadling.length > j) treadling.splice(j, 1);
+      picks--;
+      document.getElementById("picks").value = picks;
+      renderAll();
+    };
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    div.appendChild(cell);
+  }
+}
+
+function renderThreading() {
+  const div = document.getElementById("threading");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+
+  for (let s = shafts - 1; s >= 0; s--) {
+    for (let i = 0; i < warp; i++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (threading[s][i] ? "on" : "");
+
+      b.onclick = () => {
+        if (threading[s][i]) {
+          threading[s][i] = 0;
+        } else {
+          for (let k = 0; k < shafts; k++) threading[k][i] = 0;
+          threading[s][i] = 1;
+        }
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+function renderTieup() {
+  const div = document.getElementById("tieup");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
+
+  for (let s = shafts - 1; s >= 0; s--) {
+    for (let t = 0; t < treadles; t++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (tieup[t][s] ? "on" : "");
+
+      b.onclick = () => {
+        tieup[t][s] ^= 1;
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+function renderTreadling() {
+  const div = document.getElementById("treadling");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
+
+  for (let j = 0; j < picks; j++) {
+    for (let t = 0; t < treadles; t++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (treadling[j][t] ? "on" : "");
+
+      b.onclick = () => {
+        treadling[j][t] ^= 1;
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+function renderDrawdown() {
+  const div = document.getElementById("drawdown");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+
+  for (let j = 0; j < picks; j++) {
+    for (let i = 0; i < warp; i++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (getDrawdownCellValue(j, i) ? "on" : "");
+      div.appendChild(b);
+    }
+  }
+}
+
+function renderRepeatPreview() {
+  const previewScroll = document.getElementById("repeat-preview-scroll");
+  const canvas = document.getElementById("repeat-preview-canvas");
+  const meta = document.getElementById("repeat-preview-meta");
+  const ctx = canvas.getContext("2d");
+  const rootStyles = getComputedStyle(document.documentElement);
+  const previewScrollStyles = getComputedStyle(previewScroll);
+  const ink = rootStyles.getPropertyValue("--ink").trim() || "#2f241d";
+  const light = "#ffffff";
+  const { repeatX, repeatY } = getPreviewRepeatValues();
+  const basePreviewCellSize = Math.max(
+    1,
+    Number.parseFloat(rootStyles.getPropertyValue("--preview-cell-size")) ||
+      Math.max(
+        1,
+        Math.floor((Number.parseFloat(rootStyles.getPropertyValue("--cell-size")) || 20) / 2)
+      )
+  );
+  const availableWidth = Math.max(
+    1,
+    previewScroll.clientWidth -
+      Number.parseFloat(previewScrollStyles.paddingLeft || "0") -
+      Number.parseFloat(previewScrollStyles.paddingRight || "0")
+  );
+  const naturalWidth = Math.max(1, warp * repeatX * basePreviewCellSize);
+  const naturalHeight = Math.max(1, picks * repeatY * basePreviewCellSize);
+  const previewScale = Math.min(1, availableWidth / naturalWidth);
+  const previewCellSize = basePreviewCellSize * previewScale;
+  const previewWidth = Math.max(1, naturalWidth * previewScale);
+  const previewHeight = Math.max(1, naturalHeight * previewScale);
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = Math.max(1, Math.round(previewWidth * dpr));
+  canvas.height = Math.max(1, Math.round(previewHeight * dpr));
+  canvas.style.width = `${previewWidth}px`;
+  canvas.style.height = `${previewHeight}px`;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, previewWidth, previewHeight);
+  ctx.fillStyle = light;
+  ctx.fillRect(0, 0, previewWidth, previewHeight);
+
+  for (let y = 0; y < picks * repeatY; y++) {
+    for (let x = 0; x < warp * repeatX; x++) {
+      ctx.fillStyle = getDrawdownCellValue(y % picks, x % warp) ? ink : light;
+      ctx.fillRect(x * previewCellSize, y * previewCellSize, previewCellSize, previewCellSize);
+    }
+  }
+
+  const roundedPreviewCellSize = Math.round(previewCellSize * 100) / 100;
+  meta.textContent = previewScale < 1
+    ? `${repeatX} by ${repeatY} repeats at ${roundedPreviewCellSize}px cells, scaled to fit width`
+    : `${repeatX} by ${repeatY} repeats at ${roundedPreviewCellSize}px cells`;
+}
+
+init();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

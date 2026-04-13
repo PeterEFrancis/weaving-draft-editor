@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Weaving Draft Tool</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  body {
+    background: white;
+  }
+
+  table.draft {
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  td {
+    padding: 0;
+    vertical-align: top;
+    border: 2px solid black;
+  }
+
+  .grid {
+    display: grid;
+    gap: 2px;
+  }
+
+  button.cell {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+    padding: 0;
+    background: white;
+  }
+
+  .on {
+    background: black !important;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ===== warp insert toolbar ===== */
+  .warp-toolbar {
+    display: grid;
+    gap: 2px;
+    margin: 0 auto 6px auto;
+    width: fit-content;
+    margin-left: -6px;
+  }
+
+  .warp-insert-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .insert-btn {
+    width: 18px;
+    height: 9px;
+    font-size: 12px;
+    padding: 0;
+    border: 0px;
+    background: transparent;
+    line-height: 16px;
+    cursor: pointer;
+  }
+
+  .insert-btn:hover {
+    color: red;
+  }
+
+  .warp-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+</head>
+
+<body class="p-2">
+
+<h1 class="py-5 text-center">Weaving Draft Tool</h1>
+
+<div class="controls py-4">
+  <span>Shafts</span>
+  <input id="shafts" class="form-control form-control-sm" style="width:80px" type="number" value="4">
+
+  <span>Treadles</span>
+  <input id="treadles" class="form-control form-control-sm" style="width:80px" type="number" value="4">
+
+  <span>Warp</span>
+  <input id="warp" class="form-control form-control-sm" style="width:100px" type="number" value="16">
+
+  <span>Picks</span>
+  <input id="picks" class="form-control form-control-sm" style="width:100px" type="number" value="16">
+
+  <button class="btn btn-dark btn-sm" onclick="resetAll()">Reset</button>
+</div>
+
+<table class="draft my-5 m-auto">
+  <tr>
+    <th>
+      <div id="warp-inserts" class="warp-toolbar"></div>
+    </th>
+  </tr>
+
+  <tr>
+    <td><div id="threading" class="grid"></div></td>
+    <td><div id="tieup" class="grid"></div></td>
+  </tr>
+
+  <tr>
+    <td><div id="drawdown" class="grid"></div></td>
+    <td><div id="treadling" class="grid"></div></td>
+  </tr>
+</table>
+
+<script>
+let shafts = 4, treadles = 4, warp = 16, picks = 16;
+let threading = [];
+let treadling = [];
+let tieup = [];
+
+function init() {
+  threading = Array.from({length: shafts}, () => Array(warp).fill(0));
+  treadling = Array.from({length: picks}, () => Array(treadles).fill(0));
+  tieup = Array.from({length: treadles}, () => Array(shafts).fill(0));
+  renderAll();
+}
+
+function resetAll() {
+  shafts = +document.getElementById("shafts").value;
+  treadles = +document.getElementById("treadles").value;
+  warp = +document.getElementById("warp").value;
+  picks = +document.getElementById("picks").value;
+  init();
+}
+
+document.querySelectorAll("input").forEach(input => {
+  input.addEventListener("change", resetAll);
+});
+
+function renderAll() {
+  renderWarpToolbar();
+  renderThreading();
+  renderTieup();
+  renderTreadling();
+  renderDrawdown();
+}
+
+/* ================= WARP INSERT / DELETE (NO DATA LOSS RESIZE) ================= */
+function renderWarpToolbar() {
+  const div = document.getElementById("warp-inserts");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, 20px)`;
+
+  for (let i = 0; i < warp; i++) {
+    const cell = document.createElement("div");
+    cell.className = "warp-insert-cell";
+
+    const plus = document.createElement("button");
+    plus.className = "insert-btn";
+    plus.textContent = "+";
+
+    const minus = document.createElement("button");
+    minus.className = "insert-btn";
+    minus.textContent = "−";
+
+    plus.onclick = () => {
+      for (let s = 0; s < shafts; s++) {
+        threading[s].splice(i, 0, 0);
+      }
+      warp++;
+      document.getElementById("warp").value = warp;
+      renderAll();
+    };
+
+    minus.onclick = () => {
+      if (warp <= 1) return;
+      for (let s = 0; s < shafts; s++) {
+        if (threading[s].length > i) threading[s].splice(i, 1);
+      }
+      warp--;
+      document.getElementById("warp").value = warp;
+      renderAll();
+    };
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    div.appendChild(cell);
+  }
+}
+
+/* ================= THREADING ================= */
+function renderThreading() {
+  const div = document.getElementById("threading");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, 20px)`;
+
+  for (let s = shafts - 1; s >= 0; s--) {
+    for (let i = 0; i < warp; i++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (threading[s][i] ? "on" : "");
+
+      b.onclick = () => {
+        if (threading[s][i]) {
+          threading[s][i] = 0;
+        } else {
+          for (let k = 0; k < shafts; k++) threading[k][i] = 0;
+          threading[s][i] = 1;
+        }
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+/* ================= TIEUP ================= */
+function renderTieup() {
+  const div = document.getElementById("tieup");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${treadles}, 20px)`;
+
+  for (let s = shafts - 1; s >= 0; s--) {
+    for (let t = 0; t < treadles; t++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (tieup[t][s] ? "on" : "");
+
+      b.onclick = () => {
+        tieup[t][s] ^= 1;
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+/* ================= TREADLING ================= */
+function renderTreadling() {
+  const div = document.getElementById("treadling");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${treadles}, 20px)`;
+
+  for (let j = 0; j < picks; j++) {
+    for (let t = 0; t < treadles; t++) {
+      const b = document.createElement("button");
+      b.className = "cell " + (treadling[j][t] ? "on" : "");
+
+      b.onclick = () => {
+        treadling[j][t] ^= 1;
+        renderAll();
+      };
+
+      div.appendChild(b);
+    }
+  }
+}
+
+/* ================= DRAW DOWN ================= */
+function renderDrawdown() {
+  const div = document.getElementById("drawdown");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${warp}, 20px)`;
+
+  for (let j = 0; j < picks; j++) {
+    for (let i = 0; i < warp; i++) {
+
+      let shaft = threading.findIndex(r => r[i] === 1);
+
+      let val = 0;
+      if (shaft !== -1) {
+        for (let t = 0; t < treadles; t++) {
+          if (treadling[j][t] && tieup[t][shaft]) {
+            val = 1;
+            break;
+          }
+        }
+      }
+
+      const b = document.createElement("button");
+      b.className = "cell " + (val ? "on" : "");
+      div.appendChild(b);
+    }
+  }
+}
+
+init();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
