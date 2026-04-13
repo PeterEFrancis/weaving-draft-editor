@@ -93,6 +93,17 @@
       border: 1px solid rgba(47, 36, 29, 0.08);
     }
 
+    .walkthrough-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .walkthrough-grid {
+      --bs-gutter-x: 1.5rem;
+      --bs-gutter-y: 1.5rem;
+    }
+
     .step-number {
       width: 2.3rem;
       height: 2.3rem;
@@ -109,9 +120,135 @@
       margin-top: 0.65rem;
     }
 
+    .draft-map-frame {
+      height: 100%;
+      padding: 0;
+      border-radius: 0;
+      border: 1px solid #000;
+      background: #fff;
+    }
+
+    .draft-map {
+      display: grid;
+      gap: 0;
+      grid-template-columns: minmax(0, 1.5fr) minmax(120px, 0.8fr);
+      grid-template-rows: 115px 190px;
+      grid-template-areas:
+        "threading tieup"
+        "drawdown treadling";
+    }
+
+    .draft-map-block {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0;
+      border: 1px solid #000;
+      background-color: #fff;
+    }
+
+    .draft-map-block::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.9;
+    }
+
+    .draft-map-label {
+      position: absolute;
+      left: 0.65rem;
+      top: 0.65rem;
+      z-index: 1;
+      padding: 0.2rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #000;
+      color: #000;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .draft-map-threading {
+      grid-area: threading;
+    }
+
+    .draft-map-threading::before {
+      background:
+        linear-gradient(90deg, rgba(47, 36, 29, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(170, 74, 43, 0.12) 20%, transparent 20% 40%, rgba(170, 74, 43, 0.12) 40% 60%, transparent 60% 80%, rgba(170, 74, 43, 0.12) 80%);
+      background-size: 18px 100%, 100% 100%;
+    }
+
+    .draft-map-tieup {
+      grid-area: tieup;
+    }
+
+    .draft-map-tieup::before {
+      background:
+        linear-gradient(90deg, rgba(47, 36, 29, 0.1) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 36, 29, 0.1) 1px, transparent 1px),
+        linear-gradient(135deg, rgba(170, 74, 43, 0.14), rgba(122, 50, 28, 0.06));
+      background-size: 22px 22px, 22px 22px, 100% 100%;
+    }
+
+    .draft-map-drawdown {
+      grid-area: drawdown;
+    }
+
+    .draft-map-drawdown::before {
+      background:
+        linear-gradient(90deg, rgba(47, 36, 29, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 36, 29, 0.08) 1px, transparent 1px),
+        linear-gradient(135deg, rgba(170, 74, 43, 0.18) 0 22%, transparent 22% 44%, rgba(47, 36, 29, 0.16) 44% 66%, transparent 66% 88%, rgba(170, 74, 43, 0.18) 88%);
+      background-size: 18px 18px, 18px 18px, 72px 72px;
+    }
+
+    .draft-map-treadling {
+      grid-area: treadling;
+    }
+
+    .draft-map-treadling::before {
+      background:
+        linear-gradient(90deg, rgba(47, 36, 29, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 36, 29, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(170, 74, 43, 0.14) 0 12%, transparent 12% 28%, rgba(47, 36, 29, 0.12) 28% 44%, transparent 44% 60%, rgba(170, 74, 43, 0.14) 60% 76%, transparent 76%);
+      background-size: 22px 22px, 22px 22px, 100% 72px;
+    }
+
+    .site-footer {
+      max-width: 1120px;
+      margin: 2.5rem auto 0;
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid rgba(47, 36, 29, 0.12);
+      color: rgba(47, 36, 29, 0.78);
+    }
+
+    .site-footer a {
+      color: var(--accent-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .site-footer a:hover,
+    .site-footer a:focus {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
     @media (max-width: 991.98px) {
       .hero-card {
         padding: 2rem !important;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .walkthrough-stack {
+        gap: 1.25rem;
+      }
+
+      .walkthrough-grid {
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
       }
     }
   </style>
@@ -123,12 +260,12 @@
         <div class="row g-4 align-items-center">
           <div class="col-lg-12">
             <div class="eyebrow mb-3">Weaving Tool</div>
-            <h1 class="display-title fw-semibold mb-3">Draft cloth structures with a cleaner starting point.</h1>
+            <h1 class="display-title fw-semibold mb-3">Draft cloth structures with color built in.</h1>
             <p class="lead-copy text-secondary mb-4">
-              Open the latest drafter to build threading, tie-up, treadling, and drawdown in one place. You can also insert warp ends and picks without wiping your existing draft.
+              Open the drafter to build threading, tie-up, treadling, and drawdown in one place. Assign pattern colors directly in the draft so the cloth preview reflects warp and weft color.
             </p>
             <div class="d-flex flex-wrap gap-3 align-items-center">
-              <a class="btn btn-drafter" href="drafter6.html">Open Drafter</a>
+              <a class="btn btn-drafter" href="drafter7.html">Open Drafter</a>
             </div>
           </div>
         </div>
@@ -142,67 +279,82 @@
             <p class="eyebrow mb-3">How To Use It</p>
             <h2 class="section-title mb-3">A quick weaving draft walkthrough.</h2>
             <p class="text-secondary mb-0">
-              The editor is split into threading, tie-up, treadling, and drawdown. You build the structure by clicking directly inside those grids.
+              Start by sizing the draft, then build the structure, add color, and refine the layout with insert controls.
             </p>
           </div>
           <div class="col-lg-8">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="step-card">
-                  <div class="step-number mb-3">1</div>
-                  <h3 class="h5">Set your draft size</h3>
-                  <p class="text-secondary mb-0">
-                    Use the controls at the top to choose the number of shafts, treadles, warp ends, and picks. Changing these values in the current editor preserves existing data when possible.
-                  </p>
+            <div class="walkthrough-stack">
+              <div class="row walkthrough-grid">
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">1</div>
+                    <h3 class="h5">Set your draft size</h3>
+                    <p class="text-secondary mb-0">
+                      Use the controls at the top to choose the number of shafts, treadles, warp ends, and picks. Changing these values in the current editor preserves existing data when possible.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="step-card">
-                  <div class="step-number mb-3">2</div>
-                  <h3 class="h5">Build the threading and tie-up</h3>
-                  <p class="text-secondary mb-0">
-                    Click one shaft for each warp end in the threading area, then click tie-up cells to connect treadles to shafts.
-                  </p>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">2</div>
+                    <h3 class="h5">Build the structure</h3>
+                    <p class="text-secondary mb-0">
+                      Place each warp end on a shaft, then connect treadles to shafts in the tie-up. The tie-up stays structural and prints as solid black.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="step-card">
-                  <div class="step-number mb-3">3</div>
-                  <h3 class="h5">Enter the treadling</h3>
-                  <p class="text-secondary mb-0">
-                    Click the treadling grid to assign treadles to each pick and build your sequence row by row.
-                  </p>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">3</div>
+                    <h3 class="h5">Add warp and weft color</h3>
+                    <p class="text-secondary mb-0">
+                      Use the pattern colors row to add or edit colors, select one, then click threading and treadling cells to assign warp and pick colors.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="step-card">
-                  <div class="step-number mb-3">4</div>
-                  <h3 class="h5">Insert ends and picks without losing work</h3>
-                  <p class="text-secondary mb-0">
-                    Use the small <code>+</code> and <code>-</code> controls above the threading grid and to the right of the treadling grid to insert or remove columns and rows while keeping the rest of the draft intact.
-                  </p>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">4</div>
+                    <h3 class="h5">Insert ends and picks without losing work</h3>
+                    <p class="text-secondary mb-0">
+                      Use the small <code>+</code> and <code>-</code> controls above the threading grid and to the right of the treadling grid to insert or remove columns and rows while keeping the rest of the draft intact.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <div class="row g-4 mt-1">
-              <div class="col-lg-7">
-                <div class="step-card">
-                  <h3 class="h5">What the panels mean</h3>
-                  <ul class="tip-list text-secondary mb-0 ps-3">
-                    <li><strong>Threading:</strong> which shaft each warp end is threaded through.</li>
-                    <li><strong>Tie-up:</strong> which shafts lift when a treadle is pressed.</li>
-                    <li><strong>Treadling:</strong> the order of treadles across picks.</li>
-                    <li><strong>Drawdown:</strong> the woven result calculated from the other three sections.</li>
-                  </ul>
+    <section class="hero-shell mx-auto mt-4">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">Draft Layout</p>
+            <h2 class="section-title mb-3">Structure of a draft.</h2>
+            <ul class="tip-list text-secondary mb-0 ps-3">
+              <li><strong>Threading:</strong> which shaft each warp end is threaded through, plus its warp color.</li>
+              <li><strong>Tie-up:</strong> which shafts lift when a treadle is pressed.</li>
+              <li><strong>Treadling:</strong> the order of treadles across picks, plus the weft color for that pick.</li>
+              <li><strong>Drawdown:</strong> the woven result calculated from structure and color together.</li>
+            </ul>
+          </div>
+          <div class="col-lg-8 pt-5">
+            <div class="draft-map-frame">
+              <div class="draft-map" role="img" aria-label="Sample weaving draft diagram labeled Threading, Tie-Up, Drawdown, and Treadling.">
+                <div class="draft-map-block draft-map-threading">
+                  <span class="draft-map-label">Threading</span>
                 </div>
-              </div>
-              <div class="col-lg-5">
-                <div class="step-card">
-                  <h3 class="h5">Useful note</h3>
-                  <p class="text-secondary mb-0">
-                    The <code>Reset</code> button clears the draft completely, so it’s helpful when you want a fresh start. For small structural changes, use the insert and delete controls instead.
-                  </p>
+                <div class="draft-map-block draft-map-tieup">
+                  <span class="draft-map-label">Tie-Up</span>
+                </div>
+                <div class="draft-map-block draft-map-drawdown">
+                  <span class="draft-map-label">Drawdown</span>
+                </div>
+                <div class="draft-map-block draft-map-treadling">
+                  <span class="draft-map-label">Treadling</span>
                 </div>
               </div>
             </div>
@@ -211,6 +363,12 @@
       </div>
     </section>
   </main>
+
+  <footer class="site-footer text-center text-lg-start">
+    <span>Peter E. Francis</span>
+    <span class="mx-2 d-none d-lg-inline">|</span>
+    <a href="https://peterefrancis.com" target="_blank" rel="noopener noreferrer">peterefrancis.com</a>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
