@@ -20,14 +20,14 @@
     --cell-size: 20px;
     --cell-gap: 2px;
     --grid-gap: 0px;
-    --preview-cell-size: calc(var(--cell-size) / 2);
+    --preview-cell-size: 10px;
     --preview-render-scale: 2;
     --control-gap: calc(5 * var(--cell-gap));
     --toolbar-offset: var(--cell-gap);
     --insert-gap: calc(var(--cell-size) / 20);
     --insert-btn-width: calc((var(--cell-size) - var(--insert-gap)) / 2);
     --insert-btn-height: calc((var(--cell-size) - var(--insert-gap)) / 2);
-    --insert-btn-nudge: 3.7px;
+    --insert-btn-nudge: calc(var(--cell-size) * 0.185);
     --toolbar-font-size: calc(var(--cell-size) / 2);
   }
 
@@ -296,18 +296,46 @@
   }
 
   .draft-stage {
-    overflow: auto;
+    overflow: hidden;
     padding: 1.25rem;
     border-radius: 1.25rem;
     border: 1px solid rgba(47, 36, 29, 0.08);
     background: var(--panel-bg);
+    container-type: inline-size;
+  }
+
+  .draft-stage-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .draft-stage h2 {
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .draft-grid-scroll {
+    width: 100%;
+    max-width: 100%;
+    max-height: min(100cqw, calc(100dvh - 8rem));
+    overflow: auto;
+    scrollbar-gutter: stable both-edges;
   }
 
   .draft-stage-actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 0.35rem;
-    margin-top: 1rem;
+    margin-top: 0;
+  }
+
+  .draft-stage-zoom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
   }
 
   .draft-stage-button {
@@ -332,10 +360,22 @@
     transform: translateY(-1px);
   }
 
+  .draft-stage-button:disabled {
+    color: rgba(47, 36, 29, 0.22);
+    transform: none;
+    cursor: default;
+  }
+
   .draft-stage-button svg {
     width: 1.05rem;
     height: 1.05rem;
     display: block;
+  }
+
+  .draft-stage-zoom-button {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .page-home-link {
@@ -406,6 +446,34 @@
 
   .preview-control {
     width: 82px;
+  }
+
+  .preview-color-control {
+    width: 56px;
+    min-width: 56px;
+    height: 38px;
+    padding: 0.2rem;
+  }
+
+  .preview-color-control::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  .preview-color-control::-webkit-color-swatch {
+    border: 0;
+    border-radius: 0.55rem;
+  }
+
+  .preview-color-control::-moz-color-swatch {
+    border: 0;
+    border-radius: 0.55rem;
+  }
+
+  .preview-sett-control {
+    width: 118px;
+    min-width: 118px;
+    padding: 0;
+    accent-color: var(--accent);
   }
 
   .preview-controls > div {
@@ -605,6 +673,9 @@
     .draft-print-area,
     .draft-print-area * {
       visibility: visible !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
     }
 
     .draft-print-area {
@@ -620,6 +691,18 @@
       padding: 0 !important;
       border: 0 !important;
       background: #ffffff !important;
+    }
+
+    .draft-grid-scroll {
+      width: max-content !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    .draft-print-area button {
+      -webkit-appearance: none !important;
+      appearance: none !important;
+      box-shadow: none !important;
     }
 
     .toolbar-row,
@@ -694,45 +777,72 @@
       </div>
 
       <div class="draft-stage">
-        <div class="draft-print-area">
-          <table class="draft">
-            <tr class="toolbar-row">
-              <th>
-                <div id="warp-inserts" class="warp-toolbar"></div>
-              </th>
-              <th></th>
-              <th class="ghost-cell"></th>
-            </tr>
-
-            <tr>
-              <td><div id="threading" class="grid"></div></td>
-              <td><div id="tieup" class="grid"></div></td>
-              <td class="ghost-cell"></td>
-            </tr>
-
-            <tr>
-              <td><div id="drawdown" class="grid"></div></td>
-              <td>
-                <div class="pick-wrap">
-                  <div id="treadling" class="grid"></div>
-                </div>
-              </td>
-              <td class="ghost-cell">
-                <div id="pick-inserts" class="pick-toolbar"></div>
-              </td>
-            </tr>
-          </table>
+        <div class="draft-stage-header">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
+            <div>
+              <h2 class="fw-semibold">Draft</h2>
+            </div>
+            <div class="draft-stage-actions">
+              <div class="draft-stage-zoom" aria-label="Draft zoom controls">
+                <button
+                  type="button"
+                  id="draft-zoom-out"
+                  class="draft-stage-button draft-stage-zoom-button"
+                  onclick="changeDraftZoom(-1)"
+                  aria-label="Zoom out"
+                  title="Zoom out"
+                >−</button>
+                <button
+                  type="button"
+                  id="draft-zoom-in"
+                  class="draft-stage-button draft-stage-zoom-button"
+                  onclick="changeDraftZoom(1)"
+                  aria-label="Zoom in"
+                  title="Zoom in"
+                >+</button>
+              </div>
+              <button type="button" class="draft-stage-button" onclick="printDraftGrid()" aria-label="Print grid" title="Print grid">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M7 9V4h10v5"></path>
+                  <path d="M6 17H4a1 1 0 0 1-1-1v-5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v5a1 1 0 0 1-1 1h-2"></path>
+                  <path d="M6 14h12v6H6z"></path>
+                  <path d="M17 12.5h.01"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="draft-stage-actions">
-          <button type="button" class="draft-stage-button" onclick="printDraftGrid()" aria-label="Print grid" title="Print grid">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M7 9V4h10v5"></path>
-              <path d="M6 17H4a1 1 0 0 1-1-1v-5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v5a1 1 0 0 1-1 1h-2"></path>
-              <path d="M6 14h12v6H6z"></path>
-              <path d="M17 12.5h.01"></path>
-            </svg>
-          </button>
+        <div class="draft-grid-scroll">
+          <div class="draft-print-area">
+            <table class="draft">
+              <tr class="toolbar-row">
+                <th>
+                  <div id="warp-inserts" class="warp-toolbar"></div>
+                </th>
+                <th></th>
+                <th class="ghost-cell"></th>
+              </tr>
+
+              <tr>
+                <td><div id="threading" class="grid"></div></td>
+                <td><div id="tieup" class="grid"></div></td>
+                <td class="ghost-cell"></td>
+              </tr>
+
+              <tr>
+                <td><div id="drawdown" class="grid"></div></td>
+                <td>
+                  <div class="pick-wrap">
+                    <div id="treadling" class="grid"></div>
+                  </div>
+                </td>
+                <td class="ghost-cell">
+                  <div id="pick-inserts" class="pick-toolbar"></div>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -743,14 +853,6 @@
             <p class="small text-secondary">A rendering of the current drawdown, repeated into a larger swatch with smaller cells.</p>
           </div>
           <div class="preview-controls">
-            <div class="preview-mode-group">
-              <label class="control-label preview-control-label">Render</label>
-              <div class="preview-mode-toggle" role="group" aria-label="Fabric render mode">
-                <button type="button" id="preview-render-plain" class="preview-mode-button" onclick="setPreviewRenderMode('plain')">Plain</button>
-                <button type="button" id="preview-render-realistic" class="preview-mode-button active" onclick="setPreviewRenderMode('realistic')">Realistic</button>
-                <button type="button" id="preview-render-ultra" class="preview-mode-button" onclick="setPreviewRenderMode('ultra')" title="Ultra-realistic">Ultra</button>
-              </div>
-            </div>
             <div>
               <label class="control-label preview-control-label" for="preview-repeat-x">Repeat X</label>
               <input id="preview-repeat-x" class="form-control preview-control" type="number" value="4" min="1" step="1" inputmode="numeric">
@@ -758,6 +860,37 @@
             <div>
               <label class="control-label preview-control-label" for="preview-repeat-y">Repeat Y</label>
               <input id="preview-repeat-y" class="form-control preview-control" type="number" value="4" min="1" step="1" inputmode="numeric">
+            </div>
+            <div class="preview-mode-group">
+              <label class="control-label preview-control-label">Render</label>
+              <div class="preview-mode-toggle" role="group" aria-label="Fabric render mode">
+                <button type="button" id="preview-render-plain" class="preview-mode-button active" onclick="setPreviewRenderMode('plain')">Plain</button>
+                <button type="button" id="preview-render-realistic" class="preview-mode-button" onclick="setPreviewRenderMode('realistic')">Realistic</button>
+                <button type="button" id="preview-render-ultra" class="preview-mode-button" onclick="setPreviewRenderMode('ultra')" title="Ultra-realistic">Ultra</button>
+              </div>
+            </div>
+            <div id="preview-sett-group">
+              <label class="control-label preview-control-label" for="preview-sett">Sett</label>
+              <input
+                id="preview-sett"
+                class="form-range preview-sett-control"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="60"
+                aria-label="Preview sett"
+              >
+            </div>
+            <div id="preview-background-group">
+              <label class="control-label preview-control-label" for="preview-background-color">Background</label>
+              <input
+                id="preview-background-color"
+                class="form-control form-control-color preview-color-control"
+                type="color"
+                value="#ffffff"
+                aria-label="Preview background color"
+              >
             </div>
           </div>
         </div>
@@ -786,7 +919,15 @@ let patternColors = [
 ];
 let activePatternColorId = "pattern-color-1";
 let nextPatternColorNumber = 6;
-let previewRenderMode = "realistic";
+let previewRenderMode = "plain";
+let previewSett = 60;
+let draftCellSize = 20;
+const defaultPreviewBackgroundColor = "#ffffff";
+const defaultPreviewSett = 60;
+const defaultDraftCellSize = 20;
+const minDraftCellSize = 6;
+const maxDraftCellSize = 36;
+const draftZoomStep = 2;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
 const patternColorSeedValues = ["#d2a03a", "#7a5fd0", "#d6718c", "#4f8d88", "#bc6c25", "#5e548e"];
@@ -828,8 +969,70 @@ function setPreviewRepeatValues(nextValues) {
   document.getElementById("preview-repeat-y").value = nextValues.repeatY;
 }
 
+function normalizePreviewBackgroundColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(value || "") ? value.toLowerCase() : defaultPreviewBackgroundColor;
+}
+
+function getPreviewBackgroundColor() {
+  return normalizePreviewBackgroundColor(document.getElementById("preview-background-color").value);
+}
+
+function setPreviewBackgroundColor(value) {
+  document.getElementById("preview-background-color").value = normalizePreviewBackgroundColor(value);
+}
+
+function normalizePreviewSett(value) {
+  return Math.max(0, Math.min(100, Number.parseInt(value, 10) || 0));
+}
+
+function getPreviewSettValue() {
+  return normalizePreviewSett(previewSett);
+}
+
+function setPreviewSettValue(value) {
+  previewSett = normalizePreviewSett(value);
+  document.getElementById("preview-sett").value = String(previewSett);
+}
+
+function clampDraftCellSize(value) {
+  return Math.max(minDraftCellSize, Math.min(maxDraftCellSize, value));
+}
+
+function updateDraftZoomUI() {
+  document.getElementById("draft-zoom-out").disabled = draftCellSize <= minDraftCellSize;
+  document.getElementById("draft-zoom-in").disabled = draftCellSize >= maxDraftCellSize;
+}
+
+function applyDraftZoom() {
+  draftCellSize = clampDraftCellSize(draftCellSize);
+  document.documentElement.style.setProperty("--cell-size", `${draftCellSize}px`);
+  updateDraftZoomUI();
+}
+
+function changeDraftZoom(direction) {
+  const nextCellSize = clampDraftCellSize(draftCellSize + direction * draftZoomStep);
+
+  if (nextCellSize === draftCellSize) {
+    updateDraftZoomUI();
+    return;
+  }
+
+  draftCellSize = nextCellSize;
+  applyDraftZoom();
+}
+
+function getEffectivePreviewBackgroundColor(mode = getPreviewRenderMode()) {
+  return mode === "plain" ? defaultPreviewBackgroundColor : getPreviewBackgroundColor();
+}
+
+function updatePreviewBackgroundUI(backgroundColor = getEffectivePreviewBackgroundColor()) {
+  document.getElementById("repeat-preview-scroll").style.backgroundColor = backgroundColor;
+  document.querySelector(".preview-canvas-wrap").style.backgroundColor = backgroundColor;
+  document.getElementById("repeat-preview-canvas").style.backgroundColor = backgroundColor;
+}
+
 function normalizePreviewRenderMode(mode) {
-  return ["plain", "realistic", "ultra"].includes(mode) ? mode : "realistic";
+  return ["plain", "realistic", "ultra"].includes(mode) ? mode : "plain";
 }
 
 function getPreviewRenderMode() {
@@ -838,14 +1041,18 @@ function getPreviewRenderMode() {
 
 function updatePreviewRenderModeUI() {
   const activeMode = getPreviewRenderMode();
+  const showAdvancedPreviewControls = activeMode !== "plain";
   document.getElementById("preview-render-plain").classList.toggle("active", activeMode === "plain");
   document.getElementById("preview-render-realistic").classList.toggle("active", activeMode === "realistic");
   document.getElementById("preview-render-ultra").classList.toggle("active", activeMode === "ultra");
+  document.getElementById("preview-sett-group").hidden = !showAdvancedPreviewControls;
+  document.getElementById("preview-background-group").hidden = !showAdvancedPreviewControls;
 }
 
 function setPreviewRenderMode(mode, shouldRender = true) {
   previewRenderMode = normalizePreviewRenderMode(mode);
   updatePreviewRenderModeUI();
+  updatePreviewBackgroundUI(getEffectivePreviewBackgroundColor());
   if (shouldRender) {
     renderRepeatPreview();
   }
@@ -908,7 +1115,9 @@ function buildDraftSaveData() {
     },
     preview: {
       ...getPreviewRepeatValues(),
-      renderMode: getPreviewRenderMode()
+      renderMode: getPreviewRenderMode(),
+      sett: getPreviewSettValue(),
+      backgroundColor: getPreviewBackgroundColor()
     }
   };
 }
@@ -948,7 +1157,9 @@ function applyLoadedDraftData(data) {
   const nextPreview = {
     repeatX: Math.max(1, Number.parseInt(data.preview?.repeatX, 10) || 1),
     repeatY: Math.max(1, Number.parseInt(data.preview?.repeatY, 10) || 1),
-    renderMode: normalizePreviewRenderMode(data.preview?.renderMode)
+    renderMode: normalizePreviewRenderMode(data.preview?.renderMode),
+    sett: normalizePreviewSett(data.preview?.sett ?? defaultPreviewSett),
+    backgroundColor: normalizePreviewBackgroundColor(data.preview?.backgroundColor)
   };
 
   shafts = nextShafts;
@@ -967,6 +1178,8 @@ function applyLoadedDraftData(data) {
 
   setControlValues({shafts, treadles, warp, picks});
   setPreviewRepeatValues(nextPreview);
+  setPreviewSettValue(nextPreview.sett);
+  setPreviewBackgroundColor(nextPreview.backgroundColor);
   setPreviewRenderMode(nextPreview.renderMode, false);
   renderPatternColors();
   renderAll();
@@ -1375,7 +1588,7 @@ function drawUltraPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation)
   ctx.fillRect(x, y, cellSize, cellSize);
 }
 
-function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
+function drawPreviewWovenCell(ctx, x, y, cellSize, cellState, backgroundColor = defaultPreviewBackgroundColor) {
   const topColor = cellState.frontColor || "#ffffff";
   const underColor = cellState.backColor || topColor;
   const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
@@ -1387,7 +1600,7 @@ function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
     return;
   }
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = backgroundColor;
   ctx.fillRect(x, y, cellSize, cellSize);
 
   drawPreviewThreadLayer(ctx, x, y, cellSize, underColor, underOrientation, false);
@@ -1399,18 +1612,27 @@ function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
   drawPreviewThreadLayer(ctx, x, y, cellSize, topColor, topOrientation, true);
 }
 
-function drawPreviewUltraWovenCell(ctx, x, y, cellSize, cellState, cellX, cellY) {
+function drawPreviewUltraWovenCell(
+  ctx,
+  x,
+  y,
+  cellSize,
+  cellState,
+  cellX,
+  cellY,
+  backgroundColor = defaultPreviewBackgroundColor
+) {
   const topColor = cellState.frontColor || "#ffffff";
   const underColor = cellState.backColor || topColor;
   const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
   const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
 
   if (cellSize < 5.5) {
-    drawPreviewWovenCell(ctx, x, y, cellSize, cellState);
+    drawPreviewWovenCell(ctx, x, y, cellSize, cellState, backgroundColor);
     return;
   }
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = backgroundColor;
   ctx.fillRect(x, y, cellSize, cellSize);
 
   drawUltraPreviewThreadLayer(ctx, x, y, cellSize, underColor, underOrientation, false, cellX, cellY);
@@ -1428,9 +1650,16 @@ function drawPreviewPlainCell(ctx, x, y, cellSize, cellState) {
 }
 
 function getPreviewLayerWidths(cellSize, renderMode) {
-  return renderMode === "ultra"
-    ? { top: cellSize * 0.78, under: cellSize * 0.62 }
-    : { top: cellSize * 0.8, under: cellSize * 0.66 };
+  const settRatio = getPreviewSettValue() / 100;
+  const topMin = renderMode === "ultra" ? 0.45 : 0.5;
+  const underMin = renderMode === "ultra" ? 0.28 : 0.34;
+  const topWidth = topMin + (1 - topMin) * settRatio;
+  const underWidth = underMin + (1 - underMin) * settRatio;
+
+  return {
+    top: cellSize * topWidth,
+    under: cellSize * underWidth
+  };
 }
 
 function isPreviewOrientationOnTop(cellState, orientation) {
@@ -1571,13 +1800,24 @@ function drawPreviewAdaptiveYarn(
   ctx.restore();
 }
 
-function drawPreviewStructuredCell(ctx, x, y, cellSize, cellState, cellX, cellY, states, renderMode) {
+function drawPreviewStructuredCell(
+  ctx,
+  x,
+  y,
+  cellSize,
+  cellState,
+  cellX,
+  cellY,
+  states,
+  renderMode,
+  backgroundColor = defaultPreviewBackgroundColor
+) {
   const topColor = cellState.frontColor || "#ffffff";
   const underColor = cellState.backColor || topColor;
   const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
   const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = backgroundColor;
   ctx.fillRect(x, y, cellSize, cellSize);
 
   drawPreviewAdaptiveYarn(ctx, x, y, cellSize, underColor, underOrientation, false, renderMode, cellX, cellY, states);
@@ -1728,13 +1968,24 @@ function buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, renderMo
   if (renderMode === "plain") {
     for (let y = 0; y < picks; y++) {
       for (let x = 0; x < warp; x++) {
-        drawCell(tileCtx, x * cellSize, y * cellSize, cellSize, states[y][x], x, y);
+        drawCell(tileCtx, x * cellSize, y * cellSize, cellSize, states[y][x], x, y, backgroundColor);
       }
     }
   } else {
     for (let y = 0; y < picks; y++) {
       for (let x = 0; x < warp; x++) {
-        drawPreviewStructuredCell(tileCtx, x * cellSize, y * cellSize, cellSize, states[y][x], x, y, states, renderMode);
+        drawPreviewStructuredCell(
+          tileCtx,
+          x * cellSize,
+          y * cellSize,
+          cellSize,
+          states[y][x],
+          x,
+          y,
+          states,
+          renderMode,
+          backgroundColor
+        );
       }
     }
   }
@@ -1916,8 +2167,162 @@ function getPreviewRepeatValues() {
   return { repeatX, repeatY };
 }
 
+function getDraftPrintStyles() {
+  const rootStyles = getComputedStyle(document.documentElement);
+  const readVar = (name, fallback) => rootStyles.getPropertyValue(name).trim() || fallback;
+
+  return `
+    :root {
+      --cell-size: ${readVar("--cell-size", "20px")};
+      --cell-gap: ${readVar("--cell-gap", "2px")};
+      --grid-gap: ${readVar("--grid-gap", "0px")};
+      --ink: ${readVar("--ink", "#2f241d")};
+    }
+
+    @page {
+      margin: 0.5in;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    body {
+      width: max-content;
+    }
+
+    .draft-print-area,
+    .draft-print-area * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
+      box-sizing: border-box;
+    }
+
+    .draft-print-area {
+      width: max-content;
+      background: #ffffff;
+    }
+
+    table.draft {
+      border-collapse: collapse;
+      margin: 0;
+    }
+
+    th {
+      padding: 0;
+      border: 0;
+      font-weight: normal;
+    }
+
+    td {
+      padding: 0;
+      vertical-align: top;
+      border: var(--cell-gap) solid var(--ink);
+      background: #ffffff;
+    }
+
+    .toolbar-row,
+    .ghost-cell {
+      display: none !important;
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--grid-gap);
+    }
+
+    button.cell {
+      -webkit-appearance: none;
+      appearance: none;
+      position: relative;
+      width: var(--cell-size);
+      height: var(--cell-size);
+      border: 1px solid rgba(47, 36, 29, 0.1);
+      border-radius: 0;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .cell-active {
+      box-shadow: inset 0 0 0 1.2px rgba(47, 36, 29, 0.34);
+    }
+
+    .cell-structural-on {
+      background: var(--ink) !important;
+      border-color: var(--ink) !important;
+    }
+
+    .drawdown-cell {
+      width: var(--cell-size);
+      height: var(--cell-size);
+      border: 1px solid rgba(47, 36, 29, 0.1);
+      border-radius: 0;
+      box-sizing: border-box;
+    }
+  `;
+}
+
 function printDraftGrid() {
-  window.print();
+  const source = document.querySelector(".draft-print-area");
+
+  if (!source) {
+    return;
+  }
+
+  const printFrame = document.createElement("iframe");
+  printFrame.setAttribute("aria-hidden", "true");
+  printFrame.style.position = "fixed";
+  printFrame.style.right = "0";
+  printFrame.style.bottom = "0";
+  printFrame.style.width = "0";
+  printFrame.style.height = "0";
+  printFrame.style.border = "0";
+
+  document.body.appendChild(printFrame);
+
+  const printDocument = printFrame.contentDocument || printFrame.contentWindow?.document;
+
+  if (!printDocument) {
+    printFrame.remove();
+    return;
+  }
+
+  printDocument.open();
+  printDocument.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Draft Print</title>
+        <style>${getDraftPrintStyles()}</style>
+      </head>
+      <body>
+        ${source.outerHTML}
+      </body>
+    </html>
+  `);
+  printDocument.close();
+
+  const cleanup = () => {
+    window.setTimeout(() => {
+      printFrame.remove();
+    }, 0);
+  };
+
+  window.setTimeout(() => {
+    const printWindow = printFrame.contentWindow;
+    if (!printWindow) {
+      cleanup();
+      return;
+    }
+
+    printWindow.onafterprint = cleanup;
+    printWindow.focus();
+    printWindow.print();
+  }, 50);
 }
 
 function confirmReset() {
@@ -1961,7 +2366,9 @@ function loadDefaultHoundstoothDraft() {
 
   setControlValues({shafts, treadles, warp, picks});
   setPreviewRepeatValues({repeatX: 4, repeatY: 4});
-  setPreviewRenderMode("realistic", false);
+  setPreviewSettValue(defaultPreviewSett);
+  setPreviewBackgroundColor(defaultPreviewBackgroundColor);
+  setPreviewRenderMode("plain", false);
   renderPatternColors();
   renderAll();
 }
@@ -2055,6 +2462,16 @@ previewControlIds.forEach(id => {
     sanitizePositiveIntegerInput(input);
     renderRepeatPreview();
   });
+});
+
+document.getElementById("preview-background-color").addEventListener("input", () => {
+  updatePreviewBackgroundUI();
+  renderRepeatPreview();
+});
+
+document.getElementById("preview-sett").addEventListener("input", event => {
+  setPreviewSettValue(event.target.value);
+  renderRepeatPreview();
 });
 
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
@@ -2331,9 +2748,9 @@ function renderRepeatPreview() {
   const ctx = canvas.getContext("2d");
   const rootStyles = getComputedStyle(document.documentElement);
   const previewScrollStyles = getComputedStyle(previewScroll);
-  const light = "#ffffff";
   const { repeatX, repeatY } = getPreviewRepeatValues();
   const renderMode = getPreviewRenderMode();
+  const backgroundColor = getEffectivePreviewBackgroundColor(renderMode);
   const basePreviewCellSize = Math.max(
     1,
     Number.parseFloat(rootStyles.getPropertyValue("--preview-cell-size")) ||
@@ -2370,14 +2787,15 @@ function renderRepeatPreview() {
   if ("imageSmoothingQuality" in ctx) {
     ctx.imageSmoothingQuality = "high";
   }
+  updatePreviewBackgroundUI(backgroundColor);
   ctx.clearRect(0, 0, previewWidth, previewHeight);
-  ctx.fillStyle = light;
+  ctx.fillStyle = backgroundColor;
   ctx.fillRect(0, 0, previewWidth, previewHeight);
 
   const { tileCanvas, tileWidth, tileHeight } = buildPreviewRepeatTile(
     previewCellSize,
     renderScale,
-    light,
+    backgroundColor,
     renderMode
   );
 
@@ -2407,6 +2825,7 @@ function renderRepeatPreview() {
   }
 }
 
+applyDraftZoom();
 loadDefaultHoundstoothDraft();
 </script>
 
