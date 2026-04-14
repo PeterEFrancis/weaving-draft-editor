@@ -371,7 +371,7 @@
     margin-top: 1rem;
     padding: 0.75rem;
     border-radius: 1rem;
-    background: var(--panel-bg);
+    background: #ffffff;
     border: 1px solid rgba(47, 36, 29, 0.08);
     min-height: clamp(260px, 48vh, 520px);
     display: flex;
@@ -384,6 +384,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #ffffff;
   }
 
   .repeat-canvas {
@@ -747,6 +748,7 @@
               <div class="preview-mode-toggle" role="group" aria-label="Fabric render mode">
                 <button type="button" id="preview-render-plain" class="preview-mode-button" onclick="setPreviewRenderMode('plain')">Plain</button>
                 <button type="button" id="preview-render-realistic" class="preview-mode-button active" onclick="setPreviewRenderMode('realistic')">Realistic</button>
+                <button type="button" id="preview-render-ultra" class="preview-mode-button" onclick="setPreviewRenderMode('ultra')" title="Ultra-realistic">Ultra</button>
               </div>
             </div>
             <div>
@@ -826,18 +828,23 @@ function setPreviewRepeatValues(nextValues) {
   document.getElementById("preview-repeat-y").value = nextValues.repeatY;
 }
 
+function normalizePreviewRenderMode(mode) {
+  return ["plain", "realistic", "ultra"].includes(mode) ? mode : "realistic";
+}
+
 function getPreviewRenderMode() {
-  return previewRenderMode === "plain" ? "plain" : "realistic";
+  return normalizePreviewRenderMode(previewRenderMode);
 }
 
 function updatePreviewRenderModeUI() {
   const activeMode = getPreviewRenderMode();
   document.getElementById("preview-render-plain").classList.toggle("active", activeMode === "plain");
   document.getElementById("preview-render-realistic").classList.toggle("active", activeMode === "realistic");
+  document.getElementById("preview-render-ultra").classList.toggle("active", activeMode === "ultra");
 }
 
 function setPreviewRenderMode(mode, shouldRender = true) {
-  previewRenderMode = mode === "plain" ? "plain" : "realistic";
+  previewRenderMode = normalizePreviewRenderMode(mode);
   updatePreviewRenderModeUI();
   if (shouldRender) {
     renderRepeatPreview();
@@ -941,7 +948,7 @@ function applyLoadedDraftData(data) {
   const nextPreview = {
     repeatX: Math.max(1, Number.parseInt(data.preview?.repeatX, 10) || 1),
     repeatY: Math.max(1, Number.parseInt(data.preview?.repeatY, 10) || 1),
-    renderMode: data.preview?.renderMode === "plain" ? "plain" : "realistic"
+    renderMode: normalizePreviewRenderMode(data.preview?.renderMode)
   };
 
   shafts = nextShafts;
@@ -1072,13 +1079,16 @@ function previewAlphaColor(colorValue, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
 }
 
-function drawPreviewThreadLayer(ctx, x, y, cellSize, colorValue, orientation, isTopLayer) {
-  const thickness = cellSize * (isTopLayer ? 0.8 : 0.66);
+function drawPreviewThreadBand(ctx, x, y, cellSize, spanLength, colorValue, orientation, isTopLayer, thicknessOverride = null) {
+  const thickness =
+    thicknessOverride === null
+      ? cellSize * (isTopLayer ? 0.8 : 0.66)
+      : thicknessOverride;
   const inset = (cellSize - thickness) / 2;
   const rect =
     orientation === "vertical"
-      ? { x: x + inset, y, width: thickness, height: cellSize }
-      : { x, y: y + inset, width: cellSize, height: thickness };
+      ? { x: x + inset, y, width: thickness, height: spanLength }
+      : { x, y: y + inset, width: spanLength, height: thickness };
   const gradient =
     orientation === "vertical"
       ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
@@ -1091,20 +1101,26 @@ function drawPreviewThreadLayer(ctx, x, y, cellSize, colorValue, orientation, is
     orientation === "vertical"
       ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
       : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+  const outerDarkness = 0.34;
+  const shoulderDarkness = 0.16;
+  const centerHighlight = 0.24;
+  const innerDarkness = 0.14;
+  const edgeShadowAlpha = 0.12;
+  const highlightAlpha = 0.24;
 
-  gradient.addColorStop(0, darkenPreviewColor(colorValue, isTopLayer ? 0.34 : 0.42));
-  gradient.addColorStop(0.18, darkenPreviewColor(colorValue, isTopLayer ? 0.16 : 0.24));
-  gradient.addColorStop(0.5, lightenPreviewColor(colorValue, isTopLayer ? 0.24 : 0.12));
-  gradient.addColorStop(0.82, darkenPreviewColor(colorValue, isTopLayer ? 0.14 : 0.22));
-  gradient.addColorStop(1, darkenPreviewColor(colorValue, isTopLayer ? 0.34 : 0.4));
+  gradient.addColorStop(0, darkenPreviewColor(colorValue, outerDarkness));
+  gradient.addColorStop(0.18, darkenPreviewColor(colorValue, shoulderDarkness));
+  gradient.addColorStop(0.5, lightenPreviewColor(colorValue, centerHighlight));
+  gradient.addColorStop(0.82, darkenPreviewColor(colorValue, innerDarkness));
+  gradient.addColorStop(1, darkenPreviewColor(colorValue, outerDarkness));
 
-  edgeShadow.addColorStop(0, previewAlphaColor("#000000", isTopLayer ? 0.12 : 0.08));
+  edgeShadow.addColorStop(0, previewAlphaColor("#000000", edgeShadowAlpha));
   edgeShadow.addColorStop(0.18, previewAlphaColor("#000000", 0));
   edgeShadow.addColorStop(0.82, previewAlphaColor("#000000", 0));
-  edgeShadow.addColorStop(1, previewAlphaColor("#000000", isTopLayer ? 0.12 : 0.08));
+  edgeShadow.addColorStop(1, previewAlphaColor("#000000", edgeShadowAlpha));
 
   highlight.addColorStop(0, previewAlphaColor("#ffffff", 0));
-  highlight.addColorStop(0.5, previewAlphaColor("#ffffff", isTopLayer ? 0.24 : 0.1));
+  highlight.addColorStop(0.5, previewAlphaColor("#ffffff", highlightAlpha));
   highlight.addColorStop(1, previewAlphaColor("#ffffff", 0));
 
   ctx.fillStyle = gradient;
@@ -1115,6 +1131,210 @@ function drawPreviewThreadLayer(ctx, x, y, cellSize, colorValue, orientation, is
 
   ctx.fillStyle = highlight;
   ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+function previewNoise(...values) {
+  let seed = 0;
+
+  values.forEach((value, index) => {
+    seed += (Number(value) + 1) * (index + 1) * 12.9898;
+  });
+
+  const raw = Math.sin(seed) * 43758.5453123;
+  return raw - Math.floor(raw);
+}
+
+function drawPreviewThreadLayer(ctx, x, y, cellSize, colorValue, orientation, isTopLayer) {
+  drawPreviewThreadBand(ctx, x, y, cellSize, cellSize, colorValue, orientation, isTopLayer);
+}
+
+function drawUltraPreviewThreadBand(
+  ctx,
+  x,
+  y,
+  cellSize,
+  spanLength,
+  colorValue,
+  orientation,
+  isTopLayer,
+  yarnTrackIndex,
+  tileLength,
+  thicknessOverride = null
+) {
+  const thickness =
+    thicknessOverride === null
+      ? cellSize * (isTopLayer ? 0.78 : 0.62)
+      : thicknessOverride;
+  const inset = (cellSize - thickness) / 2;
+  const rect =
+    orientation === "vertical"
+      ? { x: x + inset, y, width: thickness, height: spanLength }
+      : { x, y: y + inset, width: spanLength, height: thickness };
+  const crossGradient =
+    orientation === "vertical"
+      ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+      : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+  const matteShadow =
+    orientation === "vertical"
+      ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+      : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+  const baseSeed = previewNoise(yarnTrackIndex, orientation === "vertical" ? 13 : 29, 7);
+  const softHighlightStrength = 0.1;
+
+  crossGradient.addColorStop(0, darkenPreviewColor(colorValue, 0.26));
+  crossGradient.addColorStop(0.24, darkenPreviewColor(colorValue, 0.09));
+  crossGradient.addColorStop(0.5, lightenPreviewColor(colorValue, softHighlightStrength + baseSeed * 0.04));
+  crossGradient.addColorStop(0.76, darkenPreviewColor(colorValue, 0.08));
+  crossGradient.addColorStop(1, darkenPreviewColor(colorValue, 0.24));
+
+  matteShadow.addColorStop(0, previewAlphaColor("#000000", 0.07));
+  matteShadow.addColorStop(0.2, previewAlphaColor("#000000", 0));
+  matteShadow.addColorStop(0.8, previewAlphaColor("#000000", 0));
+  matteShadow.addColorStop(1, previewAlphaColor("#000000", 0.07));
+
+  ctx.fillStyle = crossGradient;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+  ctx.fillStyle = matteShadow;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(rect.x, rect.y, rect.width, rect.height);
+  ctx.clip();
+  ctx.lineCap = "round";
+
+  const fiberCount = Math.max(5, Math.min(14, Math.round(cellSize * 0.78)));
+  const twistDirection = previewNoise(yarnTrackIndex, 79) < 0.5 ? -1 : 1;
+  const baseTwistCycles = 2 + Math.floor(previewNoise(yarnTrackIndex, 89) * 4);
+
+  for (let fiberIndex = 0; fiberIndex < fiberCount; fiberIndex++) {
+    const jitter = previewNoise(yarnTrackIndex, fiberIndex, orientation === "vertical" ? 31 : 37, 41);
+    const wavePhase = previewNoise(yarnTrackIndex, fiberIndex, 53) * Math.PI * 2;
+    const twistCycles = baseTwistCycles + (fiberIndex % 2);
+    const strandShade =
+      fiberIndex % 2 === 0
+        ? previewAlphaColor(lightenPreviewColor(colorValue, 0.22 + jitter * 0.1), 0.16)
+        : previewAlphaColor(darkenPreviewColor(colorValue, 0.18 + jitter * 0.1), 0.14);
+
+    ctx.strokeStyle = strandShade;
+    ctx.lineWidth = Math.max(0.45, cellSize * (0.022 + jitter * 0.015));
+    ctx.beginPath();
+
+    if (orientation === "vertical") {
+      const strandBaseX = rect.x + rect.width * (0.14 + jitter * 0.72);
+      const maxAmplitude = Math.min(strandBaseX - rect.x, rect.x + rect.width - strandBaseX) * 0.92;
+      const twistAmplitude = Math.max(
+        cellSize * 0.03,
+        Math.min(maxAmplitude, rect.width * (0.18 + previewNoise(yarnTrackIndex, fiberIndex, 61) * 0.2))
+      );
+      const startY = rect.y - cellSize * 0.03;
+      const endY = rect.y + rect.height + cellSize * 0.03;
+      const sampleCount = Math.max(4, Math.ceil(rect.height / Math.max(1, cellSize)));
+      ctx.moveTo(
+        strandBaseX +
+          twistAmplitude *
+            Math.sin((startY / tileLength) * Math.PI * 2 * twistCycles * twistDirection + wavePhase),
+        startY
+      );
+      for (let sampleIndex = 1; sampleIndex <= sampleCount; sampleIndex++) {
+        const sampleY = startY + ((endY - startY) * sampleIndex) / sampleCount;
+        const sampleX =
+          strandBaseX +
+          twistAmplitude *
+            Math.sin((sampleY / tileLength) * Math.PI * 2 * twistCycles * twistDirection + wavePhase);
+        ctx.lineTo(sampleX, sampleY);
+      }
+    } else {
+      const strandBaseY = rect.y + rect.height * (0.14 + jitter * 0.72);
+      const maxAmplitude = Math.min(strandBaseY - rect.y, rect.y + rect.height - strandBaseY) * 0.92;
+      const twistAmplitude = Math.max(
+        cellSize * 0.03,
+        Math.min(maxAmplitude, rect.height * (0.18 + previewNoise(yarnTrackIndex, fiberIndex, 61) * 0.2))
+      );
+      const startX = rect.x - cellSize * 0.03;
+      const endX = rect.x + rect.width + cellSize * 0.03;
+      const sampleCount = Math.max(4, Math.ceil(rect.width / Math.max(1, cellSize)));
+      ctx.moveTo(
+        startX,
+        strandBaseY +
+          twistAmplitude *
+            Math.sin((startX / tileLength) * Math.PI * 2 * twistCycles * twistDirection + wavePhase)
+      );
+      for (let sampleIndex = 1; sampleIndex <= sampleCount; sampleIndex++) {
+        const sampleX = startX + ((endX - startX) * sampleIndex) / sampleCount;
+        const sampleY =
+          strandBaseY +
+          twistAmplitude *
+            Math.sin((sampleX / tileLength) * Math.PI * 2 * twistCycles * twistDirection + wavePhase);
+        ctx.lineTo(sampleX, sampleY);
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  if (isTopLayer && cellSize >= 7) {
+    const fuzzCount = Math.max(3, Math.min(7, Math.round(cellSize / 3.4)));
+
+    ctx.lineCap = "round";
+
+    for (let fuzzIndex = 0; fuzzIndex < fuzzCount; fuzzIndex++) {
+      const fuzzSeed = previewNoise(yarnTrackIndex, fuzzIndex, orientation === "vertical" ? 71 : 89);
+      const fuzzLift = cellSize * (0.08 + previewNoise(yarnTrackIndex, fuzzIndex, 97) * 0.12);
+      const drift = (previewNoise(yarnTrackIndex, fuzzIndex, 131) - 0.5) * cellSize * 0.16;
+      const direction = previewNoise(yarnTrackIndex, fuzzIndex, 149) < 0.5 ? -1 : 1;
+
+      ctx.strokeStyle = previewAlphaColor(lightenPreviewColor(colorValue, 0.32), 0.24);
+      ctx.lineWidth = Math.max(0.45, cellSize * 0.02);
+      ctx.beginPath();
+
+      if (orientation === "vertical") {
+        const edge = previewNoise(yarnTrackIndex, fuzzIndex, 157) < 0.5 ? rect.x : rect.x + rect.width;
+        const startX = edge + direction * cellSize * 0.02;
+        const startY = rect.y + rect.height * (0.08 + fuzzSeed * 0.84);
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(
+          startX + direction * fuzzLift * 0.7,
+          startY + drift,
+          startX + direction * fuzzLift,
+          startY + drift * 0.4 + cellSize * (previewNoise(yarnTrackIndex, fuzzIndex, 163) - 0.5) * 0.18
+        );
+      } else {
+        const edge = previewNoise(yarnTrackIndex, fuzzIndex, 167) < 0.5 ? rect.y : rect.y + rect.height;
+        const startX = rect.x + rect.width * (0.08 + fuzzSeed * 0.84);
+        const startY = edge + direction * cellSize * 0.02;
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(
+          startX + drift,
+          startY + direction * fuzzLift * 0.7,
+          startX + drift * 0.4 + cellSize * (previewNoise(yarnTrackIndex, fuzzIndex, 173) - 0.5) * 0.18,
+          startY + direction * fuzzLift
+        );
+      }
+
+      ctx.stroke();
+    }
+  }
+}
+
+function drawUltraPreviewThreadLayer(ctx, x, y, cellSize, colorValue, orientation, isTopLayer, cellX, cellY) {
+  const yarnTrackIndex = orientation === "vertical" ? cellX : cellY;
+  const tileLength = Math.max(1, (orientation === "vertical" ? picks : warp) * cellSize);
+  drawUltraPreviewThreadBand(
+    ctx,
+    x,
+    y,
+    cellSize,
+    cellSize,
+    colorValue,
+    orientation,
+    isTopLayer,
+    yarnTrackIndex,
+    tileLength
+  );
 }
 
 function drawPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation) {
@@ -1136,6 +1356,25 @@ function drawPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation) {
   ctx.fillRect(x, y, cellSize, cellSize);
 }
 
+function drawUltraPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation) {
+  const topThickness = cellSize * 0.78;
+  const inset = (cellSize - topThickness) / 2;
+  const spread = cellSize * 0.18;
+  const shadow =
+    topOrientation === "vertical"
+      ? ctx.createLinearGradient(x + inset - spread, y, x + inset + topThickness + spread, y)
+      : ctx.createLinearGradient(x, y + inset - spread, x, y + inset + topThickness + spread);
+
+  shadow.addColorStop(0, previewAlphaColor("#000000", 0));
+  shadow.addColorStop(0.24, previewAlphaColor("#000000", 0.035));
+  shadow.addColorStop(0.5, previewAlphaColor("#000000", 0.08));
+  shadow.addColorStop(0.76, previewAlphaColor("#000000", 0.035));
+  shadow.addColorStop(1, previewAlphaColor("#000000", 0));
+
+  ctx.fillStyle = shadow;
+  ctx.fillRect(x, y, cellSize, cellSize);
+}
+
 function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
   const topColor = cellState.frontColor || "#ffffff";
   const underColor = cellState.backColor || topColor;
@@ -1148,7 +1387,7 @@ function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
     return;
   }
 
-  ctx.fillStyle = lightenPreviewColor(mixPreviewColors(underColor, topColor, 0.5), 0.06);
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(x, y, cellSize, cellSize);
 
   drawPreviewThreadLayer(ctx, x, y, cellSize, underColor, underOrientation, false);
@@ -1160,9 +1399,303 @@ function drawPreviewWovenCell(ctx, x, y, cellSize, cellState) {
   drawPreviewThreadLayer(ctx, x, y, cellSize, topColor, topOrientation, true);
 }
 
+function drawPreviewUltraWovenCell(ctx, x, y, cellSize, cellState, cellX, cellY) {
+  const topColor = cellState.frontColor || "#ffffff";
+  const underColor = cellState.backColor || topColor;
+  const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
+  const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
+
+  if (cellSize < 5.5) {
+    drawPreviewWovenCell(ctx, x, y, cellSize, cellState);
+    return;
+  }
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, cellSize, cellSize);
+
+  drawUltraPreviewThreadLayer(ctx, x, y, cellSize, underColor, underOrientation, false, cellX, cellY);
+
+  if (cellSize >= 7) {
+    drawUltraPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation);
+  }
+
+  drawUltraPreviewThreadLayer(ctx, x, y, cellSize, topColor, topOrientation, true, cellX, cellY);
+}
+
 function drawPreviewPlainCell(ctx, x, y, cellSize, cellState) {
   ctx.fillStyle = cellState.frontColor || "#ffffff";
   ctx.fillRect(x, y, cellSize, cellSize);
+}
+
+function getPreviewLayerWidths(cellSize, renderMode) {
+  return renderMode === "ultra"
+    ? { top: cellSize * 0.78, under: cellSize * 0.62 }
+    : { top: cellSize * 0.8, under: cellSize * 0.66 };
+}
+
+function isPreviewOrientationOnTop(cellState, orientation) {
+  return orientation === "vertical" ? cellState.warpVisibleOnFront : !cellState.warpVisibleOnFront;
+}
+
+function getPreviewNeighborState(states, cellX, cellY, orientation, direction) {
+  const rowCount = states.length;
+  const columnCount = states[0]?.length || 0;
+
+  if (!rowCount || !columnCount) {
+    return null;
+  }
+
+  if (orientation === "vertical") {
+    const wrappedY = (cellY + direction + rowCount) % rowCount;
+    return states[wrappedY]?.[cellX] || null;
+  }
+
+  const wrappedX = (cellX + direction + columnCount) % columnCount;
+  return states[cellY]?.[wrappedX] || null;
+}
+
+function getPreviewBorderThickness(states, cellX, cellY, orientation, isTopLayer, renderMode, cellSize, direction) {
+  const widths = getPreviewLayerWidths(cellSize, renderMode);
+  const currentThickness = isTopLayer ? widths.top : widths.under;
+  const neighborState = getPreviewNeighborState(states, cellX, cellY, orientation, direction);
+
+  if (!neighborState) {
+    return currentThickness;
+  }
+
+  const neighborIsTopLayer = isPreviewOrientationOnTop(neighborState, orientation);
+
+  return neighborIsTopLayer === isTopLayer ? currentThickness : (widths.top + widths.under) / 2;
+}
+
+function buildPreviewThreadPath(x, y, cellSize, orientation, startThickness, middleThickness, endThickness) {
+  const sampleCount = 8;
+  const path = new Path2D();
+  const thicknessAt = position => {
+    if (position <= 0.5) {
+      const local = position / 0.5;
+      const exponent = startThickness > middleThickness ? 2.2 : 0.85;
+      const eased = Math.pow(local, exponent);
+      return startThickness + (middleThickness - startThickness) * eased;
+    }
+
+    const local = (position - 0.5) / 0.5;
+    const exponent = endThickness > middleThickness ? 2.2 : 0.85;
+    const eased = Math.pow(local, exponent);
+    return middleThickness + (endThickness - middleThickness) * eased;
+  };
+
+  if (orientation === "vertical") {
+    const topHalf = thicknessAt(0) / 2;
+    path.moveTo(x + cellSize / 2 - topHalf, y);
+
+    for (let step = 1; step <= sampleCount; step++) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleY = y + cellSize * position;
+      path.lineTo(x + cellSize / 2 - thickness, sampleY);
+    }
+
+    for (let step = sampleCount; step >= 0; step--) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleY = y + cellSize * position;
+      path.lineTo(x + cellSize / 2 + thickness, sampleY);
+    }
+  } else {
+    const leftHalf = thicknessAt(0) / 2;
+    path.moveTo(x, y + cellSize / 2 - leftHalf);
+
+    for (let step = 1; step <= sampleCount; step++) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleX = x + cellSize * position;
+      path.lineTo(sampleX, y + cellSize / 2 - thickness);
+    }
+
+    for (let step = sampleCount; step >= 0; step--) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleX = x + cellSize * position;
+      path.lineTo(sampleX, y + cellSize / 2 + thickness);
+    }
+  }
+
+  path.closePath();
+  return path;
+}
+
+function drawPreviewAdaptiveYarn(
+  ctx,
+  x,
+  y,
+  cellSize,
+  colorValue,
+  orientation,
+  isTopLayer,
+  renderMode,
+  cellX,
+  cellY,
+  states
+) {
+  const widths = getPreviewLayerWidths(cellSize, renderMode);
+  const middleThickness = isTopLayer ? widths.top : widths.under;
+  const startThickness = getPreviewBorderThickness(states, cellX, cellY, orientation, isTopLayer, renderMode, cellSize, -1);
+  const endThickness = getPreviewBorderThickness(states, cellX, cellY, orientation, isTopLayer, renderMode, cellSize, 1);
+  const renderThickness = Math.max(startThickness, middleThickness, endThickness);
+  const path = buildPreviewThreadPath(x, y, cellSize, orientation, startThickness, middleThickness, endThickness);
+
+  ctx.save();
+  ctx.clip(path);
+
+  if (renderMode === "ultra") {
+    const yarnTrackIndex = orientation === "vertical" ? cellX : cellY;
+    const tileLength = Math.max(1, (orientation === "vertical" ? picks : warp) * cellSize);
+    drawUltraPreviewThreadBand(
+      ctx,
+      x,
+      y,
+      cellSize,
+      cellSize,
+        colorValue,
+        orientation,
+        isTopLayer,
+        yarnTrackIndex,
+        tileLength,
+        renderThickness
+      );
+    } else {
+      drawPreviewThreadBand(ctx, x, y, cellSize, cellSize, colorValue, orientation, isTopLayer, renderThickness);
+    }
+
+  ctx.restore();
+}
+
+function drawPreviewStructuredCell(ctx, x, y, cellSize, cellState, cellX, cellY, states, renderMode) {
+  const topColor = cellState.frontColor || "#ffffff";
+  const underColor = cellState.backColor || topColor;
+  const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
+  const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, cellSize, cellSize);
+
+  drawPreviewAdaptiveYarn(ctx, x, y, cellSize, underColor, underOrientation, false, renderMode, cellX, cellY, states);
+
+  if (renderMode === "ultra") {
+    if (cellSize >= 7) {
+      drawUltraPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation);
+    }
+  } else if (cellSize >= 6) {
+    drawPreviewIntersectionShadow(ctx, x, y, cellSize, topOrientation);
+  }
+
+  drawPreviewAdaptiveYarn(ctx, x, y, cellSize, topColor, topOrientation, true, renderMode, cellX, cellY, states);
+}
+
+function buildPreviewStateGrid() {
+  return Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellState(pickIndex, warpIndex))
+  );
+}
+
+function drawContinuousPreviewTextile(ctx, states, cellSize, renderMode) {
+  const isUltra = renderMode === "ultra";
+  const tileLengthVertical = Math.max(1, picks * cellSize);
+  const tileLengthHorizontal = Math.max(1, warp * cellSize);
+  const drawBand = (x, y, spanLength, colorValue, orientation, isTopLayer, trackIndex) => {
+    if (isUltra) {
+      drawUltraPreviewThreadBand(
+        ctx,
+        x,
+        y,
+        cellSize,
+        spanLength,
+        colorValue,
+        orientation,
+        isTopLayer,
+        trackIndex,
+        orientation === "vertical" ? tileLengthVertical : tileLengthHorizontal
+      );
+    } else {
+      drawPreviewThreadBand(ctx, x, y, cellSize, spanLength, colorValue, orientation, isTopLayer);
+    }
+  };
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    let warpIndex = 0;
+    while (warpIndex < warp) {
+      if (!states[pickIndex][warpIndex].warpVisibleOnFront) {
+        warpIndex++;
+        continue;
+      }
+      const start = warpIndex;
+      const colorValue = states[pickIndex][warpIndex].backColor || "#ffffff";
+      while (warpIndex < warp && states[pickIndex][warpIndex].warpVisibleOnFront) {
+        warpIndex++;
+      }
+      drawBand(start * cellSize, pickIndex * cellSize, (warpIndex - start) * cellSize, colorValue, "horizontal", false, pickIndex);
+    }
+  }
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    let pickIndex = 0;
+    while (pickIndex < picks) {
+      if (states[pickIndex][warpIndex].warpVisibleOnFront) {
+        pickIndex++;
+        continue;
+      }
+      const start = pickIndex;
+      const colorValue = states[pickIndex][warpIndex].backColor || "#ffffff";
+      while (pickIndex < picks && !states[pickIndex][warpIndex].warpVisibleOnFront) {
+        pickIndex++;
+      }
+      drawBand(warpIndex * cellSize, start * cellSize, (pickIndex - start) * cellSize, colorValue, "vertical", false, warpIndex);
+    }
+  }
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const topOrientation = states[pickIndex][warpIndex].warpVisibleOnFront ? "vertical" : "horizontal";
+      if (isUltra) {
+        drawUltraPreviewIntersectionShadow(ctx, warpIndex * cellSize, pickIndex * cellSize, cellSize, topOrientation);
+      } else {
+        drawPreviewIntersectionShadow(ctx, warpIndex * cellSize, pickIndex * cellSize, cellSize, topOrientation);
+      }
+    }
+  }
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    let warpIndex = 0;
+    while (warpIndex < warp) {
+      if (states[pickIndex][warpIndex].warpVisibleOnFront) {
+        warpIndex++;
+        continue;
+      }
+      const start = warpIndex;
+      const colorValue = states[pickIndex][warpIndex].frontColor || "#ffffff";
+      while (warpIndex < warp && !states[pickIndex][warpIndex].warpVisibleOnFront) {
+        warpIndex++;
+      }
+      drawBand(start * cellSize, pickIndex * cellSize, (warpIndex - start) * cellSize, colorValue, "horizontal", true, pickIndex);
+    }
+  }
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    let pickIndex = 0;
+    while (pickIndex < picks) {
+      if (!states[pickIndex][warpIndex].warpVisibleOnFront) {
+        pickIndex++;
+        continue;
+      }
+      const start = pickIndex;
+      const colorValue = states[pickIndex][warpIndex].frontColor || "#ffffff";
+      while (pickIndex < picks && states[pickIndex][warpIndex].warpVisibleOnFront) {
+        pickIndex++;
+      }
+      drawBand(warpIndex * cellSize, start * cellSize, (pickIndex - start) * cellSize, colorValue, "vertical", true, warpIndex);
+    }
+  }
 }
 
 function buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, renderMode) {
@@ -1170,7 +1703,12 @@ function buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, renderMo
   const tileHeight = Math.max(1, picks * cellSize);
   const tileCanvas = document.createElement("canvas");
   const tileCtx = tileCanvas.getContext("2d");
-  const drawCell = renderMode === "plain" ? drawPreviewPlainCell : drawPreviewWovenCell;
+  const drawCell =
+    renderMode === "plain"
+      ? drawPreviewPlainCell
+      : renderMode === "ultra"
+        ? drawPreviewUltraWovenCell
+        : drawPreviewWovenCell;
 
   tileCanvas.width = Math.max(1, Math.round(tileWidth * renderScale));
   tileCanvas.height = Math.max(1, Math.round(tileHeight * renderScale));
@@ -1185,9 +1723,19 @@ function buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, renderMo
   tileCtx.fillStyle = backgroundColor;
   tileCtx.fillRect(0, 0, tileWidth, tileHeight);
 
-  for (let y = 0; y < picks; y++) {
-    for (let x = 0; x < warp; x++) {
-      drawCell(tileCtx, x * cellSize, y * cellSize, cellSize, getDrawdownCellState(y, x));
+  const states = buildPreviewStateGrid();
+
+  if (renderMode === "plain") {
+    for (let y = 0; y < picks; y++) {
+      for (let x = 0; x < warp; x++) {
+        drawCell(tileCtx, x * cellSize, y * cellSize, cellSize, states[y][x], x, y);
+      }
+    }
+  } else {
+    for (let y = 0; y < picks; y++) {
+      for (let x = 0; x < warp; x++) {
+        drawPreviewStructuredCell(tileCtx, x * cellSize, y * cellSize, cellSize, states[y][x], x, y, states, renderMode);
+      }
     }
   }
 
@@ -1802,9 +2350,9 @@ function renderRepeatPreview() {
   );
   const naturalWidth = Math.max(1, warp * repeatX * basePreviewCellSize);
   const naturalHeight = Math.max(1, picks * repeatY * basePreviewCellSize);
-  const previewScale = Math.min(1, availableWidth / naturalWidth);
+  const previewScale = availableWidth / naturalWidth;
   const previewCellSize = basePreviewCellSize * previewScale;
-  const previewWidth = Math.max(1, naturalWidth * previewScale);
+  const previewWidth = Math.max(1, availableWidth);
   const previewHeight = Math.max(1, naturalHeight * previewScale);
   const previewRenderScale = Math.max(
     1,
