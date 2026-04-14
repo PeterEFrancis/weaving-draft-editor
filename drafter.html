@@ -554,6 +554,26 @@
     gap: var(--grid-gap);
   }
 
+  .heddle-count-grid {
+    display: grid;
+    gap: var(--grid-gap);
+    width: fit-content;
+    padding-right: 0.45rem;
+  }
+
+  .heddle-count-item {
+    min-width: 2.1rem;
+    height: var(--cell-size);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: rgba(47, 36, 29, 0.42);
+    font-size: calc(var(--cell-size) * 0.5);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+  }
+
   button.cell {
     position: relative;
     width: var(--cell-size);
@@ -817,6 +837,7 @@
           <div class="draft-print-area">
             <table class="draft">
               <tr class="toolbar-row">
+                <th class="ghost-cell"></th>
                 <th>
                   <div id="warp-inserts" class="warp-toolbar"></div>
                 </th>
@@ -825,13 +846,17 @@
               </tr>
 
               <tr>
+                <td class="ghost-cell"><div id="heddle-count"></div></td>
                 <td><div id="threading" class="grid"></div></td>
                 <td><div id="tieup" class="grid"></div></td>
                 <td class="ghost-cell"></td>
               </tr>
 
               <tr>
-                <td><div id="drawdown" class="grid"></div></td>
+                <td class="ghost-cell"></td>
+                <td>
+                  <div id="drawdown" class="grid"></div>
+                </td>
                 <td>
                   <div class="pick-wrap">
                     <div id="treadling" class="grid"></div>
@@ -2490,6 +2515,7 @@ if ("ResizeObserver" in window) {
 function renderAll() {
   renderWarpToolbar();
   renderPickToolbar();
+  renderHeddleCount();
   renderThreading();
   renderTieup();
   renderTreadling();
@@ -2648,6 +2674,22 @@ function renderPickToolbar() {
     cell.appendChild(plus);
     cell.appendChild(minus);
     div.appendChild(cell);
+  }
+}
+
+function renderHeddleCount() {
+  const div = document.getElementById("heddle-count");
+  div.innerHTML = "";
+  div.className = "heddle-count-grid";
+  div.style.gridTemplateRows = `repeat(${shafts}, var(--cell-size))`;
+
+  for (let shaft = shafts - 1; shaft >= 0; shaft--) {
+    const count = threading[shaft]?.reduce((total, value) => total + (value ? 1 : 0), 0) || 0;
+    const item = document.createElement("div");
+    item.className = "heddle-count-item";
+    item.textContent = String(count);
+    item.title = `Shaft ${shaft + 1}: ${count} heddles used`;
+    div.appendChild(item);
   }
 }
 
