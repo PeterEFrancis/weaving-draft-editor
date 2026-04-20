@@ -234,6 +234,10 @@
     background: rgba(245, 240, 231, 0.72);
   }
 
+  .workspace-toolbar-actions-name {
+    background: rgba(249, 246, 239, 0.78);
+  }
+
   .toolbar-action {
     display: inline-flex;
     align-items: center;
@@ -264,6 +268,8 @@
 
   .workspace-toolbar-actions .btn-soft,
   .workspace-toolbar-actions .btn-drafter {
+    min-height: 2.65rem;
+    height: 2.65rem;
     padding: 0.62rem 0.88rem;
     border-radius: 0.9rem;
     box-shadow: none;
@@ -277,6 +283,45 @@
   .workspace-toolbar-actions .btn-soft:hover,
   .workspace-toolbar-actions .btn-soft:focus {
     background: rgba(255, 255, 255, 0.96);
+  }
+
+  .toolbar-name-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toolbar-name-label {
+    color: rgba(47, 36, 29, 0.56);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .toolbar-name-input {
+    width: clamp(10rem, 18vw, 16rem);
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+    box-shadow: none;
+    font-size: 0.92rem;
+    line-height: 1;
+    box-sizing: border-box;
+  }
+
+  .toolbar-name-input:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
   }
 
   .workspace-toolbar-actions-secondary .btn-soft {
@@ -462,6 +507,7 @@
     gap: 0.65rem;
     align-items: stretch;
     min-width: 0;
+    position: relative;
   }
 
   .pattern-color-stack {
@@ -473,6 +519,17 @@
     flex: 0 0 auto;
     height: var(--pattern-color-control-height);
     overflow: visible;
+  }
+
+  .pattern-color-stack-ghost {
+    position: fixed !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+    z-index: 1200;
+    transform-origin: center center;
+    transition:
+      opacity 180ms ease,
+      transform 220ms cubic-bezier(0.22, 0.78, 0.22, 1);
   }
 
   .pattern-color-item {
@@ -1147,9 +1204,9 @@
   }
 
   .insert-btn-warp-plus {
-    left: 0;
+    right: 0;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(50%, -50%);
   }
 
   .insert-btn-pick-plus {
@@ -1239,6 +1296,22 @@
         <div class="workspace-toolbar">
           <div class="workspace-toolbar-action-row">
             <div class="workspace-toolbar-action-groups">
+              <div class="workspace-toolbar-actions workspace-toolbar-actions-name">
+                <div class="toolbar-name-field">
+                  <label class="toolbar-name-label" for="draft-name">Name</label>
+                  <input
+                    id="draft-name"
+                    class="form-control toolbar-name-input"
+                    type="text"
+                    value="Untitled Draft"
+                    maxlength="120"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Draft name"
+                  >
+                </div>
+              </div>
+
               <div class="workspace-toolbar-actions">
                 <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
                   <span class="toolbar-action-icon" aria-hidden="true">
@@ -1263,8 +1336,8 @@
                 <button type="button" class="btn btn-soft toolbar-action" onclick="openDraftFilePicker()">
                   <span class="toolbar-action-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 7h5l2 2h9v8.5A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"></path>
-                      <path d="M4 9V6.5A2.5 2.5 0 0 1 6.5 4H10"></path>
+                      <path d="M3.5 8V6.5A2.5 2.5 0 0 1 6 4h3.25l2 2H18A2.5 2.5 0 0 1 20.5 8.5V10"></path>
+                      <path d="M3 10.5h18l-1.85 6.1A2.5 2.5 0 0 1 16.76 18.5H5.24A2.5 2.5 0 0 1 2.85 16.6z"></path>
                     </svg>
                   </span>
                   <span class="toolbar-action-label">Open</span>
@@ -1356,7 +1429,7 @@
               <select id="drawdown-render-style" class="form-select" aria-label="Drawdown render style">
                 <option value="structure">Structure</option>
                 <option value="color" selected>Color</option>
-                <option value="realistic">Realistic</option>
+                <option value="realistic">Threads</option>
               </select>
                 </div>
 
@@ -1529,10 +1602,12 @@ let patternColors = [
 ];
 let activePatternColorId = "pattern-color-1";
 let nextPatternColorNumber = 6;
+let draftName = "Untitled Draft";
 let draftRenderStyle = "color";
 let previewRenderMode = "plain";
 let previewSett = 60;
 let draftCellSize = 20;
+const defaultDraftName = "Untitled Draft";
 const defaultPreviewBackgroundColor = "#ffffff";
 const defaultPreviewSett = 60;
 const defaultDraftCellSize = 20;
@@ -1552,7 +1627,20 @@ const maxWarpThreads = 1000;
 const maxDrawdownCells = 60000;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
-const patternColorSeedValues = ["#d2a03a", "#7a5fd0", "#d6718c", "#4f8d88", "#bc6c25", "#5e548e"];
+const patternColorSeedValues = [
+  "#d4a017",
+  "#7b2cbf",
+  "#ef476f",
+  "#2a9d8f",
+  "#f4a261",
+  "#4361ee",
+  "#8ac926",
+  "#ff7f50",
+  "#118ab2",
+  "#ff006e",
+  "#6a994e",
+  "#fb8500"
+];
 const defaultPatternColors = [
   { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
   { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 },
@@ -1560,7 +1648,8 @@ const defaultPatternColors = [
   { id: "pattern-color-4", value: "#3f9159", thickness: 1 },
   { id: "pattern-color-5", value: "#2f6fa8", thickness: 1 }
 ];
-const draftAutosaveStorageKey = "weaving-draft-editor.autosave.v1";
+const draftAutosaveStorageKeyPrefix = "weaving-draft-editor.autosave.v2.";
+const draftActiveNameSessionKey = "weaving-draft-editor.active-name.v1";
 const draftAutosaveDelayMs = 150;
 const draftHistoryLimit = 200;
 const draftHistoryCommitDelayMs = 80;
@@ -1573,6 +1662,71 @@ let isDraftHistorySuspended = false;
 
 function createDefaultPatternColors() {
   return defaultPatternColors.map(color => ({...color}));
+}
+
+function normalizeDraftName(value, fallback = defaultDraftName) {
+  const normalized = String(value ?? "").replace(/\s+/g, " ").trim();
+  return normalized || fallback;
+}
+
+function getDraftNameInput() {
+  return document.getElementById("draft-name");
+}
+
+function getDraftName() {
+  const input = getDraftNameInput();
+
+  if (input) {
+    draftName = normalizeDraftName(input.value, draftName);
+  }
+
+  return normalizeDraftName(draftName);
+}
+
+function persistActiveDraftName() {
+  try {
+    window.sessionStorage.setItem(draftActiveNameSessionKey, getDraftName());
+  } catch (error) {
+    // Ignore storage failures so drafting can continue uninterrupted.
+  }
+}
+
+function setDraftName(value, { updateInput = true, persistSession = true } = {}) {
+  draftName = normalizeDraftName(value);
+  const input = getDraftNameInput();
+
+  if (input && updateInput) {
+    input.value = draftName;
+  }
+
+  if (persistSession) {
+    persistActiveDraftName();
+  }
+}
+
+function restoreActiveDraftName() {
+  try {
+    return normalizeDraftName(window.sessionStorage.getItem(draftActiveNameSessionKey), defaultDraftName);
+  } catch (error) {
+    return defaultDraftName;
+  }
+}
+
+function getDraftAutosaveStorageKey(name = getDraftName()) {
+  return `${draftAutosaveStorageKeyPrefix}${encodeURIComponent(normalizeDraftName(name).toLowerCase())}`;
+}
+
+function sanitizeDraftFilenameBase(name = getDraftName()) {
+  const sanitized = normalizeDraftName(name, "weaving-draft")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return sanitized || "weaving-draft";
+}
+
+function getDraftNameFromFilename(filename) {
+  return normalizeDraftName(String(filename || "").replace(/\.[^.]+$/, ""), defaultDraftName);
 }
 
 function getSelectedPatternColorId() {
@@ -1931,6 +2085,9 @@ function buildDraftSaveData() {
   const currentEntry = serializeDraftHistoryState();
   return {
     ...JSON.parse(currentEntry),
+    meta: {
+      draftName: getDraftName()
+    },
     history: buildDraftHistoryData(currentEntry)
   };
 }
@@ -2006,7 +2163,7 @@ function saveDraftToLocalStorage() {
   }
 
   try {
-    window.localStorage.setItem(draftAutosaveStorageKey, JSON.stringify(buildDraftSaveData()));
+    window.localStorage.setItem(getDraftAutosaveStorageKey(), JSON.stringify(buildDraftSaveData()));
   } catch (error) {
     // Ignore storage failures so drafting can continue uninterrupted.
   }
@@ -2029,27 +2186,28 @@ function clearPersistedDraftData() {
   draftAutosaveTimeoutId = null;
 
   try {
-    window.localStorage.removeItem(draftAutosaveStorageKey);
+    window.localStorage.removeItem(getDraftAutosaveStorageKey());
   } catch (error) {
     // Ignore storage failures so drafting can continue uninterrupted.
   }
 }
 
 function getDraftSuggestedFilename(includeTime = false) {
+  const baseName = sanitizeDraftFilenameBase();
+
+  if (!includeTime) {
+    return `${baseName}.wdd`;
+  }
+
   const now = new Date();
   const year = String(now.getFullYear());
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
-
-  if (!includeTime) {
-    return `weaving-draft-${year}-${month}-${day}.wdd`;
-  }
-
   const hours = String(now.getHours()).padStart(2, "0");
   const minutes = String(now.getMinutes()).padStart(2, "0");
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  return `weaving-draft-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdd`;
+  return `${baseName}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdd`;
 }
 
 function downloadDraftFile(contents, filename) {
@@ -2147,7 +2305,7 @@ function normalizeLoadedDraftHistory(data, fallbackSerializedState) {
 }
 
 function applyLoadedDraftData(data, options = {}) {
-  const { restoreHistory = true } = options;
+  const { restoreHistory = true, draftNameOverride = null, preserveDraftName = false } = options;
 
   if (data?.format !== "weaving-draft-data" || typeof data?.draft !== "object") {
     throw new Error("That file is not a valid WDD draft.");
@@ -2171,6 +2329,9 @@ function applyLoadedDraftData(data, options = {}) {
   };
   const nextDraftCellSize = clampDraftCellSize(Number.parseFloat(data.ui?.draftCellSize) || draftCellSize);
   const nextDraftRenderStyle = normalizeDraftRenderStyle(data.ui?.draftRenderStyle);
+  const nextDraftName = normalizeDraftName(
+    preserveDraftName ? getDraftName() : (draftNameOverride ?? data.meta?.draftName ?? getDraftName())
+  );
 
   shafts = nextShafts;
   treadles = nextTreadles;
@@ -2187,6 +2348,7 @@ function applyLoadedDraftData(data, options = {}) {
   tieup = normalizeTieupData(data.draft.tieup, treadles, shafts);
   draftCellSize = nextDraftCellSize;
 
+  setDraftName(nextDraftName);
   setControlValues({shafts, treadles, warp, picks});
   setPreviewRepeatValues(nextPreview);
   setPreviewSettValue(nextPreview.sett);
@@ -2221,7 +2383,9 @@ function handleDraftFileChange(event) {
   reader.onload = loadEvent => {
     try {
       const parsed = JSON.parse(String(loadEvent.target?.result || ""));
-      applyLoadedDraftData(parsed);
+      applyLoadedDraftData(parsed, {
+        draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
+      });
     } catch (error) {
       window.alert(error?.message || "Unable to open that draft file.");
     } finally {
@@ -2239,7 +2403,7 @@ function restorePersistedDraftData() {
   let raw = null;
 
   try {
-    raw = window.localStorage.getItem(draftAutosaveStorageKey);
+    raw = window.localStorage.getItem(getDraftAutosaveStorageKey());
   } catch (error) {
     return false;
   }
@@ -2273,7 +2437,7 @@ function applyDraftHistoryEntry(nextIndex) {
   try {
     isDraftAutosaveSuspended = true;
     isDraftHistorySuspended = true;
-    applyLoadedDraftData(JSON.parse(entry), { restoreHistory: false });
+    applyLoadedDraftData(JSON.parse(entry), { restoreHistory: false, preserveDraftName: true });
     draftHistoryIndex = nextIndex;
   } catch (error) {
     window.alert("Unable to restore that draft state.");
@@ -2302,6 +2466,56 @@ function redoDraftChange() {
   }
 
   applyDraftHistoryEntry(draftHistoryIndex + 1);
+}
+
+function isTextEditingShortcutTarget(target) {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  if (target.closest("[contenteditable=''], [contenteditable='true'], textarea, select")) {
+    return true;
+  }
+
+  const input = target.closest("input");
+
+  if (!input) {
+    return false;
+  }
+
+  const inputType = String(input.getAttribute("type") || "text").toLowerCase();
+  return !["button", "checkbox", "color", "file", "hidden", "radio", "range", "reset", "submit"].includes(inputType);
+}
+
+function handleDraftHistoryShortcut(event) {
+  if (event.defaultPrevented || event.altKey) {
+    return;
+  }
+
+  const hasPrimaryModifier = event.metaKey || event.ctrlKey;
+
+  if (!hasPrimaryModifier || isTextEditingShortcutTarget(event.target)) {
+    return;
+  }
+
+  const key = String(event.key || "").toLowerCase();
+  const isUndoShortcut = key === "z" && !event.shiftKey;
+  const isRedoShortcut =
+    (key === "z" && event.shiftKey) ||
+    (key === "y" && event.ctrlKey && !event.metaKey && !event.shiftKey);
+
+  if (!isUndoShortcut && !isRedoShortcut) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (isUndoShortcut) {
+    undoDraftChange();
+    return;
+  }
+
+  redoDraftChange();
 }
 
 function getPatternColorValue(colorId) {
@@ -3254,6 +3468,12 @@ function deletePatternColor(colorId) {
     return;
   }
 
+  const previousRects = capturePatternColorLayoutRects();
+  const removedStack = Array.from(document.querySelectorAll("#pattern-colors .pattern-color-stack")).find(
+    stack => stack.dataset.colorId === colorId
+  );
+  const removedGhost = removedStack ? createPatternColorRemovalGhost(removedStack) : null;
+
   patternColors = patternColors.filter(color => color.id !== colorId);
 
   if (activePatternColorId === colorId) {
@@ -3261,6 +3481,7 @@ function deletePatternColor(colorId) {
   }
 
   renderPatternColors();
+  animatePatternColorLayoutChange(previousRects, removedGhost);
   renderAll();
 }
 
@@ -3271,6 +3492,7 @@ function renderPatternColors() {
   patternColors.forEach((color, index) => {
     const stack = document.createElement("div");
     stack.className = "pattern-color-stack";
+    stack.dataset.colorId = color.id;
 
     const item = document.createElement("div");
     item.className = "pattern-color-item";
@@ -3367,6 +3589,95 @@ function renderPatternColors() {
 
   syncPatternColorUsageUI();
   updatePatternColorSelectionUI();
+}
+
+function capturePatternColorLayoutRects() {
+  const rects = new Map();
+
+  document.querySelectorAll("#pattern-colors .pattern-color-stack").forEach(stack => {
+    if (!stack.dataset.colorId) {
+      return;
+    }
+
+    rects.set(stack.dataset.colorId, stack.getBoundingClientRect());
+  });
+
+  return rects;
+}
+
+function createPatternColorRemovalGhost(stack) {
+  const rect = stack.getBoundingClientRect();
+  const ghost = stack.cloneNode(true);
+
+  ghost.classList.add("pattern-color-stack-ghost");
+  ghost.style.left = `${rect.left}px`;
+  ghost.style.top = `${rect.top}px`;
+  ghost.style.width = `${rect.width}px`;
+  ghost.style.height = `${rect.height}px`;
+  ghost.style.opacity = "1";
+  ghost.style.transform = "scale(1)";
+  ghost.querySelectorAll("input, button").forEach(element => {
+    element.disabled = true;
+    element.tabIndex = -1;
+  });
+  document.body.appendChild(ghost);
+
+  return ghost;
+}
+
+function animatePatternColorLayoutChange(previousRects, removedGhost = null) {
+  const stacks = Array.from(document.querySelectorAll("#pattern-colors .pattern-color-stack"));
+
+  stacks.forEach(stack => {
+    const previousRect = previousRects.get(stack.dataset.colorId);
+
+    if (!previousRect) {
+      return;
+    }
+
+    const nextRect = stack.getBoundingClientRect();
+    const deltaX = previousRect.left - nextRect.left;
+    const deltaY = previousRect.top - nextRect.top;
+
+    if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) {
+      return;
+    }
+
+    stack.style.transition = "none";
+    stack.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    stack.style.willChange = "transform";
+    stack.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      stack.style.transition = "transform 220ms cubic-bezier(0.22, 0.78, 0.22, 1)";
+      stack.style.transform = "translate(0, 0)";
+
+      const cleanup = () => {
+        stack.style.transition = "";
+        stack.style.transform = "";
+        stack.style.willChange = "";
+      };
+
+      stack.addEventListener("transitionend", cleanup, { once: true });
+    });
+  });
+
+  if (!removedGhost) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    removedGhost.style.opacity = "0";
+    removedGhost.style.transform = "scale(0.92)";
+  });
+
+  removedGhost.addEventListener(
+    "transitionend",
+    () => {
+      removedGhost.remove();
+    },
+    { once: true }
+  );
 }
 
 function addPatternColor() {
@@ -3718,9 +4029,13 @@ function resizeFromControls(changedId = null) {
 
 function resizeThreading(old, oldS, newS, oldW, newW) {
   const result = Array.from({length: newS}, () => Array(newW).fill(0));
+  const overlapWidth = Math.min(oldW, newW);
+  const oldStart = Math.max(0, oldW - overlapWidth);
+  const newStart = Math.max(0, newW - overlapWidth);
+
   for (let s = 0; s < Math.min(oldS, newS); s++) {
-    for (let i = 0; i < Math.min(oldW, newW); i++) {
-      result[s][i] = old[s]?.[i] || 0;
+    for (let i = 0; i < overlapWidth; i++) {
+      result[s][newStart + i] = old[s]?.[oldStart + i] || 0;
     }
   }
   return result;
@@ -3795,6 +4110,13 @@ document.getElementById("preview-sett").addEventListener("input", event => {
 document.getElementById("drawdown-render-style").addEventListener("change", event => {
   setDraftRenderStyle(event.target.value);
 });
+
+document.getElementById("draft-name").addEventListener("change", event => {
+  setDraftName(event.target.value);
+  scheduleDraftAutosave();
+});
+
+document.addEventListener("keydown", handleDraftHistoryShortcut);
 
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
 
@@ -3944,7 +4266,8 @@ function getTrackEdges(sizes) {
 function getDrawdownRealisticThreadThickness(crossSize, isTopLayer) {
   const settRatio = defaultPreviewSett / 100;
   const minRatio = isTopLayer ? 0.5 : 0.34;
-  return Math.max(1, crossSize * (minRatio + (1 - minRatio) * settRatio));
+  const thicknessRatio = minRatio + (1 - minRatio) * settRatio;
+  return Math.max(1, Math.min(crossSize, crossSize * thicknessRatio * 1.06));
 }
 
 function isDrawdownOrientationRendered(cellState, orientation) {
@@ -4383,7 +4706,7 @@ function renderWarpToolbar() {
       }
 
       for (let s = 0; s < shafts; s++) {
-        threading[s].splice(i, 0, 0);
+        threading[s].splice(i + 1, 0, 0);
       }
       warp++;
       document.getElementById("warp").value = warp;
@@ -4413,14 +4736,15 @@ function renderWarpRuler() {
   div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
   for (let i = 0; i < warp; i++) {
+    const warpNumber = warp - i;
     const mark = document.createElement("div");
-    const isMajor = (i + 1) % 10 === 0;
+    const isMajor = warpNumber % 10 === 0;
     mark.className = `warp-ruler-mark${isMajor ? " warp-ruler-mark-major" : ""}`;
 
     if (isMajor) {
       const label = document.createElement("span");
       label.className = "warp-ruler-label";
-      label.textContent = String(i + 1);
+      label.textContent = String(warpNumber);
       mark.appendChild(label);
     }
 
@@ -4718,6 +5042,7 @@ function renderRepeatPreview() {
 }
 
 applyDraftZoom();
+setDraftName(restoreActiveDraftName());
 
 if (!restorePersistedDraftData()) {
   loadDefaultHoundstoothDraft();
