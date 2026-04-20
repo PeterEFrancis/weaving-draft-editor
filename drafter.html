@@ -31,8 +31,15 @@
     --toolbar-font-size: calc(var(--cell-size) / 2);
   }
 
+  html,
   body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
     min-height: 100vh;
+    overflow: hidden;
     color: var(--ink);
     background:
       radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
@@ -41,7 +48,13 @@
   }
 
   .page-shell {
-    max-width: 1240px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100dvh;
+    box-sizing: border-box;
+    padding-inline: clamp(1rem, 2vw, 2rem);
+    padding-block: clamp(0.75rem, 1.5vw, 1.25rem);
   }
 
   .hero-card,
@@ -110,14 +123,217 @@
     color: var(--ink);
   }
 
-  .controls-toolbar {
-    row-gap: 0.7rem;
+  .workspace-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    gap: 1rem;
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 
-  .control-actions-panel {
-    margin-bottom: 1.1rem;
-    padding-bottom: 1.1rem;
-    border-bottom: 1px solid rgba(47, 36, 29, 0.08);
+  .workspace-toolbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow: auto;
+    gap: 0.85rem;
+  }
+
+  .workspace-toolbar-panel {
+    display: flex;
+    align-items: stretch;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, 0.34);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  }
+
+  .workspace-toolbar-panel .workspace-toolbar-row {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .workspace-toolbar-panel-controls {
+    background: rgba(255, 255, 255, 0.26);
+  }
+
+  .workspace-toolbar-panel-controls .workspace-toolbar-row {
+    padding: 0.28rem 0.18rem 0.28rem 0.42rem;
+  }
+
+  .workspace-toolbar-panel-controls .workspace-toolbar-row,
+  .workspace-toolbar-panel-controls .workspace-toolbar-main,
+  .workspace-toolbar-panel-controls .controls-toolbar {
+    align-items: flex-start;
+  }
+
+  .workspace-toolbar-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  .workspace-toolbar-main {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .workspace-toolbar-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+    padding: 0.4rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .workspace-toolbar-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem;
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .workspace-toolbar-action-groups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .workspace-toolbar-actions-secondary {
+    border-color: rgba(170, 74, 43, 0.14);
+    background: linear-gradient(180deg, rgba(251, 242, 236, 0.9), rgba(247, 233, 224, 0.8));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 0.35rem 1rem rgba(170, 74, 43, 0.06);
+  }
+
+  .workspace-toolbar-actions-history {
+    background: rgba(245, 240, 231, 0.72);
+  }
+
+  .toolbar-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.62rem 0.88rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .toolbar-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-action-icon svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .toolbar-action-label {
+    display: inline-block;
+  }
+
+  .workspace-toolbar-actions .btn-soft,
+  .workspace-toolbar-actions .btn-drafter {
+    padding: 0.62rem 0.88rem;
+    border-radius: 0.9rem;
+    box-shadow: none;
+  }
+
+  .workspace-toolbar-actions .btn-soft {
+    background: rgba(255, 255, 255, 0.82);
+    border-color: rgba(47, 36, 29, 0.1);
+  }
+
+  .workspace-toolbar-actions .btn-soft:hover,
+  .workspace-toolbar-actions .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .workspace-toolbar-actions-secondary .btn-soft {
+    background: rgba(255, 250, 247, 0.92);
+    border-color: rgba(170, 74, 43, 0.16);
+  }
+
+  .workspace-toolbar-actions .toolbar-action-reset {
+    color: #8d4335;
+    background: rgba(193, 102, 74, 0.12);
+    border-color: rgba(170, 74, 43, 0.22);
+  }
+
+  .workspace-toolbar-actions .toolbar-action-reset:hover,
+  .workspace-toolbar-actions .toolbar-action-reset:focus {
+    color: #7a321c;
+    background: rgba(193, 102, 74, 0.18);
+    border-color: rgba(170, 74, 43, 0.32);
+  }
+
+  .workspace-toolbar-actions .btn-drafter {
+    background: linear-gradient(135deg, rgba(170, 74, 43, 0.94), rgba(200, 113, 55, 0.94));
+    box-shadow: 0 0.6rem 1.4rem rgba(170, 74, 43, 0.16);
+  }
+
+  .workspace-toolbar-actions-secondary .toolbar-action-clear {
+    background: linear-gradient(135deg, #b45840, #9a4534);
+    box-shadow: 0 0.55rem 1.2rem rgba(154, 69, 52, 0.18);
+  }
+
+  .workspace-toolbar-actions-secondary .toolbar-action-clear:hover,
+  .workspace-toolbar-actions-secondary .toolbar-action-clear:focus {
+    background: linear-gradient(135deg, #9d4936, #87382d);
+  }
+
+  .controls-toolbar {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-field {
+    width: 82px;
+  }
+
+  .toolbar-field-render-style {
+    width: 132px;
+  }
+
+  .toolbar-field-zoom {
+    width: 136px;
+  }
+
+  .toolbar-field .control-label {
+    margin-bottom: 0.6rem;
   }
 
   .control-actions {
@@ -132,12 +348,23 @@
     min-height: 2.65rem;
   }
 
+  .workspace-toolbar-side {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 1 auto;
+    margin-left: auto;
+  }
+
   .control-label {
     display: block;
     margin-bottom: 0.3rem;
     color: var(--accent-dark);
     font-size: 0.74rem;
     font-weight: 700;
+    line-height: 1.1;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
@@ -153,67 +380,125 @@
     font-size: 0.95rem;
   }
 
+  .form-select {
+    min-height: 2.65rem;
+    padding: 0.5rem 2rem 0.5rem 0.7rem;
+    border-radius: 0.85rem;
+    border-color: rgba(47, 36, 29, 0.12);
+    background-color: rgba(255, 255, 255, 0.92);
+    color: var(--ink);
+    box-shadow: none;
+    font-size: 0.95rem;
+  }
+
   .form-control:focus {
     border-color: rgba(170, 74, 43, 0.45);
     box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
   }
 
+  .form-select:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
   .pattern-colors-panel {
-    margin-top: 1.25rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(47, 36, 29, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .pattern-colors-header {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.85rem;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    width: 100%;
+    min-width: 0;
   }
 
   .pattern-colors-title {
-    flex: 0 1 17rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 0 0 auto;
+  }
+
+  .pattern-colors-heading {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .pattern-colors-meta {
+    color: rgba(47, 36, 29, 0.5);
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-transform: none;
   }
 
   .pattern-colors-copy {
-    max-width: 16rem;
-    font-size: 0.82rem;
-    line-height: 1.3;
+    display: none;
   }
 
   .pattern-colors-tools {
-    display: flex;
-    flex: 1 1 24rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 0.8rem;
-    --pattern-color-control-height: 3.15rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 0.65rem;
+    row-gap: 0.5rem;
+    width: 100%;
+    --pattern-color-control-height: 2.65rem;
   }
 
   .pattern-colors-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
+    gap: 0.65rem;
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .pattern-color-stack {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    flex: 0 0 auto;
+    height: var(--pattern-color-control-height);
+    overflow: visible;
   }
 
   .pattern-color-item {
     position: relative;
-    width: 3.5rem;
+    width: 3rem;
     height: var(--pattern-color-control-height);
     padding: 0;
-    border: 2px solid rgba(47, 36, 29, 0.14);
-    border-radius: 0.9rem;
+    border: solid rgba(47, 36, 29, 0.14);
+    border-width: 2px 0 2px 2px;
+    border-radius: 0.85rem 0 0 0.85rem;
     box-sizing: border-box;
     transition: border-color 140ms ease, transform 140ms ease;
     cursor: pointer;
     overflow: hidden;
+    flex: 0 0 auto;
   }
 
-  .pattern-color-item.active {
+  .pattern-color-stack.active .pattern-color-item {
     border-color: #c87137;
-    border-width: 4px;
+    border-width: 3px 0 3px 3px;
+    transform: translateY(-1px);
+  }
+
+  .pattern-color-stack.active .pattern-color-thickness {
+    border-color: #c87137;
+    border-width: 3px 3px 3px 1px;
     transform: translateY(-1px);
   }
 
@@ -240,8 +525,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.22rem;
-    height: 1.22rem;
+    width: 0.98rem;
+    height: 0.98rem;
     padding: 0;
     border: 0;
     border-radius: 999px;
@@ -252,12 +537,15 @@
   }
 
   .pattern-color-edit {
-    bottom: 0.18rem;
+    bottom: 0.12rem;
   }
 
   .pattern-color-delete {
-    top: 0.18rem;
+    top: 0;
+    right: 0;
+    transform: translate(38%, -38%);
     color: rgba(122, 50, 28, 0.82);
+    z-index: 3;
   }
 
   .pattern-color-edit:hover,
@@ -276,17 +564,48 @@
 
   .pattern-color-edit svg,
   .pattern-color-delete svg {
-    width: 0.68rem;
-    height: 0.68rem;
+    width: 0.56rem;
+    height: 0.56rem;
     display: block;
+  }
+
+  .pattern-color-thickness {
+    width: 2.7rem;
+    min-height: var(--pattern-color-control-height) !important;
+    height: var(--pattern-color-control-height);
+    padding: 0.22rem 0.3rem;
+    border: solid rgba(47, 36, 29, 0.14);
+    border-width: 2px 2px 2px 1px;
+    border-left-color: rgba(47, 36, 29, 0.14);
+    border-radius: 0 0.85rem 0.85rem 0;
+    font-size: 0.82rem;
+    line-height: 1.1;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: none;
+    flex: 0 0 auto;
+  }
+
+  .pattern-color-thickness::-webkit-outer-spin-button,
+  .pattern-color-thickness::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  .pattern-color-thickness:focus {
+    box-shadow: none;
+    outline: none;
   }
 
   .pattern-color-add {
     height: var(--pattern-color-control-height);
-    padding: 0 1rem;
+    padding: 0 0.85rem;
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
+    align-self: start;
   }
 
   @media (max-width: 767.98px) {
@@ -296,11 +615,16 @@
   }
 
   .draft-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: min(18rem, 40vh);
     overflow: hidden;
-    padding: 1.25rem;
-    border-radius: 1.25rem;
+    padding: 0;
+    border-radius: 1.15rem;
     border: 1px solid rgba(47, 36, 29, 0.08);
-    background: var(--panel-bg);
+    background: rgba(255, 255, 255, 0.34);
     container-type: inline-size;
   }
 
@@ -317,11 +641,15 @@
   }
 
   .draft-grid-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
     max-width: 100%;
-    max-height: min(100cqw, calc(100dvh - 8rem));
+    max-height: none;
     overflow: auto;
+    box-sizing: border-box;
     scrollbar-gutter: stable both-edges;
+    padding: 1rem;
   }
 
   .draft-stage-actions {
@@ -333,9 +661,30 @@
   }
 
   .draft-stage-zoom {
-    display: inline-flex;
+    display: grid;
+    grid-template-columns: 1.9rem 3.4rem 1.9rem;
     align-items: center;
-    gap: 0.15rem;
+    column-gap: 0.12rem;
+  }
+
+  .toolbar-field-zoom .draft-stage-zoom {
+    min-height: 2.65rem;
+    padding: 0 0.15rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .draft-stage-zoom-value {
+    width: 100%;
+    min-width: 0;
+    color: rgba(47, 36, 29, 0.48);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-align: center;
+    user-select: none;
   }
 
   .draft-stage-button {
@@ -376,17 +725,6 @@
     font-size: 1rem;
     font-weight: 700;
     line-height: 1;
-  }
-
-  .page-home-link {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 40;
-    background: rgba(252, 248, 240, 0.88);
-    border: 1px solid rgba(47, 36, 29, 0.12);
-    border-radius: 999px;
-    color: rgba(47, 36, 29, 0.72);
   }
 
   .preview-stage {
@@ -554,6 +892,103 @@
     gap: var(--grid-gap);
   }
 
+  .warp-ruler {
+    position: relative;
+    display: grid;
+    gap: var(--grid-gap);
+    width: fit-content;
+    min-height: calc(var(--cell-size) * 1.1);
+    margin-bottom: calc(var(--cell-gap) * 1.5);
+    border-bottom: 1px solid rgba(47, 36, 29, 0.22);
+    overflow: visible;
+  }
+
+  .warp-ruler-mark {
+    position: relative;
+    min-width: 1px;
+    height: calc(var(--cell-size) * 1.1);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .warp-ruler-mark::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 1px;
+    height: calc(var(--cell-size) * 0.28);
+    transform: translateX(-50%);
+    background: rgba(47, 36, 29, 0.28);
+  }
+
+  .warp-ruler-mark-major::after {
+    height: calc(var(--cell-size) * 0.52);
+    background: rgba(47, 36, 29, 0.45);
+  }
+
+  .warp-ruler-label {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    color: rgba(47, 36, 29, 0.58);
+    font-size: calc(var(--cell-size) * 0.42);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .pick-ruler {
+    position: relative;
+    display: grid;
+    gap: var(--grid-gap);
+    width: 2.8rem;
+    min-width: 2.8rem;
+    margin-left: calc(var(--cell-gap) * 2);
+    border-left: 1px solid rgba(47, 36, 29, 0.22);
+    overflow: visible;
+  }
+
+  .pick-ruler-mark {
+    position: relative;
+    min-height: 1px;
+    width: 100%;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .pick-ruler-mark::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: calc(var(--cell-size) * 0.28);
+    height: 1px;
+    transform: translateY(-50%);
+    background: rgba(47, 36, 29, 0.28);
+  }
+
+  .pick-ruler-mark-major::after {
+    width: calc(var(--cell-size) * 0.52);
+    background: rgba(47, 36, 29, 0.45);
+  }
+
+  .pick-ruler-label {
+    position: absolute;
+    left: calc(var(--cell-size) * 0.52 + 0.3rem);
+    color: rgba(47, 36, 29, 0.58);
+    font-size: calc(var(--cell-size) * 0.42);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .pick-ruler-label {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .heddle-count-grid {
     display: grid;
     gap: var(--grid-gap);
@@ -599,28 +1034,59 @@
   }
 
   .drawdown-cell {
+    position: relative;
     width: var(--cell-size);
     height: var(--cell-size);
     border: 1px solid rgba(47, 36, 29, 0.1);
     border-radius: 0;
     box-sizing: border-box;
+    overflow: hidden;
+    background: #ffffff;
     user-select: none;
     pointer-events: none;
+  }
+
+  .drawdown-realistic {
+    display: block;
+    width: fit-content;
+    line-height: 0;
+    background: #ffffff;
+  }
+
+  .drawdown-realistic-canvas {
+    display: block;
+  }
+
+  .drawdown-thread {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: block;
+    pointer-events: none;
+  }
+
+  .drawdown-thread-warp {
+    top: 0;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+
+  .drawdown-thread-weft {
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
   }
 
   .warp-toolbar {
     display: grid;
     gap: var(--grid-gap);
     margin: 0px;
-    margin-left: calc(-1 * var(--insert-btn-nudge));
     width: fit-content;
   }
 
   .warp-insert-cell {
-    display: flex;
-    gap: var(--insert-gap);
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    overflow: visible;
   }
 
   .insert-btn {
@@ -649,21 +1115,47 @@
     align-items: flex-start;
   }
 
+  .pick-side-wrap {
+    display: flex;
+    align-items: flex-start;
+  }
+
   .pick-toolbar {
     display: grid;
     gap: var(--grid-gap);
     margin-left: var(--toolbar-offset);
-    margin-top: calc(-1 * var(--insert-btn-nudge));
     width: fit-content;
   }
 
   .pick-insert-cell {
-    display: flex;
-    flex-direction: column;
-    gap: var(--insert-gap);
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    overflow: visible;
     height: var(--cell-size);
+  }
+
+  .insert-btn-plus,
+  .insert-btn-minus {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .insert-btn-warp-minus,
+  .insert-btn-pick-minus {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .insert-btn-warp-plus {
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .insert-btn-pick-plus {
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
   }
 
   @media (max-width: 991.98px) {
@@ -673,7 +1165,7 @@
     }
 
     .draft-stage {
-      padding: 0.9rem;
+      padding: 0;
     }
   }
 
@@ -725,9 +1217,12 @@
       box-shadow: none !important;
     }
 
+    .ruler-row,
     .toolbar-row,
     .ghost-cell,
-    .draft-stage-actions {
+    .pick-ruler,
+    .draft-stage-actions,
+    .draft-stage-controls {
       display: none !important;
     }
 
@@ -739,70 +1234,134 @@
 </head>
 
 <body>
-<a href="index.html" class="draft-stage-button page-home-link" aria-label="Back to home" title="Back to home">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M3 10.5 12 3l9 7.5"></path>
-    <path d="M5.5 9.5V21h13V9.5"></path>
-    <path d="M9.5 21v-6h5v6"></path>
-  </svg>
-</a>
-<main class="container py-4 py-lg-5">
+<main class="container-fluid page-shell">
+      <div class="workspace-card">
+        <div class="workspace-toolbar">
+          <div class="workspace-toolbar-action-row">
+            <div class="workspace-toolbar-action-groups">
+              <div class="workspace-toolbar-actions">
+                <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 10.5 12 3l9 7.5"></path>
+                      <path d="M5.5 9.5V21h13V9.5"></path>
+                      <path d="M9.5 21v-6h5v6"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Home</span>
+                </a>
+                <button type="button" class="btn btn-soft toolbar-action" onclick="saveDraftToFile()">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 4h11l3 3v13H5z"></path>
+                      <path d="M8 4v6h8V4"></path>
+                      <path d="M9 16h6"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Save</span>
+                </button>
+                <button type="button" class="btn btn-soft toolbar-action" onclick="openDraftFilePicker()">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 7h5l2 2h9v8.5A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5z"></path>
+                      <path d="M4 9V6.5A2.5 2.5 0 0 1 6.5 4H10"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Open</span>
+                </button>
+                <button type="button" class="btn btn-soft toolbar-action" onclick="printDraftGrid()">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M7 9V4h10v5"></path>
+                      <rect x="5" y="13" width="14" height="7" rx="1.5"></rect>
+                      <path d="M5 10.5h14A2.5 2.5 0 0 1 21.5 13v2H2.5v-2A2.5 2.5 0 0 1 5 10.5Z"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Print</span>
+                </button>
+              </div>
 
-
-      <div class="controls-card p-3 p-lg-4 mb-4">
-        <div class="control-actions-panel">
-          <div class="control-actions">
-            <button type="button" class="btn btn-soft" onclick="saveDraftToFile()">Save Draft</button>
-            <button type="button" class="btn btn-soft" onclick="openDraftFilePicker()">Open Draft</button>
-            <button type="button" class="btn btn-drafter" onclick="confirmReset()">Clear</button>
-          </div>
-          <input id="draft-file-input" type="file" accept=".wdd,application/json" class="d-none">
-        </div>
-
-        <div class="row g-2 controls-toolbar align-items-end">
-          <div class="col-6 col-md-2">
-            <label class="control-label" for="shafts">Shafts</label>
-            <input id="shafts" class="form-control" type="number" value="4" min="1" step="1" inputmode="numeric">
-          </div>
-
-          <div class="col-6 col-md-2">
-            <label class="control-label" for="treadles">Treadles</label>
-            <input id="treadles" class="form-control" type="number" value="4" min="1" step="1" inputmode="numeric">
-          </div>
-
-          <div class="col-6 col-md-2">
-            <label class="control-label" for="warp">Warp Threads</label>
-            <input id="warp" class="form-control" type="number" value="16" min="1" step="1" inputmode="numeric">
-          </div>
-
-          <div class="col-6 col-md-2">
-            <label class="control-label" for="picks">Picks</label>
-            <input id="picks" class="form-control" type="number" value="16" min="1" step="1" inputmode="numeric">
-          </div>
-        </div>
-
-        <div class="pattern-colors-panel">
-          <div class="pattern-colors-header">
-            <div class="pattern-colors-title">
-              <span class="control-label mb-1">Pattern Colors</span>
-              <p class="pattern-colors-copy text-secondary mb-0">Select one, then click threading or treadling.</p>
+              <div class="workspace-toolbar-actions workspace-toolbar-actions-history">
+                <button type="button" id="draft-undo-button" class="btn btn-soft toolbar-action" onclick="undoDraftChange()" aria-label="Undo" title="Undo">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 7 5 12l5 5"></path>
+                      <path d="M19 18v-2a4 4 0 0 0-4-4H5"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Undo</span>
+                </button>
+                <button type="button" id="draft-redo-button" class="btn btn-soft toolbar-action" onclick="redoDraftChange()" aria-label="Redo" title="Redo">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m14 7 5 5-5 5"></path>
+                      <path d="M5 18v-2a4 4 0 0 1 4-4h10"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Redo</span>
+                </button>
+              </div>
             </div>
 
-            <div class="pattern-colors-tools">
-              <div id="pattern-colors" class="pattern-colors-row"></div>
-              <button type="button" class="btn btn-soft pattern-color-add" onclick="addPatternColor()">Add Color</button>
+            <div class="workspace-toolbar-actions workspace-toolbar-actions-secondary">
+              <button type="button" class="btn btn-soft toolbar-action toolbar-action-reset" onclick="confirmResetToDefault()">
+                <span class="toolbar-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                    <path d="M3 4v5h5"></path>
+                  </svg>
+                </span>
+                <span class="toolbar-action-label">Reset to Default</span>
+              </button>
+              <button type="button" class="btn btn-drafter toolbar-action toolbar-action-clear" onclick="confirmReset()">
+                <span class="toolbar-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M8 6V4h8v2"></path>
+                    <path d="m8.5 10.5 7 7"></path>
+                    <path d="m15.5 10.5-7 7"></path>
+                  </svg>
+                </span>
+                <span class="toolbar-action-label">Clear</span>
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="draft-stage">
-        <div class="draft-stage-header">
-          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
-            <div>
-              <h2 class="fw-semibold">Draft</h2>
+          <div class="workspace-toolbar-panel workspace-toolbar-panel-controls">
+            <div class="workspace-toolbar-row">
+              <div class="workspace-toolbar-main">
+              <div class="controls-toolbar">
+                <div class="toolbar-field">
+              <label class="control-label" for="shafts">Shafts</label>
+              <input id="shafts" class="form-control" type="number" value="4" min="1" step="1" inputmode="numeric">
             </div>
-            <div class="draft-stage-actions">
+
+                <div class="toolbar-field">
+              <label class="control-label" for="treadles">Treadles</label>
+              <input id="treadles" class="form-control" type="number" value="4" min="1" step="1" inputmode="numeric">
+            </div>
+
+                <div class="toolbar-field">
+              <label class="control-label" for="warp">Warp Ends</label>
+              <input id="warp" class="form-control" type="number" value="16" min="1" step="1" inputmode="numeric">
+            </div>
+
+                <div class="toolbar-field">
+              <label class="control-label" for="picks">Picks</label>
+              <input id="picks" class="form-control" type="number" value="16" min="1" step="1" inputmode="numeric">
+                </div>
+
+                <div class="toolbar-field toolbar-field-render-style">
+              <label class="control-label" for="drawdown-render-style">Render Style</label>
+              <select id="drawdown-render-style" class="form-select" aria-label="Drawdown render style">
+                <option value="structure">Structure</option>
+                <option value="color" selected>Color</option>
+                <option value="realistic">Realistic</option>
+              </select>
+                </div>
+
+                <div class="toolbar-field toolbar-field-zoom">
+              <label class="control-label" for="draft-zoom-out">Zoom</label>
               <div class="draft-stage-zoom" aria-label="Draft zoom controls">
                 <button
                   type="button"
@@ -812,6 +1371,7 @@
                   aria-label="Zoom out"
                   title="Zoom out"
                 >−</button>
+                <span id="draft-zoom-value" class="draft-stage-zoom-value" aria-live="polite">100%</span>
                 <button
                   type="button"
                   id="draft-zoom-in"
@@ -821,21 +1381,43 @@
                   title="Zoom in"
                 >+</button>
               </div>
-              <button type="button" class="draft-stage-button" onclick="printDraftGrid()" aria-label="Print grid" title="Print grid">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M7 9V4h10v5"></path>
-                  <path d="M6 17H4a1 1 0 0 1-1-1v-5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v5a1 1 0 0 1-1 1h-2"></path>
-                  <path d="M6 14h12v6H6z"></path>
-                  <path d="M17 12.5h.01"></path>
-                </svg>
-              </button>
+                </div>
+              </div>
+
+              <div class="pattern-colors-panel">
+                <div class="pattern-colors-header">
+                  <div class="pattern-colors-title">
+                    <div class="pattern-colors-heading">
+                      <span class="control-label mb-0">Yarns</span>
+                      <span class="pattern-colors-meta">(color and weight)</span>
+                    </div>
+                    <p class="pattern-colors-copy text-secondary mb-0">Select one, then click threading or treadling.</p>
+                  </div>
+
+                  <div class="pattern-colors-tools">
+                    <div id="pattern-colors" class="pattern-colors-row"></div>
+                    <button type="button" class="btn btn-soft pattern-color-add" onclick="addPatternColor()">Add Yarn</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <input id="draft-file-input" type="file" accept=".wdd,application/json" class="d-none">
         </div>
 
+        <div class="draft-stage">
         <div class="draft-grid-scroll">
           <div class="draft-print-area">
             <table class="draft">
+              <tr class="ruler-row">
+                <th class="ghost-cell"></th>
+                <th>
+                  <div id="warp-ruler" class="warp-ruler"></div>
+                </th>
+                <th class="ghost-cell"></th>
+                <th class="ghost-cell"></th>
+              </tr>
+
               <tr class="toolbar-row">
                 <th class="ghost-cell"></th>
                 <th>
@@ -863,7 +1445,10 @@
                   </div>
                 </td>
                 <td class="ghost-cell">
-                  <div id="pick-inserts" class="pick-toolbar"></div>
+                  <div class="pick-side-wrap">
+                    <div id="pick-inserts" class="pick-toolbar"></div>
+                    <div id="pick-ruler" class="pick-ruler"></div>
+                  </div>
                 </td>
               </tr>
             </table>
@@ -871,7 +1456,7 @@
         </div>
       </div>
 
-      <div class="preview-stage">
+      <div class="preview-stage" hidden>
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
           <div>
             <h2 class="fw-semibold">Repeated Fabric Preview</h2>
@@ -936,33 +1521,55 @@ let threading = [];
 let treadling = [];
 let tieup = [];
 let patternColors = [
-  { id: "pattern-color-1", value: "#2f241d" },
-  { id: "pattern-color-2", value: "#d4d4d4" },
-  { id: "pattern-color-3", value: "#c84d36" },
-  { id: "pattern-color-4", value: "#3f9159" },
-  { id: "pattern-color-5", value: "#2f6fa8" }
+  { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
+  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 },
+  { id: "pattern-color-3", value: "#c84d36", thickness: 1 },
+  { id: "pattern-color-4", value: "#3f9159", thickness: 1 },
+  { id: "pattern-color-5", value: "#2f6fa8", thickness: 1 }
 ];
 let activePatternColorId = "pattern-color-1";
 let nextPatternColorNumber = 6;
+let draftRenderStyle = "color";
 let previewRenderMode = "plain";
 let previewSett = 60;
 let draftCellSize = 20;
 const defaultPreviewBackgroundColor = "#ffffff";
 const defaultPreviewSett = 60;
 const defaultDraftCellSize = 20;
-const minDraftCellSize = 6;
-const maxDraftCellSize = 36;
-const draftZoomStep = 2;
+const defaultDraftRenderStyle = "color";
+const minDraftZoomPercent = 1;
+const maxDraftZoomPercent = 300;
+const minDraftCellSize = (defaultDraftCellSize * minDraftZoomPercent) / 100;
+const maxDraftCellSize = (defaultDraftCellSize * maxDraftZoomPercent) / 100;
+const draftZoomStops = [
+  ...Array.from({ length: 10 }, (_, index) => index + 1),
+  ...Array.from({ length: 14 }, (_, index) => (index + 2) * 10),
+  ...Array.from({ length: 6 }, (_, index) => 175 + index * 25)
+];
+const maxRealisticDrawdownCanvasDimension = 8192;
+const maxRealisticDrawdownCanvasPixels = 16000000;
+const maxWarpThreads = 1000;
+const maxDrawdownCells = 60000;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
 const patternColorSeedValues = ["#d2a03a", "#7a5fd0", "#d6718c", "#4f8d88", "#bc6c25", "#5e548e"];
 const defaultPatternColors = [
-  { id: "pattern-color-1", value: "#2f241d" },
-  { id: "pattern-color-2", value: "#d4d4d4" },
-  { id: "pattern-color-3", value: "#c84d36" },
-  { id: "pattern-color-4", value: "#3f9159" },
-  { id: "pattern-color-5", value: "#2f6fa8" }
+  { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
+  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 },
+  { id: "pattern-color-3", value: "#c84d36", thickness: 1 },
+  { id: "pattern-color-4", value: "#3f9159", thickness: 1 },
+  { id: "pattern-color-5", value: "#2f6fa8", thickness: 1 }
 ];
+const draftAutosaveStorageKey = "weaving-draft-editor.autosave.v1";
+const draftAutosaveDelayMs = 150;
+const draftHistoryLimit = 200;
+const draftHistoryCommitDelayMs = 80;
+let draftAutosaveTimeoutId = null;
+let draftHistoryEntries = [];
+let draftHistoryIndex = -1;
+let draftHistoryCommitTimeoutId = null;
+let isDraftAutosaveSuspended = false;
+let isDraftHistorySuspended = false;
 
 function createDefaultPatternColors() {
   return defaultPatternColors.map(color => ({...color}));
@@ -987,11 +1594,68 @@ function setControlValues(nextValues) {
   document.getElementById("treadles").value = nextValues.treadles;
   document.getElementById("warp").value = nextValues.warp;
   document.getElementById("picks").value = nextValues.picks;
+  updateDraftDimensionLimitsUI(nextValues.warp, nextValues.picks);
 }
 
 function setPreviewRepeatValues(nextValues) {
   document.getElementById("preview-repeat-x").value = nextValues.repeatX;
   document.getElementById("preview-repeat-y").value = nextValues.repeatY;
+}
+
+function getMaxWarpForPicks(nextPicks) {
+  return Math.max(1, Math.min(maxWarpThreads, Math.floor(maxDrawdownCells / Math.max(1, nextPicks))));
+}
+
+function getMaxPicksForWarp(nextWarp) {
+  return Math.max(1, Math.floor(maxDrawdownCells / Math.max(1, nextWarp)));
+}
+
+function updateDraftDimensionLimitsUI(nextWarp = warp, nextPicks = picks) {
+  const warpInput = document.getElementById("warp");
+  const picksInput = document.getElementById("picks");
+
+  if (!warpInput || !picksInput) {
+    return;
+  }
+
+  warpInput.max = String(getMaxWarpForPicks(nextPicks));
+  picksInput.max = String(getMaxPicksForWarp(nextWarp));
+}
+
+function getDraftLimitMessage(prefix = "Draft size was limited to keep the page responsive.") {
+  return `${prefix} Warp threads max out at ${maxWarpThreads}, and warp × picks maxes out at ${maxDrawdownCells.toLocaleString()}.`;
+}
+
+function showDraftLimitAlert(prefix) {
+  window.alert(getDraftLimitMessage(prefix));
+}
+
+function applyDraftDimensionLimits(nextWarp, nextPicks, changedId = null) {
+  let limitedWarp = Math.max(1, Number.parseInt(nextWarp, 10) || 1);
+  let limitedPicks = Math.max(1, Number.parseInt(nextPicks, 10) || 1);
+  const originalWarp = limitedWarp;
+  const originalPicks = limitedPicks;
+
+  if (limitedWarp > maxWarpThreads) {
+    limitedWarp = maxWarpThreads;
+  }
+
+  if (changedId === "picks") {
+    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
+    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
+  } else if (changedId === "warp") {
+    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
+    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
+  } else {
+    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
+    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
+  }
+
+  return {
+    warp: limitedWarp,
+    picks: limitedPicks,
+    changed: limitedWarp !== originalWarp || limitedPicks !== originalPicks
+  };
 }
 
 function normalizePreviewBackgroundColor(value) {
@@ -1020,12 +1684,60 @@ function setPreviewSettValue(value) {
 }
 
 function clampDraftCellSize(value) {
-  return Math.max(minDraftCellSize, Math.min(maxDraftCellSize, value));
+  const clamped = Math.max(minDraftCellSize, Math.min(maxDraftCellSize, value));
+  return Math.round(clamped * 1000) / 1000;
+}
+
+function normalizeDraftRenderStyle(style) {
+  return ["structure", "color", "realistic"].includes(style) ? style : defaultDraftRenderStyle;
+}
+
+function getDraftRenderStyle() {
+  return normalizeDraftRenderStyle(draftRenderStyle);
+}
+
+function setDraftRenderStyle(style, shouldRender = true) {
+  draftRenderStyle = normalizeDraftRenderStyle(style);
+  const select = document.getElementById("drawdown-render-style");
+
+  if (select) {
+    select.value = draftRenderStyle;
+  }
+
+  if (shouldRender) {
+    renderDrawdown();
+    scheduleDraftAutosave();
+    commitDraftHistoryState();
+  }
+}
+
+function getDraftZoomPercent() {
+  return Math.round((draftCellSize / defaultDraftCellSize) * 100);
+}
+
+function getNextDraftZoomPercent(direction) {
+  const currentPercent = getDraftZoomPercent();
+
+  if (direction > 0) {
+    return draftZoomStops.find(percent => percent > currentPercent) ?? maxDraftZoomPercent;
+  }
+
+  if (direction < 0) {
+    for (let index = draftZoomStops.length - 1; index >= 0; index--) {
+      if (draftZoomStops[index] < currentPercent) {
+        return draftZoomStops[index];
+      }
+    }
+  }
+
+  return currentPercent;
 }
 
 function updateDraftZoomUI() {
-  document.getElementById("draft-zoom-out").disabled = draftCellSize <= minDraftCellSize;
-  document.getElementById("draft-zoom-in").disabled = draftCellSize >= maxDraftCellSize;
+  const currentPercent = getDraftZoomPercent();
+  document.getElementById("draft-zoom-out").disabled = currentPercent <= minDraftZoomPercent;
+  document.getElementById("draft-zoom-in").disabled = currentPercent >= maxDraftZoomPercent;
+  document.getElementById("draft-zoom-value").textContent = `${currentPercent}%`;
 }
 
 function applyDraftZoom() {
@@ -1035,15 +1747,20 @@ function applyDraftZoom() {
 }
 
 function changeDraftZoom(direction) {
-  const nextCellSize = clampDraftCellSize(draftCellSize + direction * draftZoomStep);
+  const currentPercent = getDraftZoomPercent();
+  const nextPercent = getNextDraftZoomPercent(direction);
+  const nextCellSize = clampDraftCellSize((defaultDraftCellSize * nextPercent) / 100);
 
-  if (nextCellSize === draftCellSize) {
+  if (nextPercent === currentPercent || nextCellSize === draftCellSize) {
     updateDraftZoomUI();
     return;
   }
 
   draftCellSize = nextCellSize;
   applyDraftZoom();
+  renderDraftStage();
+  scheduleDraftAutosave();
+  commitDraftHistoryState();
 }
 
 function getEffectivePreviewBackgroundColor(mode = getPreviewRenderMode()) {
@@ -1081,6 +1798,22 @@ function setPreviewRenderMode(mode, shouldRender = true) {
   if (shouldRender) {
     renderRepeatPreview();
   }
+  scheduleDraftAutosave();
+  commitDraftHistoryState();
+}
+
+function normalizePatternColorThickness(value, fallback = 1) {
+  const parsed = Number.parseFloat(value);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+
+  return Math.max(0.1, Math.round(parsed * 10) / 10);
+}
+
+function formatPatternColorThickness(value) {
+  return String(normalizePatternColorThickness(value));
 }
 
 function normalizePatternColors(colors) {
@@ -1088,7 +1821,8 @@ function normalizePatternColors(colors) {
     ? colors
         .map((color, index) => ({
           id: typeof color?.id === "string" && color.id ? color.id : `pattern-color-${index + 1}`,
-          value: /^#[0-9a-f]{6}$/i.test(color?.value || "") ? color.value : null
+          value: /^#[0-9a-f]{6}$/i.test(color?.value || "") ? String(color.value).toLowerCase() : null,
+          thickness: normalizePatternColorThickness(color?.thickness, 1)
         }))
         .filter(color => color.value)
     : [];
@@ -1122,10 +1856,10 @@ function normalizeTieupData(data, nextTreadles, nextShafts) {
   );
 }
 
-function buildDraftSaveData() {
+function buildDraftHistoryEntryData() {
   return {
     format: "weaving-draft-data",
-    version: 1,
+    version: 3,
     draft: {
       shafts,
       treadles,
@@ -1143,38 +1877,287 @@ function buildDraftSaveData() {
       renderMode: getPreviewRenderMode(),
       sett: getPreviewSettValue(),
       backgroundColor: getPreviewBackgroundColor()
+    },
+    ui: {
+      draftCellSize,
+      draftRenderStyle: getDraftRenderStyle()
     }
   };
 }
 
-function saveDraftToFile() {
-  const data = buildDraftSaveData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+function buildDraftHistoryData(currentEntryOverride = null) {
+  const fallbackEntry = currentEntryOverride || serializeDraftHistoryState();
+  const serializedEntries = draftHistoryEntries.length ? draftHistoryEntries.slice() : [fallbackEntry];
+  const entries = serializedEntries
+    .map(entry => {
+      try {
+        const parsed = JSON.parse(entry);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (!entries.length) {
+    try {
+      entries.push(JSON.parse(fallbackEntry));
+    } catch (error) {
+      return { index: 0, entries: [] };
+    }
+  }
+
+  const index = Math.max(0, Math.min(draftHistoryIndex, entries.length - 1));
+  const currentEntry =
+    (() => {
+      try {
+        return JSON.parse(fallbackEntry);
+      } catch (error) {
+        return null;
+      }
+    })();
+
+  if (currentEntry) {
+    entries[index] = currentEntry;
+  }
+
+  return {
+    index,
+    entries
+  };
+}
+
+function buildDraftSaveData() {
+  const currentEntry = serializeDraftHistoryState();
+  return {
+    ...JSON.parse(currentEntry),
+    history: buildDraftHistoryData(currentEntry)
+  };
+}
+
+function serializeDraftHistoryState() {
+  return JSON.stringify(buildDraftHistoryEntryData());
+}
+
+function updateDraftHistoryUI() {
+  const undoButton = document.getElementById("draft-undo-button");
+  const redoButton = document.getElementById("draft-redo-button");
+
+  if (!undoButton || !redoButton) {
+    return;
+  }
+
+  undoButton.disabled = draftHistoryIndex <= 0;
+  redoButton.disabled = draftHistoryIndex < 0 || draftHistoryIndex >= draftHistoryEntries.length - 1;
+}
+
+function clearScheduledDraftHistoryCommit() {
+  window.clearTimeout(draftHistoryCommitTimeoutId);
+  draftHistoryCommitTimeoutId = null;
+}
+
+function resetDraftHistory() {
+  clearScheduledDraftHistoryCommit();
+  draftHistoryEntries = [serializeDraftHistoryState()];
+  draftHistoryIndex = 0;
+  updateDraftHistoryUI();
+}
+
+function commitDraftHistoryState() {
+  if (isDraftHistorySuspended) {
+    return;
+  }
+
+  const serializedState = serializeDraftHistoryState();
+
+  if (draftHistoryIndex >= 0 && draftHistoryEntries[draftHistoryIndex] === serializedState) {
+    updateDraftHistoryUI();
+    return;
+  }
+
+  draftHistoryEntries = draftHistoryEntries.slice(0, draftHistoryIndex + 1);
+  draftHistoryEntries.push(serializedState);
+
+  if (draftHistoryEntries.length > draftHistoryLimit) {
+    const overflow = draftHistoryEntries.length - draftHistoryLimit;
+    draftHistoryEntries.splice(0, overflow);
+    draftHistoryIndex = Math.max(-1, draftHistoryIndex - overflow);
+  }
+
+  draftHistoryIndex = draftHistoryEntries.length - 1;
+  updateDraftHistoryUI();
+}
+
+function scheduleDraftHistoryCommit() {
+  if (isDraftHistorySuspended) {
+    return;
+  }
+
+  clearScheduledDraftHistoryCommit();
+  draftHistoryCommitTimeoutId = window.setTimeout(() => {
+    draftHistoryCommitTimeoutId = null;
+    commitDraftHistoryState();
+  }, draftHistoryCommitDelayMs);
+}
+
+function saveDraftToLocalStorage() {
+  if (isDraftAutosaveSuspended) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(draftAutosaveStorageKey, JSON.stringify(buildDraftSaveData()));
+  } catch (error) {
+    // Ignore storage failures so drafting can continue uninterrupted.
+  }
+}
+
+function scheduleDraftAutosave() {
+  if (isDraftAutosaveSuspended) {
+    return;
+  }
+
+  window.clearTimeout(draftAutosaveTimeoutId);
+  draftAutosaveTimeoutId = window.setTimeout(() => {
+    draftAutosaveTimeoutId = null;
+    saveDraftToLocalStorage();
+  }, draftAutosaveDelayMs);
+}
+
+function clearPersistedDraftData() {
+  window.clearTimeout(draftAutosaveTimeoutId);
+  draftAutosaveTimeoutId = null;
+
+  try {
+    window.localStorage.removeItem(draftAutosaveStorageKey);
+  } catch (error) {
+    // Ignore storage failures so drafting can continue uninterrupted.
+  }
+}
+
+function getDraftSuggestedFilename(includeTime = false) {
+  const now = new Date();
+  const year = String(now.getFullYear());
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  if (!includeTime) {
+    return `weaving-draft-${year}-${month}-${day}.wdd`;
+  }
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  return `weaving-draft-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdd`;
+}
+
+function downloadDraftFile(contents, filename) {
+  const blob = new Blob([contents], {type: "application/json"});
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  const timestamp = new Date().toISOString().slice(0, 10);
 
   link.href = url;
-  link.download = `weaving-draft-${timestamp}.wdd`;
+  link.download = filename;
   document.body.appendChild(link);
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
 }
 
+async function saveDraftToFile() {
+  const contents = JSON.stringify(buildDraftSaveData(), null, 2);
+  const suggestedName = getDraftSuggestedFilename();
+
+  if (typeof window.showSaveFilePicker === "function") {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types: [{
+          description: "Weaving Draft Document",
+          accept: {
+            "application/json": [".wdd"]
+          }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(contents);
+      await writable.close();
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+    }
+  }
+
+  const fallbackSuggestedName = getDraftSuggestedFilename(true);
+  const fallbackName = window.prompt("Save draft as", fallbackSuggestedName);
+
+  if (fallbackName === null) {
+    return;
+  }
+
+  const trimmedName = fallbackName.trim();
+  const filename = trimmedName
+    ? (trimmedName.toLowerCase().endsWith(".wdd") ? trimmedName : `${trimmedName}.wdd`)
+    : fallbackSuggestedName;
+
+  downloadDraftFile(contents, filename);
+}
+
 function openDraftFilePicker() {
   document.getElementById("draft-file-input").click();
 }
 
-function applyLoadedDraftData(data) {
+function normalizeLoadedDraftHistory(data, fallbackSerializedState) {
+  const rawEntries = Array.isArray(data?.history?.entries) ? data.history.entries : [];
+  const serializedEntries = rawEntries
+    .map(entry => {
+      if (!entry || entry.format !== "weaving-draft-data" || typeof entry.draft !== "object") {
+        return null;
+      }
+
+      try {
+        return JSON.stringify(entry);
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter(Boolean);
+
+  if (!serializedEntries.length) {
+    return {
+      entries: [fallbackSerializedState],
+      index: 0
+    };
+  }
+
+  const nextIndex = Math.max(
+    0,
+    Math.min(Number.parseInt(data?.history?.index, 10) || 0, serializedEntries.length - 1)
+  );
+
+  serializedEntries[nextIndex] = fallbackSerializedState;
+
+  return {
+    entries: serializedEntries,
+    index: nextIndex
+  };
+}
+
+function applyLoadedDraftData(data, options = {}) {
+  const { restoreHistory = true } = options;
+
   if (data?.format !== "weaving-draft-data" || typeof data?.draft !== "object") {
     throw new Error("That file is not a valid WDD draft.");
   }
 
   const nextShafts = Math.max(1, Number.parseInt(data.draft.shafts, 10) || 1);
   const nextTreadles = Math.max(1, Number.parseInt(data.draft.treadles, 10) || 1);
-  const nextWarp = Math.max(1, Number.parseInt(data.draft.warp, 10) || 1);
-  const nextPicks = Math.max(1, Number.parseInt(data.draft.picks, 10) || 1);
+  const nextDimensions = applyDraftDimensionLimits(data.draft.warp, data.draft.picks);
+  const nextWarp = nextDimensions.warp;
+  const nextPicks = nextDimensions.picks;
   const nextPatternColors = normalizePatternColors(data.draft.patternColors);
   const nextActivePatternColorId = nextPatternColors.some(color => color.id === data.draft.activePatternColorId)
     ? data.draft.activePatternColorId
@@ -1186,6 +2169,8 @@ function applyLoadedDraftData(data) {
     sett: normalizePreviewSett(data.preview?.sett ?? defaultPreviewSett),
     backgroundColor: normalizePreviewBackgroundColor(data.preview?.backgroundColor)
   };
+  const nextDraftCellSize = clampDraftCellSize(Number.parseFloat(data.ui?.draftCellSize) || draftCellSize);
+  const nextDraftRenderStyle = normalizeDraftRenderStyle(data.ui?.draftRenderStyle);
 
   shafts = nextShafts;
   treadles = nextTreadles;
@@ -1200,14 +2185,29 @@ function applyLoadedDraftData(data) {
   threading = normalizeThreadingData(data.draft.threading, shafts, warp, patternColors);
   treadling = normalizeTreadlingData(data.draft.treadling, picks, treadles, patternColors);
   tieup = normalizeTieupData(data.draft.tieup, treadles, shafts);
+  draftCellSize = nextDraftCellSize;
 
   setControlValues({shafts, treadles, warp, picks});
   setPreviewRepeatValues(nextPreview);
   setPreviewSettValue(nextPreview.sett);
   setPreviewBackgroundColor(nextPreview.backgroundColor);
   setPreviewRenderMode(nextPreview.renderMode, false);
+  setDraftRenderStyle(nextDraftRenderStyle, false);
+  applyDraftZoom();
   renderPatternColors();
   renderAll();
+
+  if (restoreHistory) {
+    const fallbackSerializedState = serializeDraftHistoryState();
+    const nextHistory = normalizeLoadedDraftHistory(data, fallbackSerializedState);
+    draftHistoryEntries = nextHistory.entries;
+    draftHistoryIndex = nextHistory.index;
+    updateDraftHistoryUI();
+  }
+
+  if (nextDimensions.changed) {
+    showDraftLimitAlert("The loaded draft was reduced to fit the editor limits.");
+  }
 }
 
 function handleDraftFileChange(event) {
@@ -1235,8 +2235,174 @@ function handleDraftFileChange(event) {
   reader.readAsText(file);
 }
 
+function restorePersistedDraftData() {
+  let raw = null;
+
+  try {
+    raw = window.localStorage.getItem(draftAutosaveStorageKey);
+  } catch (error) {
+    return false;
+  }
+
+  if (!raw) {
+    return false;
+  }
+
+  try {
+    isDraftAutosaveSuspended = true;
+    isDraftHistorySuspended = true;
+    applyLoadedDraftData(JSON.parse(raw));
+    return true;
+  } catch (error) {
+    clearPersistedDraftData();
+    return false;
+  } finally {
+    isDraftAutosaveSuspended = false;
+    isDraftHistorySuspended = false;
+  }
+}
+
+function applyDraftHistoryEntry(nextIndex) {
+  const entry = draftHistoryEntries[nextIndex];
+
+  if (!entry) {
+    updateDraftHistoryUI();
+    return;
+  }
+
+  try {
+    isDraftAutosaveSuspended = true;
+    isDraftHistorySuspended = true;
+    applyLoadedDraftData(JSON.parse(entry), { restoreHistory: false });
+    draftHistoryIndex = nextIndex;
+  } catch (error) {
+    window.alert("Unable to restore that draft state.");
+  } finally {
+    isDraftAutosaveSuspended = false;
+    isDraftHistorySuspended = false;
+  }
+
+  updateDraftHistoryUI();
+  saveDraftToLocalStorage();
+}
+
+function undoDraftChange() {
+  if (draftHistoryIndex <= 0) {
+    updateDraftHistoryUI();
+    return;
+  }
+
+  applyDraftHistoryEntry(draftHistoryIndex - 1);
+}
+
+function redoDraftChange() {
+  if (draftHistoryIndex >= draftHistoryEntries.length - 1) {
+    updateDraftHistoryUI();
+    return;
+  }
+
+  applyDraftHistoryEntry(draftHistoryIndex + 1);
+}
+
 function getPatternColorValue(colorId) {
   return patternColors.find(color => color.id === colorId)?.value || null;
+}
+
+function getPatternColorThickness(colorId) {
+  return patternColors.find(color => color.id === colorId)?.thickness || 1;
+}
+
+function getUsedPatternThicknesses() {
+  const colorIds = new Set();
+
+  threading.forEach(row => {
+    row?.forEach(colorId => {
+      if (colorId) {
+        colorIds.add(colorId);
+      }
+    });
+  });
+
+  treadling.forEach(row => {
+    row?.forEach(colorId => {
+      if (colorId) {
+        colorIds.add(colorId);
+      }
+    });
+  });
+
+  const thicknesses = Array.from(colorIds, colorId => getPatternColorThickness(colorId)).filter(
+    thickness => Number.isFinite(thickness) && thickness > 0
+  );
+
+  return thicknesses.length ? thicknesses : [1];
+}
+
+function getDraftThicknessScale() {
+  return Math.min(...getUsedPatternThicknesses());
+}
+
+function getDraftTrackSizeForColor(colorId) {
+  if (!colorId) {
+    return draftCellSize;
+  }
+
+  const thicknessScale = getDraftThicknessScale();
+  const normalizedThickness = getPatternColorThickness(colorId) / thicknessScale;
+  return Math.max(1, draftCellSize * normalizedThickness);
+}
+
+function getWarpColumnWidth(warpIndex) {
+  return getDraftTrackSizeForColor(getWarpAssignment(warpIndex)?.colorId || null);
+}
+
+function getPickRowHeight(pickIndex) {
+  return getDraftTrackSizeForColor(getPickColorId(pickIndex));
+}
+
+function getWarpColumnWidths() {
+  return Array.from({length: warp}, (_, warpIndex) => getWarpColumnWidth(warpIndex));
+}
+
+function getPickRowHeights() {
+  return Array.from({length: picks}, (_, pickIndex) => getPickRowHeight(pickIndex));
+}
+
+function formatGridTrackList(sizes) {
+  return sizes.map(size => `${size}px`).join(" ");
+}
+
+function setElementSize(element, width, height) {
+  element.style.width = width === null ? "" : `${width}px`;
+  element.style.height = height === null ? "" : `${height}px`;
+}
+
+function getInsertButtonGap() {
+  const rootStyles = getComputedStyle(document.documentElement);
+  return Math.max(0, Number.parseFloat(rootStyles.getPropertyValue("--insert-gap")) || 0);
+}
+
+function getInsertButtonSize() {
+  const buttonGap = getInsertButtonGap();
+  return Math.max(1, (draftCellSize - buttonGap) / 2);
+}
+
+function sizeWarpToolbarButtons(plusButton, minusButton) {
+  const buttonSize = getInsertButtonSize();
+
+  [plusButton, minusButton].forEach(button => {
+    setElementSize(button, buttonSize, buttonSize);
+    button.style.fontSize = `${Math.max(1, buttonSize * 0.85)}px`;
+  });
+}
+
+function sizePickToolbarButtons(plusButton, minusButton) {
+  const buttonSize = getInsertButtonSize();
+
+  [plusButton, minusButton].forEach(button => {
+    setElementSize(button, buttonSize, buttonSize);
+    button.style.fontSize = `${Math.max(1, buttonSize * 0.85)}px`;
+  });
 }
 
 const previewColorCache = new Map();
@@ -2025,10 +3191,16 @@ function getNextPatternColorValue() {
 
 function updatePatternColorSelectionUI() {
   const activeColorId = getSelectedPatternColorId();
-  document.querySelectorAll("#pattern-colors .pattern-color-item").forEach(item => {
-    const isActive = item.dataset.colorId === activeColorId;
-    item.classList.toggle("active", isActive);
+  document.querySelectorAll("#pattern-colors .pattern-color-stack").forEach(stack => {
+    const item = stack.querySelector(".pattern-color-item");
+    const isActive = item?.dataset.colorId === activeColorId;
+    stack.classList.toggle("active", isActive);
+
+    if (item) {
+      item.classList.toggle("active", isActive);
+    }
   });
+  scheduleDraftAutosave();
 }
 
 function isPatternColorInUse(colorId) {
@@ -2060,13 +3232,17 @@ function createPatternColorDeleteButton(colorId) {
 function syncPatternColorUsageUI() {
   const container = document.getElementById("pattern-colors");
 
-  container.querySelectorAll(".pattern-color-item").forEach(item => {
-    const colorId = item.dataset.colorId;
-    const existingDeleteButton = item.querySelector(".pattern-color-delete");
+  container.querySelectorAll(".pattern-color-stack").forEach(stack => {
+    const item = stack.querySelector(".pattern-color-item");
+    const colorId = item?.dataset.colorId;
+    const existingDeleteButton = stack.querySelector(".pattern-color-delete");
+    if (!colorId) {
+      return;
+    }
     const shouldShowDeleteButton = canDeletePatternColor(colorId);
 
     if (shouldShowDeleteButton && !existingDeleteButton) {
-      item.appendChild(createPatternColorDeleteButton(colorId));
+      stack.appendChild(createPatternColorDeleteButton(colorId));
     } else if (!shouldShowDeleteButton && existingDeleteButton) {
       existingDeleteButton.remove();
     }
@@ -2093,6 +3269,9 @@ function renderPatternColors() {
   container.innerHTML = "";
 
   patternColors.forEach((color, index) => {
+    const stack = document.createElement("div");
+    stack.className = "pattern-color-stack";
+
     const item = document.createElement("div");
     item.className = "pattern-color-item";
     item.dataset.colorId = color.id;
@@ -2117,7 +3296,7 @@ function renderPatternColors() {
       updatePatternColorSelectionUI();
     });
     input.addEventListener("input", () => {
-      color.value = input.value;
+      color.value = input.value.toLowerCase();
       item.style.backgroundColor = color.value;
       surface.style.backgroundColor = color.value;
       activePatternColorId = color.id;
@@ -2142,10 +3321,48 @@ function renderPatternColors() {
       input.click();
     };
 
+    const thicknessInput = document.createElement("input");
+    thicknessInput.type = "number";
+    thicknessInput.className = "form-control pattern-color-thickness";
+    thicknessInput.inputMode = "decimal";
+    thicknessInput.min = "0.1";
+    thicknessInput.step = "0.1";
+    thicknessInput.value = formatPatternColorThickness(color.thickness);
+    thicknessInput.setAttribute("aria-label", `Yarn thickness for pattern color ${index + 1}`);
+    thicknessInput.addEventListener("focus", () => {
+      activePatternColorId = color.id;
+      updatePatternColorSelectionUI();
+    });
+    thicknessInput.addEventListener("keydown", event => {
+      if (["-", "+", "e", "E"].includes(event.key)) {
+        event.preventDefault();
+      }
+    });
+    thicknessInput.addEventListener("input", () => {
+      const nextThickness = Number.parseFloat(thicknessInput.value);
+
+      if (!Number.isFinite(nextThickness) || nextThickness <= 0) {
+        return;
+      }
+
+      color.thickness = normalizePatternColorThickness(nextThickness, color.thickness);
+      renderAll();
+    });
+    thicknessInput.addEventListener("blur", () => {
+      color.thickness = sanitizePositiveDecimalInput(thicknessInput, color.thickness);
+      renderAll();
+    });
+    thicknessInput.addEventListener("change", () => {
+      color.thickness = sanitizePositiveDecimalInput(thicknessInput, color.thickness);
+      renderAll();
+    });
+
     item.appendChild(surface);
     item.appendChild(input);
     item.appendChild(editButton);
-    container.appendChild(item);
+    stack.appendChild(item);
+    stack.appendChild(thicknessInput);
+    container.appendChild(stack);
   });
 
   syncPatternColorUsageUI();
@@ -2156,12 +3373,19 @@ function addPatternColor() {
   const nextColorValue = getNextPatternColorValue();
   const color = {
     id: `pattern-color-${nextPatternColorNumber++}`,
-    value: nextColorValue
+    value: nextColorValue,
+    thickness: 1
   };
   patternColors.push(color);
   activePatternColorId = color.id;
   renderPatternColors();
   renderAll();
+}
+
+function sanitizePositiveDecimalInput(input, fallbackValue = 1) {
+  const nextValue = normalizePatternColorThickness(input.value, fallbackValue);
+  input.value = formatPatternColorThickness(nextValue);
+  return nextValue;
 }
 
 function sanitizePositiveIntegerInput(input) {
@@ -2287,7 +3511,47 @@ function getDraftPrintStyles() {
       border-radius: 0;
       box-sizing: border-box;
     }
+
+    .drawdown-realistic {
+      display: block;
+      width: fit-content;
+      line-height: 0;
+      background: #ffffff;
+    }
+
+    .drawdown-realistic-canvas {
+      display: block;
+    }
+
+    .drawdown-realistic-image {
+      display: block;
+    }
   `;
+}
+
+function getPrintableDraftMarkup(source) {
+  const clone = source.cloneNode(true);
+  const sourceCanvases = source.querySelectorAll("canvas");
+  const cloneCanvases = clone.querySelectorAll("canvas");
+
+  sourceCanvases.forEach((canvas, index) => {
+    const cloneCanvas = cloneCanvases[index];
+
+    if (!cloneCanvas) {
+      return;
+    }
+
+    const image = document.createElement("img");
+    image.className = `${canvas.className} drawdown-realistic-image`.trim();
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    image.src = canvas.toDataURL("image/png");
+    image.style.width = canvas.style.width || `${canvas.clientWidth}px`;
+    image.style.height = canvas.style.height || `${canvas.clientHeight}px`;
+    cloneCanvas.replaceWith(image);
+  });
+
+  return clone.outerHTML;
 }
 
 function printDraftGrid() {
@@ -2325,7 +3589,7 @@ function printDraftGrid() {
         <style>${getDraftPrintStyles()}</style>
       </head>
       <body>
-        ${source.outerHTML}
+        ${getPrintableDraftMarkup(source)}
       </body>
     </html>
   `);
@@ -2353,6 +3617,12 @@ function printDraftGrid() {
 function confirmReset() {
   if (window.confirm("Reset the entire draft and clear all current colors and structure?")) {
     resetAll();
+  }
+}
+
+function confirmResetToDefault() {
+  if (window.confirm("Reset the draft to the default houndstooth setup?")) {
+    loadDefaultHoundstoothDraft();
   }
 }
 
@@ -2394,6 +3664,7 @@ function loadDefaultHoundstoothDraft() {
   setPreviewSettValue(defaultPreviewSett);
   setPreviewBackgroundColor(defaultPreviewBackgroundColor);
   setPreviewRenderMode("plain", false);
+  setDraftRenderStyle(defaultDraftRenderStyle, false);
   renderPatternColors();
   renderAll();
 }
@@ -2407,19 +3678,31 @@ function init() {
 
 function resetAll() {
   const values = getControlValues();
+  const nextDimensions = applyDraftDimensionLimits(values.warp, values.picks);
   shafts = values.shafts;
   treadles = values.treadles;
-  warp = values.warp;
-  picks = values.picks;
+  warp = nextDimensions.warp;
+  picks = nextDimensions.picks;
+  setControlValues({ ...values, warp, picks });
   init();
+
+  if (nextDimensions.changed) {
+    showDraftLimitAlert("Draft size was reduced before clearing to keep the page responsive.");
+  }
 }
 
-function resizeFromControls() {
+function resizeFromControls(changedId = null) {
   const values = getControlValues();
   const newShafts = values.shafts;
   const newTreadles = values.treadles;
-  const newWarp = values.warp;
-  const newPicks = values.picks;
+  const nextDimensions = applyDraftDimensionLimits(values.warp, values.picks, changedId);
+  const newWarp = nextDimensions.warp;
+  const newPicks = nextDimensions.picks;
+
+  if (nextDimensions.changed) {
+    setControlValues({ ...values, warp: newWarp, picks: newPicks });
+    showDraftLimitAlert("Draft size was reduced to keep the page responsive.");
+  }
 
   threading = resizeThreading(threading, shafts, newShafts, warp, newWarp);
   treadling = resizeTreadling(treadling, picks, newPicks, treadles, newTreadles);
@@ -2471,9 +3754,9 @@ function bindPositiveIntegerInput(input, onChange) {
   });
   input.addEventListener("blur", () => {
     sanitizePositiveIntegerInput(input);
-    onChange();
+    onChange(input.id);
   });
-  input.addEventListener("change", onChange);
+  input.addEventListener("change", () => onChange(input.id));
 }
 
 controlIds.forEach(id => {
@@ -2482,21 +3765,35 @@ controlIds.forEach(id => {
 
 previewControlIds.forEach(id => {
   const input = document.getElementById(id);
-  bindPositiveIntegerInput(input, renderRepeatPreview);
+  bindPositiveIntegerInput(input, () => {
+    renderRepeatPreview();
+    scheduleDraftAutosave();
+    scheduleDraftHistoryCommit();
+  });
   input.addEventListener("input", () => {
     sanitizePositiveIntegerInput(input);
     renderRepeatPreview();
+    scheduleDraftAutosave();
+    scheduleDraftHistoryCommit();
   });
 });
 
 document.getElementById("preview-background-color").addEventListener("input", () => {
   updatePreviewBackgroundUI();
   renderRepeatPreview();
+  scheduleDraftAutosave();
+  scheduleDraftHistoryCommit();
 });
 
 document.getElementById("preview-sett").addEventListener("input", event => {
   setPreviewSettValue(event.target.value);
   renderRepeatPreview();
+  scheduleDraftAutosave();
+  scheduleDraftHistoryCommit();
+});
+
+document.getElementById("drawdown-render-style").addEventListener("change", event => {
+  setDraftRenderStyle(event.target.value);
 });
 
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
@@ -2512,7 +3809,10 @@ if ("ResizeObserver" in window) {
   window.addEventListener("resize", renderRepeatPreview);
 }
 
-function renderAll() {
+function renderDraftStage() {
+  updateDraftDimensionLimitsUI();
+  renderWarpRuler();
+  renderPickRuler();
   renderWarpToolbar();
   renderPickToolbar();
   renderHeddleCount();
@@ -2520,8 +3820,14 @@ function renderAll() {
   renderTieup();
   renderTreadling();
   renderDrawdown();
+}
+
+function renderAll() {
+  renderDraftStage();
   renderRepeatPreview();
   syncPatternColorUsageUI();
+  scheduleDraftAutosave();
+  commitDraftHistoryState();
 }
 
 function styleCell(button, colorId) {
@@ -2567,25 +3873,47 @@ function setPickColor(pickIndex, colorId) {
 
 function getDrawdownCellState(pickIndex, warpIndex) {
   const warpAssignment = getWarpAssignment(warpIndex);
-  const pickColor = getPatternColorValue(getPickColorId(pickIndex)) || "#ffffff";
+  const pickColorId = getPickColorId(pickIndex);
+  const pickColor = getPatternColorValue(pickColorId) || "#ffffff";
+  const hasWeft = Boolean(pickColorId);
 
   if (!warpAssignment) {
     return {
       frontColor: pickColor,
       backColor: pickColor,
-      warpVisibleOnFront: false
+      warpVisibleOnFront: false,
+      hasWarp: false,
+      hasWeft,
+      warpColor: null,
+      weftColor: pickColor
     };
   }
 
   const { shaft, colorId } = warpAssignment;
   const warpColor = getPatternColorValue(colorId) || "#ffffff";
 
+  if (!hasWeft) {
+    return {
+      frontColor: warpColor,
+      backColor: warpColor,
+      warpVisibleOnFront: true,
+      hasWarp: true,
+      hasWeft: false,
+      warpColor,
+      weftColor: null
+    };
+  }
+
   for (let t = 0; t < treadles; t++) {
     if (treadling[pickIndex]?.[t] && tieup[t]?.[shaft]) {
       return {
         frontColor: warpColor,
         backColor: pickColor,
-        warpVisibleOnFront: true
+        warpVisibleOnFront: true,
+        hasWarp: true,
+        hasWeft,
+        warpColor,
+        weftColor: pickColor
       };
     }
   }
@@ -2593,28 +3921,467 @@ function getDrawdownCellState(pickIndex, warpIndex) {
   return {
     frontColor: pickColor,
     backColor: warpColor,
-    warpVisibleOnFront: false
+    warpVisibleOnFront: false,
+    hasWarp: true,
+    hasWeft,
+    warpColor,
+    weftColor: pickColor
   };
+}
+
+function getTrackEdges(sizes) {
+  const edges = [0];
+  let offset = 0;
+
+  sizes.forEach(size => {
+    offset += size;
+    edges.push(offset);
+  });
+
+  return edges;
+}
+
+function getDrawdownRealisticThreadThickness(crossSize, isTopLayer) {
+  const settRatio = defaultPreviewSett / 100;
+  const minRatio = isTopLayer ? 0.5 : 0.34;
+  return Math.max(1, crossSize * (minRatio + (1 - minRatio) * settRatio));
+}
+
+function isDrawdownOrientationRendered(cellState, orientation) {
+  if (orientation === "vertical") {
+    return Boolean(cellState?.hasWarp);
+  }
+
+  return Boolean(cellState?.hasWeft);
+}
+
+function getDrawdownNeighborState(states, cellX, cellY, orientation, direction) {
+  const rowCount = states.length;
+  const columnCount = states[0]?.length || 0;
+
+  if (!rowCount || !columnCount) {
+    return null;
+  }
+
+  if (orientation === "vertical") {
+    const nextY = cellY + direction;
+    return nextY >= 0 && nextY < rowCount ? states[nextY]?.[cellX] || null : null;
+  }
+
+  const nextX = cellX + direction;
+  return nextX >= 0 && nextX < columnCount ? states[cellY]?.[nextX] || null : null;
+}
+
+function getDrawdownBorderThickness(states, cellX, cellY, orientation, isTopLayer, cellWidth, cellHeight, direction) {
+  const crossSize = orientation === "vertical" ? cellWidth : cellHeight;
+  const currentThickness = getDrawdownRealisticThreadThickness(crossSize, isTopLayer);
+  const neighborState = getDrawdownNeighborState(states, cellX, cellY, orientation, direction);
+
+  if (!neighborState || !isDrawdownOrientationRendered(neighborState, orientation)) {
+    return currentThickness;
+  }
+
+  const neighborIsTopLayer = isPreviewOrientationOnTop(neighborState, orientation);
+  const neighborThickness = getDrawdownRealisticThreadThickness(crossSize, neighborIsTopLayer);
+
+  return neighborIsTopLayer === isTopLayer ? currentThickness : (currentThickness + neighborThickness) / 2;
+}
+
+function buildDrawdownThreadPath(x, y, cellWidth, cellHeight, orientation, startThickness, middleThickness, endThickness) {
+  const sampleCount = 8;
+  const path = new Path2D();
+  const thicknessAt = position => {
+    if (position <= 0.5) {
+      const local = position / 0.5;
+      const exponent = startThickness > middleThickness ? 2.2 : 0.85;
+      const eased = Math.pow(local, exponent);
+      return startThickness + (middleThickness - startThickness) * eased;
+    }
+
+    const local = (position - 0.5) / 0.5;
+    const exponent = endThickness > middleThickness ? 2.2 : 0.85;
+    const eased = Math.pow(local, exponent);
+    return middleThickness + (endThickness - middleThickness) * eased;
+  };
+
+  if (orientation === "vertical") {
+    const topHalf = thicknessAt(0) / 2;
+    path.moveTo(x + cellWidth / 2 - topHalf, y);
+
+    for (let step = 1; step <= sampleCount; step++) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleY = y + cellHeight * position;
+      path.lineTo(x + cellWidth / 2 - thickness, sampleY);
+    }
+
+    for (let step = sampleCount; step >= 0; step--) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleY = y + cellHeight * position;
+      path.lineTo(x + cellWidth / 2 + thickness, sampleY);
+    }
+  } else {
+    const leftHalf = thicknessAt(0) / 2;
+    path.moveTo(x, y + cellHeight / 2 - leftHalf);
+
+    for (let step = 1; step <= sampleCount; step++) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleX = x + cellWidth * position;
+      path.lineTo(sampleX, y + cellHeight / 2 - thickness);
+    }
+
+    for (let step = sampleCount; step >= 0; step--) {
+      const position = step / sampleCount;
+      const thickness = thicknessAt(position) / 2;
+      const sampleX = x + cellWidth * position;
+      path.lineTo(sampleX, y + cellHeight / 2 + thickness);
+    }
+  }
+
+  path.closePath();
+  return path;
+}
+
+function drawDrawdownRealisticBand(
+  ctx,
+  x,
+  y,
+  spanLength,
+  crossSize,
+  colorValue,
+  orientation,
+  isTopLayer,
+  thicknessOverride = null
+) {
+  if (spanLength <= 0 || crossSize <= 0) {
+    return;
+  }
+
+  const thickness =
+    thicknessOverride === null
+      ? getDrawdownRealisticThreadThickness(crossSize, isTopLayer)
+      : thicknessOverride;
+  const inset = (crossSize - thickness) / 2;
+  const rect =
+    orientation === "vertical"
+      ? { x: x + inset, y, width: thickness, height: spanLength }
+      : { x, y: y + inset, width: spanLength, height: thickness };
+  const gradient =
+    orientation === "vertical"
+      ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+      : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+  const edgeShadow =
+    orientation === "vertical"
+      ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+      : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+  const highlight =
+    orientation === "vertical"
+      ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+      : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+
+  gradient.addColorStop(0, darkenPreviewColor(colorValue, 0.22));
+  gradient.addColorStop(0.2, darkenPreviewColor(colorValue, 0.1));
+  gradient.addColorStop(0.5, lightenPreviewColor(colorValue, 0.1));
+  gradient.addColorStop(0.8, darkenPreviewColor(colorValue, 0.08));
+  gradient.addColorStop(1, darkenPreviewColor(colorValue, 0.22));
+
+  edgeShadow.addColorStop(0, previewAlphaColor("#000000", 0.08));
+  edgeShadow.addColorStop(0.18, previewAlphaColor("#000000", 0));
+  edgeShadow.addColorStop(0.82, previewAlphaColor("#000000", 0));
+  edgeShadow.addColorStop(1, previewAlphaColor("#000000", 0.08));
+
+  highlight.addColorStop(0, previewAlphaColor("#ffffff", 0));
+  highlight.addColorStop(0.5, previewAlphaColor("#ffffff", 0.1));
+  highlight.addColorStop(1, previewAlphaColor("#ffffff", 0));
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+  ctx.fillStyle = edgeShadow;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+  ctx.fillStyle = highlight;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+function drawDrawdownAdaptiveYarn(
+  ctx,
+  x,
+  y,
+  cellWidth,
+  cellHeight,
+  colorValue,
+  orientation,
+  isTopLayer,
+  cellX,
+  cellY,
+  states
+) {
+  const middleThickness = getDrawdownRealisticThreadThickness(
+    orientation === "vertical" ? cellWidth : cellHeight,
+    isTopLayer
+  );
+  const startThickness = getDrawdownBorderThickness(
+    states,
+    cellX,
+    cellY,
+    orientation,
+    isTopLayer,
+    cellWidth,
+    cellHeight,
+    -1
+  );
+  const endThickness = getDrawdownBorderThickness(
+    states,
+    cellX,
+    cellY,
+    orientation,
+    isTopLayer,
+    cellWidth,
+    cellHeight,
+    1
+  );
+  const renderThickness = Math.max(startThickness, middleThickness, endThickness);
+  const path = buildDrawdownThreadPath(
+    x,
+    y,
+    cellWidth,
+    cellHeight,
+    orientation,
+    startThickness,
+    middleThickness,
+    endThickness
+  );
+
+  ctx.save();
+  ctx.clip(path);
+  drawDrawdownRealisticBand(
+    ctx,
+    x,
+    y,
+    orientation === "vertical" ? cellHeight : cellWidth,
+    orientation === "vertical" ? cellWidth : cellHeight,
+    colorValue,
+    orientation,
+    isTopLayer,
+    renderThickness
+  );
+  ctx.restore();
+}
+
+function drawDrawdownIntersectionShadow(ctx, x, y, cellWidth, cellHeight, topOrientation) {
+  const crossSize = topOrientation === "vertical" ? cellWidth : cellHeight;
+  const topThickness = getDrawdownRealisticThreadThickness(crossSize, true);
+  const inset = (crossSize - topThickness) / 2;
+  const spread = crossSize * 0.12;
+  const shadow =
+    topOrientation === "vertical"
+      ? ctx.createLinearGradient(x + inset - spread, y, x + inset + topThickness + spread, y)
+      : ctx.createLinearGradient(x, y + inset - spread, x, y + inset + topThickness + spread);
+
+  shadow.addColorStop(0, previewAlphaColor("#000000", 0));
+  shadow.addColorStop(0.2, previewAlphaColor("#000000", 0.06));
+  shadow.addColorStop(0.5, previewAlphaColor("#000000", 0.15));
+  shadow.addColorStop(0.8, previewAlphaColor("#000000", 0.06));
+  shadow.addColorStop(1, previewAlphaColor("#000000", 0));
+
+  ctx.fillStyle = shadow;
+  ctx.fillRect(x, y, cellWidth, cellHeight);
+}
+
+function drawDrawdownStructuredCell(ctx, x, y, cellWidth, cellHeight, cellState, cellX, cellY, states) {
+  const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
+  const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, cellWidth, cellHeight);
+
+  if (underOrientation === "vertical") {
+    if (isDrawdownOrientationRendered(cellState, "vertical")) {
+      drawDrawdownAdaptiveYarn(
+        ctx,
+        x,
+        y,
+        cellWidth,
+        cellHeight,
+        cellState.warpColor || "#ffffff",
+        "vertical",
+        false,
+        cellX,
+        cellY,
+        states
+      );
+    }
+  } else if (isDrawdownOrientationRendered(cellState, "horizontal")) {
+    drawDrawdownAdaptiveYarn(
+      ctx,
+      x,
+      y,
+      cellWidth,
+      cellHeight,
+      cellState.weftColor || "#ffffff",
+      "horizontal",
+      false,
+      cellX,
+      cellY,
+      states
+    );
+  }
+
+  if (cellState.hasWarp && cellState.hasWeft) {
+    drawDrawdownIntersectionShadow(ctx, x, y, cellWidth, cellHeight, topOrientation);
+  }
+
+  if (topOrientation === "vertical") {
+    if (isDrawdownOrientationRendered(cellState, "vertical")) {
+      drawDrawdownAdaptiveYarn(
+        ctx,
+        x,
+        y,
+        cellWidth,
+        cellHeight,
+        cellState.warpColor || "#ffffff",
+        "vertical",
+        true,
+        cellX,
+        cellY,
+        states
+      );
+    }
+  } else if (isDrawdownOrientationRendered(cellState, "horizontal")) {
+    drawDrawdownAdaptiveYarn(
+      ctx,
+      x,
+      y,
+      cellWidth,
+      cellHeight,
+      cellState.weftColor || "#ffffff",
+      "horizontal",
+      true,
+      cellX,
+      cellY,
+      states
+    );
+  }
+}
+
+function getRealisticDrawdownRenderScale(totalWidth, totalHeight) {
+  const safeWidth = Math.max(1, totalWidth);
+  const safeHeight = Math.max(1, totalHeight);
+  const safeArea = Math.max(1, safeWidth * safeHeight);
+  const dimensionLimit = Math.min(
+    maxRealisticDrawdownCanvasDimension / safeWidth,
+    maxRealisticDrawdownCanvasDimension / safeHeight
+  );
+  const pixelLimit = Math.sqrt(maxRealisticDrawdownCanvasPixels / safeArea);
+
+  return Math.max(0.1, Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit));
+}
+
+function renderRealisticDrawdown(div, columnWidths, rowHeights) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const states = buildPreviewStateGrid();
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+
+  if (!ctx) {
+    div.className = "grid";
+    div.innerHTML = "";
+    div.style.width = "";
+    div.style.height = "";
+    div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+    div.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const state = states[pickIndex][warpIndex];
+        const cell = document.createElement("div");
+        cell.className = "drawdown-cell";
+        cell.style.backgroundColor = state.frontColor;
+        setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
+        div.appendChild(cell);
+      }
+    }
+
+    return;
+  }
+
+  div.className = "drawdown-realistic";
+  div.innerHTML = "";
+  div.style.width = `${totalWidth}px`;
+  div.style.height = `${totalHeight}px`;
+  div.style.gridTemplateColumns = "";
+  div.style.gridTemplateRows = "";
+
+  canvas.className = "drawdown-realistic-canvas";
+  canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+  canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+  canvas.style.width = `${totalWidth}px`;
+  canvas.style.height = `${totalHeight}px`;
+
+  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in ctx) {
+    ctx.imageSmoothingQuality = "high";
+  }
+
+  ctx.clearRect(0, 0, totalWidth, totalHeight);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      drawDrawdownStructuredCell(
+        ctx,
+        columnEdges[warpIndex],
+        rowEdges[pickIndex],
+        columnWidths[warpIndex],
+        rowHeights[pickIndex],
+        states[pickIndex][warpIndex],
+        warpIndex,
+        pickIndex,
+        states
+      );
+    }
+  }
+
+  div.appendChild(canvas);
 }
 
 function renderWarpToolbar() {
   const div = document.getElementById("warp-inserts");
+  const columnWidths = getWarpColumnWidths();
   div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
   for (let i = 0; i < warp; i++) {
     const cell = document.createElement("div");
     cell.className = "warp-insert-cell";
+    setElementSize(cell, columnWidths[i], draftCellSize);
 
     const plus = document.createElement("button");
-    plus.className = "insert-btn";
+    plus.className = "insert-btn insert-btn-plus insert-btn-warp-plus";
     plus.textContent = "+";
 
     const minus = document.createElement("button");
-    minus.className = "insert-btn";
+    minus.className = "insert-btn insert-btn-minus insert-btn-warp-minus";
     minus.textContent = "−";
+    sizeWarpToolbarButtons(plus, minus);
 
     plus.onclick = () => {
+      const nextDimensions = applyDraftDimensionLimits(warp + 1, picks, "warp");
+
+      if (nextDimensions.warp !== warp + 1) {
+        showDraftLimitAlert("You can't add another warp thread.");
+        return;
+      }
+
       for (let s = 0; s < shafts; s++) {
         threading[s].splice(i, 0, 0);
       }
@@ -2639,24 +4406,78 @@ function renderWarpToolbar() {
   }
 }
 
+function renderWarpRuler() {
+  const div = document.getElementById("warp-ruler");
+  const columnWidths = getWarpColumnWidths();
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+
+  for (let i = 0; i < warp; i++) {
+    const mark = document.createElement("div");
+    const isMajor = (i + 1) % 10 === 0;
+    mark.className = `warp-ruler-mark${isMajor ? " warp-ruler-mark-major" : ""}`;
+
+    if (isMajor) {
+      const label = document.createElement("span");
+      label.className = "warp-ruler-label";
+      label.textContent = String(i + 1);
+      mark.appendChild(label);
+    }
+
+    div.appendChild(mark);
+  }
+}
+
+function renderPickRuler() {
+  const div = document.getElementById("pick-ruler");
+  const rowHeights = getPickRowHeights();
+  div.innerHTML = "";
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+  for (let j = 0; j < picks; j++) {
+    const mark = document.createElement("div");
+    const isMajor = (j + 1) % 10 === 0;
+    mark.className = `pick-ruler-mark${isMajor ? " pick-ruler-mark-major" : ""}`;
+
+    if (isMajor) {
+      const label = document.createElement("span");
+      label.className = "pick-ruler-label";
+      label.textContent = String(j + 1);
+      mark.appendChild(label);
+    }
+
+    div.appendChild(mark);
+  }
+}
+
 function renderPickToolbar() {
   const div = document.getElementById("pick-inserts");
+  const rowHeights = getPickRowHeights();
   div.innerHTML = "";
-  div.style.gridTemplateRows = `repeat(${picks}, var(--cell-size))`;
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
   for (let j = 0; j < picks; j++) {
     const cell = document.createElement("div");
     cell.className = "pick-insert-cell";
+    setElementSize(cell, draftCellSize, rowHeights[j]);
 
     const plus = document.createElement("button");
-    plus.className = "insert-btn";
+    plus.className = "insert-btn insert-btn-plus insert-btn-pick-plus";
     plus.textContent = "+";
 
     const minus = document.createElement("button");
-    minus.className = "insert-btn";
+    minus.className = "insert-btn insert-btn-minus insert-btn-pick-minus";
     minus.textContent = "−";
+    sizePickToolbarButtons(plus, minus);
 
     plus.onclick = () => {
+      const nextDimensions = applyDraftDimensionLimits(warp, picks + 1, "picks");
+
+      if (nextDimensions.picks !== picks + 1) {
+        showDraftLimitAlert("You can't add another pick.");
+        return;
+      }
+
       treadling.splice(j, 0, Array(treadles).fill(0));
       picks++;
       document.getElementById("picks").value = picks;
@@ -2695,13 +4516,15 @@ function renderHeddleCount() {
 
 function renderThreading() {
   const div = document.getElementById("threading");
+  const columnWidths = getWarpColumnWidths();
   div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
   for (let s = shafts - 1; s >= 0; s--) {
     for (let i = 0; i < warp; i++) {
       const b = document.createElement("button");
       styleCell(b, threading[s][i]);
+      setElementSize(b, columnWidths[i], draftCellSize);
 
       b.onclick = () => {
         const selectedColorId = getSelectedPatternColorId();
@@ -2745,13 +4568,16 @@ function renderTieup() {
 
 function renderTreadling() {
   const div = document.getElementById("treadling");
+  const rowHeights = getPickRowHeights();
   div.innerHTML = "";
   div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
   for (let j = 0; j < picks; j++) {
     for (let t = 0; t < treadles; t++) {
       const b = document.createElement("button");
       styleCell(b, treadling[j][t]);
+      setElementSize(b, draftCellSize, rowHeights[j]);
 
       b.onclick = () => {
         const selectedColorId = getSelectedPatternColorId();
@@ -2771,20 +4597,44 @@ function renderTreadling() {
 
 function renderDrawdown() {
   const div = document.getElementById("drawdown");
+  const columnWidths = getWarpColumnWidths();
+  const rowHeights = getPickRowHeights();
+  const renderStyle = getDraftRenderStyle();
+
+  if (renderStyle === "realistic") {
+    renderRealisticDrawdown(div, columnWidths, rowHeights);
+    return;
+  }
+
+  div.className = "grid";
   div.innerHTML = "";
-  div.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+  div.style.width = "";
+  div.style.height = "";
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
   for (let j = 0; j < picks; j++) {
     for (let i = 0; i < warp; i++) {
+      const state = getDrawdownCellState(j, i);
       const cell = document.createElement("div");
       cell.className = "drawdown-cell";
-      cell.style.backgroundColor = getDrawdownCellState(j, i).frontColor;
+      cell.style.backgroundColor =
+        renderStyle === "structure"
+          ? (state.warpVisibleOnFront && state.hasWarp ? "var(--ink)" : "#ffffff")
+          : state.frontColor;
+      setElementSize(cell, columnWidths[i], rowHeights[j]);
       div.appendChild(cell);
     }
   }
 }
 
 function renderRepeatPreview() {
+  const previewStage = document.querySelector(".preview-stage");
+
+  if (previewStage?.hidden) {
+    return;
+  }
+
   const previewScroll = document.getElementById("repeat-preview-scroll");
   const canvas = document.getElementById("repeat-preview-canvas");
   const ctx = canvas.getContext("2d");
@@ -2868,7 +4718,14 @@ function renderRepeatPreview() {
 }
 
 applyDraftZoom();
-loadDefaultHoundstoothDraft();
+
+if (!restorePersistedDraftData()) {
+  loadDefaultHoundstoothDraft();
+  resetDraftHistory();
+} else {
+  updateDraftHistoryUI();
+}
+window.addEventListener("beforeunload", saveDraftToLocalStorage);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
