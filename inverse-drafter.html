@@ -1,0 +1,3565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inverse Drafter</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-cream: #f7f1e3;
+    --bg-warm: #ead8bf;
+    --ink: #2f241d;
+    --accent: #aa4a2b;
+    --accent-dark: #7a321c;
+    --flow-green: rgba(103, 136, 96, 0.78);
+    --flow-amber: rgba(195, 132, 63, 0.84);
+    --flow-orange: rgba(170, 74, 43, 0.82);
+    --line: rgb(223, 214, 201);
+    --panel-bg: rgb(252, 248, 240);
+    --cell-size: 18px;
+    --insert-btn-size: calc(var(--cell-size) * 0.58);
+    --insert-btn-font-size: calc(var(--cell-size) * 0.5);
+    --target-toolbar-offset: calc(var(--cell-size) * 0.46);
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+      radial-gradient(circle at right 20%, rgba(84, 115, 76, 0.12), transparent 28%),
+      linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 46%, var(--bg-warm) 100%);
+  }
+
+  .page-shell {
+    padding: clamp(1rem, 2vw, 2rem);
+  }
+
+  .workspace {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.08);
+    background-clip: padding-box;
+  }
+
+  .workspace-toolbar {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .workspace-toolbar-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .workspace-toolbar-action-groups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .workspace-toolbar-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+    padding: 0.4rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .workspace-toolbar-actions-name {
+    background: rgba(249, 246, 239, 0.78);
+  }
+
+  .workspace-toolbar-actions-history,
+  .workspace-toolbar-actions-invert {
+    background: rgba(245, 240, 231, 0.72);
+  }
+
+  .workspace-toolbar-actions-secondary {
+    border-color: rgba(170, 74, 43, 0.14);
+    background: linear-gradient(180deg, rgba(251, 242, 236, 0.9), rgba(247, 233, 224, 0.8));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 0.35rem 1rem rgba(170, 74, 43, 0.06);
+  }
+
+  .workspace-toolbar-panel {
+    display: flex;
+    align-items: stretch;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .workspace-toolbar-panel-controls {
+    background: rgba(255, 255, 255, 0.26);
+  }
+
+  .toolbar-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 0.9rem;
+  }
+
+  .toolbar-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-action-icon svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .toolbar-action-label {
+    display: inline-block;
+  }
+
+  .btn-soft,
+  .btn-drafter {
+    min-height: 2.65rem;
+    padding: 0.62rem 0.9rem;
+    border-radius: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .btn-soft {
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+  }
+
+  .btn-soft:hover,
+  .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--ink);
+  }
+
+  .btn-drafter {
+    border: 0;
+    background: linear-gradient(135deg, var(--accent), #c87137);
+    color: #fff;
+    box-shadow: 0 0.9rem 2rem rgba(170, 74, 43, 0.16);
+  }
+
+  .btn-drafter:hover,
+  .btn-drafter:focus {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+    color: #fff;
+  }
+
+  .workspace-toolbar-actions .btn-soft,
+  .workspace-toolbar-actions .btn-drafter {
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    border-radius: 0.9rem;
+    box-shadow: none;
+  }
+
+  .workspace-toolbar-actions .btn-soft {
+    background: rgba(255, 255, 255, 0.82);
+    border-color: rgba(47, 36, 29, 0.1);
+  }
+
+  .workspace-toolbar-actions .btn-soft:hover,
+  .workspace-toolbar-actions .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .workspace-toolbar-actions .toolbar-action-reset {
+    color: #8d4335;
+    background: rgba(193, 102, 74, 0.12);
+    border-color: rgba(170, 74, 43, 0.22);
+  }
+
+  .workspace-toolbar-actions .toolbar-action-reset:hover,
+  .workspace-toolbar-actions .toolbar-action-reset:focus {
+    color: #7a321c;
+    background: rgba(193, 102, 74, 0.18);
+    border-color: rgba(170, 74, 43, 0.32);
+  }
+
+  .workspace-toolbar-actions-secondary .toolbar-action-clear {
+    background: linear-gradient(135deg, #b45840, #9a4534);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .workspace-toolbar-actions-secondary .toolbar-action-clear:hover,
+  .workspace-toolbar-actions-secondary .toolbar-action-clear:focus {
+    background: linear-gradient(135deg, #a04936, #883d2d);
+    color: #fff;
+  }
+
+  .toolbar-name-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .toolbar-name-label {
+    color: rgba(122, 50, 28, 0.78);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .toolbar-name-input {
+    width: clamp(10rem, 18vw, 16rem);
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+    box-shadow: none;
+    font-size: 0.92rem;
+    line-height: 1;
+    box-sizing: border-box;
+  }
+
+  .toolbar-name-input:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.85rem 1rem;
+    width: 100%;
+  }
+
+  .toolbar-field {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .toolbar-field-zoom {
+    min-width: 8.6rem;
+  }
+
+  .control-label,
+  .slider-control > label {
+    color: rgba(122, 50, 28, 0.82);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .toolbar-field .form-control,
+  .toolbar-field .form-select {
+    min-width: 5.6rem;
+    max-width: 7.5rem;
+    min-height: 2.35rem;
+    border-radius: 0.85rem;
+    border-color: rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .toolbar-field .form-control:focus,
+  .toolbar-field .form-select:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .toolbar-field .toggle-button {
+    min-height: 2.35rem;
+    height: 2.35rem;
+    padding: 0.45rem 0.8rem;
+    white-space: nowrap;
+  }
+
+  .toolbar-field-cell {
+    min-width: 11rem;
+  }
+
+  .slider-control {
+    display: grid;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .slider-control-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .slider-control input[type="range"] {
+    width: 8.5rem;
+    accent-color: rgba(170, 74, 43, 0.92);
+  }
+
+  .slider-control-value {
+    min-width: 3rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent-dark);
+    text-align: right;
+  }
+
+  .draft-stage-zoom {
+    display: grid;
+    grid-template-columns: 1.9rem 3.4rem 1.9rem;
+    align-items: center;
+    column-gap: 0.12rem;
+  }
+
+  .toolbar-field-zoom .draft-stage-zoom {
+    min-height: 2.35rem;
+    padding: 0 0.15rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .draft-stage-zoom-value {
+    width: 100%;
+    min-width: 0;
+    color: rgba(47, 36, 29, 0.48);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-align: center;
+    user-select: none;
+  }
+
+  .draft-stage-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: rgba(47, 36, 29, 0.45);
+    text-decoration: none;
+    transition: color 140ms ease, opacity 140ms ease, transform 140ms ease;
+  }
+
+  .draft-stage-button:hover,
+  .draft-stage-button:focus-visible {
+    color: rgba(47, 36, 29, 0.72);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  .draft-stage-button:disabled {
+    color: rgba(47, 36, 29, 0.22);
+    transform: none;
+    cursor: default;
+  }
+
+  .draft-stage-zoom-button {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .content-grid {
+    display: grid;
+    position: relative;
+    grid-template-columns: minmax(16rem, 1fr) minmax(10.5rem, 11.75rem) minmax(10.75rem, 12.5rem) minmax(15rem, 1.08fr);
+    align-items: start;
+    gap: 1.35rem;
+  }
+
+  .work-panel {
+    position: relative;
+    z-index: 1;
+    padding: 1rem 1.1rem 1.1rem;
+  }
+
+  .optimizer-panel {
+    position: relative;
+    z-index: 1;
+    margin-left: 1rem;
+    padding: 1rem 0.95rem;
+  }
+
+  .optimizer-panel-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .optimizer-panel-header p {
+    margin: 0.3rem 0 0;
+    color: rgba(47, 36, 29, 0.62);
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .optimizer-controls {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 0.95rem;
+  }
+
+  .optimizer-panel .toolbar-field .form-control,
+  .optimizer-panel .toolbar-field .form-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .optimizer-panel .toggle-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .option-rail {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-self: stretch;
+    min-width: 8.5rem;
+    padding: 0.65rem 1.15rem 0 1.9rem;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+  }
+
+  .work-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .work-panel-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .work-panel-header p {
+    margin: 0.25rem 0 0;
+    color: rgba(47, 36, 29, 0.64);
+  }
+
+  .panel-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .panel-meta-info {
+    display: grid;
+    justify-items: end;
+    gap: 0.25rem;
+    text-align: right;
+  }
+
+  .status-line {
+    color: rgba(47, 36, 29, 0.68);
+    font-size: 0.88rem;
+    line-height: 1.25;
+  }
+
+  .status-line-strong {
+    color: rgba(47, 36, 29, 0.84);
+    font-weight: 600;
+  }
+
+  .panel-scroll {
+    overflow: auto;
+  }
+
+  .target-grid-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0.2rem 0 0.4rem;
+  }
+
+  .target-draft-stage {
+    display: grid;
+    gap: 0;
+    width: fit-content;
+  }
+
+  .target-grid-main {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .target-grid,
+  .draft-grid {
+    display: grid;
+    gap: 0;
+  }
+
+  .draw-cell,
+  .draft-cell {
+    position: relative;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 1px solid rgba(47, 36, 29, 0.22);
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    background: #fff;
+  }
+
+  .draw-cell {
+    appearance: none;
+    cursor: crosshair;
+    user-select: none;
+  }
+
+  .draw-cell.cell-on,
+  .draft-cell.cell-on {
+    background: #111;
+  }
+
+  .draw-cell.draw-cell-stress::after,
+  .draft-cell.draft-cell-stress::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(170, 74, 43, var(--stress-alpha, 0.3));
+    pointer-events: none;
+  }
+
+  .draw-cell.draw-cell-problem {
+    outline: 2px solid rgba(170, 74, 43, 0.75);
+    outline-offset: -3px;
+  }
+
+  .target-warp-toolbar {
+    display: grid;
+    gap: 0;
+    width: fit-content;
+    margin-bottom: var(--target-toolbar-offset);
+  }
+
+  .target-pick-toolbar {
+    display: grid;
+    gap: 0;
+    width: fit-content;
+    margin-left: var(--target-toolbar-offset);
+  }
+
+  .target-warp-insert-cell,
+  .target-pick-insert-cell {
+    position: relative;
+    overflow: visible;
+  }
+
+  .target-pick-insert-cell {
+    height: var(--cell-size);
+  }
+
+  .target-insert-btn {
+    position: absolute;
+    z-index: 1;
+    width: var(--insert-btn-size);
+    height: var(--insert-btn-size);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent-dark);
+    font-size: var(--insert-btn-font-size);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .target-insert-btn:hover,
+  .target-insert-btn:focus {
+    color: var(--accent);
+  }
+
+  .target-insert-btn:disabled {
+    opacity: 0.28;
+    cursor: default;
+  }
+
+  .target-insert-btn-warp-minus,
+  .target-insert-btn-pick-minus {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .target-insert-btn-warp-plus {
+    right: 0;
+    top: 50%;
+    transform: translate(50%, -50%);
+  }
+
+  .target-insert-btn-pick-plus {
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .draft-cell-ambiguous {
+    outline: 2px dashed rgba(170, 74, 43, 0.7);
+    outline-offset: -3px;
+  }
+
+  .toggle-button,
+  .option-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.3rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .toggle-button.active,
+  .option-button.active {
+    border-color: rgba(170, 74, 43, 0.34);
+    background: rgba(255, 243, 235, 0.95);
+    color: var(--accent-dark);
+  }
+
+  .option-button {
+    border-width: 2px;
+    border-color: rgba(195, 132, 63, 0.76);
+    background: rgba(255, 249, 241, 0.9);
+    color: rgba(122, 50, 28, 0.9);
+  }
+
+  .option-button.active {
+    border-color: rgba(170, 74, 43, 0.82);
+    background: rgba(255, 242, 233, 0.96);
+    color: var(--accent-dark);
+  }
+
+  .option-button-muted {
+    color: rgba(122, 50, 28, 0.5);
+    font-weight: 600;
+  }
+
+  .option-button.active .option-button-muted {
+    color: rgba(122, 50, 28, 0.56);
+  }
+
+  .option-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .option-list .option-button {
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .flow-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+  }
+
+  .flow-overlay .flow-path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .flow-overlay .flow-path-target {
+    stroke: var(--flow-orange);
+    stroke-width: 2.8;
+  }
+
+  .flow-overlay .flow-path-optimizer,
+  .flow-overlay .flow-path-branch {
+    stroke: var(--flow-amber);
+    stroke-width: 2.5;
+  }
+
+  .flow-overlay .flow-path-active {
+    stroke: var(--flow-orange);
+    stroke-width: 3.1;
+  }
+
+  .flow-overlay .flow-path-branch-active {
+    stroke: var(--flow-orange);
+    stroke-width: 2.8;
+  }
+
+  .generated-layout {
+    display: flex;
+    justify-content: center;
+    padding: 0.2rem 0 0.5rem;
+  }
+
+  .generated-draft-combined {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "threading tieup"
+      "drawdown treadling";
+    gap: 0.75em;
+    align-items: start;
+  }
+
+  .generated-section-threading {
+    grid-area: threading;
+  }
+
+  .generated-section-tieup {
+    grid-area: tieup;
+  }
+
+  .generated-section-drawdown {
+    grid-area: drawdown;
+  }
+
+  .generated-section-treadling {
+    grid-area: treadling;
+  }
+
+  .summary-copy {
+    max-width: 48rem;
+  }
+
+  @media (max-width: 1100px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .optimizer-panel {
+      margin-left: 0;
+      padding: 1rem 1.1rem 1.1rem;
+    }
+
+    .option-rail {
+      min-width: 0;
+      padding-top: 0;
+    }
+
+    .option-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .option-list .option-button {
+      width: auto;
+    }
+
+    .flow-overlay {
+      display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .work-panel-header {
+      flex-direction: column;
+    }
+
+    .panel-meta-info {
+      justify-items: start;
+      text-align: left;
+    }
+  }
+
+  @media print {
+    body {
+      background: #fff;
+    }
+
+    .workspace-toolbar,
+    .work-panel:first-of-type,
+    .optimizer-panel,
+    .option-rail,
+    .option-list,
+    .flow-overlay,
+    .toggle-button {
+      display: none !important;
+    }
+
+    .work-panel {
+      box-shadow: none;
+      border: 0;
+      background: #fff;
+      padding: 0;
+    }
+
+    .draft-cell,
+    .draw-cell {
+      border-color: rgba(0, 0, 0, 0.35);
+    }
+  }
+</style>
+</head>
+
+<body>
+<main class="container-fluid page-shell">
+  <div class="workspace">
+    <div class="workspace-toolbar">
+      <div class="workspace-toolbar-action-row">
+        <div class="workspace-toolbar-action-groups">
+          <div class="workspace-toolbar-actions workspace-toolbar-actions-name">
+            <div class="toolbar-name-field">
+              <label class="toolbar-name-label" for="inverse-draft-name">Name</label>
+              <input
+                id="inverse-draft-name"
+                class="form-control toolbar-name-input"
+                type="text"
+                value="Untitled Inverse Draft"
+                maxlength="120"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Inverse draft name"
+              >
+            </div>
+          </div>
+
+          <div class="workspace-toolbar-actions">
+            <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 10.5 12 3l9 7.5"></path>
+                  <path d="M5.5 9.5V21h13V9.5"></path>
+                  <path d="M9.5 21v-6h5v6"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Home</span>
+            </a>
+            <button type="button" class="btn btn-soft toolbar-action" id="save-button">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 4h11l3 3v13H5z"></path>
+                  <path d="M8 4v6h8V4"></path>
+                  <path d="M9 16h6"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Save</span>
+            </button>
+            <button type="button" class="btn btn-soft toolbar-action" id="open-button">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3.5 8V6.5A2.5 2.5 0 0 1 6 4h3.25l2 2H18A2.5 2.5 0 0 1 20.5 8.5V10"></path>
+                  <path d="M3 10.5h18l-1.85 6.1A2.5 2.5 0 0 1 16.76 18.5H5.24A2.5 2.5 0 0 1 2.85 16.6z"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Open</span>
+            </button>
+            <button type="button" class="btn btn-soft toolbar-action" id="print-button">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 9V4h10v5"></path>
+                  <rect x="5" y="13" width="14" height="7" rx="1.5"></rect>
+                  <path d="M5 10.5h14A2.5 2.5 0 0 1 21.5 13v2H2.5v-2A2.5 2.5 0 0 1 5 10.5Z"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Print</span>
+            </button>
+          </div>
+
+          <div class="workspace-toolbar-actions workspace-toolbar-actions-history">
+            <button type="button" id="inverse-undo-button" class="btn btn-soft toolbar-action" aria-label="Undo" title="Undo">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 7 5 12l5 5"></path>
+                  <path d="M19 18v-2a4 4 0 0 0-4-4H5"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Undo</span>
+            </button>
+            <button type="button" id="inverse-redo-button" class="btn btn-soft toolbar-action" aria-label="Redo" title="Redo">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m14 7 5 5-5 5"></path>
+                  <path d="M5 18v-2a4 4 0 0 1 4-4h10"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Redo</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="workspace-toolbar-actions workspace-toolbar-actions-secondary">
+          <button type="button" class="btn btn-soft toolbar-action toolbar-action-reset" id="reset-default-button">
+            <span class="toolbar-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                <path d="M3 4v5h5"></path>
+              </svg>
+            </span>
+            <span class="toolbar-action-label">Reset to Default</span>
+          </button>
+          <button type="button" class="btn btn-drafter toolbar-action toolbar-action-clear" id="clear-button">
+            <span class="toolbar-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M8 6V4h8v2"></path>
+                <path d="m8.5 10.5 7 7"></path>
+                <path d="m15.5 10.5-7 7"></path>
+              </svg>
+            </span>
+            <span class="toolbar-action-label">Clear</span>
+          </button>
+        </div>
+      </div>
+
+      <section class="panel workspace-toolbar-panel workspace-toolbar-panel-controls">
+        <div class="toolbar-row">
+          <div class="toolbar-field">
+            <label class="control-label" for="warp-input">Warp Ends</label>
+            <input id="warp-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="picks-input">Picks</label>
+            <input id="picks-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="invert-button">Target</label>
+            <button type="button" class="toggle-button" id="invert-button">Invert</button>
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="target-stress-toggle">Float Stress</label>
+            <button type="button" class="toggle-button" id="target-stress-toggle">Show Float Stress</button>
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="target-diff-toggle">Diff</label>
+            <button type="button" class="toggle-button active" id="target-diff-toggle">Hide Diff</button>
+          </div>
+
+          <div class="toolbar-field toolbar-field-zoom">
+            <label class="control-label" for="inverse-zoom-out">Zoom</label>
+            <div class="draft-stage-zoom" aria-label="Target zoom controls">
+              <button
+                type="button"
+                id="inverse-zoom-out"
+                class="draft-stage-button draft-stage-zoom-button"
+                aria-label="Zoom out"
+                title="Zoom out"
+              >−</button>
+              <span id="inverse-zoom-value" class="draft-stage-zoom-value" aria-live="polite">100%</span>
+              <button
+                type="button"
+                id="inverse-zoom-in"
+                class="draft-stage-button draft-stage-zoom-button"
+                aria-label="Zoom in"
+                title="Zoom in"
+              >+</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <input id="inverse-draft-file-input" type="file" accept=".wdi,application/json" hidden>
+
+    <section id="inverse-content-grid" class="content-grid">
+      <svg id="flow-overlay" class="flow-overlay" aria-hidden="true"></svg>
+
+      <article id="target-panel" class="panel work-panel">
+        <div class="work-panel-header">
+          <div>
+            <h2>Target Drawdown</h2>
+            <p>Paint the cloth structure you want to reproduce.</p>
+          </div>
+        </div>
+
+        <div class="panel-scroll">
+          <div class="target-grid-wrap">
+            <div class="target-draft-stage">
+              <div id="target-warp-inserts" class="target-warp-toolbar"></div>
+              <div class="target-grid-main">
+                <div id="target-grid" class="target-grid" aria-label="Editable target drawdown"></div>
+                <div id="target-pick-inserts" class="target-pick-toolbar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <aside id="optimizer-panel" class="panel optimizer-panel">
+        <div class="optimizer-panel-header">
+          <h2>Optimizer</h2>
+        </div>
+
+        <div class="optimizer-controls">
+          <div class="toolbar-field">
+            <label class="control-label" for="max-shafts-input">Max Shafts</label>
+            <input id="max-shafts-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="max-treadles-input">Max Treadles</label>
+            <input id="max-treadles-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="max-pressed-treadles-input">Max Pressed</label>
+            <input id="max-pressed-treadles-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="float-tolerance-input">Float Tolerance</label>
+            <input id="float-tolerance-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+          </div>
+
+          <div class="toolbar-field">
+            <label class="control-label" for="optimization-tolerance-toggle">Use Tolerance</label>
+            <button type="button" class="toggle-button" id="optimization-tolerance-toggle">Off</button>
+          </div>
+        </div>
+      </aside>
+
+      <div id="option-rail" class="option-rail" aria-label="Generated draft options">
+        <div id="option-list" class="option-list"></div>
+      </div>
+
+      <article id="generated-panel" class="panel work-panel">
+        <div class="work-panel-header">
+          <div>
+            <h2>Generated Draft</h2>
+          </div>
+
+          <div class="panel-meta">
+            <div class="panel-meta-info">
+              <div class="status-line status-line-strong" id="generated-info-1">2 shafts · 2 treadles · Exact match</div>
+              <div class="status-line" id="generated-info-2">Cloth-like 100% · Worst float 1 / 1 · Tol 6</div>
+              <div class="status-line" id="generated-info-3">Exact fits current limits</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-scroll">
+          <div class="generated-layout">
+            <div class="generated-draft-combined" aria-label="Combined generated draft">
+              <div class="generated-section generated-section-threading">
+                <div id="generated-threading" class="draft-grid" aria-label="Generated threading"></div>
+              </div>
+
+              <div class="generated-section generated-section-tieup">
+                <div id="generated-tieup" class="draft-grid" aria-label="Generated tie-up"></div>
+              </div>
+
+              <div class="generated-section generated-section-drawdown">
+                <div id="generated-drawdown" class="draft-grid" aria-label="Generated drawdown"></div>
+              </div>
+
+              <div class="generated-section generated-section-treadling">
+                <div id="generated-treadling" class="draft-grid" aria-label="Generated treadling"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</main>
+
+<script>
+const defaultWarp = 6;
+const defaultPicks = 6;
+const defaultCellSize = 18;
+const defaultMaxShafts = 2;
+const defaultMaxTreadles = 2;
+const defaultMaxPressedTreadles = 2;
+const defaultFloatTolerance = 6;
+const maxGeneratedOptions = 6;
+const minInverseZoomPercent = 1;
+const maxInverseZoomPercent = 300;
+const minInverseCellSize = (defaultCellSize * minInverseZoomPercent) / 100;
+const maxInverseCellSize = (defaultCellSize * maxInverseZoomPercent) / 100;
+const inverseZoomStops = [
+  ...Array.from({ length: 10 }, (_, index) => index + 1),
+  ...Array.from({ length: 14 }, (_, index) => (index + 2) * 10),
+  ...Array.from({ length: 6 }, (_, index) => 175 + index * 25)
+];
+const defaultDraftName = "Untitled Inverse Draft";
+const maxWarp = 180;
+const maxPicks = 180;
+const maxEditableCells = 20000;
+const inverseAutosaveStorageKeyPrefix = "weaving-inverse-drafter.autosave.v1.";
+const inverseActiveNameSessionKey = "weaving-inverse-drafter.active-name.v1";
+const inverseHistoryLimit = 120;
+
+let warp = defaultWarp;
+let picks = defaultPicks;
+let maxShafts = Math.min(defaultMaxShafts, defaultWarp);
+let maxTreadles = Math.min(defaultMaxTreadles, defaultPicks);
+let maxPressedTreadles = Math.min(defaultMaxPressedTreadles, maxTreadles);
+let floatTolerance = defaultFloatTolerance;
+let useFloatToleranceInOptimization = false;
+let showTargetStressOverlay = false;
+let showTargetDiffOverlay = true;
+let targetDrawdown = createDefaultTargetDrawdown(defaultPicks, defaultWarp);
+let generatedOptions = [];
+let selectedOptionIndex = 0;
+let exactRequirements = { shafts: 2, treadles: 2, pressed: 1 };
+let inverseHistory = [];
+let inverseHistoryIndex = -1;
+let isApplyingHistory = false;
+let isPainting = false;
+let dragPaintValue = 1;
+let queuedGeneratedRender = false;
+let queuedFlowOverlayRender = false;
+let draftName = defaultDraftName;
+
+function createMatrix(rows, columns, fillValue = 0) {
+  return Array.from({ length: rows }, () => Array(columns).fill(fillValue));
+}
+
+function cloneMatrix(matrix) {
+  return matrix.map(row => row.slice());
+}
+
+function createDefaultTargetDrawdown(rows, columns) {
+  const sample = [
+    [1, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 1, 0],
+    [1, 1, 0, 1, 1, 0],
+    [0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0],
+    [1, 1, 0, 1, 1, 0]
+  ];
+  const matrix = createMatrix(rows, columns, 0);
+  for (let row = 0; row < Math.min(rows, sample.length); row++) {
+    for (let column = 0; column < Math.min(columns, sample[row].length); column++) {
+      matrix[row][column] = sample[row][column];
+    }
+  }
+  return matrix;
+}
+
+function normalizeDraftName(value, fallback = defaultDraftName) {
+  const trimmed = String(value || "").trim();
+  return trimmed || fallback;
+}
+
+function getDraftNameInput() {
+  return document.getElementById("inverse-draft-name");
+}
+
+function getDraftName() {
+  const input = getDraftNameInput();
+  if (input) {
+    draftName = normalizeDraftName(input.value, draftName);
+  }
+  return normalizeDraftName(draftName);
+}
+
+function setDraftName(value, { updateInput = true, persistSession = true } = {}) {
+  draftName = normalizeDraftName(value);
+  const input = getDraftNameInput();
+  if (input && updateInput) {
+    input.value = draftName;
+  }
+  if (persistSession) {
+    try {
+      window.sessionStorage.setItem(inverseActiveNameSessionKey, draftName);
+    } catch (error) {
+      // Ignore storage failures.
+    }
+  }
+}
+
+function restoreActiveDraftName() {
+  try {
+    return normalizeDraftName(window.sessionStorage.getItem(inverseActiveNameSessionKey), defaultDraftName);
+  } catch (error) {
+    return defaultDraftName;
+  }
+}
+
+function getAutosaveStorageKey(name = getDraftName()) {
+  return `${inverseAutosaveStorageKeyPrefix}${encodeURIComponent(normalizeDraftName(name).toLowerCase())}`;
+}
+
+function sanitizeFilenameBase(name = getDraftName()) {
+  return normalizeDraftName(name, "inverse-draft")
+    .replace(/[<>:"/\\|?*\u0000-\u001F]+/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "") || "inverse-draft";
+}
+
+function getSuggestedFilename(includeTimestamp = false) {
+  const base = sanitizeFilenameBase();
+  if (!includeTimestamp) {
+    return `${base}.wdi`;
+  }
+  const now = new Date();
+  const year = String(now.getFullYear());
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  return `${base}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdi`;
+}
+
+function getDraftNameFromFilename(filename) {
+  return normalizeDraftName(String(filename || "").replace(/\.[^.]+$/, ""), defaultDraftName);
+}
+
+function getCellSize() {
+  const value = Number.parseFloat(document.documentElement.style.getPropertyValue("--cell-size"));
+  return Number.isFinite(value) ? value : defaultCellSize;
+}
+
+function clampInverseCellSize(value) {
+  const clamped = Math.max(minInverseCellSize, Math.min(maxInverseCellSize, value));
+  return Math.round(clamped * 1000) / 1000;
+}
+
+function getInverseZoomPercent() {
+  return Math.round((getCellSize() / defaultCellSize) * 100);
+}
+
+function getNextInverseZoomPercent(direction) {
+  const currentPercent = getInverseZoomPercent();
+
+  if (direction > 0) {
+    return inverseZoomStops.find(percent => percent > currentPercent) ?? maxInverseZoomPercent;
+  }
+
+  if (direction < 0) {
+    for (let index = inverseZoomStops.length - 1; index >= 0; index--) {
+      if (inverseZoomStops[index] < currentPercent) {
+        return inverseZoomStops[index];
+      }
+    }
+  }
+
+  return currentPercent;
+}
+
+function updateInverseZoomUI() {
+  const currentPercent = getInverseZoomPercent();
+  document.getElementById("inverse-zoom-out").disabled = currentPercent <= minInverseZoomPercent;
+  document.getElementById("inverse-zoom-in").disabled = currentPercent >= maxInverseZoomPercent;
+  document.getElementById("inverse-zoom-value").textContent = `${currentPercent}%`;
+}
+
+function setCellSize(value) {
+  const nextSize = clampInverseCellSize(Number(value) || defaultCellSize);
+  document.documentElement.style.setProperty("--cell-size", `${nextSize}px`);
+  updateInverseZoomUI();
+}
+
+function changeInverseZoom(direction) {
+  const currentPercent = getInverseZoomPercent();
+  const nextPercent = getNextInverseZoomPercent(direction);
+  const nextCellSize = clampInverseCellSize((defaultCellSize * nextPercent) / 100);
+
+  if (nextPercent === currentPercent || nextCellSize === getCellSize()) {
+    updateInverseZoomUI();
+    return;
+  }
+
+  setCellSize(nextCellSize);
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function captureStateSnapshot() {
+  return {
+    warp,
+    picks,
+    maxShafts,
+    maxTreadles,
+    maxPressedTreadles,
+    floatTolerance,
+    useFloatToleranceInOptimization,
+    showTargetStressOverlay,
+    showTargetDiffOverlay,
+    cellSize: getCellSize(),
+    targetDrawdown: cloneMatrix(targetDrawdown),
+    selectedOptionIndex
+  };
+}
+
+function getSnapshotSignature(snapshot) {
+  return JSON.stringify(snapshot);
+}
+
+function applyStateSnapshot(snapshot, { preserveSelection = false } = {}) {
+  warp = Math.max(1, Number.parseInt(snapshot.warp, 10) || defaultWarp);
+  picks = Math.max(1, Number.parseInt(snapshot.picks, 10) || defaultPicks);
+  maxShafts = Math.max(1, Math.min(Number.parseInt(snapshot.maxShafts, 10) || defaultMaxShafts, warp));
+  maxTreadles = Math.max(1, Math.min(Number.parseInt(snapshot.maxTreadles, 10) || defaultMaxTreadles, picks));
+  maxPressedTreadles = Math.max(1, Math.min(Number.parseInt(snapshot.maxPressedTreadles, 10) || defaultMaxPressedTreadles, maxTreadles));
+  floatTolerance = Math.max(1, Math.min(Number.parseInt(snapshot.floatTolerance, 10) || defaultFloatTolerance, getMaxFloatTolerance()));
+  useFloatToleranceInOptimization = snapshot.useFloatToleranceInOptimization !== false;
+  showTargetStressOverlay = Boolean(snapshot.showTargetStressOverlay);
+  showTargetDiffOverlay = snapshot.showTargetDiffOverlay !== false;
+  targetDrawdown = cloneMatrix(snapshot.targetDrawdown || createDefaultTargetDrawdown(picks, warp));
+  selectedOptionIndex = preserveSelection ? selectedOptionIndex : Math.max(0, Number.parseInt(snapshot.selectedOptionIndex, 10) || 0);
+  updateDimensionInputs();
+  setCellSize(snapshot.cellSize || defaultCellSize);
+  renderTargetGrid();
+  renderGeneratedDraft();
+}
+
+function buildSaveData() {
+  return {
+    meta: {
+      kind: "weaving-inverse-draft",
+      version: 1,
+      draftName: getDraftName()
+    },
+    state: captureStateSnapshot(),
+    history: {
+      stack: inverseHistory,
+      index: inverseHistoryIndex
+    }
+  };
+}
+
+function applyLoadedData(data, { draftNameOverride = null } = {}) {
+  const state = data?.state || data;
+  if (!state) {
+    throw new Error("This file does not contain a saved inverse draft.");
+  }
+
+  const nextDraftName = normalizeDraftName(draftNameOverride ?? data?.meta?.draftName ?? getDraftName());
+  setDraftName(nextDraftName);
+
+  const stack = Array.isArray(data?.history?.stack) && data.history.stack.length
+    ? data.history.stack
+    : [state];
+  const index = Math.max(0, Math.min(Number.parseInt(data?.history?.index, 10) || (stack.length - 1), stack.length - 1));
+
+  inverseHistory = stack.map(snapshot => ({
+    ...captureSnapshotDefaults(snapshot),
+    targetDrawdown: cloneMatrix(snapshot.targetDrawdown || createDefaultTargetDrawdown(snapshot.picks || defaultPicks, snapshot.warp || defaultWarp))
+  }));
+  inverseHistoryIndex = index;
+  isApplyingHistory = true;
+  applyStateSnapshot(inverseHistory[inverseHistoryIndex]);
+  isApplyingHistory = false;
+  updateHistoryButtons();
+  saveAutosave();
+}
+
+function captureSnapshotDefaults(snapshot) {
+  return {
+    warp: snapshot.warp || defaultWarp,
+    picks: snapshot.picks || defaultPicks,
+    maxShafts: snapshot.maxShafts || defaultMaxShafts,
+    maxTreadles: snapshot.maxTreadles || defaultMaxTreadles,
+    maxPressedTreadles: snapshot.maxPressedTreadles || defaultMaxPressedTreadles,
+    floatTolerance: snapshot.floatTolerance || defaultFloatTolerance,
+    useFloatToleranceInOptimization: snapshot.useFloatToleranceInOptimization !== false,
+    showTargetStressOverlay: Boolean(snapshot.showTargetStressOverlay),
+    showTargetDiffOverlay: snapshot.showTargetDiffOverlay !== false,
+    cellSize: snapshot.cellSize || defaultCellSize,
+    selectedOptionIndex: snapshot.selectedOptionIndex || 0,
+    targetDrawdown: cloneMatrix(snapshot.targetDrawdown || createDefaultTargetDrawdown(snapshot.picks || defaultPicks, snapshot.warp || defaultWarp))
+  };
+}
+
+function saveAutosave() {
+  try {
+    window.localStorage.setItem(getAutosaveStorageKey(), JSON.stringify(buildSaveData()));
+  } catch (error) {
+    // Ignore storage failures.
+  }
+}
+
+function restoreAutosave(name = restoreActiveDraftName()) {
+  try {
+    const raw = window.localStorage.getItem(getAutosaveStorageKey(name));
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function pushHistorySnapshot() {
+  if (isApplyingHistory) {
+    return;
+  }
+
+  const snapshot = captureStateSnapshot();
+  const signature = getSnapshotSignature(snapshot);
+
+  if (inverseHistoryIndex >= 0 && getSnapshotSignature(inverseHistory[inverseHistoryIndex]) === signature) {
+    updateHistoryButtons();
+    saveAutosave();
+    return;
+  }
+
+  inverseHistory = inverseHistory.slice(0, inverseHistoryIndex + 1);
+  inverseHistory.push(snapshot);
+  if (inverseHistory.length > inverseHistoryLimit) {
+    inverseHistory.shift();
+  }
+  inverseHistoryIndex = inverseHistory.length - 1;
+  updateHistoryButtons();
+  saveAutosave();
+}
+
+function updateHistoryButtons() {
+  document.getElementById("inverse-undo-button").disabled = inverseHistoryIndex <= 0;
+  document.getElementById("inverse-redo-button").disabled = inverseHistoryIndex >= inverseHistory.length - 1;
+}
+
+function undoInverseChange() {
+  if (inverseHistoryIndex <= 0) {
+    return;
+  }
+  inverseHistoryIndex--;
+  isApplyingHistory = true;
+  applyStateSnapshot(inverseHistory[inverseHistoryIndex]);
+  isApplyingHistory = false;
+  updateHistoryButtons();
+  saveAutosave();
+}
+
+function redoInverseChange() {
+  if (inverseHistoryIndex >= inverseHistory.length - 1) {
+    return;
+  }
+  inverseHistoryIndex++;
+  isApplyingHistory = true;
+  applyStateSnapshot(inverseHistory[inverseHistoryIndex]);
+  isApplyingHistory = false;
+  updateHistoryButtons();
+  saveAutosave();
+}
+
+function getMaxFloatTolerance() {
+  return Math.max(1, warp, picks);
+}
+
+function sanitizePositiveIntegerInput(input) {
+  const digitsOnly = String(input.value || "").replace(/[^\d]/g, "");
+  const nextValue = Math.max(1, Number.parseInt(digitsOnly || "1", 10));
+  input.value = String(nextValue);
+  return nextValue;
+}
+
+function clampDimensions(nextWarp, nextPicks, changedId = null) {
+  let limitedWarp = Math.max(1, Number.parseInt(nextWarp, 10) || 1);
+  let limitedPicks = Math.max(1, Number.parseInt(nextPicks, 10) || 1);
+  limitedWarp = Math.min(limitedWarp, maxWarp);
+  limitedPicks = Math.min(limitedPicks, maxPicks);
+
+  if (limitedWarp * limitedPicks > maxEditableCells) {
+    if (changedId === "warp") {
+      limitedWarp = Math.min(limitedWarp, Math.max(1, Math.floor(maxEditableCells / limitedPicks)));
+    } else if (changedId === "picks") {
+      limitedPicks = Math.min(limitedPicks, Math.max(1, Math.floor(maxEditableCells / limitedWarp)));
+    } else {
+      const limitedArea = Math.max(1, Math.floor(Math.sqrt(maxEditableCells)));
+      limitedWarp = Math.min(limitedWarp, limitedArea);
+      limitedPicks = Math.min(limitedPicks, Math.max(1, Math.floor(maxEditableCells / limitedWarp)));
+    }
+  }
+
+  return { warp: limitedWarp, picks: limitedPicks };
+}
+
+function showLimitAlert() {
+  window.alert(`This page is limited to ${maxWarp} warp ends, ${maxPicks} picks, and ${maxEditableCells.toLocaleString()} total target cells.`);
+}
+
+function resizeTargetDrawdown(nextWarp, nextPicks) {
+  const resized = createMatrix(nextPicks, nextWarp, 0);
+  const overlapRows = Math.min(picks, nextPicks);
+  const overlapColumns = Math.min(warp, nextWarp);
+  const sourceColumnStart = Math.max(0, warp - overlapColumns);
+  const destinationColumnStart = Math.max(0, nextWarp - overlapColumns);
+
+  for (let row = 0; row < overlapRows; row++) {
+    for (let column = 0; column < overlapColumns; column++) {
+      resized[row][destinationColumnStart + column] = targetDrawdown[row]?.[sourceColumnStart + column] ? 1 : 0;
+    }
+  }
+
+  warp = nextWarp;
+  picks = nextPicks;
+  targetDrawdown = resized;
+}
+
+function updateDimensionInputs() {
+  const warpInput = document.getElementById("warp-input");
+  const picksInput = document.getElementById("picks-input");
+  const maxShaftsInput = document.getElementById("max-shafts-input");
+  const maxTreadlesInput = document.getElementById("max-treadles-input");
+  const maxPressedTreadlesInput = document.getElementById("max-pressed-treadles-input");
+
+  warpInput.value = String(warp);
+  picksInput.value = String(picks);
+  warpInput.max = String(maxWarp);
+  picksInput.max = String(maxPicks);
+  maxShafts = Math.max(1, Math.min(maxShafts, warp));
+  maxTreadles = Math.max(1, Math.min(maxTreadles, picks));
+  maxPressedTreadles = Math.max(1, Math.min(maxPressedTreadles, maxTreadles));
+  maxShaftsInput.value = String(maxShafts);
+  maxTreadlesInput.value = String(maxTreadles);
+  maxPressedTreadlesInput.value = String(maxPressedTreadles);
+  maxShaftsInput.max = String(warp);
+  maxTreadlesInput.max = String(picks);
+  maxPressedTreadlesInput.max = String(maxTreadles);
+  floatTolerance = Math.max(1, Math.min(floatTolerance, getMaxFloatTolerance()));
+  syncFloatToleranceControl();
+}
+
+function resizeFromControls(changedId = null) {
+  const warpInput = document.getElementById("warp-input");
+  const picksInput = document.getElementById("picks-input");
+  const maxShaftsInput = document.getElementById("max-shafts-input");
+  const maxTreadlesInput = document.getElementById("max-treadles-input");
+  const maxPressedTreadlesInput = document.getElementById("max-pressed-treadles-input");
+  const requestedWarp = sanitizePositiveIntegerInput(warpInput);
+  const requestedPicks = sanitizePositiveIntegerInput(picksInput);
+  const requestedMaxShafts = sanitizePositiveIntegerInput(maxShaftsInput);
+  const requestedMaxTreadles = sanitizePositiveIntegerInput(maxTreadlesInput);
+  const requestedMaxPressedTreadles = sanitizePositiveIntegerInput(maxPressedTreadlesInput);
+  const limited = clampDimensions(requestedWarp, requestedPicks, changedId);
+  const wasLimited = limited.warp !== requestedWarp || limited.picks !== requestedPicks;
+
+  resizeTargetDrawdown(limited.warp, limited.picks);
+  maxShafts = Math.max(1, Math.min(requestedMaxShafts, warp));
+  maxTreadles = Math.max(1, Math.min(requestedMaxTreadles, picks));
+  maxPressedTreadles = Math.max(1, Math.min(requestedMaxPressedTreadles, maxTreadles));
+  updateDimensionInputs();
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+
+  if (wasLimited) {
+    showLimitAlert();
+  }
+}
+
+function syncDrawCell(button, value) {
+  button.classList.toggle("cell-on", Boolean(value));
+  button.setAttribute("aria-pressed", value ? "true" : "false");
+}
+
+function updateTargetCell(row, column, value, button = null) {
+  if (!targetDrawdown[row] || targetDrawdown[row][column] === value) {
+    return false;
+  }
+  targetDrawdown[row][column] = value;
+  if (button) {
+    syncDrawCell(button, value);
+  }
+  return true;
+}
+
+function handleTargetCellPointerDown(event, row, column, button) {
+  if (event.button !== 0) {
+    return;
+  }
+  event.preventDefault();
+  isPainting = true;
+  dragPaintValue = targetDrawdown[row][column] ? 0 : 1;
+  if (updateTargetCell(row, column, dragPaintValue, button)) {
+    updateTargetGridDecorations();
+    scheduleGeneratedRender();
+  }
+}
+
+function handleTargetCellPointerEnter(row, column, button) {
+  if (!isPainting) {
+    return;
+  }
+  if (updateTargetCell(row, column, dragPaintValue, button)) {
+    updateTargetGridDecorations();
+    scheduleGeneratedRender();
+  }
+}
+
+function stopPainting() {
+  if (!isPainting) {
+    return;
+  }
+  isPainting = false;
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function renderTargetGrid() {
+  const targetGrid = document.getElementById("target-grid");
+  targetGrid.innerHTML = "";
+  targetGrid.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+  targetGrid.style.gridTemplateRows = `repeat(${picks}, var(--cell-size))`;
+
+  for (let row = 0; row < picks; row++) {
+    for (let column = 0; column < warp; column++) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "draw-cell";
+      button.dataset.row = String(row);
+      button.dataset.column = String(column);
+      button.title = `Pick ${row + 1}, warp ${column + 1}`;
+      button.addEventListener("pointerdown", event => handleTargetCellPointerDown(event, row, column, button));
+      button.addEventListener("pointerenter", () => handleTargetCellPointerEnter(row, column, button));
+      syncDrawCell(button, targetDrawdown[row][column]);
+      targetGrid.appendChild(button);
+    }
+  }
+
+  renderTargetWarpInsertToolbar();
+  renderTargetPickInsertToolbar();
+  updateTargetGridDecorations();
+}
+
+function renderTargetWarpInsertToolbar() {
+  const toolbar = document.getElementById("target-warp-inserts");
+  toolbar.innerHTML = "";
+  toolbar.style.gridTemplateColumns = `repeat(${warp}, var(--cell-size))`;
+
+  for (let column = 0; column < warp; column++) {
+    const cell = document.createElement("div");
+    cell.className = "target-warp-insert-cell";
+
+    const plus = document.createElement("button");
+    plus.type = "button";
+    plus.className = "target-insert-btn target-insert-btn-warp-plus";
+    plus.textContent = "+";
+    plus.title = `Insert warp after column ${column + 1}`;
+    plus.addEventListener("click", () => insertTargetWarpAfter(column));
+
+    const minus = document.createElement("button");
+    minus.type = "button";
+    minus.className = "target-insert-btn target-insert-btn-warp-minus";
+    minus.textContent = "−";
+    minus.title = `Delete column ${column + 1}`;
+    minus.disabled = warp <= 1;
+    minus.addEventListener("click", () => deleteTargetWarp(column));
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    toolbar.appendChild(cell);
+  }
+}
+
+function renderTargetPickInsertToolbar() {
+  const toolbar = document.getElementById("target-pick-inserts");
+  toolbar.innerHTML = "";
+  toolbar.style.gridTemplateRows = `repeat(${picks}, var(--cell-size))`;
+
+  for (let row = 0; row < picks; row++) {
+    const cell = document.createElement("div");
+    cell.className = "target-pick-insert-cell";
+
+    const plus = document.createElement("button");
+    plus.type = "button";
+    plus.className = "target-insert-btn target-insert-btn-pick-plus";
+    plus.textContent = "+";
+    plus.title = `Insert pick before row ${row + 1}`;
+    plus.addEventListener("click", () => insertTargetPickBefore(row));
+
+    const minus = document.createElement("button");
+    minus.type = "button";
+    minus.className = "target-insert-btn target-insert-btn-pick-minus";
+    minus.textContent = "−";
+    minus.title = `Delete row ${row + 1}`;
+    minus.disabled = picks <= 1;
+    minus.addEventListener("click", () => deleteTargetPick(row));
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    toolbar.appendChild(cell);
+  }
+}
+
+function insertTargetWarpAfter(columnIndex) {
+  const nextDimensions = clampDimensions(warp + 1, picks, "warp");
+  if (nextDimensions.warp !== warp + 1) {
+    showLimitAlert();
+    return;
+  }
+
+  targetDrawdown.forEach(row => {
+    row.splice(columnIndex + 1, 0, 0);
+  });
+  warp++;
+  updateDimensionInputs();
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function deleteTargetWarp(columnIndex) {
+  if (warp <= 1) {
+    return;
+  }
+
+  targetDrawdown.forEach(row => {
+    if (row.length > columnIndex) {
+      row.splice(columnIndex, 1);
+    }
+  });
+  warp--;
+  updateDimensionInputs();
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function insertTargetPickBefore(rowIndex) {
+  const nextDimensions = clampDimensions(warp, picks + 1, "picks");
+  if (nextDimensions.picks !== picks + 1) {
+    showLimitAlert();
+    return;
+  }
+
+  targetDrawdown.splice(rowIndex, 0, Array(warp).fill(0));
+  picks++;
+  updateDimensionInputs();
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function deleteTargetPick(rowIndex) {
+  if (picks <= 1) {
+    return;
+  }
+
+  if (targetDrawdown.length > rowIndex) {
+    targetDrawdown.splice(rowIndex, 1);
+  }
+  picks--;
+  updateDimensionInputs();
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function renderMatrixGrid(element, rows, columns, isOnAt, extraClassAt = null, titleAt = null, decorateCell = null) {
+  element.innerHTML = "";
+  element.style.gridTemplateColumns = `repeat(${columns}, var(--cell-size))`;
+  element.style.gridTemplateRows = `repeat(${rows}, var(--cell-size))`;
+
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      const cell = document.createElement("div");
+      cell.className = "draft-cell";
+      cell.classList.toggle("cell-on", Boolean(isOnAt(row, column)));
+      if (extraClassAt) {
+        const className = extraClassAt(row, column);
+        if (className) {
+          cell.classList.add(className);
+        }
+      }
+      if (titleAt) {
+        const title = titleAt(row, column);
+        if (title) {
+          cell.title = title;
+        }
+      }
+      if (decorateCell) {
+        decorateCell(cell, row, column);
+      }
+      element.appendChild(cell);
+    }
+  }
+}
+
+function countMatrixMismatches(left, right) {
+  if (left.length !== right.length || left[0]?.length !== right[0]?.length) {
+    return Number.POSITIVE_INFINITY;
+  }
+  let mismatchCount = 0;
+  for (let row = 0; row < left.length; row++) {
+    for (let column = 0; column < left[row].length; column++) {
+      if (Boolean(left[row][column]) !== Boolean(right[row][column])) {
+        mismatchCount++;
+      }
+    }
+  }
+  return mismatchCount;
+}
+
+function getMatchRatio(matrix, mismatchCount) {
+  const totalCells = (matrix.length || 0) * (matrix[0]?.length || 0);
+  return totalCells ? Math.max(0, 1 - mismatchCount / totalCells) : 1;
+}
+
+function getClothlikeReferenceTolerance() {
+  return useFloatToleranceInOptimization ? floatTolerance : 1;
+}
+
+function computeDrawdownClothlikeAnalysis(matrix, tolerance = floatTolerance) {
+  const rowCount = matrix.length;
+  const columnCount = matrix[0]?.length || 0;
+  const severityMap = createMatrix(rowCount, columnCount, 0);
+  const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+  let totalPenalty = 0;
+  let worstFloatLength = 1;
+  let worstWarpFloatLength = 1;
+  let worstWeftFloatLength = 1;
+
+  const getPenalty = (length, span) => {
+    const excess = Math.max(0, length - normalizedTolerance);
+    return excess > 0 && span > normalizedTolerance
+      ? Math.pow(excess / Math.max(1, span - normalizedTolerance), 1.15)
+      : 0;
+  };
+
+  for (let column = 0; column < columnCount; column++) {
+    let row = 0;
+    while (row < rowCount) {
+      const value = Boolean(matrix[row][column]);
+      const start = row;
+      while (row < rowCount && Boolean(matrix[row][column]) === value) {
+        row++;
+      }
+      const length = row - start;
+      worstFloatLength = Math.max(worstFloatLength, length);
+      worstWarpFloatLength = Math.max(worstWarpFloatLength, length);
+      const penalty = getPenalty(length, rowCount);
+      for (let cursor = start; cursor < row; cursor++) {
+        severityMap[cursor][column] = Math.max(severityMap[cursor][column], penalty);
+      }
+    }
+  }
+
+  for (let row = 0; row < rowCount; row++) {
+    let column = 0;
+    while (column < columnCount) {
+      const value = Boolean(matrix[row][column]);
+      const start = column;
+      while (column < columnCount && Boolean(matrix[row][column]) === value) {
+        column++;
+      }
+      const length = column - start;
+      worstFloatLength = Math.max(worstFloatLength, length);
+      worstWeftFloatLength = Math.max(worstWeftFloatLength, length);
+      const penalty = getPenalty(length, columnCount);
+      for (let cursor = start; cursor < column; cursor++) {
+        severityMap[row][cursor] = Math.max(severityMap[row][cursor], penalty);
+      }
+    }
+  }
+
+  for (let row = 0; row < rowCount; row++) {
+    for (let column = 0; column < columnCount; column++) {
+      totalPenalty += severityMap[row][column];
+    }
+  }
+
+  const totalCells = rowCount * columnCount;
+  const averagePenalty = totalCells ? totalPenalty / totalCells : 0;
+  const score = Math.round(Math.max(0, 100 * (1 - averagePenalty)));
+
+  return {
+    severityMap,
+    worstFloatLength,
+    worstWarpFloatLength,
+    worstWeftFloatLength,
+    averagePenalty,
+    score
+  };
+}
+
+function limitColumnRuns(matrix, tolerance) {
+  const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+  const rowCount = matrix.length;
+  const columnCount = matrix[0]?.length || 0;
+  let changed = false;
+
+  for (let column = 0; column < columnCount; column++) {
+    let row = 0;
+    while (row < rowCount) {
+      const value = Boolean(matrix[row][column]);
+      const start = row;
+      while (row < rowCount && Boolean(matrix[row][column]) === value) {
+        row++;
+      }
+      for (let cursor = start + normalizedTolerance; cursor < row; cursor += normalizedTolerance + 1) {
+        const replacement = value ? 0 : 1;
+        if (matrix[cursor][column] !== replacement) {
+          matrix[cursor][column] = replacement;
+          changed = true;
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+function limitRowRuns(matrix, tolerance) {
+  const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+  const rowCount = matrix.length;
+  const columnCount = matrix[0]?.length || 0;
+  let changed = false;
+
+  for (let row = 0; row < rowCount; row++) {
+    let column = 0;
+    while (column < columnCount) {
+      const value = Boolean(matrix[row][column]);
+      const start = column;
+      while (column < columnCount && Boolean(matrix[row][column]) === value) {
+        column++;
+      }
+      for (let cursor = start + normalizedTolerance; cursor < column; cursor += normalizedTolerance + 1) {
+        const replacement = value ? 0 : 1;
+        if (matrix[row][cursor] !== replacement) {
+          matrix[row][cursor] = replacement;
+          changed = true;
+        }
+      }
+    }
+  }
+
+  return changed;
+}
+
+function repairMatrixFloatStress(matrix, tolerance = floatTolerance) {
+  const repaired = cloneMatrix(matrix);
+  const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+
+  for (let pass = 0; pass < 24; pass++) {
+    let changed = false;
+    changed = limitColumnRuns(repaired, normalizedTolerance) || changed;
+    changed = limitRowRuns(repaired, normalizedTolerance) || changed;
+    const analysis = computeDrawdownClothlikeAnalysis(repaired, normalizedTolerance);
+    if (analysis.worstFloatLength <= normalizedTolerance || !changed) {
+      return {
+        matrix: repaired,
+        repairedCellCount: countMatrixMismatches(matrix, repaired),
+        clothlikeAnalysis: analysis
+      };
+    }
+  }
+
+  return {
+    matrix: repaired,
+    repairedCellCount: countMatrixMismatches(matrix, repaired),
+    clothlikeAnalysis: computeDrawdownClothlikeAnalysis(repaired, normalizedTolerance)
+  };
+}
+
+function patternToKey(pattern) {
+  return pattern.join("");
+}
+
+function countPatternOnes(pattern) {
+  return pattern.reduce((total, value) => total + (value ? 1 : 0), 0);
+}
+
+function isZeroPattern(pattern) {
+  return !pattern.some(Boolean);
+}
+
+function isPatternSubset(subsetPattern, targetPattern) {
+  for (let index = 0; index < subsetPattern.length; index++) {
+    if (subsetPattern[index] && !targetPattern[index]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function intersectPatterns(left, right) {
+  return left.map((value, index) => (value && right[index] ? 1 : 0));
+}
+
+function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPressedTreadles) {
+  const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
+
+  if (isZeroPattern(targetPattern)) {
+    return [];
+  }
+
+  if (normalizedMaxPressed === 0 || !basisPatterns.length) {
+    return null;
+  }
+
+  const targetKey = patternToKey(targetPattern);
+  const targetOnes = countPatternOnes(targetPattern);
+  const candidates = basisPatterns
+    .map((pattern, index) => ({ pattern, index, ones: countPatternOnes(pattern) }))
+    .filter(({ pattern, ones }) => ones > 0 && isPatternSubset(pattern, targetPattern))
+    .sort((left, right) => right.ones - left.ones || left.index - right.index);
+
+  const exactCandidate = candidates.find(({ pattern }) => patternToKey(pattern) === targetKey);
+  if (exactCandidate) {
+    return [exactCandidate.index];
+  }
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  let match = null;
+
+  function search(startIndex, remainingSlots, covered, coveredOnes, chosen) {
+    if (coveredOnes === targetOnes) {
+      match = chosen.slice();
+      return true;
+    }
+    if (remainingSlots === 0) {
+      return false;
+    }
+
+    for (let candidateIndex = startIndex; candidateIndex < candidates.length; candidateIndex++) {
+      const candidate = candidates[candidateIndex];
+      const nextCovered = covered.slice();
+      let gain = 0;
+
+      candidate.pattern.forEach((value, position) => {
+        if (value && !nextCovered[position]) {
+          nextCovered[position] = 1;
+          gain++;
+        }
+      });
+
+      if (!gain) {
+        continue;
+      }
+
+      chosen.push(candidate.index);
+      if (search(candidateIndex + 1, remainingSlots - 1, nextCovered, coveredOnes + gain, chosen)) {
+        return true;
+      }
+      chosen.pop();
+    }
+
+    return false;
+  }
+
+  search(0, normalizedMaxPressed, Array(targetPattern.length).fill(0), 0, []);
+  return match;
+}
+
+function buildOneHotTreadleRepresentation(rowPatterns) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const tieup = [];
+  const patternIndexByKey = new Map();
+  const treadling = rowPatterns.map(pattern => {
+    const key = patternToKey(pattern);
+    if (!patternIndexByKey.has(key)) {
+      patternIndexByKey.set(key, tieup.length);
+      tieup.push(pattern.slice());
+    }
+    const row = Array(tieup.length).fill(0);
+    row[patternIndexByKey.get(key)] = 1;
+    return row;
+  }).map(row => {
+    const normalized = Array(tieup.length || 1).fill(0);
+    row.forEach((value, index) => {
+      if (value) {
+        normalized[index] = 1;
+      }
+    });
+    return normalized;
+  });
+
+  return {
+    tieup: tieup.length ? tieup : [Array(patternLength).fill(0)],
+    treadling,
+    maxPressedUsed: treadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+  };
+}
+
+function compressTreadleRepresentation(rowPatterns, maxPressed = maxPressedTreadles, maxTreadleCount = Number.POSITIVE_INFINITY) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const normalizedCap = Number.isFinite(maxTreadleCount)
+    ? Math.max(1, Number.parseInt(maxTreadleCount, 10) || 1)
+    : Number.POSITIVE_INFINITY;
+  const uniquePatterns = [];
+  const uniquePatternMap = new Map();
+
+  rowPatterns.forEach(pattern => {
+    const key = patternToKey(pattern);
+    if (!uniquePatternMap.has(key)) {
+      uniquePatternMap.set(key, uniquePatterns.length);
+      uniquePatterns.push(pattern.slice());
+    }
+  });
+
+  const basisPatternMap = new Map();
+  const addBasisPattern = pattern => {
+    if (isZeroPattern(pattern)) {
+      return;
+    }
+    const key = patternToKey(pattern);
+    if (!basisPatternMap.has(key)) {
+      basisPatternMap.set(key, pattern.slice());
+    }
+  };
+
+  uniquePatterns.forEach(addBasisPattern);
+
+  for (let shaft = 0; shaft < patternLength; shaft++) {
+    const singleton = Array(patternLength).fill(0);
+    singleton[shaft] = 1;
+    if (uniquePatterns.some(pattern => pattern[shaft])) {
+      addBasisPattern(singleton);
+    }
+  }
+
+  if (maxPressed > 1 && uniquePatterns.length <= 64) {
+    for (let leftIndex = 0; leftIndex < uniquePatterns.length; leftIndex++) {
+      for (let rightIndex = leftIndex + 1; rightIndex < uniquePatterns.length; rightIndex++) {
+        addBasisPattern(intersectPatterns(uniquePatterns[leftIndex], uniquePatterns[rightIndex]));
+      }
+    }
+  }
+
+  let basisPatterns = Array.from(basisPatternMap.values())
+    .sort((left, right) => countPatternOnes(right) - countPatternOnes(left) || patternToKey(left).localeCompare(patternToKey(right)));
+
+  let removedPattern = true;
+  while (removedPattern && basisPatterns.length > 1) {
+    removedPattern = false;
+    for (let index = 0; index < basisPatterns.length; index++) {
+      const trialBasis = basisPatterns.filter((_, patternIndex) => patternIndex !== index);
+      if (trialBasis.length > normalizedCap) {
+        continue;
+      }
+      const allRepresentable = uniquePatterns.every(pattern => findPatternCombination(pattern, trialBasis, maxPressed) !== null);
+      if (allRepresentable) {
+        basisPatterns = trialBasis;
+        removedPattern = true;
+        break;
+      }
+    }
+  }
+
+  if (!basisPatterns.length) {
+    basisPatterns = [Array(patternLength).fill(0)];
+  }
+
+  if (basisPatterns.length > normalizedCap) {
+    return null;
+  }
+
+  const rowCombinations = [];
+  for (const pattern of rowPatterns) {
+    const combination = findPatternCombination(pattern, basisPatterns, maxPressed);
+    if (combination === null) {
+      return null;
+    }
+    rowCombinations.push(combination);
+  }
+
+  const usedBasisIndices = [];
+  rowCombinations.forEach(combination => {
+    combination.forEach(index => {
+      if (!usedBasisIndices.includes(index)) {
+        usedBasisIndices.push(index);
+      }
+    });
+  });
+  usedBasisIndices.sort((left, right) => left - right);
+
+  const remap = new Map();
+  usedBasisIndices.forEach((index, nextIndex) => {
+    remap.set(index, nextIndex);
+  });
+
+  const tieup = usedBasisIndices.length
+    ? usedBasisIndices.map(index => basisPatterns[index].slice())
+    : [Array(patternLength).fill(0)];
+
+  if (tieup.length > normalizedCap) {
+    return null;
+  }
+
+  const treadling = rowCombinations.map(combination => {
+    const row = Array(tieup.length || 1).fill(0);
+    combination.forEach(index => {
+      if (remap.has(index)) {
+        row[remap.get(index)] = 1;
+      }
+    });
+    return row;
+  });
+
+  const firstUse = tieup.map((_, tieupIndex) => treadling.findIndex(row => row[tieupIndex]));
+  const order = tieup.map((_, index) => index).sort((left, right) => firstUse[left] - firstUse[right] || left - right);
+  const reorderedTieup = order.map(index => tieup[index]);
+  const reorderedTreadling = treadling.map(row => order.map(index => row[index] || 0));
+
+  return {
+    tieup: reorderedTieup,
+    treadling: reorderedTreadling,
+    maxPressedUsed: reorderedTreadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+  };
+}
+
+function rebuildDrawdown(threading, tieup, treadling) {
+  const shafts = threading.length;
+  const warpCount = threading[0]?.length || 0;
+  const pickCount = treadling.length;
+  const treadles = treadling[0]?.length || 0;
+  const warpToShaft = Array(warpCount).fill(0);
+
+  for (let column = 0; column < warpCount; column++) {
+    for (let shaft = 0; shaft < shafts; shaft++) {
+      if (threading[shaft]?.[column]) {
+        warpToShaft[column] = shaft;
+        break;
+      }
+    }
+  }
+
+  return Array.from({ length: pickCount }, (_, row) =>
+    Array.from({ length: warpCount }, (_, column) => {
+      const shaft = warpToShaft[column];
+      for (let treadle = 0; treadle < treadles; treadle++) {
+        if (treadling[row]?.[treadle] && tieup[treadle]?.[shaft]) {
+          return 1;
+        }
+      }
+      return 0;
+    })
+  );
+}
+
+function serializeDraftSignature({ threading, tieup, treadling }) {
+  return `${threading.map(row => row.join("")).join("|")}::${tieup.map(row => row.join("")).join("|")}::${treadling.map(row => row.join("")).join("|")}`;
+}
+
+function generateExactDraftFromDrawdown(matrix) {
+  const pickCount = matrix.length;
+  const warpCount = matrix[0]?.length || 0;
+
+  if (!pickCount || !warpCount) {
+    const empty = {
+      shafts: 1,
+      treadles: 1,
+      threading: [[1]],
+      tieup: [[0]],
+      ambiguousTieup: [[false]],
+      treadling: [[0]],
+      drawdown: [[0]],
+      exactMatch: true,
+      mismatchCount: 0,
+      matchRatio: 1,
+      clothlikeAnalysis: computeDrawdownClothlikeAnalysis([[0]], floatTolerance),
+      signature: "exact-empty",
+      maxPressedUsed: 0
+    };
+    return empty;
+  }
+
+  const shaftIndexByPattern = new Map();
+  const columnPatterns = [];
+  const warpToShaft = [];
+
+  for (let column = 0; column < warpCount; column++) {
+    const pattern = matrix.map(row => (row[column] ? "1" : "0")).join("");
+    if (!shaftIndexByPattern.has(pattern)) {
+      shaftIndexByPattern.set(pattern, columnPatterns.length);
+      columnPatterns.push(pattern);
+    }
+    warpToShaft[column] = shaftIndexByPattern.get(pattern);
+  }
+
+  const shafts = columnPatterns.length || 1;
+  const threading = Array.from({ length: shafts }, () => Array(warpCount).fill(0));
+  warpToShaft.forEach((shaftIndex, column) => {
+    threading[shaftIndex][column] = 1;
+  });
+
+  const rowPatterns = Array.from({ length: pickCount }, (_, row) =>
+    columnPatterns.map(columnPattern => (columnPattern[row] === "1" ? 1 : 0))
+  );
+  const oneHot = buildOneHotTreadleRepresentation(rowPatterns);
+  const compressed = compressTreadleRepresentation(rowPatterns, maxPressedTreadles, Number.POSITIVE_INFINITY);
+  const selected = compressed || oneHot;
+  const tieup = selected.tieup;
+  const treadling = selected.treadling;
+  const treadles = Math.max(1, tieup.length || 0);
+  const drawdown = rebuildDrawdown(threading, tieup, treadling);
+  const mismatchCount = countMatrixMismatches(matrix, drawdown);
+  const exactMatch = mismatchCount === 0;
+
+  return {
+    shafts,
+    treadles,
+    threading,
+    tieup,
+    ambiguousTieup: createMatrix(treadles, shafts, false),
+    treadling,
+    drawdown,
+    exactMatch,
+    mismatchCount,
+    matchRatio: getMatchRatio(matrix, mismatchCount),
+    clothlikeAnalysis: computeDrawdownClothlikeAnalysis(drawdown, floatTolerance),
+    signature: serializeDraftSignature({ threading, tieup, treadling }),
+    maxPressedUsed: selected.maxPressedUsed || 0
+  };
+}
+
+function getColumnVectors(matrix) {
+  const rowCount = matrix.length;
+  const columnCount = matrix[0]?.length || 0;
+  return Array.from({ length: columnCount }, (_, column) =>
+    Array.from({ length: rowCount }, (_, row) => (matrix[row][column] ? 1 : 0))
+  );
+}
+
+function getRowVectors(matrix) {
+  return matrix.map(row => row.slice());
+}
+
+function hammingDistance(left, right) {
+  let distance = 0;
+  for (let index = 0; index < left.length; index++) {
+    if (Boolean(left[index]) !== Boolean(right[index])) {
+      distance++;
+    }
+  }
+  return distance;
+}
+
+function seededRandom(seed) {
+  let value = seed % 2147483647;
+  if (value <= 0) {
+    value += 2147483646;
+  }
+  return () => {
+    value = value * 16807 % 2147483647;
+    return (value - 1) / 2147483646;
+  };
+}
+
+function createInitialAssignments(vectors, groupCount, strategy = "farthest", seed = 1) {
+  const count = vectors.length;
+  const normalizedGroups = Math.max(1, Math.min(groupCount, count || 1));
+  if (!count) {
+    return [0];
+  }
+
+  const uniqueMap = new Map();
+  const uniqueIndices = [];
+  vectors.forEach((vector, index) => {
+    const key = patternToKey(vector);
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, index);
+      uniqueIndices.push(index);
+    }
+  });
+
+  if (uniqueIndices.length <= normalizedGroups) {
+    const groupLookup = new Map();
+    uniqueIndices.forEach((vectorIndex, groupIndex) => {
+      groupLookup.set(patternToKey(vectors[vectorIndex]), groupIndex);
+    });
+    return vectors.map(vector => groupLookup.get(patternToKey(vector)) || 0);
+  }
+
+  const rng = seededRandom(seed);
+  const centers = [];
+  if (strategy === "density") {
+    uniqueIndices
+      .slice()
+      .sort((left, right) => countPatternOnes(vectors[right]) - countPatternOnes(vectors[left]) || left - right)
+      .slice(0, normalizedGroups)
+      .forEach(index => centers.push(vectors[index].slice()));
+  } else if (strategy === "random") {
+    const shuffled = uniqueIndices.slice().sort(() => rng() - 0.5);
+    shuffled.slice(0, normalizedGroups).forEach(index => centers.push(vectors[index].slice()));
+  } else {
+    centers.push(vectors[uniqueIndices[0]].slice());
+    while (centers.length < normalizedGroups) {
+      let bestIndex = uniqueIndices[0];
+      let bestDistance = -1;
+      uniqueIndices.forEach(index => {
+        const distance = centers.reduce((minimum, center) => Math.min(minimum, hammingDistance(vectors[index], center)), Number.POSITIVE_INFINITY);
+        if (distance > bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+      centers.push(vectors[bestIndex].slice());
+    }
+  }
+
+  const assignments = vectors.map(vector => {
+    let bestGroup = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    centers.forEach((center, groupIndex) => {
+      const distance = hammingDistance(vector, center);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestGroup = groupIndex;
+      }
+    });
+    return bestGroup;
+  });
+
+  for (let groupIndex = 0; groupIndex < normalizedGroups; groupIndex++) {
+    if (!assignments.includes(groupIndex)) {
+      let worstIndex = 0;
+      let worstDistance = -1;
+      vectors.forEach((vector, index) => {
+        const distance = hammingDistance(vector, centers[assignments[index]]);
+        if (distance > worstDistance) {
+          worstDistance = distance;
+          worstIndex = index;
+        }
+      });
+      assignments[worstIndex] = groupIndex;
+      centers[groupIndex] = vectors[worstIndex].slice();
+    }
+  }
+
+  return assignments;
+}
+
+function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount) {
+  const ones = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+  const totals = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+  const ambiguous = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(false));
+  const tieup = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+
+  for (let row = 0; row < matrix.length; row++) {
+    for (let column = 0; column < matrix[row].length; column++) {
+      const treadle = rowAssignments[row];
+      const shaft = columnAssignments[column];
+      totals[treadle][shaft]++;
+      if (matrix[row][column]) {
+        ones[treadle][shaft]++;
+      }
+    }
+  }
+
+  for (let treadle = 0; treadle < treadleCount; treadle++) {
+    for (let shaft = 0; shaft < shaftCount; shaft++) {
+      const total = totals[treadle][shaft];
+      const count = ones[treadle][shaft];
+      tieup[treadle][shaft] = total && count * 2 >= total ? 1 : 0;
+      ambiguous[treadle][shaft] = total > 0 && count * 2 === total;
+    }
+  }
+
+  return { tieup, ambiguous, ones, totals };
+}
+
+function rebalanceAssignments(assignments, groupCount) {
+  const counts = Array(groupCount).fill(0);
+  assignments.forEach(groupIndex => {
+    counts[groupIndex]++;
+  });
+
+  for (let groupIndex = 0; groupIndex < groupCount; groupIndex++) {
+    if (counts[groupIndex] > 0) {
+      continue;
+    }
+
+    let donorGroup = counts.findIndex(count => count > 1);
+    if (donorGroup < 0) {
+      donorGroup = 0;
+    }
+    const donorIndex = assignments.findIndex(value => value === donorGroup);
+    if (donorIndex >= 0) {
+      assignments[donorIndex] = groupIndex;
+      counts[donorGroup]--;
+      counts[groupIndex]++;
+    }
+  }
+
+  return assignments;
+}
+
+function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, currentAssignments) {
+  const nextAssignments = currentAssignments.slice();
+
+  for (let row = 0; row < matrix.length; row++) {
+    let bestTreadle = currentAssignments[row] ?? 0;
+    let bestMismatch = Number.POSITIVE_INFINITY;
+
+    for (let treadleIndex = 0; treadleIndex < treadleCount; treadleIndex++) {
+      let mismatch = 0;
+      for (let column = 0; column < matrix[row].length; column++) {
+        mismatch += matrix[row][column] === tieup[treadleIndex][columnAssignments[column]] ? 0 : 1;
+      }
+
+      if (mismatch < bestMismatch || (mismatch === bestMismatch && treadleIndex === currentAssignments[row])) {
+        bestMismatch = mismatch;
+        bestTreadle = treadleIndex;
+      }
+    }
+
+    nextAssignments[row] = bestTreadle;
+  }
+
+  return rebalanceAssignments(nextAssignments, treadleCount);
+}
+
+function updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, currentAssignments) {
+  const nextAssignments = currentAssignments.slice();
+
+  for (let column = 0; column < matrix[0].length; column++) {
+    let bestShaft = currentAssignments[column] ?? 0;
+    let bestMismatch = Number.POSITIVE_INFINITY;
+
+    for (let shaftIndex = 0; shaftIndex < shaftCount; shaftIndex++) {
+      let mismatch = 0;
+      for (let row = 0; row < matrix.length; row++) {
+        mismatch += matrix[row][column] === tieup[rowAssignments[row]][shaftIndex] ? 0 : 1;
+      }
+
+      if (mismatch < bestMismatch || (mismatch === bestMismatch && shaftIndex === currentAssignments[column])) {
+        bestMismatch = mismatch;
+        bestShaft = shaftIndex;
+      }
+    }
+
+    nextAssignments[column] = bestShaft;
+  }
+
+  return rebalanceAssignments(nextAssignments, shaftCount);
+}
+
+function trimGroupsToAssignments(rowAssignments, columnAssignments, tieup) {
+  const rowMap = new Map();
+  const columnMap = new Map();
+
+  rowAssignments.forEach(groupIndex => {
+    if (!rowMap.has(groupIndex)) {
+      rowMap.set(groupIndex, rowMap.size);
+    }
+  });
+  columnAssignments.forEach(groupIndex => {
+    if (!columnMap.has(groupIndex)) {
+      columnMap.set(groupIndex, columnMap.size);
+    }
+  });
+
+  const trimmedRows = rowAssignments.map(groupIndex => rowMap.get(groupIndex));
+  const trimmedColumns = columnAssignments.map(groupIndex => columnMap.get(groupIndex));
+  const usedRowGroups = Array.from(rowMap.keys());
+  const usedColumnGroups = Array.from(columnMap.keys());
+  const trimmedTieup = usedRowGroups.map(rowGroup =>
+    usedColumnGroups.map(columnGroup => (tieup[rowGroup]?.[columnGroup] ? 1 : 0))
+  );
+
+  return {
+    rowAssignments: trimmedRows,
+    columnAssignments: trimmedColumns,
+    tieup: trimmedTieup
+  };
+}
+
+function buildApproximateDrawdownFromAssignments(rowAssignments, columnAssignments, tieup) {
+  return Array.from({ length: picks }, (_, row) =>
+    Array.from({ length: warp }, (_, column) => (tieup[rowAssignments[row]]?.[columnAssignments[column]] ? 1 : 0))
+  );
+}
+
+function chooseAmbiguousTieupValuesForClothlike(matrix, rowAssignments, columnAssignments, initialTieup, ambiguous) {
+  const referenceTolerance = getClothlikeReferenceTolerance();
+  const tieup = initialTieup.map(row => row.slice());
+  const ambiguousCells = [];
+
+  ambiguous.forEach((row, treadleIndex) => {
+    row.forEach((isAmbiguous, shaftIndex) => {
+      if (isAmbiguous) {
+        ambiguousCells.push({ treadleIndex, shaftIndex });
+      }
+    });
+  });
+
+  if (!ambiguousCells.length) {
+    const drawdown = buildApproximateDrawdownFromAssignments(rowAssignments, columnAssignments, tieup);
+    return { tieup, ambiguous, drawdown, clothlikeAnalysis: computeDrawdownClothlikeAnalysis(drawdown, referenceTolerance) };
+  }
+
+  let currentDrawdown = buildApproximateDrawdownFromAssignments(rowAssignments, columnAssignments, tieup);
+  let currentAnalysis = computeDrawdownClothlikeAnalysis(currentDrawdown, referenceTolerance);
+
+  ambiguousCells.forEach(({ treadleIndex, shaftIndex }) => {
+    const originalValue = tieup[treadleIndex][shaftIndex];
+    let bestValue = originalValue;
+    let bestDrawdown = currentDrawdown;
+    let bestAnalysis = currentAnalysis;
+
+    for (const candidateValue of [0, 1]) {
+      tieup[treadleIndex][shaftIndex] = candidateValue;
+      const candidateDrawdown = buildApproximateDrawdownFromAssignments(rowAssignments, columnAssignments, tieup);
+      const candidateAnalysis = computeDrawdownClothlikeAnalysis(candidateDrawdown, referenceTolerance);
+
+      if (
+        candidateAnalysis.score > bestAnalysis.score ||
+        (candidateAnalysis.score === bestAnalysis.score && candidateAnalysis.worstFloatLength < bestAnalysis.worstFloatLength)
+      ) {
+        bestValue = candidateValue;
+        bestDrawdown = candidateDrawdown;
+        bestAnalysis = candidateAnalysis;
+      }
+    }
+
+    tieup[treadleIndex][shaftIndex] = bestValue;
+    currentDrawdown = bestDrawdown;
+    currentAnalysis = bestAnalysis;
+  });
+
+  return {
+    tieup,
+    ambiguous,
+    drawdown: currentDrawdown,
+    clothlikeAnalysis: currentAnalysis
+  };
+}
+
+function mergeDuplicateShafts(tieup, columnAssignments) {
+  const shaftCount = tieup[0]?.length || 0;
+  const shaftKeyMap = new Map();
+  const oldToNew = Array(shaftCount).fill(0);
+
+  for (let shaft = 0; shaft < shaftCount; shaft++) {
+    const key = tieup.map(row => row[shaft]).join("");
+    if (!shaftKeyMap.has(key)) {
+      shaftKeyMap.set(key, shaftKeyMap.size);
+    }
+    oldToNew[shaft] = shaftKeyMap.get(key);
+  }
+
+  const newShaftCount = shaftKeyMap.size || 1;
+  const mergedTieup = tieup.map(row => {
+    const nextRow = Array(newShaftCount).fill(0);
+    for (let shaft = 0; shaft < shaftCount; shaft++) {
+      nextRow[oldToNew[shaft]] = row[shaft];
+    }
+    return nextRow;
+  });
+
+  return {
+    tieup: mergedTieup,
+    columnAssignments: columnAssignments.map(groupIndex => oldToNew[groupIndex])
+  };
+}
+
+function mergeDuplicateTreadles(tieup, rowAssignments) {
+  const treadleKeyMap = new Map();
+  const oldToNew = Array(tieup.length).fill(0);
+
+  tieup.forEach((row, treadleIndex) => {
+    const key = row.join("");
+    if (!treadleKeyMap.has(key)) {
+      treadleKeyMap.set(key, treadleKeyMap.size);
+    }
+    oldToNew[treadleIndex] = treadleKeyMap.get(key);
+  });
+
+  const mergedTieup = Array.from(treadleKeyMap.keys(), key => key.split("").map(value => (value === "1" ? 1 : 0)));
+
+  return {
+    tieup: mergedTieup,
+    rowAssignments: rowAssignments.map(groupIndex => oldToNew[groupIndex])
+  };
+}
+
+function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, tieup, label = "Approximate") {
+  let normalized = trimGroupsToAssignments(rowAssignments, columnAssignments, tieup);
+  let merged = mergeDuplicateShafts(normalized.tieup, normalized.columnAssignments);
+  normalized = trimGroupsToAssignments(normalized.rowAssignments, merged.columnAssignments, merged.tieup);
+  merged = mergeDuplicateTreadles(normalized.tieup, normalized.rowAssignments);
+  normalized = trimGroupsToAssignments(merged.rowAssignments, normalized.columnAssignments, merged.tieup);
+
+  const shafts = Math.max(1, normalized.tieup[0]?.length || 0);
+  const threading = Array.from({ length: shafts }, () => Array(warp).fill(0));
+  normalized.columnAssignments.forEach((shaftIndex, column) => {
+    threading[shaftIndex][column] = 1;
+  });
+
+  const finalTieupStats = computeTieupStatsFromAssignments(
+    matrix,
+    normalized.rowAssignments,
+    normalized.columnAssignments,
+    Math.max(1, normalized.tieup.length || 0),
+    shafts
+  );
+  const resolvedTieup = chooseAmbiguousTieupValuesForClothlike(
+    matrix,
+    normalized.rowAssignments,
+    normalized.columnAssignments,
+    finalTieupStats.tieup,
+    finalTieupStats.ambiguous
+  );
+  const rowPatterns = Array.from({ length: picks }, (_, row) =>
+    resolvedTieup.tieup[normalized.rowAssignments[row]]?.slice() || Array(shafts).fill(0)
+  );
+  const originalTreadleCount = Math.max(1, resolvedTieup.tieup.length || 0);
+  const oneHot = buildOneHotTreadleRepresentation(rowPatterns);
+  let selected = compressTreadleRepresentation(rowPatterns, maxPressedTreadles, originalTreadleCount);
+  if (!selected) {
+    selected = oneHot.tieup.length <= maxTreadles ? oneHot : null;
+  }
+  if (!selected) {
+    return null;
+  }
+
+  const compressedTieup = selected.tieup;
+  const treadling = selected.treadling;
+  const treadles = Math.max(1, compressedTieup.length || 0);
+  const drawdown = rebuildDrawdown(threading, compressedTieup, treadling);
+  const mismatchCount = countMatrixMismatches(matrix, drawdown);
+  const exactMatch = mismatchCount === 0;
+  const clothlikeAnalysis = computeDrawdownClothlikeAnalysis(drawdown, floatTolerance);
+
+  return {
+    label,
+    shafts,
+    treadles,
+    threading,
+    tieup: compressedTieup,
+    ambiguousTieup: createMatrix(treadles, shafts, false),
+    treadling,
+    drawdown,
+    mismatchCount,
+    exactMatch,
+    matchRatio: getMatchRatio(matrix, mismatchCount),
+    clothlikeAnalysis,
+    signature: serializeDraftSignature({ threading, tieup: compressedTieup, treadling }),
+    maxPressedUsed: selected.maxPressedUsed || 0
+  };
+}
+
+function optimizeApproximateDraft(matrix, shaftCount, treadleCount, columnStrategy, rowStrategy, seed = 1) {
+  const columnVectors = getColumnVectors(matrix);
+  const rowVectors = getRowVectors(matrix);
+  let columnAssignments = createInitialAssignments(columnVectors, shaftCount, columnStrategy, seed);
+  let rowAssignments = createInitialAssignments(rowVectors, treadleCount, rowStrategy, seed + 17);
+  const iterationLimit = warp * picks > 9000 ? 6 : 10;
+  let signature = "";
+
+  for (let iteration = 0; iteration < iterationLimit; iteration++) {
+    let tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+    rowAssignments = updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, rowAssignments);
+    tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+    columnAssignments = updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, columnAssignments);
+    tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+
+    const nextSignature = `${rowAssignments.join(",")}|${columnAssignments.join(",")}|${tieup.flat().join("")}`;
+    if (nextSignature === signature) {
+      break;
+    }
+    signature = nextSignature;
+  }
+
+  const finalTieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+  return buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, finalTieup, "Approximate");
+}
+
+function decorateDraftOptionForTarget(option, originalMatrix, repairResult) {
+  if (!option) {
+    return null;
+  }
+  const mismatchCount = countMatrixMismatches(originalMatrix, option.drawdown);
+  return {
+    ...option,
+    exactMatch: mismatchCount === 0,
+    mismatchCount,
+    matchRatio: getMatchRatio(originalMatrix, mismatchCount),
+    clothlikeAnalysis: computeDrawdownClothlikeAnalysis(option.drawdown, floatTolerance),
+    repairedCellCount: repairResult.repairedCellCount,
+    repairTolerance: floatTolerance
+  };
+}
+
+function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
+  const repairResult = useFloatToleranceInOptimization
+    ? repairMatrixFloatStress(matrix, floatTolerance)
+    : {
+        matrix,
+        repairedCellCount: 0,
+        clothlikeAnalysis: computeDrawdownClothlikeAnalysis(matrix, floatTolerance)
+      };
+  const optimizationMatrix = repairResult.matrix;
+  const exactDraft = decorateDraftOptionForTarget(generateExactDraftFromDrawdown(optimizationMatrix), matrix, repairResult);
+  exactRequirements = {
+    shafts: exactDraft.shafts,
+    treadles: exactDraft.treadles,
+    pressed: Math.max(1, exactDraft.maxPressedUsed || 1)
+  };
+
+  if (
+    exactDraft.shafts <= shaftLimit &&
+    exactDraft.treadles <= treadleLimit &&
+    exactDraft.maxPressedUsed <= maxPressedTreadles
+  ) {
+    return [exactDraft];
+  }
+
+  const clampedShaftLimit = Math.max(1, Math.min(shaftLimit, optimizationMatrix[0]?.length || 1));
+  const clampedTreadleLimit = Math.max(1, Math.min(treadleLimit, optimizationMatrix.length || 1));
+  const configs = [
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "farthest", seed: 11 },
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "density", seed: 23 },
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "farthest", seed: 31 },
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 37 },
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "random", seed: 43 },
+    { shafts: Math.max(1, clampedShaftLimit - 1), treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "farthest", seed: 41 },
+    { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "farthest", rowStrategy: "density", seed: 53 },
+    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "random", seed: 67 },
+    { shafts: Math.max(1, clampedShaftLimit - 1), treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "random", rowStrategy: "random", seed: 71 },
+    { shafts: Math.max(1, clampedShaftLimit - 2), treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 79 },
+    { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 2), columnStrategy: "random", rowStrategy: "density", seed: 83 }
+  ].filter(
+    (config, index, array) =>
+      config.shafts >= 1 &&
+      config.treadles >= 1 &&
+      array.findIndex(other =>
+        other.shafts === config.shafts &&
+        other.treadles === config.treadles &&
+        other.columnStrategy === config.columnStrategy &&
+        other.rowStrategy === config.rowStrategy
+      ) === index
+  );
+
+  const candidateMap = new Map();
+
+  configs.forEach(config => {
+    const candidate = decorateDraftOptionForTarget(
+      optimizeApproximateDraft(optimizationMatrix, config.shafts, config.treadles, config.columnStrategy, config.rowStrategy, config.seed),
+      matrix,
+      repairResult
+    );
+
+    if (!candidate) {
+      return;
+    }
+    if (candidate.treadles > treadleLimit || candidate.shafts > shaftLimit || candidate.maxPressedUsed > maxPressedTreadles) {
+      return;
+    }
+
+    if (!candidateMap.has(candidate.signature)) {
+      candidateMap.set(candidate.signature, candidate);
+      return;
+    }
+
+    const existing = candidateMap.get(candidate.signature);
+    if (
+      candidate.mismatchCount < existing.mismatchCount ||
+      (candidate.mismatchCount === existing.mismatchCount && candidate.shafts + candidate.treadles < existing.shafts + existing.treadles)
+    ) {
+      candidateMap.set(candidate.signature, candidate);
+    }
+  });
+
+  const allCandidates = Array.from(candidateMap.values()).sort((left, right) => {
+    if (useFloatToleranceInOptimization) {
+      const floatComparison =
+        Math.max(0, left.clothlikeAnalysis.worstFloatLength - floatTolerance) -
+        Math.max(0, right.clothlikeAnalysis.worstFloatLength - floatTolerance);
+      if (floatComparison !== 0) {
+        return floatComparison;
+      }
+    }
+
+    return (
+      left.mismatchCount - right.mismatchCount ||
+      (left.shafts + left.treadles) - (right.shafts + right.treadles) ||
+      right.matchRatio - left.matchRatio
+    );
+  });
+
+  if (!allCandidates.length) {
+    return [exactDraft];
+  }
+
+  if (!useFloatToleranceInOptimization) {
+    return allCandidates.slice(0, maxGeneratedOptions);
+  }
+
+  const stressSafeCandidates = allCandidates.filter(candidate => candidate.clothlikeAnalysis.worstFloatLength <= floatTolerance);
+  return (stressSafeCandidates.length ? stressSafeCandidates : allCandidates).slice(0, maxGeneratedOptions);
+}
+
+function renderGeneratedOptionButtons() {
+  const optionList = document.getElementById("option-list");
+  optionList.innerHTML = "";
+
+  generatedOptions.forEach((option, optionIndex) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "option-button";
+    button.classList.toggle("active", optionIndex === selectedOptionIndex);
+    button.innerHTML = `Option ${optionIndex + 1} <span class="option-button-muted">· ${option.mismatchCount} off</span>`;
+    button.addEventListener("click", () => {
+      selectedOptionIndex = optionIndex;
+      renderSelectedGeneratedOption();
+    });
+    optionList.appendChild(button);
+  });
+
+  scheduleFlowOverlayRender();
+}
+
+function renderSelectedGeneratedOption() {
+  const option = generatedOptions[selectedOptionIndex] || generatedOptions[0];
+  if (!option) {
+    return;
+  }
+  const generatedStressAnalysis = showTargetStressOverlay
+    ? computeDrawdownClothlikeAnalysis(option.drawdown, floatTolerance)
+    : null;
+
+  renderMatrixGrid(
+    document.getElementById("generated-threading"),
+    option.shafts,
+    warp,
+    (row, column) => {
+      const shaft = option.shafts - 1 - row;
+      return option.threading[shaft]?.[column];
+    }
+  );
+
+  renderMatrixGrid(
+    document.getElementById("generated-tieup"),
+    option.shafts,
+    option.treadles,
+    (row, column) => {
+      const shaft = option.shafts - 1 - row;
+      return option.tieup[column]?.[shaft];
+    },
+    (row, column) => {
+      const shaft = option.shafts - 1 - row;
+      return option.ambiguousTieup?.[column]?.[shaft] ? "draft-cell-ambiguous" : "";
+    },
+    (row, column) => {
+      const shaft = option.shafts - 1 - row;
+      return option.ambiguousTieup?.[column]?.[shaft]
+        ? (useFloatToleranceInOptimization
+            ? `Ambiguous tie cell: chosen to improve cloth-likeness at tolerance ${floatTolerance}.`
+            : "Ambiguous tie cell: chosen to improve cloth-likeness without tolerance optimization.")
+        : "";
+    }
+  );
+
+  renderMatrixGrid(
+    document.getElementById("generated-drawdown"),
+    picks,
+    warp,
+    (row, column) => option.drawdown[row]?.[column],
+    (row, column) => {
+      const severity = generatedStressAnalysis?.severityMap[row]?.[column] || 0;
+      return generatedStressAnalysis && severity > 0 ? "draft-cell-stress" : "";
+    },
+    (row, column) => {
+      const severity = generatedStressAnalysis?.severityMap[row]?.[column] || 0;
+      return generatedStressAnalysis && severity > 0
+        ? `Float stress severity ${(severity * 100).toFixed(0)}% at tolerance ${floatTolerance}.`
+        : "";
+    },
+    (cell, row, column) => {
+      const severity = generatedStressAnalysis?.severityMap[row]?.[column] || 0;
+      if (generatedStressAnalysis && severity > 0) {
+        cell.style.setProperty("--stress-alpha", `${Math.min(0.72, severity * 0.78)}`);
+      }
+    }
+  );
+
+  renderMatrixGrid(
+    document.getElementById("generated-treadling"),
+    picks,
+    option.treadles,
+    (row, column) => option.treadling[row]?.[column]
+  );
+
+  const shaftLabel = `${option.shafts} shaft${option.shafts === 1 ? "" : "s"}`;
+  const treadleLabel = `${option.treadles} treadle${option.treadles === 1 ? "" : "s"}`;
+  const matchLabel = option.exactMatch ? "Exact match" : `${(option.matchRatio * 100).toFixed(1)}% match`;
+  const clothlikeLabel = `Cloth-like ${option.clothlikeAnalysis?.score ?? 100}%`;
+  const worstWarpFloat = option.clothlikeAnalysis?.worstWarpFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;
+  const worstWeftFloat = option.clothlikeAnalysis?.worstWeftFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;
+  const worstFloatLabel = `Worst float ${worstWarpFloat} / ${worstWeftFloat} · Tol ${floatTolerance}`;
+  document.getElementById("generated-info-1").textContent = `${shaftLabel} · ${treadleLabel} · ${matchLabel}`;
+  document.getElementById("generated-info-2").textContent = `${clothlikeLabel} · ${worstFloatLabel}`;
+  document.getElementById("generated-info-3").textContent =
+    exactRequirements.shafts <= maxShafts &&
+    exactRequirements.treadles <= maxTreadles &&
+    exactRequirements.pressed <= maxPressedTreadles
+      ? "Exact fits current limits"
+      : `${useFloatToleranceInOptimization ? "Tolerance-aware" : "Exact"} needs ${exactRequirements.shafts}S / ${exactRequirements.treadles}T / ${exactRequirements.pressed}P`;
+
+  document.querySelectorAll("#option-list .option-button").forEach((button, buttonIndex) => {
+    button.classList.toggle("active", buttonIndex === selectedOptionIndex);
+  });
+
+  updateTargetGridDecorations();
+  scheduleFlowOverlayRender();
+}
+
+function renderGeneratedDraft() {
+  const previousSignature = generatedOptions[selectedOptionIndex]?.signature || null;
+  generatedOptions = buildConstrainedDraftOptions(targetDrawdown, maxShafts, maxTreadles);
+  if (previousSignature) {
+    const matchingIndex = generatedOptions.findIndex(option => option.signature === previousSignature);
+    selectedOptionIndex = matchingIndex >= 0 ? matchingIndex : 0;
+  } else {
+    selectedOptionIndex = Math.max(0, Math.min(selectedOptionIndex, generatedOptions.length - 1));
+  }
+  renderGeneratedOptionButtons();
+  renderSelectedGeneratedOption();
+}
+
+function scheduleGeneratedRender() {
+  if (queuedGeneratedRender) {
+    return;
+  }
+  queuedGeneratedRender = true;
+  window.requestAnimationFrame(() => {
+    queuedGeneratedRender = false;
+    renderGeneratedDraft();
+  });
+}
+
+function createSvgNode(tagName, attributes = {}) {
+  const node = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+  Object.entries(attributes).forEach(([name, value]) => {
+    node.setAttribute(name, String(value));
+  });
+  return node;
+}
+
+function getRelativeBox(element, containerRect) {
+  if (!element) {
+    return null;
+  }
+  const rect = element.getBoundingClientRect();
+  return {
+    left: rect.left - containerRect.left,
+    top: rect.top - containerRect.top,
+    right: rect.right - containerRect.left,
+    bottom: rect.bottom - containerRect.top,
+    width: rect.width,
+    height: rect.height,
+    centerX: rect.left - containerRect.left + rect.width / 2,
+    centerY: rect.top - containerRect.top + rect.height / 2
+  };
+}
+
+function getPanelPortY(box, fallbackOffset = 68) {
+  return Math.min(box.bottom - 28, box.top + Math.min(fallbackOffset, Math.max(48, box.height * 0.2)));
+}
+
+function buildFlowCurve(startX, startY, endX, endY, intensity = 0.46) {
+  const deltaX = endX - startX;
+  const handle = Math.max(22, Math.abs(deltaX) * intensity);
+  return `M ${startX} ${startY} C ${startX + handle} ${startY}, ${endX - handle} ${endY}, ${endX} ${endY}`;
+}
+
+function renderFlowOverlay() {
+  const container = document.getElementById("inverse-content-grid");
+  const overlay = document.getElementById("flow-overlay");
+  const targetPanel = document.getElementById("target-panel");
+  const optimizerPanel = document.getElementById("optimizer-panel");
+  const optionRail = document.getElementById("option-rail");
+  const generatedPanel = document.getElementById("generated-panel");
+
+  if (!container || !overlay || !targetPanel || !optimizerPanel || !optionRail || !generatedPanel) {
+    return;
+  }
+
+  if (window.innerWidth <= 1100) {
+    overlay.replaceChildren();
+    return;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const targetBox = getRelativeBox(targetPanel, containerRect);
+  const optimizerBox = getRelativeBox(optimizerPanel, containerRect);
+  const optionRailBox = getRelativeBox(optionRail, containerRect);
+  const generatedBox = getRelativeBox(generatedPanel, containerRect);
+  const optionButtons = Array.from(document.querySelectorAll("#option-list .option-button"));
+
+  if (!targetBox || !optimizerBox || !optionRailBox || !generatedBox || !optionButtons.length) {
+    overlay.replaceChildren();
+    return;
+  }
+
+  overlay.setAttribute("viewBox", `0 0 ${containerRect.width} ${containerRect.height}`);
+  overlay.setAttribute("width", `${containerRect.width}`);
+  overlay.setAttribute("height", `${containerRect.height}`);
+  overlay.replaceChildren();
+
+  const optionButtonBoxes = optionButtons
+    .map(button => getRelativeBox(button, containerRect))
+    .filter(Boolean);
+
+  if (!optionButtonBoxes.length) {
+    return;
+  }
+
+  const selectedButtonBox = optionButtonBoxes[Math.max(0, Math.min(selectedOptionIndex, optionButtonBoxes.length - 1))];
+  const targetPortX = targetBox.right - 10;
+  const targetPortY = getPanelPortY(targetBox, 74);
+  const optimizerPortX = optimizerBox.left + 10;
+  const optimizerPortY = getPanelPortY(optimizerBox, 68);
+  const optimizerExitX = optimizerBox.right - 10;
+  const optimizerExitY = Math.min(optimizerBox.bottom - 26, optimizerBox.top + 96);
+  const generatedPortX = generatedBox.left + 10;
+  const generatedPortY = getPanelPortY(generatedBox, 82);
+  const branchSpread = Math.min(68, Math.max(24, (optionButtonBoxes.length - 1) * 9));
+  const branchStartTop = Math.max(optimizerBox.top + 42, optimizerExitY - branchSpread);
+  const branchStartBottom = Math.min(optimizerBox.bottom - 36, optimizerExitY + branchSpread);
+
+  overlay.appendChild(createSvgNode("path", {
+    class: "flow-path flow-path-target",
+    d: buildFlowCurve(targetPortX, targetPortY, optimizerPortX, optimizerPortY, 0.38)
+  }));
+
+  optionButtonBoxes.forEach((box, optionIndex) => {
+    const isActive = optionIndex === selectedOptionIndex;
+    const optionEntryX = box.left + 1;
+    const branchProgress = optionButtonBoxes.length <= 1
+      ? 0.5
+      : optionIndex / (optionButtonBoxes.length - 1);
+    const optimizerBranchStartY =
+      branchStartTop + (branchStartBottom - branchStartTop) * branchProgress;
+    overlay.appendChild(createSvgNode("path", {
+      class: `flow-path ${isActive ? "flow-path-branch-active" : "flow-path-branch"}`,
+      d: buildFlowCurve(optimizerExitX, optimizerBranchStartY, optionEntryX, box.centerY, 0.34)
+    }));
+  });
+
+  overlay.appendChild(createSvgNode("path", {
+    class: "flow-path flow-path-active",
+    d: buildFlowCurve(selectedButtonBox.right - 1, selectedButtonBox.centerY, generatedPortX, generatedPortY, 0.34)
+  }));
+}
+
+function scheduleFlowOverlayRender() {
+  if (queuedFlowOverlayRender) {
+    return;
+  }
+  queuedFlowOverlayRender = true;
+  window.requestAnimationFrame(() => {
+    queuedFlowOverlayRender = false;
+    renderFlowOverlay();
+  });
+}
+
+function syncTargetStressToggle() {
+  const button = document.getElementById("target-stress-toggle");
+  button.classList.toggle("active", showTargetStressOverlay);
+  button.textContent = showTargetStressOverlay ? "Hide Float Stress" : "Show Float Stress";
+}
+
+function syncTargetDiffToggle() {
+  const button = document.getElementById("target-diff-toggle");
+  button.classList.toggle("active", showTargetDiffOverlay);
+  button.textContent = showTargetDiffOverlay ? "Hide Diff" : "Show Diff";
+}
+
+function syncOptimizationToleranceToggle() {
+  const button = document.getElementById("optimization-tolerance-toggle");
+  button.classList.toggle("active", useFloatToleranceInOptimization);
+  button.textContent = useFloatToleranceInOptimization ? "On" : "Off";
+}
+
+function syncFloatToleranceControl() {
+  const floatToleranceInput = document.getElementById("float-tolerance-input");
+  const maxFloatTolerance = getMaxFloatTolerance();
+  floatTolerance = Math.max(1, Math.min(floatTolerance, maxFloatTolerance));
+  floatToleranceInput.max = String(maxFloatTolerance);
+  floatToleranceInput.value = String(floatTolerance);
+}
+
+function updateTargetGridDecorations() {
+  const selectedOption = generatedOptions[selectedOptionIndex] || null;
+  const hasComparableDrawdown =
+    selectedOption &&
+    Array.isArray(selectedOption.drawdown) &&
+    selectedOption.drawdown.length === picks &&
+    selectedOption.drawdown[0]?.length === warp;
+  const targetAnalysis = showTargetStressOverlay ? computeDrawdownClothlikeAnalysis(targetDrawdown, floatTolerance) : null;
+
+  document.querySelectorAll("#target-grid .draw-cell").forEach(button => {
+    const row = Number.parseInt(button.dataset.row || "-1", 10);
+    const column = Number.parseInt(button.dataset.column || "-1", 10);
+    const severity = targetAnalysis?.severityMap[row]?.[column] || 0;
+    const isProblematic =
+      hasComparableDrawdown &&
+      row >= 0 &&
+      column >= 0 &&
+      Boolean(targetDrawdown[row]?.[column]) !== Boolean(selectedOption.drawdown[row]?.[column]);
+
+    button.classList.toggle("draw-cell-stress", Boolean(targetAnalysis && severity > 0));
+    if (targetAnalysis && severity > 0) {
+      button.style.setProperty("--stress-alpha", `${Math.min(0.72, severity * 0.78)}`);
+    } else {
+      button.style.removeProperty("--stress-alpha");
+    }
+    button.classList.toggle("draw-cell-problem", Boolean(showTargetDiffOverlay && isProblematic));
+  });
+
+  syncTargetStressToggle();
+  syncTargetDiffToggle();
+  syncOptimizationToleranceToggle();
+  scheduleFlowOverlayRender();
+}
+
+function clearTargetDrawdown() {
+  targetDrawdown = createMatrix(picks, warp, 0);
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function invertTargetDrawdown() {
+  targetDrawdown = targetDrawdown.map(row => row.map(value => (value ? 0 : 1)));
+  renderTargetGrid();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+}
+
+function confirmInverseResetToDefault() {
+  const snapshot = {
+    warp: defaultWarp,
+    picks: defaultPicks,
+    maxShafts: Math.min(defaultMaxShafts, defaultWarp),
+    maxTreadles: Math.min(defaultMaxTreadles, defaultPicks),
+    maxPressedTreadles: Math.min(defaultMaxPressedTreadles, defaultMaxTreadles),
+    floatTolerance: defaultFloatTolerance,
+    useFloatToleranceInOptimization: false,
+    showTargetStressOverlay: false,
+    showTargetDiffOverlay: true,
+    cellSize: defaultCellSize,
+    selectedOptionIndex: 0,
+    targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)
+  };
+  applyStateSnapshot(snapshot);
+  pushHistorySnapshot();
+}
+
+async function saveInverseDraftToFile() {
+  const contents = JSON.stringify(buildSaveData(), null, 2);
+  const suggestedName = getSuggestedFilename();
+  const blob = new Blob([contents], { type: "application/json" });
+
+  if (typeof window.showSaveFilePicker === "function") {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types: [{
+          description: "Inverse weaving draft",
+          accept: { "application/json": [".wdi"] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        return;
+      }
+    }
+  }
+
+  const fallbackSuggestedName = getSuggestedFilename(true);
+  const fallbackName = window.prompt("Save inverse draft as", fallbackSuggestedName);
+  if (fallbackName === null) {
+    return;
+  }
+  const trimmed = fallbackName.trim();
+  const filename = trimmed
+    ? (trimmed.toLowerCase().endsWith(".wdi") ? trimmed : `${trimmed}.wdi`)
+    : fallbackSuggestedName;
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function openInverseDraftFilePicker() {
+  document.getElementById("inverse-draft-file-input").click();
+}
+
+async function handleInverseDraftFileOpen(event) {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) {
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    applyLoadedData(parsed, {
+      draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
+    });
+  } catch (error) {
+    window.alert("That file could not be opened as an inverse draft.");
+  }
+}
+
+function buildPrintableMarkup() {
+  const generated = document.querySelector(".generated-draft-combined");
+  return generated ? generated.outerHTML : "";
+}
+
+function printInverseDraft() {
+  const markup = buildPrintableMarkup();
+  if (!markup) {
+    return;
+  }
+
+  const cellSize = getCellSize();
+  const printWindow = window.open("", "_blank", "noopener,noreferrer");
+  if (!printWindow) {
+    return;
+  }
+
+  printWindow.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inverse Draft Print</title>
+<style>
+  body { margin: 1rem; font-family: sans-serif; color: #111; }
+  .generated-draft-combined { display: grid; grid-template-columns: auto auto; grid-template-areas: "threading tieup" "drawdown treadling"; gap: 0.75em; align-items: start; }
+  .generated-section-threading { grid-area: threading; }
+  .generated-section-tieup { grid-area: tieup; }
+  .generated-section-drawdown { grid-area: drawdown; }
+  .generated-section-treadling { grid-area: treadling; }
+  .draft-grid { display: grid; gap: 0; }
+  .draft-cell { width: ${cellSize}px; height: ${cellSize}px; border: 1px solid rgba(0, 0, 0, 0.3); box-sizing: border-box; background: #fff; }
+  .draft-cell.cell-on { background: #111; }
+  .draft-cell-ambiguous { outline: 2px dashed rgba(170, 74, 43, 0.7); outline-offset: -3px; }
+</style>
+</head>
+<body>${markup}</body>
+</html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+}
+
+function isTextEditingTarget(target) {
+  if (!target) {
+    return false;
+  }
+  if (target.tagName === "TEXTAREA") {
+    return true;
+  }
+  if (target.tagName === "INPUT") {
+    const type = String(target.type || "text").toLowerCase();
+    return ["text", "search", "url", "email", "tel", "password"].includes(type);
+  }
+  return target.isContentEditable;
+}
+
+document.getElementById("save-button").addEventListener("click", saveInverseDraftToFile);
+document.getElementById("open-button").addEventListener("click", openInverseDraftFilePicker);
+document.getElementById("print-button").addEventListener("click", printInverseDraft);
+document.getElementById("inverse-draft-file-input").addEventListener("change", handleInverseDraftFileOpen);
+document.getElementById("inverse-undo-button").addEventListener("click", undoInverseChange);
+document.getElementById("inverse-redo-button").addEventListener("click", redoInverseChange);
+document.getElementById("invert-button").addEventListener("click", invertTargetDrawdown);
+document.getElementById("clear-button").addEventListener("click", () => {
+  clearTargetDrawdown();
+});
+document.getElementById("reset-default-button").addEventListener("click", confirmInverseResetToDefault);
+document.getElementById("target-stress-toggle").addEventListener("click", () => {
+  showTargetStressOverlay = !showTargetStressOverlay;
+  if (generatedOptions.length) {
+    renderSelectedGeneratedOption();
+  } else {
+    updateTargetGridDecorations();
+  }
+  pushHistorySnapshot();
+});
+document.getElementById("target-diff-toggle").addEventListener("click", () => {
+  showTargetDiffOverlay = !showTargetDiffOverlay;
+  updateTargetGridDecorations();
+  pushHistorySnapshot();
+});
+document.getElementById("float-tolerance-input").addEventListener("input", event => {
+  floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
+  syncFloatToleranceControl();
+  updateTargetGridDecorations();
+  scheduleGeneratedRender();
+});
+document.getElementById("float-tolerance-input").addEventListener("change", event => {
+  floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
+  syncFloatToleranceControl();
+  renderGeneratedDraft();
+  pushHistorySnapshot();
+});
+document.getElementById("float-tolerance-input").addEventListener("blur", event => {
+  floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
+  syncFloatToleranceControl();
+});
+document.getElementById("optimization-tolerance-toggle").addEventListener("click", () => {
+  useFloatToleranceInOptimization = !useFloatToleranceInOptimization;
+  renderGeneratedDraft();
+  updateTargetGridDecorations();
+  pushHistorySnapshot();
+});
+document.getElementById("inverse-zoom-out").addEventListener("click", () => changeInverseZoom(-1));
+document.getElementById("inverse-zoom-in").addEventListener("click", () => changeInverseZoom(1));
+document.getElementById("inverse-draft-name").addEventListener("input", event => {
+  setDraftName(event.target.value);
+  saveAutosave();
+});
+document.getElementById("inverse-draft-name").addEventListener("change", event => {
+  setDraftName(event.target.value);
+  saveAutosave();
+});
+
+["warp-input", "picks-input", "max-shafts-input", "max-treadles-input", "max-pressed-treadles-input", "float-tolerance-input"].forEach(id => {
+  document.getElementById(id).addEventListener("keydown", event => {
+    if (["-", "+", ".", ",", "e", "E"].includes(event.key)) {
+      event.preventDefault();
+    }
+  });
+});
+
+document.getElementById("warp-input").addEventListener("change", () => resizeFromControls("warp"));
+document.getElementById("picks-input").addEventListener("change", () => resizeFromControls("picks"));
+document.getElementById("max-shafts-input").addEventListener("change", () => resizeFromControls("max-shafts"));
+document.getElementById("max-treadles-input").addEventListener("change", () => resizeFromControls("max-treadles"));
+document.getElementById("max-pressed-treadles-input").addEventListener("change", () => resizeFromControls("max-pressed-treadles"));
+document.getElementById("warp-input").addEventListener("blur", () => resizeFromControls("warp"));
+document.getElementById("picks-input").addEventListener("blur", () => resizeFromControls("picks"));
+document.getElementById("max-shafts-input").addEventListener("blur", () => resizeFromControls("max-shafts"));
+document.getElementById("max-treadles-input").addEventListener("blur", () => resizeFromControls("max-treadles"));
+document.getElementById("max-pressed-treadles-input").addEventListener("blur", () => resizeFromControls("max-pressed-treadles"));
+
+window.addEventListener("pointerup", stopPainting);
+window.addEventListener("pointercancel", stopPainting);
+window.addEventListener("beforeunload", saveAutosave);
+window.addEventListener("resize", scheduleFlowOverlayRender);
+window.addEventListener("keydown", event => {
+  const modifier = event.metaKey || event.ctrlKey;
+  if (!modifier) {
+    return;
+  }
+  if (isTextEditingTarget(event.target)) {
+    return;
+  }
+
+  const key = String(event.key || "").toLowerCase();
+  const isUndoShortcut = key === "z" && !event.shiftKey;
+  const isRedoShortcut = (key === "z" && event.shiftKey) || key === "y";
+  if (!isUndoShortcut && !isRedoShortcut) {
+    return;
+  }
+  event.preventDefault();
+  if (isUndoShortcut) {
+    undoInverseChange();
+  } else {
+    redoInverseChange();
+  }
+});
+
+setDraftName(restoreActiveDraftName());
+const autosave = restoreAutosave();
+if (autosave) {
+  try {
+    applyLoadedData(autosave, { draftNameOverride: autosave?.meta?.draftName || restoreActiveDraftName() });
+  } catch (error) {
+    applyStateSnapshot(captureSnapshotDefaults({
+      warp: defaultWarp,
+      picks: defaultPicks,
+      maxShafts: defaultMaxShafts,
+      maxTreadles: defaultMaxTreadles,
+      maxPressedTreadles: defaultMaxPressedTreadles,
+      floatTolerance: defaultFloatTolerance,
+      useFloatToleranceInOptimization: false,
+      showTargetStressOverlay: false,
+      showTargetDiffOverlay: true,
+      cellSize: defaultCellSize,
+      selectedOptionIndex: 0,
+      targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)
+    }));
+    inverseHistory = [captureStateSnapshot()];
+    inverseHistoryIndex = 0;
+    updateHistoryButtons();
+  }
+} else {
+  applyStateSnapshot(captureSnapshotDefaults({
+    warp: defaultWarp,
+    picks: defaultPicks,
+    maxShafts: defaultMaxShafts,
+    maxTreadles: defaultMaxTreadles,
+    maxPressedTreadles: defaultMaxPressedTreadles,
+    floatTolerance: defaultFloatTolerance,
+    useFloatToleranceInOptimization: false,
+    showTargetStressOverlay: false,
+    showTargetDiffOverlay: true,
+    cellSize: defaultCellSize,
+    selectedOptionIndex: 0,
+    targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)
+  }));
+  inverseHistory = [captureStateSnapshot()];
+  inverseHistoryIndex = 0;
+  updateHistoryButtons();
+  saveAutosave();
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1429,7 +1429,7 @@
               <select id="drawdown-render-style" class="form-select" aria-label="Drawdown render style">
                 <option value="structure">Structure</option>
                 <option value="color" selected>Color</option>
-                <option value="realistic">Threads</option>
+                <option value="realistic">Interlacement</option>
               </select>
                 </div>
 
@@ -3926,15 +3926,11 @@ function printDraftGrid() {
 }
 
 function confirmReset() {
-  if (window.confirm("Reset the entire draft and clear all current colors and structure?")) {
-    resetAll();
-  }
+  resetAll();
 }
 
 function confirmResetToDefault() {
-  if (window.confirm("Reset the draft to the default houndstooth setup?")) {
-    loadDefaultHoundstoothDraft();
-  }
+  loadDefaultHoundstoothDraft();
 }
 
 function buildTwillTieup() {
