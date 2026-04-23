@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Weaving Draft Editor favicon">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#ead8bf"/>
+    </linearGradient>
+    <linearGradient id="warp" x1="16" y1="10" x2="48" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4a382f"/>
+      <stop offset="1" stop-color="#2f241d"/>
+    </linearGradient>
+    <linearGradient id="weft" x1="10" y1="16" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c87137"/>
+      <stop offset="1" stop-color="#aa4a2b"/>
+    </linearGradient>
+
+    <clipPath id="cell-00"><rect x="10" y="10" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-01"><rect x="24" y="10" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-02"><rect x="38" y="10" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-10"><rect x="10" y="24" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-11"><rect x="24" y="24" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-12"><rect x="38" y="24" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-20"><rect x="10" y="38" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-21"><rect x="24" y="38" width="14" height="14" rx="2.5"/></clipPath>
+    <clipPath id="cell-22"><rect x="38" y="38" width="14" height="14" rx="2.5"/></clipPath>
+  </defs>
+
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#bg)" stroke="#2f241d" stroke-width="2.5"/>
+  <rect x="10" y="10" width="44" height="44" rx="10" fill="none" stroke="#2f241d" stroke-opacity="0.12" stroke-width="1.25"/>
+
+  <g opacity="0.16" stroke="#7a321c" stroke-width="1">
+    <path d="M24 10v44"/>
+    <path d="M38 10v44"/>
+    <path d="M10 24h44"/>
+    <path d="M10 38h44"/>
+  </g>
+
+  <g>
+    <rect x="14" y="10" width="8" height="44" rx="4" fill="url(#warp)"/>
+    <rect x="28" y="10" width="8" height="44" rx="4" fill="url(#warp)"/>
+    <rect x="42" y="10" width="8" height="44" rx="4" fill="url(#warp)"/>
+
+    <path d="M18 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.14"/>
+    <path d="M32 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.14"/>
+    <path d="M46 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.14"/>
+  </g>
+
+  <g>
+    <rect x="10" y="14" width="44" height="8" rx="4" fill="url(#weft)"/>
+    <rect x="10" y="28" width="44" height="8" rx="4" fill="url(#weft)"/>
+    <rect x="10" y="42" width="44" height="8" rx="4" fill="url(#weft)"/>
+
+    <path d="M13 18h38" fill="none" stroke="#fce7d2" stroke-width="1.35" stroke-linecap="round" opacity="0.16"/>
+    <path d="M13 32h38" fill="none" stroke="#fce7d2" stroke-width="1.35" stroke-linecap="round" opacity="0.16"/>
+    <path d="M13 46h38" fill="none" stroke="#fce7d2" stroke-width="1.35" stroke-linecap="round" opacity="0.16"/>
+  </g>
+
+  <g>
+    <rect x="14" y="10" width="8" height="44" rx="4" fill="url(#warp)" clip-path="url(#cell-00)"/>
+    <path d="M18 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.28" clip-path="url(#cell-00)"/>
+
+    <rect x="42" y="10" width="8" height="44" rx="4" fill="url(#warp)" clip-path="url(#cell-02)"/>
+    <path d="M46 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.28" clip-path="url(#cell-02)"/>
+
+    <rect x="28" y="10" width="8" height="44" rx="4" fill="url(#warp)" clip-path="url(#cell-11)"/>
+    <path d="M32 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.28" clip-path="url(#cell-11)"/>
+
+    <rect x="14" y="10" width="8" height="44" rx="4" fill="url(#warp)" clip-path="url(#cell-20)"/>
+    <path d="M18 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.28" clip-path="url(#cell-20)"/>
+
+    <rect x="42" y="10" width="8" height="44" rx="4" fill="url(#warp)" clip-path="url(#cell-22)"/>
+    <path d="M46 13v38" fill="none" stroke="#f6efe5" stroke-width="1.35" stroke-linecap="round" opacity="0.28" clip-path="url(#cell-22)"/>
+  </g>
+</svg>
