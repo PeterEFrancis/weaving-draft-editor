@@ -417,6 +417,16 @@
     padding: 1rem 1.1rem 1.1rem;
   }
 
+  #generated-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #generated-panel .panel-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
   .optimizer-panel {
     position: relative;
     z-index: 1;
@@ -493,6 +503,25 @@
     display: grid;
     justify-items: end;
     gap: 0.25rem;
+    text-align: right;
+  }
+
+  .generated-panel-footer {
+    display: grid;
+    grid-template-columns: minmax(14rem, 1.45fr) minmax(10rem, 0.85fr);
+    gap: 0.25rem 1.25rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+  }
+
+  .generated-panel-footer-column {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .generated-panel-footer-column-right {
+    justify-items: end;
     text-align: right;
   }
 
@@ -816,6 +845,15 @@
       justify-items: start;
       text-align: left;
     }
+
+    .generated-panel-footer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .generated-panel-footer-column-right {
+      justify-items: start;
+      text-align: left;
+    }
   }
 
   @media print {
@@ -962,12 +1000,12 @@
         <div class="toolbar-row">
           <div class="toolbar-field">
             <label class="control-label" for="warp-input">Warp Ends</label>
-            <input id="warp-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+            <input id="warp-input" class="form-control" type="number" value="13" min="1" step="1" inputmode="numeric">
           </div>
 
           <div class="toolbar-field">
             <label class="control-label" for="picks-input">Picks</label>
-            <input id="picks-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+            <input id="picks-input" class="form-control" type="number" value="13" min="1" step="1" inputmode="numeric">
           </div>
 
           <div class="toolbar-field">
@@ -982,7 +1020,7 @@
 
           <div class="toolbar-field">
             <label class="control-label" for="target-diff-toggle">Diff</label>
-            <button type="button" class="toggle-button active" id="target-diff-toggle">Hide Diff</button>
+            <button type="button" class="toggle-button" id="target-diff-toggle">Show Diff</button>
           </div>
 
           <div class="toolbar-field toolbar-field-zoom">
@@ -1009,7 +1047,7 @@
       </section>
     </div>
 
-    <input id="inverse-draft-file-input" type="file" accept=".wdi,application/json" hidden>
+    <input id="inverse-draft-file-input" type="file" accept=".wdi,.wdd,application/json" hidden>
 
     <section id="inverse-content-grid" class="content-grid">
       <svg id="flow-overlay" class="flow-overlay" aria-hidden="true"></svg>
@@ -1042,13 +1080,22 @@
 
         <div class="optimizer-controls">
           <div class="toolbar-field">
+            <label class="control-label" for="optimizer-engine-select">Engine</label>
+            <select id="optimizer-engine-select" class="form-select" aria-label="Optimizer engine">
+              <option value="balanced">Balanced</option>
+              <option value="motif">Motif</option>
+              <option value="linework">Linework</option>
+            </select>
+          </div>
+
+          <div class="toolbar-field">
             <label class="control-label" for="max-shafts-input">Max Shafts</label>
-            <input id="max-shafts-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
+            <input id="max-shafts-input" class="form-control" type="number" value="4" min="1" step="1" inputmode="numeric">
           </div>
 
           <div class="toolbar-field">
             <label class="control-label" for="max-treadles-input">Max Treadles</label>
-            <input id="max-treadles-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
+            <input id="max-treadles-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
           </div>
 
           <div class="toolbar-field">
@@ -1058,7 +1105,7 @@
 
           <div class="toolbar-field">
             <label class="control-label" for="float-tolerance-input">Float Tolerance</label>
-            <input id="float-tolerance-input" class="form-control" type="number" value="6" min="1" step="1" inputmode="numeric">
+            <input id="float-tolerance-input" class="form-control" type="number" value="2" min="1" step="1" inputmode="numeric">
           </div>
 
           <div class="toolbar-field">
@@ -1080,9 +1127,7 @@
 
           <div class="panel-meta">
             <div class="panel-meta-info">
-              <div class="status-line status-line-strong" id="generated-info-1">2 shafts · 2 treadles · Exact match</div>
-              <div class="status-line" id="generated-info-2">Cloth-like 100% · Worst float 1 / 1 · Tol 6</div>
-              <div class="status-line" id="generated-info-3">Exact fits current limits</div>
+              <div class="status-line status-line-strong" id="generated-info-1">2 shafts · 2 treadles</div>
             </div>
           </div>
         </div>
@@ -1108,19 +1153,31 @@
             </div>
           </div>
         </div>
+
+        <div class="generated-panel-footer">
+          <div class="generated-panel-footer-column">
+            <div class="status-line" id="generated-info-2">Exact match</div>
+            <div class="status-line" id="generated-info-5">Exact fits current limits</div>
+          </div>
+          <div class="generated-panel-footer-column generated-panel-footer-column-right">
+            <div class="status-line" id="generated-info-3">Cloth-like 100%</div>
+            <div class="status-line" id="generated-info-4">Worst float 1 / 1 · Tol 2</div>
+          </div>
+        </div>
       </article>
     </section>
   </div>
 </main>
 
 <script>
-const defaultWarp = 6;
-const defaultPicks = 6;
+const defaultWarp = 13;
+const defaultPicks = 13;
 const defaultCellSize = 18;
-const defaultMaxShafts = 2;
-const defaultMaxTreadles = 2;
+const defaultMaxShafts = 4;
+const defaultMaxTreadles = 6;
 const defaultMaxPressedTreadles = 2;
-const defaultFloatTolerance = 6;
+const defaultOptimizerEngine = "balanced";
+const defaultFloatTolerance = 2;
 const maxGeneratedOptions = 6;
 const minInverseZoomPercent = 1;
 const maxInverseZoomPercent = 300;
@@ -1144,10 +1201,11 @@ let picks = defaultPicks;
 let maxShafts = Math.min(defaultMaxShafts, defaultWarp);
 let maxTreadles = Math.min(defaultMaxTreadles, defaultPicks);
 let maxPressedTreadles = Math.min(defaultMaxPressedTreadles, maxTreadles);
+let optimizerEngine = defaultOptimizerEngine;
 let floatTolerance = defaultFloatTolerance;
 let useFloatToleranceInOptimization = false;
 let showTargetStressOverlay = false;
-let showTargetDiffOverlay = true;
+let showTargetDiffOverlay = false;
 let targetDrawdown = createDefaultTargetDrawdown(defaultPicks, defaultWarp);
 let generatedOptions = [];
 let selectedOptionIndex = 0;
@@ -1158,6 +1216,7 @@ let isApplyingHistory = false;
 let isPainting = false;
 let dragPaintValue = 1;
 let queuedGeneratedRender = false;
+let queuedGeneratedRenderResetSelection = false;
 let queuedFlowOverlayRender = false;
 let draftName = defaultDraftName;
 
@@ -1171,12 +1230,19 @@ function cloneMatrix(matrix) {
 
 function createDefaultTargetDrawdown(rows, columns) {
   const sample = [
-    [1, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 1, 0],
-    [1, 1, 0, 1, 1, 0],
-    [0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0],
-    [1, 1, 0, 1, 1, 0]
+    [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0]
   ];
   const matrix = createMatrix(rows, columns, 0);
   for (let row = 0; row < Math.min(rows, sample.length); row++) {
@@ -1185,6 +1251,10 @@ function createDefaultTargetDrawdown(rows, columns) {
     }
   }
   return matrix;
+}
+
+function normalizeOptimizerEngine(value) {
+  return ["balanced", "motif", "linework"].includes(value) ? value : defaultOptimizerEngine;
 }
 
 function normalizeDraftName(value, fallback = defaultDraftName) {
@@ -1326,6 +1396,7 @@ function captureStateSnapshot() {
     maxShafts,
     maxTreadles,
     maxPressedTreadles,
+    optimizerEngine,
     floatTolerance,
     useFloatToleranceInOptimization,
     showTargetStressOverlay,
@@ -1346,10 +1417,11 @@ function applyStateSnapshot(snapshot, { preserveSelection = false } = {}) {
   maxShafts = Math.max(1, Math.min(Number.parseInt(snapshot.maxShafts, 10) || defaultMaxShafts, warp));
   maxTreadles = Math.max(1, Math.min(Number.parseInt(snapshot.maxTreadles, 10) || defaultMaxTreadles, picks));
   maxPressedTreadles = Math.max(1, Math.min(Number.parseInt(snapshot.maxPressedTreadles, 10) || defaultMaxPressedTreadles, maxTreadles));
+  optimizerEngine = normalizeOptimizerEngine(snapshot.optimizerEngine);
   floatTolerance = Math.max(1, Math.min(Number.parseInt(snapshot.floatTolerance, 10) || defaultFloatTolerance, getMaxFloatTolerance()));
-  useFloatToleranceInOptimization = snapshot.useFloatToleranceInOptimization !== false;
+  useFloatToleranceInOptimization = Boolean(snapshot.useFloatToleranceInOptimization);
   showTargetStressOverlay = Boolean(snapshot.showTargetStressOverlay);
-  showTargetDiffOverlay = snapshot.showTargetDiffOverlay !== false;
+  showTargetDiffOverlay = Boolean(snapshot.showTargetDiffOverlay);
   targetDrawdown = cloneMatrix(snapshot.targetDrawdown || createDefaultTargetDrawdown(picks, warp));
   selectedOptionIndex = preserveSelection ? selectedOptionIndex : Math.max(0, Number.parseInt(snapshot.selectedOptionIndex, 10) || 0);
   updateDimensionInputs();
@@ -1370,6 +1442,98 @@ function buildSaveData() {
       stack: inverseHistory,
       index: inverseHistoryIndex
     }
+  };
+}
+
+function isForwardDraftData(data) {
+  return data?.format === "weaving-draft-data" && typeof data?.draft === "object";
+}
+
+function buildInverseDataFromForwardDraft(data, { filename = "" } = {}) {
+  if (!isForwardDraftData(data)) {
+    throw new Error("This file does not contain a saved WDD draft.");
+  }
+
+  const draft = data.draft;
+  const requestedWarp = Math.max(1, Number.parseInt(draft.warp, 10) || draft.threading?.[0]?.length || 1);
+  const requestedPicks = Math.max(1, Number.parseInt(draft.picks, 10) || draft.treadling?.length || 1);
+  const nextDimensions = clampDimensions(requestedWarp, requestedPicks);
+  const nextWarp = nextDimensions.warp;
+  const nextPicks = nextDimensions.picks;
+  const sourceColumnStart = Math.max(0, requestedWarp - nextWarp);
+  const nextShafts = Math.max(1, Math.min(Number.parseInt(draft.shafts, 10) || 1, nextWarp));
+  const nextTreadles = Math.max(1, Math.min(Number.parseInt(draft.treadles, 10) || 1, nextPicks));
+  const threading = Array.from({ length: nextShafts }, (_, shaftIndex) =>
+    Array.from({ length: requestedWarp }, (_, warpIndex) => (draft.threading?.[shaftIndex]?.[warpIndex] ? 1 : 0))
+  );
+  const tieup = Array.from({ length: nextTreadles }, (_, treadleIndex) =>
+    Array.from({ length: nextShafts }, (_, shaftIndex) => (draft.tieup?.[treadleIndex]?.[shaftIndex] ? 1 : 0))
+  );
+  const treadling = Array.from({ length: requestedPicks }, (_, pickIndex) =>
+    Array.from({ length: nextTreadles }, (_, treadleIndex) => (draft.treadling?.[pickIndex]?.[treadleIndex] ? 1 : 0))
+  );
+  const importedMaxPressedTreadles = treadling.reduce(
+    (maximum, row) => Math.max(maximum, row.filter(Boolean).length),
+    0
+  );
+  const targetMatrix = Array.from({ length: nextPicks }, (_, pickIndex) =>
+    Array.from({ length: nextWarp }, (_, localColumnIndex) => {
+      const warpIndex = sourceColumnStart + localColumnIndex;
+      let shaftIndex = -1;
+
+      for (let shaft = 0; shaft < nextShafts; shaft++) {
+        if (threading[shaft]?.[warpIndex]) {
+          shaftIndex = shaft;
+          break;
+        }
+      }
+
+      if (shaftIndex < 0) {
+        return 0;
+      }
+
+      let hasWeft = false;
+      for (let treadle = 0; treadle < nextTreadles; treadle++) {
+        if (!treadling[pickIndex]?.[treadle]) {
+          continue;
+        }
+        hasWeft = true;
+        if (tieup[treadle]?.[shaftIndex]) {
+          return 1;
+        }
+      }
+
+      return hasWeft ? 0 : 1;
+    })
+  );
+  const nextState = captureSnapshotDefaults({
+    warp: nextWarp,
+    picks: nextPicks,
+    maxShafts: nextShafts,
+    maxTreadles: nextTreadles,
+    maxPressedTreadles: Math.max(1, Math.min(importedMaxPressedTreadles || 1, nextTreadles)),
+    optimizerEngine,
+    floatTolerance: Math.min(floatTolerance, Math.max(1, nextWarp, nextPicks)),
+    useFloatToleranceInOptimization,
+    showTargetStressOverlay,
+    showTargetDiffOverlay,
+    cellSize: getCellSize(),
+    selectedOptionIndex: 0,
+    targetDrawdown: targetMatrix
+  });
+
+  return {
+    meta: {
+      kind: "weaving-inverse-draft",
+      version: 1,
+      draftName: normalizeDraftName(data?.meta?.draftName ?? getDraftNameFromFilename(filename))
+    },
+    state: nextState,
+    history: {
+      stack: [nextState],
+      index: 0
+    },
+    dimensionLimitChanged: nextDimensions.warp !== requestedWarp || nextDimensions.picks !== requestedPicks
   };
 }
 
@@ -1406,10 +1570,11 @@ function captureSnapshotDefaults(snapshot) {
     maxShafts: snapshot.maxShafts || defaultMaxShafts,
     maxTreadles: snapshot.maxTreadles || defaultMaxTreadles,
     maxPressedTreadles: snapshot.maxPressedTreadles || defaultMaxPressedTreadles,
+    optimizerEngine: normalizeOptimizerEngine(snapshot.optimizerEngine),
     floatTolerance: snapshot.floatTolerance || defaultFloatTolerance,
-    useFloatToleranceInOptimization: snapshot.useFloatToleranceInOptimization !== false,
+    useFloatToleranceInOptimization: Boolean(snapshot.useFloatToleranceInOptimization),
     showTargetStressOverlay: Boolean(snapshot.showTargetStressOverlay),
-    showTargetDiffOverlay: snapshot.showTargetDiffOverlay !== false,
+    showTargetDiffOverlay: Boolean(snapshot.showTargetDiffOverlay),
     cellSize: snapshot.cellSize || defaultCellSize,
     selectedOptionIndex: snapshot.selectedOptionIndex || 0,
     targetDrawdown: cloneMatrix(snapshot.targetDrawdown || createDefaultTargetDrawdown(snapshot.picks || defaultPicks, snapshot.warp || defaultWarp))
@@ -1546,6 +1711,7 @@ function updateDimensionInputs() {
   const maxShaftsInput = document.getElementById("max-shafts-input");
   const maxTreadlesInput = document.getElementById("max-treadles-input");
   const maxPressedTreadlesInput = document.getElementById("max-pressed-treadles-input");
+  const optimizerEngineSelect = document.getElementById("optimizer-engine-select");
 
   warpInput.value = String(warp);
   picksInput.value = String(picks);
@@ -1557,6 +1723,7 @@ function updateDimensionInputs() {
   maxShaftsInput.value = String(maxShafts);
   maxTreadlesInput.value = String(maxTreadles);
   maxPressedTreadlesInput.value = String(maxPressedTreadles);
+  optimizerEngineSelect.value = normalizeOptimizerEngine(optimizerEngine);
   maxShaftsInput.max = String(warp);
   maxTreadlesInput.max = String(picks);
   maxPressedTreadlesInput.max = String(maxTreadles);
@@ -1584,7 +1751,12 @@ function resizeFromControls(changedId = null) {
   maxPressedTreadles = Math.max(1, Math.min(requestedMaxPressedTreadles, maxTreadles));
   updateDimensionInputs();
   renderTargetGrid();
-  renderGeneratedDraft();
+  if (["max-shafts", "max-treadles", "max-pressed-treadles"].includes(changedId)) {
+    selectedOptionIndex = 0;
+    renderGeneratedDraft({ preserveSignature: false });
+  } else {
+    renderGeneratedDraft();
+  }
   pushHistorySnapshot();
 
   if (wasLimited) {
@@ -1842,6 +2014,121 @@ function getMatchRatio(matrix, mismatchCount) {
 
 function getClothlikeReferenceTolerance() {
   return useFloatToleranceInOptimization ? floatTolerance : 1;
+}
+
+function countMatrixOnes(matrix) {
+  let total = 0;
+  for (let row = 0; row < matrix.length; row++) {
+    for (let column = 0; column < (matrix[row]?.length || 0); column++) {
+      total += matrix[row][column] ? 1 : 0;
+    }
+  }
+  return total;
+}
+
+function computeBlurField(matrix, radius = 1) {
+  const rowCount = matrix.length;
+  const columnCount = matrix[0]?.length || 0;
+  const prefix = Array.from({ length: rowCount + 1 }, () => Array(columnCount + 1).fill(0));
+
+  for (let row = 0; row < rowCount; row++) {
+    for (let column = 0; column < columnCount; column++) {
+      prefix[row + 1][column + 1] =
+        prefix[row][column + 1] +
+        prefix[row + 1][column] -
+        prefix[row][column] +
+        (matrix[row][column] ? 1 : 0);
+    }
+  }
+
+  return Array.from({ length: rowCount }, (_, row) =>
+    Array.from({ length: columnCount }, (_, column) => {
+      const top = Math.max(0, row - radius);
+      const bottom = Math.min(rowCount - 1, row + radius);
+      const left = Math.max(0, column - radius);
+      const right = Math.min(columnCount - 1, column + radius);
+      const area = (bottom - top + 1) * (right - left + 1);
+      const sum =
+        prefix[bottom + 1][right + 1] -
+        prefix[top][right + 1] -
+        prefix[bottom + 1][left] +
+        prefix[top][left];
+      return area ? sum / area : 0;
+    })
+  );
+}
+
+function computeBlurMismatch(left, right, radius = 1) {
+  const leftField = computeBlurField(left, radius);
+  const rightField = computeBlurField(right, radius);
+  let total = 0;
+
+  for (let row = 0; row < leftField.length; row++) {
+    for (let column = 0; column < (leftField[row]?.length || 0); column++) {
+      total += Math.abs((leftField[row][column] || 0) - (rightField[row]?.[column] || 0));
+    }
+  }
+
+  return Math.round(total * 1000) / 1000;
+}
+
+function computeLineMismatch(left, right) {
+  const rowCount = Math.min(left.length, right.length);
+  const columnCount = Math.min(left[0]?.length || 0, right[0]?.length || 0);
+  let mismatch = 0;
+
+  for (let row = 0; row < rowCount; row++) {
+    for (let column = 0; column < columnCount - 1; column++) {
+      const leftEdge = Boolean(left[row][column]) !== Boolean(left[row][column + 1]);
+      const rightEdge = Boolean(right[row][column]) !== Boolean(right[row][column + 1]);
+      mismatch += leftEdge === rightEdge ? 0 : 1;
+    }
+  }
+
+  for (let row = 0; row < rowCount - 1; row++) {
+    for (let column = 0; column < columnCount; column++) {
+      const leftEdge = Boolean(left[row][column]) !== Boolean(left[row + 1][column]);
+      const rightEdge = Boolean(right[row][column]) !== Boolean(right[row + 1][column]);
+      mismatch += leftEdge === rightEdge ? 0 : 1;
+    }
+  }
+
+  return mismatch;
+}
+
+function computeDraftEngineMetrics(targetMatrix, draftMatrix) {
+  return {
+    blurMismatch: computeBlurMismatch(targetMatrix, draftMatrix, 1),
+    lineMismatch: computeLineMismatch(targetMatrix, draftMatrix),
+    densityMismatch: Math.abs(countMatrixOnes(targetMatrix) - countMatrixOnes(draftMatrix))
+  };
+}
+
+function compareDraftEngineMetrics(left, right) {
+  if (optimizerEngine === "motif") {
+    return (
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch ||
+      left.mismatchCount - right.mismatchCount ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch
+    );
+  }
+
+  if (optimizerEngine === "linework") {
+    return (
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.mismatchCount - right.mismatchCount ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+    );
+  }
+
+  return (
+    left.mismatchCount - right.mismatchCount ||
+    left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+    left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+    left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+  );
 }
 
 function computeDrawdownClothlikeAnalysis(matrix, tolerance = floatTolerance) {
@@ -2814,6 +3101,7 @@ function decorateDraftOptionForTarget(option, originalMatrix, repairResult) {
     exactMatch: mismatchCount === 0,
     mismatchCount,
     matchRatio: getMatchRatio(originalMatrix, mismatchCount),
+    engineMetrics: computeDraftEngineMetrics(originalMatrix, option.drawdown),
     clothlikeAnalysis: computeDrawdownClothlikeAnalysis(option.drawdown, floatTolerance),
     repairedCellCount: repairResult.repairedCellCount,
     repairTolerance: floatTolerance
@@ -2893,8 +3181,8 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
 
     const existing = candidateMap.get(candidate.signature);
     if (
-      candidate.mismatchCount < existing.mismatchCount ||
-      (candidate.mismatchCount === existing.mismatchCount && candidate.shafts + candidate.treadles < existing.shafts + existing.treadles)
+      compareDraftEngineMetrics(candidate, existing) < 0 ||
+      (compareDraftEngineMetrics(candidate, existing) === 0 && candidate.shafts + candidate.treadles < existing.shafts + existing.treadles)
     ) {
       candidateMap.set(candidate.signature, candidate);
     }
@@ -2911,7 +3199,7 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
     }
 
     return (
-      left.mismatchCount - right.mismatchCount ||
+      compareDraftEngineMetrics(left, right) ||
       (left.shafts + left.treadles) - (right.shafts + right.treadles) ||
       right.matchRatio - left.matchRatio
     );
@@ -2938,7 +3226,7 @@ function renderGeneratedOptionButtons() {
     button.type = "button";
     button.className = "option-button";
     button.classList.toggle("active", optionIndex === selectedOptionIndex);
-    button.innerHTML = `Option ${optionIndex + 1} <span class="option-button-muted">· ${option.mismatchCount} off</span>`;
+    button.textContent = `Option ${optionIndex + 1}`;
     button.addEventListener("click", () => {
       selectedOptionIndex = optionIndex;
       renderSelectedGeneratedOption();
@@ -3022,14 +3310,18 @@ function renderSelectedGeneratedOption() {
 
   const shaftLabel = `${option.shafts} shaft${option.shafts === 1 ? "" : "s"}`;
   const treadleLabel = `${option.treadles} treadle${option.treadles === 1 ? "" : "s"}`;
-  const matchLabel = option.exactMatch ? "Exact match" : `${(option.matchRatio * 100).toFixed(1)}% match`;
-  const clothlikeLabel = `Cloth-like ${option.clothlikeAnalysis?.score ?? 100}%`;
+  const matchLabel = option.exactMatch
+    ? "Exact match"
+    : `${(option.matchRatio * 100).toFixed(1)}% match (${option.mismatchCount} off)`;
+  const clothlikeLabel = `${option.clothlikeAnalysis?.score ?? 100}% Cloth-like`;
   const worstWarpFloat = option.clothlikeAnalysis?.worstWarpFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;
   const worstWeftFloat = option.clothlikeAnalysis?.worstWeftFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;
   const worstFloatLabel = `Worst float ${worstWarpFloat} / ${worstWeftFloat} · Tol ${floatTolerance}`;
-  document.getElementById("generated-info-1").textContent = `${shaftLabel} · ${treadleLabel} · ${matchLabel}`;
-  document.getElementById("generated-info-2").textContent = `${clothlikeLabel} · ${worstFloatLabel}`;
-  document.getElementById("generated-info-3").textContent =
+  document.getElementById("generated-info-1").textContent = `${shaftLabel} · ${treadleLabel}`;
+  document.getElementById("generated-info-2").textContent = matchLabel;
+  document.getElementById("generated-info-3").textContent = clothlikeLabel;
+  document.getElementById("generated-info-4").textContent = worstFloatLabel;
+  document.getElementById("generated-info-5").textContent =
     exactRequirements.shafts <= maxShafts &&
     exactRequirements.treadles <= maxTreadles &&
     exactRequirements.pressed <= maxPressedTreadles
@@ -3044,14 +3336,16 @@ function renderSelectedGeneratedOption() {
   scheduleFlowOverlayRender();
 }
 
-function renderGeneratedDraft() {
-  const previousSignature = generatedOptions[selectedOptionIndex]?.signature || null;
+function renderGeneratedDraft({ preserveSignature = true } = {}) {
+  const previousSignature = preserveSignature
+    ? (generatedOptions[selectedOptionIndex]?.signature || null)
+    : null;
   generatedOptions = buildConstrainedDraftOptions(targetDrawdown, maxShafts, maxTreadles);
   if (previousSignature) {
     const matchingIndex = generatedOptions.findIndex(option => option.signature === previousSignature);
     selectedOptionIndex = matchingIndex >= 0 ? matchingIndex : 0;
   } else {
-    selectedOptionIndex = Math.max(0, Math.min(selectedOptionIndex, generatedOptions.length - 1));
+    selectedOptionIndex = 0;
   }
   renderGeneratedOptionButtons();
   renderSelectedGeneratedOption();
@@ -3062,9 +3356,15 @@ function scheduleGeneratedRender() {
     return;
   }
   queuedGeneratedRender = true;
+  const shouldResetSelection = queuedGeneratedRenderResetSelection;
   window.requestAnimationFrame(() => {
     queuedGeneratedRender = false;
-    renderGeneratedDraft();
+    const resetSelection = queuedGeneratedRenderResetSelection || shouldResetSelection;
+    queuedGeneratedRenderResetSelection = false;
+    if (resetSelection) {
+      selectedOptionIndex = 0;
+    }
+    renderGeneratedDraft({ preserveSignature: !resetSelection });
   });
 }
 
@@ -3275,10 +3575,11 @@ function confirmInverseResetToDefault() {
     maxShafts: Math.min(defaultMaxShafts, defaultWarp),
     maxTreadles: Math.min(defaultMaxTreadles, defaultPicks),
     maxPressedTreadles: Math.min(defaultMaxPressedTreadles, defaultMaxTreadles),
+    optimizerEngine: defaultOptimizerEngine,
     floatTolerance: defaultFloatTolerance,
     useFloatToleranceInOptimization: false,
     showTargetStressOverlay: false,
-    showTargetDiffOverlay: true,
+    showTargetDiffOverlay: false,
     cellSize: defaultCellSize,
     selectedOptionIndex: 0,
     targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)
@@ -3345,11 +3646,19 @@ async function handleInverseDraftFileOpen(event) {
   try {
     const text = await file.text();
     const parsed = JSON.parse(text);
-    applyLoadedData(parsed, {
-      draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
-    });
+    if (isForwardDraftData(parsed)) {
+      const converted = buildInverseDataFromForwardDraft(parsed, { filename: file.name });
+      applyLoadedData(converted);
+      if (converted.dimensionLimitChanged) {
+        showLimitAlert();
+      }
+    } else {
+      applyLoadedData(parsed, {
+        draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
+      });
+    }
   } catch (error) {
-    window.alert("That file could not be opened as an inverse draft.");
+    window.alert("That file could not be opened.");
   }
 }
 
@@ -3439,21 +3748,27 @@ document.getElementById("float-tolerance-input").addEventListener("input", event
   floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
   syncFloatToleranceControl();
   updateTargetGridDecorations();
+  queuedGeneratedRenderResetSelection = true;
   scheduleGeneratedRender();
 });
 document.getElementById("float-tolerance-input").addEventListener("change", event => {
   floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
   syncFloatToleranceControl();
-  renderGeneratedDraft();
+  renderGeneratedDraft({ preserveSignature: false });
   pushHistorySnapshot();
 });
 document.getElementById("float-tolerance-input").addEventListener("blur", event => {
   floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
   syncFloatToleranceControl();
 });
+document.getElementById("optimizer-engine-select").addEventListener("change", event => {
+  optimizerEngine = normalizeOptimizerEngine(event.target.value);
+  renderGeneratedDraft({ preserveSignature: false });
+  pushHistorySnapshot();
+});
 document.getElementById("optimization-tolerance-toggle").addEventListener("click", () => {
   useFloatToleranceInOptimization = !useFloatToleranceInOptimization;
-  renderGeneratedDraft();
+  renderGeneratedDraft({ preserveSignature: false });
   updateTargetGridDecorations();
   pushHistorySnapshot();
 });
@@ -3526,10 +3841,11 @@ if (autosave) {
       maxShafts: defaultMaxShafts,
       maxTreadles: defaultMaxTreadles,
       maxPressedTreadles: defaultMaxPressedTreadles,
+      optimizerEngine: defaultOptimizerEngine,
       floatTolerance: defaultFloatTolerance,
       useFloatToleranceInOptimization: false,
       showTargetStressOverlay: false,
-      showTargetDiffOverlay: true,
+      showTargetDiffOverlay: false,
       cellSize: defaultCellSize,
       selectedOptionIndex: 0,
       targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)
@@ -3545,10 +3861,11 @@ if (autosave) {
     maxShafts: defaultMaxShafts,
     maxTreadles: defaultMaxTreadles,
     maxPressedTreadles: defaultMaxPressedTreadles,
+    optimizerEngine: defaultOptimizerEngine,
     floatTolerance: defaultFloatTolerance,
     useFloatToleranceInOptimization: false,
     showTargetStressOverlay: false,
-    showTargetDiffOverlay: true,
+    showTargetDiffOverlay: false,
     cellSize: defaultCellSize,
     selectedOptionIndex: 0,
     targetDrawdown: createDefaultTargetDrawdown(defaultPicks, defaultWarp)

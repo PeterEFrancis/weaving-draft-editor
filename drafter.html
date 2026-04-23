@@ -1475,7 +1475,7 @@
               </div>
             </div>
           </div>
-          <input id="draft-file-input" type="file" accept=".wdd,application/json" class="d-none">
+          <input id="draft-file-input" type="file" accept=".wdd,.wdi,application/json" class="d-none">
         </div>
 
         <div class="draft-stage">
@@ -2010,6 +2010,1298 @@ function normalizeTieupData(data, nextTreadles, nextShafts) {
   );
 }
 
+function isInverseDraftData(data) {
+  return data?.meta?.kind === "weaving-inverse-draft" && typeof data?.state === "object";
+}
+
+function buildDraftDataFromInverseState(data, { filename = "" } = {}) {
+  const inverseState = data?.state;
+
+  if (!inverseState || !Array.isArray(inverseState.targetDrawdown) || !inverseState.targetDrawdown.length) {
+    throw new Error("That file is not a valid WDI draft.");
+  }
+
+  const requestedWarp = Math.max(1, Number.parseInt(inverseState.warp, 10) || inverseState.targetDrawdown[0]?.length || 1);
+  const requestedPicks = Math.max(1, Number.parseInt(inverseState.picks, 10) || inverseState.targetDrawdown.length || 1);
+  const limitedDimensions = applyDraftDimensionLimits(requestedWarp, requestedPicks);
+  const nextWarp = limitedDimensions.warp;
+  const nextPicks = limitedDimensions.picks;
+  const targetMatrix = Array.from({ length: nextPicks }, (_, rowIndex) =>
+    Array.from({ length: nextWarp }, (_, columnIndex) => (inverseState.targetDrawdown?.[rowIndex]?.[columnIndex] ? 1 : 0))
+  );
+  const optimizerEngine = ["balanced", "motif", "linework"].includes(inverseState.optimizerEngine)
+    ? inverseState.optimizerEngine
+    : "balanced";
+  const floatTolerance = Math.max(1, Number.parseInt(inverseState.floatTolerance, 10) || 1);
+  const useFloatToleranceInOptimization = Boolean(inverseState.useFloatToleranceInOptimization);
+  const maxShafts = Math.max(1, Math.min(Number.parseInt(inverseState.maxShafts, 10) || 1, nextWarp));
+  const maxTreadles = Math.max(1, Math.min(Number.parseInt(inverseState.maxTreadles, 10) || 1, nextPicks));
+  const maxPressedTreadles = Math.max(1, Math.min(Number.parseInt(inverseState.maxPressedTreadles, 10) || 1, maxTreadles));
+
+  function createMatrix(rows, columns, fillValue = 0) {
+    return Array.from({ length: rows }, () => Array(columns).fill(fillValue));
+  }
+
+  function cloneMatrix(matrix) {
+    return matrix.map(row => row.slice());
+  }
+
+  function countMatrixMismatches(left, right) {
+    if (left.length !== right.length || left[0]?.length !== right[0]?.length) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    let mismatchCount = 0;
+    for (let row = 0; row < left.length; row++) {
+      for (let column = 0; column < left[row].length; column++) {
+        if (Boolean(left[row][column]) !== Boolean(right[row][column])) {
+          mismatchCount++;
+        }
+      }
+    }
+    return mismatchCount;
+  }
+
+  function getMatchRatio(matrix, mismatchCount) {
+    const totalCells = (matrix.length || 0) * (matrix[0]?.length || 0);
+    return totalCells ? Math.max(0, 1 - mismatchCount / totalCells) : 1;
+  }
+
+  function countMatrixOnes(matrix) {
+    let total = 0;
+    for (let row = 0; row < matrix.length; row++) {
+      for (let column = 0; column < (matrix[row]?.length || 0); column++) {
+        total += matrix[row][column] ? 1 : 0;
+      }
+    }
+    return total;
+  }
+
+  function computeBlurField(matrix, radius = 1) {
+    const rowCount = matrix.length;
+    const columnCount = matrix[0]?.length || 0;
+    const prefix = Array.from({ length: rowCount + 1 }, () => Array(columnCount + 1).fill(0));
+
+    for (let row = 0; row < rowCount; row++) {
+      for (let column = 0; column < columnCount; column++) {
+        prefix[row + 1][column + 1] =
+          prefix[row][column + 1] +
+          prefix[row + 1][column] -
+          prefix[row][column] +
+          (matrix[row][column] ? 1 : 0);
+      }
+    }
+
+    return Array.from({ length: rowCount }, (_, row) =>
+      Array.from({ length: columnCount }, (_, column) => {
+        const top = Math.max(0, row - radius);
+        const bottom = Math.min(rowCount - 1, row + radius);
+        const left = Math.max(0, column - radius);
+        const right = Math.min(columnCount - 1, column + radius);
+        const area = (bottom - top + 1) * (right - left + 1);
+        const sum =
+          prefix[bottom + 1][right + 1] -
+          prefix[top][right + 1] -
+          prefix[bottom + 1][left] +
+          prefix[top][left];
+        return area ? sum / area : 0;
+      })
+    );
+  }
+
+  function computeBlurMismatch(left, right, radius = 1) {
+    const leftField = computeBlurField(left, radius);
+    const rightField = computeBlurField(right, radius);
+    let total = 0;
+
+    for (let row = 0; row < leftField.length; row++) {
+      for (let column = 0; column < (leftField[row]?.length || 0); column++) {
+        total += Math.abs((leftField[row][column] || 0) - (rightField[row]?.[column] || 0));
+      }
+    }
+
+    return Math.round(total * 1000) / 1000;
+  }
+
+  function computeLineMismatch(left, right) {
+    const rowCount = Math.min(left.length, right.length);
+    const columnCount = Math.min(left[0]?.length || 0, right[0]?.length || 0);
+    let mismatch = 0;
+
+    for (let row = 0; row < rowCount; row++) {
+      for (let column = 0; column < columnCount - 1; column++) {
+        const leftEdge = Boolean(left[row][column]) !== Boolean(left[row][column + 1]);
+        const rightEdge = Boolean(right[row][column]) !== Boolean(right[row][column + 1]);
+        mismatch += leftEdge === rightEdge ? 0 : 1;
+      }
+    }
+
+    for (let row = 0; row < rowCount - 1; row++) {
+      for (let column = 0; column < columnCount; column++) {
+        const leftEdge = Boolean(left[row][column]) !== Boolean(left[row + 1][column]);
+        const rightEdge = Boolean(right[row][column]) !== Boolean(right[row + 1][column]);
+        mismatch += leftEdge === rightEdge ? 0 : 1;
+      }
+    }
+
+    return mismatch;
+  }
+
+  function computeDraftEngineMetrics(target, draft) {
+    return {
+      blurMismatch: computeBlurMismatch(target, draft, 1),
+      lineMismatch: computeLineMismatch(target, draft),
+      densityMismatch: Math.abs(countMatrixOnes(target) - countMatrixOnes(draft))
+    };
+  }
+
+  function compareDraftOptions(left, right) {
+    if (optimizerEngine === "motif") {
+      return (
+        left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+        left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch ||
+        left.mismatchCount - right.mismatchCount ||
+        left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch
+      );
+    }
+
+    if (optimizerEngine === "linework") {
+      return (
+        left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+        left.mismatchCount - right.mismatchCount ||
+        left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+        left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+      );
+    }
+
+    return (
+      left.mismatchCount - right.mismatchCount ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+    );
+  }
+
+  function computeDrawdownClothlikeAnalysis(matrix, tolerance = floatTolerance) {
+    const rowCount = matrix.length;
+    const columnCount = matrix[0]?.length || 0;
+    const severityMap = createMatrix(rowCount, columnCount, 0);
+    const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+    let totalPenalty = 0;
+    let worstFloatLength = 1;
+    let worstWarpFloatLength = 1;
+    let worstWeftFloatLength = 1;
+
+    const getPenalty = (length, span) => {
+      const excess = Math.max(0, length - normalizedTolerance);
+      return excess > 0 && span > normalizedTolerance
+        ? Math.pow(excess / Math.max(1, span - normalizedTolerance), 1.15)
+        : 0;
+    };
+
+    for (let column = 0; column < columnCount; column++) {
+      let row = 0;
+      while (row < rowCount) {
+        const value = Boolean(matrix[row][column]);
+        const start = row;
+        while (row < rowCount && Boolean(matrix[row][column]) === value) {
+          row++;
+        }
+        const length = row - start;
+        worstFloatLength = Math.max(worstFloatLength, length);
+        worstWarpFloatLength = Math.max(worstWarpFloatLength, length);
+        const penalty = getPenalty(length, rowCount);
+        for (let cursor = start; cursor < row; cursor++) {
+          severityMap[cursor][column] = Math.max(severityMap[cursor][column], penalty);
+        }
+      }
+    }
+
+    for (let row = 0; row < rowCount; row++) {
+      let column = 0;
+      while (column < columnCount) {
+        const value = Boolean(matrix[row][column]);
+        const start = column;
+        while (column < columnCount && Boolean(matrix[row][column]) === value) {
+          column++;
+        }
+        const length = column - start;
+        worstFloatLength = Math.max(worstFloatLength, length);
+        worstWeftFloatLength = Math.max(worstWeftFloatLength, length);
+        const penalty = getPenalty(length, columnCount);
+        for (let cursor = start; cursor < column; cursor++) {
+          severityMap[row][cursor] = Math.max(severityMap[row][cursor], penalty);
+        }
+      }
+    }
+
+    for (let row = 0; row < rowCount; row++) {
+      for (let column = 0; column < columnCount; column++) {
+        totalPenalty += severityMap[row][column];
+      }
+    }
+
+    const totalCells = rowCount * columnCount;
+    const averagePenalty = totalCells ? totalPenalty / totalCells : 0;
+    const score = Math.round(Math.max(0, 100 * (1 - averagePenalty)));
+
+    return {
+      severityMap,
+      worstFloatLength,
+      worstWarpFloatLength,
+      worstWeftFloatLength,
+      averagePenalty,
+      score
+    };
+  }
+
+  function limitColumnRuns(matrix, tolerance) {
+    const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+    const rowCount = matrix.length;
+    const columnCount = matrix[0]?.length || 0;
+    let changed = false;
+
+    for (let column = 0; column < columnCount; column++) {
+      let row = 0;
+      while (row < rowCount) {
+        const value = Boolean(matrix[row][column]);
+        const start = row;
+        while (row < rowCount && Boolean(matrix[row][column]) === value) {
+          row++;
+        }
+        for (let cursor = start + normalizedTolerance; cursor < row; cursor += normalizedTolerance + 1) {
+          const replacement = value ? 0 : 1;
+          if (matrix[cursor][column] !== replacement) {
+            matrix[cursor][column] = replacement;
+            changed = true;
+          }
+        }
+      }
+    }
+
+    return changed;
+  }
+
+  function limitRowRuns(matrix, tolerance) {
+    const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+    const rowCount = matrix.length;
+    const columnCount = matrix[0]?.length || 0;
+    let changed = false;
+
+    for (let row = 0; row < rowCount; row++) {
+      let column = 0;
+      while (column < columnCount) {
+        const value = Boolean(matrix[row][column]);
+        const start = column;
+        while (column < columnCount && Boolean(matrix[row][column]) === value) {
+          column++;
+        }
+        for (let cursor = start + normalizedTolerance; cursor < column; cursor += normalizedTolerance + 1) {
+          const replacement = value ? 0 : 1;
+          if (matrix[row][cursor] !== replacement) {
+            matrix[row][cursor] = replacement;
+            changed = true;
+          }
+        }
+      }
+    }
+
+    return changed;
+  }
+
+  function repairMatrixFloatStress(matrix, tolerance = floatTolerance) {
+    const repaired = cloneMatrix(matrix);
+    const normalizedTolerance = Math.max(1, Number.parseInt(tolerance, 10) || 1);
+
+    for (let pass = 0; pass < 24; pass++) {
+      let changed = false;
+      changed = limitColumnRuns(repaired, normalizedTolerance) || changed;
+      changed = limitRowRuns(repaired, normalizedTolerance) || changed;
+      const analysis = computeDrawdownClothlikeAnalysis(repaired, normalizedTolerance);
+      if (analysis.worstFloatLength <= normalizedTolerance || !changed) {
+        return {
+          matrix: repaired,
+          repairedCellCount: countMatrixMismatches(matrix, repaired),
+          clothlikeAnalysis: analysis
+        };
+      }
+    }
+
+    return {
+      matrix: repaired,
+      repairedCellCount: countMatrixMismatches(matrix, repaired),
+      clothlikeAnalysis: computeDrawdownClothlikeAnalysis(repaired, normalizedTolerance)
+    };
+  }
+
+  function patternToKey(pattern) {
+    return pattern.join("");
+  }
+
+  function countPatternOnes(pattern) {
+    return pattern.reduce((total, value) => total + (value ? 1 : 0), 0);
+  }
+
+  function isZeroPattern(pattern) {
+    return !pattern.some(Boolean);
+  }
+
+  function isPatternSubset(subsetPattern, targetPattern) {
+    for (let index = 0; index < subsetPattern.length; index++) {
+      if (subsetPattern[index] && !targetPattern[index]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function intersectPatterns(left, right) {
+    return left.map((value, index) => (value && right[index] ? 1 : 0));
+  }
+
+  function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPressedTreadles) {
+    const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
+
+    if (isZeroPattern(targetPattern)) {
+      return [];
+    }
+
+    if (normalizedMaxPressed === 0 || !basisPatterns.length) {
+      return null;
+    }
+
+    const targetKey = patternToKey(targetPattern);
+    const targetOnes = countPatternOnes(targetPattern);
+    const candidates = basisPatterns
+      .map((pattern, index) => ({ pattern, index, ones: countPatternOnes(pattern) }))
+      .filter(({ pattern, ones }) => ones > 0 && isPatternSubset(pattern, targetPattern))
+      .sort((left, right) => right.ones - left.ones || left.index - right.index);
+
+    const exactCandidate = candidates.find(({ pattern }) => patternToKey(pattern) === targetKey);
+    if (exactCandidate) {
+      return [exactCandidate.index];
+    }
+
+    if (!candidates.length) {
+      return null;
+    }
+
+    let match = null;
+
+    function search(startIndex, remainingSlots, covered, coveredOnes, chosen) {
+      if (coveredOnes === targetOnes) {
+        match = chosen.slice();
+        return true;
+      }
+      if (remainingSlots === 0) {
+        return false;
+      }
+
+      for (let candidateIndex = startIndex; candidateIndex < candidates.length; candidateIndex++) {
+        const candidate = candidates[candidateIndex];
+        const nextCovered = covered.slice();
+        let gain = 0;
+
+        candidate.pattern.forEach((value, position) => {
+          if (value && !nextCovered[position]) {
+            nextCovered[position] = 1;
+            gain++;
+          }
+        });
+
+        if (!gain) {
+          continue;
+        }
+
+        chosen.push(candidate.index);
+        if (search(candidateIndex + 1, remainingSlots - 1, nextCovered, coveredOnes + gain, chosen)) {
+          return true;
+        }
+        chosen.pop();
+      }
+
+      return false;
+    }
+
+    search(0, normalizedMaxPressed, Array(targetPattern.length).fill(0), 0, []);
+    return match;
+  }
+
+  function buildOneHotTreadleRepresentation(rowPatterns) {
+    const patternLength = rowPatterns[0]?.length || 1;
+    const tieup = [];
+    const patternIndexByKey = new Map();
+    const treadling = rowPatterns.map(pattern => {
+      const key = patternToKey(pattern);
+      if (!patternIndexByKey.has(key)) {
+        patternIndexByKey.set(key, tieup.length);
+        tieup.push(pattern.slice());
+      }
+      const row = Array(tieup.length).fill(0);
+      row[patternIndexByKey.get(key)] = 1;
+      return row;
+    }).map(row => {
+      const normalized = Array(tieup.length || 1).fill(0);
+      row.forEach((value, index) => {
+        if (value) {
+          normalized[index] = 1;
+        }
+      });
+      return normalized;
+    });
+
+    return {
+      tieup: tieup.length ? tieup : [Array(patternLength).fill(0)],
+      treadling,
+      maxPressedUsed: treadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+    };
+  }
+
+  function compressTreadleRepresentation(rowPatterns, maxPressed = maxPressedTreadles, maxTreadleCount = Number.POSITIVE_INFINITY) {
+    const patternLength = rowPatterns[0]?.length || 1;
+    const normalizedCap = Number.isFinite(maxTreadleCount)
+      ? Math.max(1, Number.parseInt(maxTreadleCount, 10) || 1)
+      : Number.POSITIVE_INFINITY;
+    const uniquePatterns = [];
+    const uniquePatternMap = new Map();
+
+    rowPatterns.forEach(pattern => {
+      const key = patternToKey(pattern);
+      if (!uniquePatternMap.has(key)) {
+        uniquePatternMap.set(key, uniquePatterns.length);
+        uniquePatterns.push(pattern.slice());
+      }
+    });
+
+    const basisPatternMap = new Map();
+    const addBasisPattern = pattern => {
+      if (isZeroPattern(pattern)) {
+        return;
+      }
+      const key = patternToKey(pattern);
+      if (!basisPatternMap.has(key)) {
+        basisPatternMap.set(key, pattern.slice());
+      }
+    };
+
+    uniquePatterns.forEach(addBasisPattern);
+
+    for (let shaft = 0; shaft < patternLength; shaft++) {
+      const singleton = Array(patternLength).fill(0);
+      singleton[shaft] = 1;
+      if (uniquePatterns.some(pattern => pattern[shaft])) {
+        addBasisPattern(singleton);
+      }
+    }
+
+    if (maxPressed > 1 && uniquePatterns.length <= 64) {
+      for (let leftIndex = 0; leftIndex < uniquePatterns.length; leftIndex++) {
+        for (let rightIndex = leftIndex + 1; rightIndex < uniquePatterns.length; rightIndex++) {
+          addBasisPattern(intersectPatterns(uniquePatterns[leftIndex], uniquePatterns[rightIndex]));
+        }
+      }
+    }
+
+    let basisPatterns = Array.from(basisPatternMap.values())
+      .sort((left, right) => countPatternOnes(right) - countPatternOnes(left) || patternToKey(left).localeCompare(patternToKey(right)));
+
+    let removedPattern = true;
+    while (removedPattern && basisPatterns.length > 1) {
+      removedPattern = false;
+      for (let index = 0; index < basisPatterns.length; index++) {
+        const trialBasis = basisPatterns.filter((_, patternIndex) => patternIndex !== index);
+        if (trialBasis.length > normalizedCap) {
+          continue;
+        }
+        const allRepresentable = uniquePatterns.every(pattern => findPatternCombination(pattern, trialBasis, maxPressed) !== null);
+        if (allRepresentable) {
+          basisPatterns = trialBasis;
+          removedPattern = true;
+          break;
+        }
+      }
+    }
+
+    if (!basisPatterns.length) {
+      basisPatterns = [Array(patternLength).fill(0)];
+    }
+
+    if (basisPatterns.length > normalizedCap) {
+      return null;
+    }
+
+    const rowCombinations = [];
+    for (const pattern of rowPatterns) {
+      const combination = findPatternCombination(pattern, basisPatterns, maxPressed);
+      if (combination === null) {
+        return null;
+      }
+      rowCombinations.push(combination);
+    }
+
+    const usedBasisIndices = [];
+    rowCombinations.forEach(combination => {
+      combination.forEach(index => {
+        if (!usedBasisIndices.includes(index)) {
+          usedBasisIndices.push(index);
+        }
+      });
+    });
+    usedBasisIndices.sort((left, right) => left - right);
+
+    const remap = new Map();
+    usedBasisIndices.forEach((index, nextIndex) => {
+      remap.set(index, nextIndex);
+    });
+
+    const tieup = usedBasisIndices.length
+      ? usedBasisIndices.map(index => basisPatterns[index].slice())
+      : [Array(patternLength).fill(0)];
+
+    if (tieup.length > normalizedCap) {
+      return null;
+    }
+
+    const treadling = rowCombinations.map(combination => {
+      const row = Array(tieup.length || 1).fill(0);
+      combination.forEach(index => {
+        if (remap.has(index)) {
+          row[remap.get(index)] = 1;
+        }
+      });
+      return row;
+    });
+
+    const firstUse = tieup.map((_, tieupIndex) => treadling.findIndex(row => row[tieupIndex]));
+    const order = tieup.map((_, index) => index).sort((left, right) => firstUse[left] - firstUse[right] || left - right);
+    const reorderedTieup = order.map(index => tieup[index]);
+    const reorderedTreadling = treadling.map(row => order.map(index => row[index] || 0));
+
+    return {
+      tieup: reorderedTieup,
+      treadling: reorderedTreadling,
+      maxPressedUsed: reorderedTreadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+    };
+  }
+
+  function rebuildDrawdown(threading, tieup, treadling) {
+    const shaftCount = threading.length;
+    const warpCount = threading[0]?.length || 0;
+    const pickCount = treadling.length;
+    const treadleCount = treadling[0]?.length || 0;
+    const warpToShaft = Array(warpCount).fill(0);
+
+    for (let column = 0; column < warpCount; column++) {
+      for (let shaft = 0; shaft < shaftCount; shaft++) {
+        if (threading[shaft]?.[column]) {
+          warpToShaft[column] = shaft;
+          break;
+        }
+      }
+    }
+
+    return Array.from({ length: pickCount }, (_, row) =>
+      Array.from({ length: warpCount }, (_, column) => {
+        const shaft = warpToShaft[column];
+        for (let treadle = 0; treadle < treadleCount; treadle++) {
+          if (treadling[row]?.[treadle] && tieup[treadle]?.[shaft]) {
+            return 1;
+          }
+        }
+        return 0;
+      })
+    );
+  }
+
+  function serializeDraftSignature({ threading, tieup, treadling }) {
+    return `${threading.map(row => row.join("")).join("|")}::${tieup.map(row => row.join("")).join("|")}::${treadling.map(row => row.join("")).join("|")}`;
+  }
+
+  function generateExactDraftFromDrawdown(matrix) {
+    const pickCount = matrix.length;
+    const warpCount = matrix[0]?.length || 0;
+
+    if (!pickCount || !warpCount) {
+      return {
+        shafts: 1,
+        treadles: 1,
+        threading: [[1]],
+        tieup: [[0]],
+        treadling: [[0]],
+        drawdown: [[0]],
+        mismatchCount: 0,
+        exactMatch: true,
+        matchRatio: 1,
+        signature: "exact-empty",
+        maxPressedUsed: 0
+      };
+    }
+
+    const shaftIndexByPattern = new Map();
+    const columnPatterns = [];
+    const warpToShaft = [];
+
+    for (let column = 0; column < warpCount; column++) {
+      const pattern = matrix.map(row => (row[column] ? "1" : "0")).join("");
+      if (!shaftIndexByPattern.has(pattern)) {
+        shaftIndexByPattern.set(pattern, columnPatterns.length);
+        columnPatterns.push(pattern);
+      }
+      warpToShaft[column] = shaftIndexByPattern.get(pattern);
+    }
+
+    const shaftCount = columnPatterns.length || 1;
+    const threading = Array.from({ length: shaftCount }, () => Array(warpCount).fill(0));
+    warpToShaft.forEach((shaftIndex, column) => {
+      threading[shaftIndex][column] = 1;
+    });
+
+    const rowPatterns = Array.from({ length: pickCount }, (_, row) =>
+      columnPatterns.map(columnPattern => (columnPattern[row] === "1" ? 1 : 0))
+    );
+    const oneHot = buildOneHotTreadleRepresentation(rowPatterns);
+    const compressed = compressTreadleRepresentation(rowPatterns, maxPressedTreadles, Number.POSITIVE_INFINITY);
+    const selected = compressed || oneHot;
+    const tieup = selected.tieup;
+    const treadling = selected.treadling;
+    const treadleCount = Math.max(1, tieup.length || 0);
+    const drawdown = rebuildDrawdown(threading, tieup, treadling);
+    const mismatchCount = countMatrixMismatches(matrix, drawdown);
+
+    return {
+      shafts: shaftCount,
+      treadles: treadleCount,
+      threading,
+      tieup,
+      treadling,
+      drawdown,
+      mismatchCount,
+      exactMatch: mismatchCount === 0,
+      matchRatio: getMatchRatio(matrix, mismatchCount),
+      signature: serializeDraftSignature({ threading, tieup, treadling }),
+      maxPressedUsed: selected.maxPressedUsed || 0
+    };
+  }
+
+  function getColumnVectors(matrix) {
+    const rowCount = matrix.length;
+    const columnCount = matrix[0]?.length || 0;
+    return Array.from({ length: columnCount }, (_, column) =>
+      Array.from({ length: rowCount }, (_, row) => (matrix[row][column] ? 1 : 0))
+    );
+  }
+
+  function getRowVectors(matrix) {
+    return matrix.map(row => row.slice());
+  }
+
+  function hammingDistance(left, right) {
+    let distance = 0;
+    for (let index = 0; index < left.length; index++) {
+      if (Boolean(left[index]) !== Boolean(right[index])) {
+        distance++;
+      }
+    }
+    return distance;
+  }
+
+  function seededRandom(seed) {
+    let value = seed % 2147483647;
+    if (value <= 0) {
+      value += 2147483646;
+    }
+    return () => {
+      value = value * 16807 % 2147483647;
+      return (value - 1) / 2147483646;
+    };
+  }
+
+  function createInitialAssignments(vectors, groupCount, strategy = "farthest", seed = 1) {
+    const count = vectors.length;
+    const normalizedGroups = Math.max(1, Math.min(groupCount, count || 1));
+    if (!count) {
+      return [0];
+    }
+
+    const uniqueMap = new Map();
+    const uniqueIndices = [];
+    vectors.forEach((vector, index) => {
+      const key = patternToKey(vector);
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, index);
+        uniqueIndices.push(index);
+      }
+    });
+
+    if (uniqueIndices.length <= normalizedGroups) {
+      const groupLookup = new Map();
+      uniqueIndices.forEach((vectorIndex, groupIndex) => {
+        groupLookup.set(patternToKey(vectors[vectorIndex]), groupIndex);
+      });
+      return vectors.map(vector => groupLookup.get(patternToKey(vector)) || 0);
+    }
+
+    const rng = seededRandom(seed);
+    const centers = [];
+    if (strategy === "density") {
+      uniqueIndices
+        .slice()
+        .sort((left, right) => countPatternOnes(vectors[right]) - countPatternOnes(vectors[left]) || left - right)
+        .slice(0, normalizedGroups)
+        .forEach(index => centers.push(vectors[index].slice()));
+    } else if (strategy === "random") {
+      const shuffled = uniqueIndices.slice().sort(() => rng() - 0.5);
+      shuffled.slice(0, normalizedGroups).forEach(index => centers.push(vectors[index].slice()));
+    } else {
+      centers.push(vectors[uniqueIndices[0]].slice());
+      while (centers.length < normalizedGroups) {
+        let bestIndex = uniqueIndices[0];
+        let bestDistance = -1;
+        uniqueIndices.forEach(index => {
+          const distance = centers.reduce((minimum, center) => Math.min(minimum, hammingDistance(vectors[index], center)), Number.POSITIVE_INFINITY);
+          if (distance > bestDistance) {
+            bestDistance = distance;
+            bestIndex = index;
+          }
+        });
+        centers.push(vectors[bestIndex].slice());
+      }
+    }
+
+    const assignments = vectors.map(vector => {
+      let bestGroup = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      centers.forEach((center, groupIndex) => {
+        const distance = hammingDistance(vector, center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestGroup = groupIndex;
+        }
+      });
+      return bestGroup;
+    });
+
+    for (let groupIndex = 0; groupIndex < normalizedGroups; groupIndex++) {
+      if (!assignments.includes(groupIndex)) {
+        let worstIndex = 0;
+        let worstDistance = -1;
+        vectors.forEach((vector, index) => {
+          const distance = hammingDistance(vector, centers[assignments[index]]);
+          if (distance > worstDistance) {
+            worstDistance = distance;
+            worstIndex = index;
+          }
+        });
+        assignments[worstIndex] = groupIndex;
+        centers[groupIndex] = vectors[worstIndex].slice();
+      }
+    }
+
+    return assignments;
+  }
+
+  function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount) {
+    const ones = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+    const totals = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+    const ambiguous = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(false));
+    const tieup = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+
+    for (let row = 0; row < matrix.length; row++) {
+      for (let column = 0; column < matrix[row].length; column++) {
+        const treadle = rowAssignments[row];
+        const shaft = columnAssignments[column];
+        totals[treadle][shaft]++;
+        if (matrix[row][column]) {
+          ones[treadle][shaft]++;
+        }
+      }
+    }
+
+    for (let treadle = 0; treadle < treadleCount; treadle++) {
+      for (let shaft = 0; shaft < shaftCount; shaft++) {
+        const total = totals[treadle][shaft];
+        const count = ones[treadle][shaft];
+        tieup[treadle][shaft] = total && count * 2 >= total ? 1 : 0;
+        ambiguous[treadle][shaft] = total > 0 && count * 2 === total;
+      }
+    }
+
+    return { tieup, ambiguous };
+  }
+
+  function rebalanceAssignments(assignments, groupCount) {
+    const counts = Array(groupCount).fill(0);
+    assignments.forEach(groupIndex => {
+      counts[groupIndex]++;
+    });
+
+    for (let groupIndex = 0; groupIndex < groupCount; groupIndex++) {
+      if (counts[groupIndex] > 0) {
+        continue;
+      }
+
+      let donorGroup = counts.findIndex(count => count > 1);
+      if (donorGroup < 0) {
+        donorGroup = 0;
+      }
+      const donorIndex = assignments.findIndex(value => value === donorGroup);
+      if (donorIndex >= 0) {
+        assignments[donorIndex] = groupIndex;
+        counts[donorGroup]--;
+        counts[groupIndex]++;
+      }
+    }
+
+    return assignments;
+  }
+
+  function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, currentAssignments) {
+    const nextAssignments = currentAssignments.slice();
+
+    for (let row = 0; row < matrix.length; row++) {
+      let bestTreadle = currentAssignments[row] ?? 0;
+      let bestMismatch = Number.POSITIVE_INFINITY;
+
+      for (let treadleIndex = 0; treadleIndex < treadleCount; treadleIndex++) {
+        let mismatch = 0;
+        for (let column = 0; column < matrix[row].length; column++) {
+          mismatch += matrix[row][column] === tieup[treadleIndex][columnAssignments[column]] ? 0 : 1;
+        }
+
+        if (mismatch < bestMismatch || (mismatch === bestMismatch && treadleIndex === currentAssignments[row])) {
+          bestMismatch = mismatch;
+          bestTreadle = treadleIndex;
+        }
+      }
+
+      nextAssignments[row] = bestTreadle;
+    }
+
+    return rebalanceAssignments(nextAssignments, treadleCount);
+  }
+
+  function updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, currentAssignments) {
+    const nextAssignments = currentAssignments.slice();
+
+    for (let column = 0; column < matrix[0].length; column++) {
+      let bestShaft = currentAssignments[column] ?? 0;
+      let bestMismatch = Number.POSITIVE_INFINITY;
+
+      for (let shaftIndex = 0; shaftIndex < shaftCount; shaftIndex++) {
+        let mismatch = 0;
+        for (let row = 0; row < matrix.length; row++) {
+          mismatch += matrix[row][column] === tieup[rowAssignments[row]][shaftIndex] ? 0 : 1;
+        }
+
+        if (mismatch < bestMismatch || (mismatch === bestMismatch && shaftIndex === currentAssignments[column])) {
+          bestMismatch = mismatch;
+          bestShaft = shaftIndex;
+        }
+      }
+
+      nextAssignments[column] = bestShaft;
+    }
+
+    return rebalanceAssignments(nextAssignments, shaftCount);
+  }
+
+  function trimGroupsToAssignments(rowAssignments, columnAssignments, tieup) {
+    const rowMap = new Map();
+    const columnMap = new Map();
+
+    rowAssignments.forEach(groupIndex => {
+      if (!rowMap.has(groupIndex)) {
+        rowMap.set(groupIndex, rowMap.size);
+      }
+    });
+    columnAssignments.forEach(groupIndex => {
+      if (!columnMap.has(groupIndex)) {
+        columnMap.set(groupIndex, columnMap.size);
+      }
+    });
+
+    const trimmedRows = rowAssignments.map(groupIndex => rowMap.get(groupIndex));
+    const trimmedColumns = columnAssignments.map(groupIndex => columnMap.get(groupIndex));
+    const usedRowGroups = Array.from(rowMap.keys());
+    const usedColumnGroups = Array.from(columnMap.keys());
+    const trimmedTieup = usedRowGroups.map(rowGroup =>
+      usedColumnGroups.map(columnGroup => (tieup[rowGroup]?.[columnGroup] ? 1 : 0))
+    );
+
+    return {
+      rowAssignments: trimmedRows,
+      columnAssignments: trimmedColumns,
+      tieup: trimmedTieup
+    };
+  }
+
+  function buildApproximateDrawdownFromAssignments(matrix, rowAssignments, columnAssignments, tieup) {
+    const pickCount = matrix.length;
+    const warpCount = matrix[0]?.length || 0;
+    return Array.from({ length: pickCount }, (_, row) =>
+      Array.from({ length: warpCount }, (_, column) => (tieup[rowAssignments[row]]?.[columnAssignments[column]] ? 1 : 0))
+    );
+  }
+
+  function chooseAmbiguousTieupValuesForClothlike(matrix, rowAssignments, columnAssignments, initialTieup, ambiguous) {
+    const referenceTolerance = useFloatToleranceInOptimization ? floatTolerance : 1;
+    const tieup = initialTieup.map(row => row.slice());
+    const ambiguousCells = [];
+
+    ambiguous.forEach((row, treadleIndex) => {
+      row.forEach((isAmbiguous, shaftIndex) => {
+        if (isAmbiguous) {
+          ambiguousCells.push({ treadleIndex, shaftIndex });
+        }
+      });
+    });
+
+    if (!ambiguousCells.length) {
+      const drawdown = buildApproximateDrawdownFromAssignments(matrix, rowAssignments, columnAssignments, tieup);
+      return { tieup, drawdown };
+    }
+
+    let currentDrawdown = buildApproximateDrawdownFromAssignments(matrix, rowAssignments, columnAssignments, tieup);
+    let currentAnalysis = computeDrawdownClothlikeAnalysis(currentDrawdown, referenceTolerance);
+
+    ambiguousCells.forEach(({ treadleIndex, shaftIndex }) => {
+      const originalValue = tieup[treadleIndex][shaftIndex];
+      let bestValue = originalValue;
+      let bestDrawdown = currentDrawdown;
+      let bestAnalysis = currentAnalysis;
+
+      for (const candidateValue of [0, 1]) {
+        tieup[treadleIndex][shaftIndex] = candidateValue;
+        const candidateDrawdown = buildApproximateDrawdownFromAssignments(matrix, rowAssignments, columnAssignments, tieup);
+        const candidateAnalysis = computeDrawdownClothlikeAnalysis(candidateDrawdown, referenceTolerance);
+
+        if (
+          candidateAnalysis.score > bestAnalysis.score ||
+          (candidateAnalysis.score === bestAnalysis.score && candidateAnalysis.worstFloatLength < bestAnalysis.worstFloatLength)
+        ) {
+          bestValue = candidateValue;
+          bestDrawdown = candidateDrawdown;
+          bestAnalysis = candidateAnalysis;
+        }
+      }
+
+      tieup[treadleIndex][shaftIndex] = bestValue;
+      currentDrawdown = bestDrawdown;
+      currentAnalysis = bestAnalysis;
+    });
+
+    return {
+      tieup,
+      drawdown: currentDrawdown
+    };
+  }
+
+  function mergeDuplicateShafts(tieup, columnAssignments) {
+    const shaftCount = tieup[0]?.length || 0;
+    const shaftKeyMap = new Map();
+    const oldToNew = Array(shaftCount).fill(0);
+
+    for (let shaft = 0; shaft < shaftCount; shaft++) {
+      const key = tieup.map(row => row[shaft]).join("");
+      if (!shaftKeyMap.has(key)) {
+        shaftKeyMap.set(key, shaftKeyMap.size);
+      }
+      oldToNew[shaft] = shaftKeyMap.get(key);
+    }
+
+    const newShaftCount = shaftKeyMap.size || 1;
+    const mergedTieup = tieup.map(row => {
+      const nextRow = Array(newShaftCount).fill(0);
+      for (let shaft = 0; shaft < shaftCount; shaft++) {
+        nextRow[oldToNew[shaft]] = row[shaft];
+      }
+      return nextRow;
+    });
+
+    return {
+      tieup: mergedTieup,
+      columnAssignments: columnAssignments.map(groupIndex => oldToNew[groupIndex])
+    };
+  }
+
+  function mergeDuplicateTreadles(tieup, rowAssignments) {
+    const treadleKeyMap = new Map();
+    const oldToNew = Array(tieup.length).fill(0);
+
+    tieup.forEach((row, treadleIndex) => {
+      const key = row.join("");
+      if (!treadleKeyMap.has(key)) {
+        treadleKeyMap.set(key, treadleKeyMap.size);
+      }
+      oldToNew[treadleIndex] = treadleKeyMap.get(key);
+    });
+
+    const mergedTieup = Array.from(treadleKeyMap.keys(), key => key.split("").map(value => (value === "1" ? 1 : 0)));
+
+    return {
+      tieup: mergedTieup,
+      rowAssignments: rowAssignments.map(groupIndex => oldToNew[groupIndex])
+    };
+  }
+
+  function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, tieup) {
+    let normalized = trimGroupsToAssignments(rowAssignments, columnAssignments, tieup);
+    let merged = mergeDuplicateShafts(normalized.tieup, normalized.columnAssignments);
+    normalized = trimGroupsToAssignments(normalized.rowAssignments, merged.columnAssignments, merged.tieup);
+    merged = mergeDuplicateTreadles(normalized.tieup, normalized.rowAssignments);
+    normalized = trimGroupsToAssignments(merged.rowAssignments, normalized.columnAssignments, merged.tieup);
+
+    const shaftCount = Math.max(1, normalized.tieup[0]?.length || 0);
+    const warpCount = matrix[0]?.length || 0;
+    const pickCount = matrix.length;
+    const threading = Array.from({ length: shaftCount }, () => Array(warpCount).fill(0));
+    normalized.columnAssignments.forEach((shaftIndex, column) => {
+      threading[shaftIndex][column] = 1;
+    });
+
+    const finalTieupStats = computeTieupStatsFromAssignments(
+      matrix,
+      normalized.rowAssignments,
+      normalized.columnAssignments,
+      Math.max(1, normalized.tieup.length || 0),
+      shaftCount
+    );
+    const resolvedTieup = chooseAmbiguousTieupValuesForClothlike(
+      matrix,
+      normalized.rowAssignments,
+      normalized.columnAssignments,
+      finalTieupStats.tieup,
+      finalTieupStats.ambiguous
+    );
+    const rowPatterns = Array.from({ length: pickCount }, (_, row) =>
+      resolvedTieup.tieup[normalized.rowAssignments[row]]?.slice() || Array(shaftCount).fill(0)
+    );
+    const originalTreadleCount = Math.max(1, resolvedTieup.tieup.length || 0);
+    const oneHot = buildOneHotTreadleRepresentation(rowPatterns);
+    let selected = compressTreadleRepresentation(rowPatterns, maxPressedTreadles, originalTreadleCount);
+    if (!selected) {
+      selected = oneHot.tieup.length <= maxTreadles ? oneHot : null;
+    }
+    if (!selected) {
+      return null;
+    }
+
+    const compressedTieup = selected.tieup;
+    const treadling = selected.treadling;
+    const treadleCount = Math.max(1, compressedTieup.length || 0);
+    const drawdown = rebuildDrawdown(threading, compressedTieup, treadling);
+    const mismatchCount = countMatrixMismatches(matrix, drawdown);
+
+    return {
+      shafts: shaftCount,
+      treadles: treadleCount,
+      threading,
+      tieup: compressedTieup,
+      treadling,
+      drawdown,
+      mismatchCount,
+      exactMatch: mismatchCount === 0,
+      matchRatio: getMatchRatio(matrix, mismatchCount),
+      clothlikeAnalysis: computeDrawdownClothlikeAnalysis(drawdown, floatTolerance),
+      signature: serializeDraftSignature({ threading, tieup: compressedTieup, treadling }),
+      maxPressedUsed: selected.maxPressedUsed || 0
+    };
+  }
+
+  function optimizeApproximateDraft(matrix, shaftCount, treadleCount, columnStrategy, rowStrategy, seed = 1) {
+    const columnVectors = getColumnVectors(matrix);
+    const rowVectors = getRowVectors(matrix);
+    let columnAssignments = createInitialAssignments(columnVectors, shaftCount, columnStrategy, seed);
+    let rowAssignments = createInitialAssignments(rowVectors, treadleCount, rowStrategy, seed + 17);
+    const iterationLimit = nextWarp * nextPicks > 9000 ? 6 : 10;
+    let signature = "";
+
+    for (let iteration = 0; iteration < iterationLimit; iteration++) {
+      let tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+      rowAssignments = updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, rowAssignments);
+      tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+      columnAssignments = updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, columnAssignments);
+      tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+
+      const nextSignature = `${rowAssignments.join(",")}|${columnAssignments.join(",")}|${tieup.flat().join("")}`;
+      if (nextSignature === signature) {
+        break;
+      }
+      signature = nextSignature;
+    }
+
+    const finalTieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount).tieup;
+    return buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, finalTieup);
+  }
+
+  function decorateDraftOption(option, originalMatrix, repairResult) {
+    if (!option) {
+      return null;
+    }
+
+    const mismatchCount = countMatrixMismatches(originalMatrix, option.drawdown);
+    return {
+      ...option,
+      exactMatch: mismatchCount === 0,
+      mismatchCount,
+      matchRatio: getMatchRatio(originalMatrix, mismatchCount),
+      engineMetrics: computeDraftEngineMetrics(originalMatrix, option.drawdown),
+      clothlikeAnalysis: computeDrawdownClothlikeAnalysis(option.drawdown, floatTolerance),
+      repairedCellCount: repairResult.repairedCellCount
+    };
+  }
+
+  function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
+    const repairResult = useFloatToleranceInOptimization
+      ? repairMatrixFloatStress(matrix, floatTolerance)
+      : {
+          matrix,
+          repairedCellCount: 0,
+          clothlikeAnalysis: computeDrawdownClothlikeAnalysis(matrix, floatTolerance)
+        };
+    const optimizationMatrix = repairResult.matrix;
+    const exactDraft = decorateDraftOption(generateExactDraftFromDrawdown(optimizationMatrix), matrix, repairResult);
+
+    if (
+      exactDraft.shafts <= shaftLimit &&
+      exactDraft.treadles <= treadleLimit &&
+      exactDraft.maxPressedUsed <= maxPressedTreadles
+    ) {
+      return [exactDraft];
+    }
+
+    const clampedShaftLimit = Math.max(1, Math.min(shaftLimit, optimizationMatrix[0]?.length || 1));
+    const clampedTreadleLimit = Math.max(1, Math.min(treadleLimit, optimizationMatrix.length || 1));
+    const configs = [
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "farthest", seed: 11 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "density", seed: 23 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "farthest", seed: 31 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 37 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "random", seed: 43 },
+      { shafts: Math.max(1, clampedShaftLimit - 1), treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "farthest", seed: 41 },
+      { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "farthest", rowStrategy: "density", seed: 53 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "random", seed: 67 },
+      { shafts: Math.max(1, clampedShaftLimit - 1), treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "random", rowStrategy: "random", seed: 71 },
+      { shafts: Math.max(1, clampedShaftLimit - 2), treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 79 },
+      { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 2), columnStrategy: "random", rowStrategy: "density", seed: 83 }
+    ].filter(
+      (config, index, array) =>
+        config.shafts >= 1 &&
+        config.treadles >= 1 &&
+        array.findIndex(other =>
+          other.shafts === config.shafts &&
+          other.treadles === config.treadles &&
+          other.columnStrategy === config.columnStrategy &&
+          other.rowStrategy === config.rowStrategy
+        ) === index
+    );
+
+    const candidateMap = new Map();
+
+    configs.forEach(config => {
+      const candidate = decorateDraftOption(
+        optimizeApproximateDraft(optimizationMatrix, config.shafts, config.treadles, config.columnStrategy, config.rowStrategy, config.seed),
+        matrix,
+        repairResult
+      );
+
+      if (!candidate) {
+        return;
+      }
+
+      if (candidate.treadles > treadleLimit || candidate.shafts > shaftLimit || candidate.maxPressedUsed > maxPressedTreadles) {
+        return;
+      }
+
+      const existing = candidateMap.get(candidate.signature);
+      if (
+        !existing ||
+        compareDraftOptions(candidate, existing) < 0 ||
+        (compareDraftOptions(candidate, existing) === 0 && candidate.shafts + candidate.treadles < existing.shafts + existing.treadles)
+      ) {
+        candidateMap.set(candidate.signature, candidate);
+      }
+    });
+
+    const allCandidates = Array.from(candidateMap.values()).sort((left, right) => {
+      if (useFloatToleranceInOptimization) {
+        const floatComparison =
+          Math.max(0, left.clothlikeAnalysis.worstFloatLength - floatTolerance) -
+          Math.max(0, right.clothlikeAnalysis.worstFloatLength - floatTolerance);
+        if (floatComparison !== 0) {
+          return floatComparison;
+        }
+      }
+
+      return (
+        compareDraftOptions(left, right) ||
+        (left.shafts + left.treadles) - (right.shafts + right.treadles) ||
+        right.matchRatio - left.matchRatio
+      );
+    });
+
+    if (!allCandidates.length) {
+      return [exactDraft];
+    }
+
+    if (!useFloatToleranceInOptimization) {
+      return allCandidates;
+    }
+
+    const stressSafeCandidates = allCandidates.filter(candidate => candidate.clothlikeAnalysis.worstFloatLength <= floatTolerance);
+    return stressSafeCandidates.length ? stressSafeCandidates : allCandidates;
+  }
+
+  const generatedOptions = buildConstrainedDraftOptions(targetMatrix, maxShafts, maxTreadles);
+  const selectedOptionIndex = Math.max(
+    0,
+    Math.min(Number.parseInt(inverseState.selectedOptionIndex, 10) || 0, generatedOptions.length - 1)
+  );
+  const selectedOption = generatedOptions[selectedOptionIndex] || generatedOptions[0];
+
+  if (!selectedOption) {
+    throw new Error("Unable to generate a forward draft from that inverse draft.");
+  }
+
+  const nextPatternColors = createDefaultPatternColors();
+  const warpColorId = nextPatternColors[0]?.id || "pattern-color-1";
+  const weftColorId = nextPatternColors[1]?.id || warpColorId;
+  const nextDraftName = normalizeDraftName(data?.meta?.draftName ?? getDraftNameFromFilename(filename), defaultDraftName);
+
+  return {
+    data: {
+      format: "weaving-draft-data",
+      version: 3,
+      meta: {
+        draftName: nextDraftName
+      },
+      draft: {
+        shafts: selectedOption.shafts,
+        treadles: selectedOption.treadles,
+        warp: nextWarp,
+        picks: nextPicks,
+        threading: selectedOption.threading.map(row => row.map(value => (value ? warpColorId : 0))),
+        treadling: selectedOption.treadling.map(row => row.map(value => (value ? weftColorId : 0))),
+        tieup: selectedOption.tieup.map(row => row.slice()),
+        patternColors: nextPatternColors,
+        activePatternColorId: warpColorId,
+        nextPatternColorNumber: getNextPatternColorNumberFromPalette(nextPatternColors)
+      },
+      preview: {
+        ...getPreviewRepeatValues(),
+        renderMode: getPreviewRenderMode(),
+        sett: getPreviewSettValue(),
+        backgroundColor: getPreviewBackgroundColor()
+      },
+      ui: {
+        draftCellSize,
+        draftRenderStyle: getDraftRenderStyle()
+      }
+    },
+    dimensionLimitChanged: limitedDimensions.changed
+  };
+}
+
 function buildDraftHistoryEntryData() {
   return {
     format: "weaving-draft-data",
@@ -2383,9 +3675,17 @@ function handleDraftFileChange(event) {
   reader.onload = loadEvent => {
     try {
       const parsed = JSON.parse(String(loadEvent.target?.result || ""));
-      applyLoadedDraftData(parsed, {
-        draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
-      });
+      if (isInverseDraftData(parsed)) {
+        const converted = buildDraftDataFromInverseState(parsed, { filename: file.name });
+        applyLoadedDraftData(converted.data);
+        if (converted.dimensionLimitChanged) {
+          showDraftLimitAlert("The inverse draft was reduced to fit the editor limits.");
+        }
+      } else {
+        applyLoadedDraftData(parsed, {
+          draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
+        });
+      }
     } catch (error) {
       window.alert(error?.message || "Unable to open that draft file.");
     } finally {

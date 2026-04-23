@@ -235,6 +235,39 @@
       text-decoration: underline;
     }
 
+    .faq-accordion .accordion-item {
+      border: 1px solid rgba(47, 36, 29, 0.08);
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+    }
+
+    .faq-accordion .accordion-item + .accordion-item {
+      margin-top: 0.9rem;
+    }
+
+    .faq-accordion .accordion-button {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: none;
+    }
+
+    .faq-accordion .accordion-button:not(.collapsed) {
+      background: rgba(170, 74, 43, 0.08);
+      color: var(--accent-dark);
+      box-shadow: none;
+    }
+
+    .faq-accordion .accordion-button:focus {
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    .faq-accordion .accordion-body {
+      color: rgba(47, 36, 29, 0.82);
+    }
+
     @media (max-width: 991.98px) {
       .hero-card {
         padding: 2rem !important;
@@ -262,7 +295,7 @@
             <div class="eyebrow mb-3">Weaving Tool</div>
             <h1 class="display-title fw-semibold mb-3">Draft cloth structures forward or backward.</h1>
             <p class="lead-copy text-secondary mb-4">
-              Open the main drafter to build threading, tie-up, treadling, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it.
+              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it. The two tools can also pass work back and forth through saved <code>.wdd</code> and <code>.wdi</code> files.
             </p>
             <div class="d-flex flex-wrap gap-3 align-items-center">
               <a class="btn btn-drafter" href="drafter.html">Open Drafter</a>
@@ -274,62 +307,6 @@
     </section>
 
     <section class="hero-shell mx-auto mt-5">
-      <div class="info-card p-4 p-lg-5">
-        <div class="row g-4 align-items-start">
-          <div class="col-lg-4">
-            <p class="eyebrow mb-3">How To Use It</p>
-            <h2 class="section-title mb-3">A quick weaving draft walkthrough.</h2>
-            <p class="text-secondary mb-0">
-              Start by sizing the draft, then build the structure, add color, and refine the layout with insert controls.
-            </p>
-          </div>
-          <div class="col-lg-8">
-            <div class="walkthrough-stack">
-              <div class="row walkthrough-grid">
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">1</div>
-                    <h3 class="h5">Set your draft size</h3>
-                    <p class="text-secondary mb-0">
-                      Use the controls at the top to choose the number of shafts, treadles, warp ends, and picks. Changing these values in the current editor preserves existing data when possible.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">2</div>
-                    <h3 class="h5">Build the structure</h3>
-                    <p class="text-secondary mb-0">
-                      Place each warp end on a shaft, then connect treadles to shafts in the tie-up. The tie-up stays structural and prints as solid black.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">3</div>
-                    <h3 class="h5">Add warp and weft color</h3>
-                    <p class="text-secondary mb-0">
-                      Use the pattern colors row to add or edit colors, select one, then click threading and treadling cells to assign warp and pick colors.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">4</div>
-                    <h3 class="h5">Insert ends and picks without losing work</h3>
-                    <p class="text-secondary mb-0">
-                      Use the small <code>+</code> and <code>-</code> controls above the threading grid and to the right of the treadling grid to insert or remove columns and rows while keeping the rest of the draft intact.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="hero-shell mx-auto mt-4">
       <div class="info-card p-4 p-lg-5">
         <div class="row g-4 align-items-start">
           <div class="col-lg-4">
@@ -356,6 +333,249 @@
                 </div>
                 <div class="draft-map-block draft-map-treadling">
                   <span class="draft-map-label">Treadling</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-shell mx-auto mt-4">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">Using The Drafter</p>
+            <h2 class="section-title mb-3">Build a draft directly.</h2>
+            <p class="text-secondary mb-0">
+              The main drafter is for composing a weaving draft section by section, adjusting colors and yarn weights, and seeing the drawdown update immediately.
+            </p>
+          </div>
+          <div class="col-lg-8">
+            <div class="walkthrough-stack">
+              <div class="row walkthrough-grid">
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">1</div>
+                    <h3 class="h5">Set the frame of the draft</h3>
+                    <p class="text-secondary mb-0">
+                      Choose the draft name, then set shafts, treadles, warp ends, and picks from the toolbar. The editor tries to preserve existing work as those counts change.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">2</div>
+                    <h3 class="h5">Build the structure</h3>
+                    <p class="text-secondary mb-0">
+                      Click the threading to assign each warp end to a shaft, fill the tie-up to decide which shafts lift together, and click treadling cells to place treadles on each pick.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">3</div>
+                    <h3 class="h5">Add yarns, color, and weight</h3>
+                    <p class="text-secondary mb-0">
+                      Use the yarn controls to add colors, edit their hex values, and set yarn thickness. Select a yarn, then paint threading and treadling cells to assign warp and weft colors.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">4</div>
+                    <h3 class="h5">Edit without rebuilding</h3>
+                    <p class="text-secondary mb-0">
+                      Use the small <code>+</code> and <code>-</code> controls around the grid to insert or remove warp ends and picks while keeping surrounding data in place. Zoom changes the draft cell size without changing the page layout.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">5</div>
+                    <h3 class="h5">Switch the drawdown view</h3>
+                    <p class="text-secondary mb-0">
+                      Use <strong>Structure</strong> for black-and-white interlacement, <strong>Color</strong> for the colored drawdown, and <strong>Interlacement</strong> for the shaded thread-style preview directly in the draft panel.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">6</div>
+                    <h3 class="h5">Save, reopen, and recover</h3>
+                    <p class="text-secondary mb-0">
+                      <code>Save</code> writes a <code>.wdd</code> file, <code>Open</code> can reopen either <code>.wdd</code> drafts or generated <code>.wdi</code> inverse drafts, and the page also keeps local autosave plus undo and redo history while you work.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-shell mx-auto mt-4">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">Using The Inverse Drafter</p>
+            <h2 class="section-title mb-3">Start from a target cloth.</h2>
+            <p class="text-secondary mb-0">
+              The inverse drafter lets you sketch the drawdown you want first, then search for draft structures that approximate or exactly reproduce it under chosen constraints.
+            </p>
+          </div>
+          <div class="col-lg-8">
+            <div class="walkthrough-stack">
+              <div class="row walkthrough-grid">
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">1</div>
+                    <h3 class="h5">Start from a target</h3>
+                    <p class="text-secondary mb-0">
+                      Paint the target drawdown directly, or open a saved <code>.wdi</code> inverse draft. You can also open a <code>.wdd</code> forward draft and the inverse tool will use that draft’s drawdown as the new target.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">2</div>
+                    <h3 class="h5">Resize and edit the target</h3>
+                    <p class="text-secondary mb-0">
+                      Change warp ends and picks from the toolbar, use the target’s insert and delete controls to grow or trim rows and columns, and zoom the target if you need a closer editing view.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">3</div>
+                    <h3 class="h5">Tune the optimizer</h3>
+                    <p class="text-secondary mb-0">
+                      The optimizer panel sets the structural limits the solver is allowed to use: engine, max shafts, max treadles, max pressed treadles, float tolerance, and whether tolerance should affect the optimization itself.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">4</div>
+                    <h3 class="h5">Read stress and difference overlays</h3>
+                    <p class="text-secondary mb-0">
+                      Use <code>Show Float Stress</code> to highlight long floats and <code>Show Diff</code> to outline where the current generated draft differs from the target, which helps explain why some options are better than others.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">5</div>
+                    <h3 class="h5">Compare generated options</h3>
+                    <p class="text-secondary mb-0">
+                      The option buttons between the panels are sorted by the currently selected optimizer settings and engine. Option 1 is always the best current result, and switching engines can change which structure rises to the top.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">6</div>
+                    <h3 class="h5">Continue into the main drafter</h3>
+                    <p class="text-secondary mb-0">
+                      Save the inverse draft as <code>.wdi</code> to keep the target and optimizer state. Opening that same file in the main drafter loads the currently selected generated draft so you can continue coloring and refining it there.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-shell mx-auto mt-4">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">FAQ</p>
+            <h2 class="section-title mb-3">Common questions.</h2>
+            <p class="text-secondary mb-0">
+              A few quick answers for the most common points of confusion when moving between the forward drafter and the inverse drafter.
+            </p>
+          </div>
+          <div class="col-lg-8">
+            <div class="accordion faq-accordion" id="faqAccordion">
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqOneHeading">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
+                    What is the difference between the drafter and the inverse drafter?
+                  </button>
+                </h3>
+                <div id="faqOne" class="accordion-collapse collapse show" aria-labelledby="faqOneHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    The main drafter starts from structure: you build threading, tie-up, treadling, yarn color, and yarn thickness directly. The inverse drafter starts from the drawdown you want to see, then searches for draft structures that fit that target under the optimizer limits you set.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqTwoHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
+                    What file type should I use?
+                  </button>
+                </h3>
+                <div id="faqTwo" class="accordion-collapse collapse" aria-labelledby="faqTwoHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Use <code>.wdd</code> for the main drafter and <code>.wdi</code> for the inverse drafter. The tools can also cross-open those formats: opening a <code>.wdi</code> in the main drafter loads the currently selected generated draft, and opening a <code>.wdd</code> in the inverse drafter uses its drawdown as a target.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqThreeHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
+                    Why does the inverse drafter show several options instead of one answer?
+                  </button>
+                </h3>
+                <div id="faqThree" class="accordion-collapse collapse" aria-labelledby="faqThreeHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Many targets can be approximated in more than one reasonable way, especially when the shaft, treadle, or float limits are tight. The inverse drafter ranks several candidates so you can compare structure, cloth-likeness, and how closely each option matches the target.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqFourHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
+                    Why is the generated draft not always an exact match?
+                  </button>
+                </h3>
+                <div id="faqFour" class="accordion-collapse collapse" aria-labelledby="faqFourHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    The optimizer may be restricted by maximum shafts, maximum treadles, maximum simultaneously pressed treadles, float tolerance, or the selected engine. Loosening those limits often improves the match, while keeping them tight can produce drafts that are more practical or more cloth-like but less exact.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqFiveHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFive" aria-expanded="false" aria-controls="faqFive">
+                    Will refreshing the page make me lose my work?
+                  </button>
+                </h3>
+                <div id="faqFive" class="accordion-collapse collapse" aria-labelledby="faqFiveHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    Usually no. Both tools keep local autosave in the browser and also support undo and redo. Saving a file is still the safest way to keep a snapshot you can move between tabs, machines, or tools later.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h3 class="accordion-header" id="faqSixHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSix" aria-expanded="false" aria-controls="faqSix">
+                    What do Float Stress and Diff mean in the inverse drafter?
+                  </button>
+                </h3>
+                <div id="faqSix" class="accordion-collapse collapse" aria-labelledby="faqSixHeading" data-bs-parent="#faqAccordion">
+                  <div class="accordion-body">
+                    <code>Float Stress</code> highlights places where long warp or weft floats make the cloth less balanced. <code>Diff</code> marks where the selected generated draft differs from the target you drew. Together they help explain both match quality and fabric behavior.
+                  </div>
                 </div>
               </div>
             </div>
