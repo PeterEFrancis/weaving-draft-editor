@@ -21,6 +21,7 @@
     --cell-size: 20px;
     --cell-gap: 2px;
     --grid-gap: 0px;
+    --draft-section-gap: 0.5em;
     --preview-cell-size: 10px;
     --preview-render-scale: 2;
     --control-gap: calc(5 * var(--cell-gap));
@@ -946,6 +947,35 @@
     background: transparent !important;
   }
 
+  .draft-section-col-left {
+    padding-right: var(--draft-section-gap);
+  }
+
+  .draft-section-col-right {
+    padding-left: var(--draft-section-gap);
+  }
+
+  .draft-section-row-top {
+    padding-bottom: var(--draft-section-gap);
+  }
+
+  .draft-section-row-bottom {
+    padding-top: var(--draft-section-gap);
+  }
+
+  .draft-section-cell {
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .draft-stage #threading,
+  .draft-stage #tieup,
+  .draft-stage #drawdown,
+  .draft-stage #treadling {
+    outline: var(--cell-gap) solid var(--ink);
+    background: rgba(255, 255, 255, 0.3);
+  }
+
   .grid {
     display: grid;
     gap: var(--grid-gap);
@@ -1174,6 +1204,12 @@
     align-items: flex-start;
   }
 
+  .shaft-side-wrap {
+    display: flex;
+    align-items: flex-start;
+    width: fit-content;
+  }
+
   .pick-side-wrap {
     display: flex;
     align-items: flex-start;
@@ -1211,10 +1247,22 @@
     transform: translate(50%, -50%);
   }
 
+  .insert-btn-warp-plus-left {
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .insert-btn-pick-plus {
     left: 50%;
     top: 0;
     transform: translate(-50%, -50%);
+  }
+
+  .insert-btn-pick-plus-bottom {
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
   }
 
   .draft-print-modal .modal-content {
@@ -1509,7 +1557,7 @@
             <table class="draft">
               <tr class="ruler-row">
                 <th class="ghost-cell"></th>
-                <th>
+                <th class="draft-section-col-left">
                   <div id="warp-ruler" class="warp-ruler"></div>
                 </th>
                 <th class="ghost-cell"></th>
@@ -1518,31 +1566,38 @@
 
               <tr class="toolbar-row">
                 <th class="ghost-cell"></th>
-                <th>
+                <th class="draft-section-col-left">
                   <div id="warp-inserts" class="warp-toolbar"></div>
                 </th>
-                <th></th>
+                <th class="draft-section-col-right">
+                  <div id="treadle-inserts" class="warp-toolbar"></div>
+                </th>
                 <th class="ghost-cell"></th>
               </tr>
 
               <tr>
-                <td class="ghost-cell"><div id="heddle-count"></div></td>
-                <td><div id="threading" class="grid"></div></td>
-                <td><div id="tieup" class="grid"></div></td>
+                <td class="ghost-cell">
+                  <div class="shaft-side-wrap">
+                    <div id="heddle-count"></div>
+                    <div id="shaft-inserts" class="pick-toolbar"></div>
+                  </div>
+                </td>
+                <td class="draft-section-cell draft-section-col-left draft-section-row-top"><div id="threading" class="grid"></div></td>
+                <td class="draft-section-cell draft-section-col-right draft-section-row-top"><div id="tieup" class="grid"></div></td>
                 <td class="ghost-cell"></td>
               </tr>
 
               <tr>
                 <td class="ghost-cell"></td>
-                <td>
+                <td class="draft-section-cell draft-section-col-left draft-section-row-bottom">
                   <div id="drawdown" class="grid"></div>
                 </td>
-                <td>
+                <td class="draft-section-cell draft-section-col-right draft-section-row-bottom">
                   <div class="pick-wrap">
                     <div id="treadling" class="grid"></div>
                   </div>
                 </td>
-                <td class="ghost-cell">
+                <td class="ghost-cell draft-section-row-bottom">
                   <div class="pick-side-wrap">
                     <div id="pick-inserts" class="pick-toolbar"></div>
                     <div id="pick-ruler" class="pick-ruler"></div>
@@ -6448,8 +6503,10 @@ function renderDraftStage() {
   renderWarpRuler();
   renderPickRuler();
   renderWarpToolbar();
+  renderTreadleToolbar();
   renderPickToolbar();
   renderHeddleCount();
+  renderShaftToolbar();
   renderThreading();
   renderTieup();
   renderTreadling();
@@ -6599,6 +6656,11 @@ function getDrawdownFacedBaseColor(cellState, renderStyle) {
   return cellState?.frontColor || "#ffffff";
 }
 
+function getFacedExpansionWeight(weightValue) {
+  const normalizedWeight = Math.max(0.1, Number(weightValue) || 1);
+  return Math.exp(normalizedWeight - 1);
+}
+
 function getTrackEdges(sizes) {
   const edges = [0];
   let offset = 0;
@@ -6626,7 +6688,7 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
         seeds.push({
           color: state.warpColor || state.frontColor || "#ffffff",
           center: columnEdges[warpIndex] + columnWidths[warpIndex] / 2,
-          weight: Math.max(0.1, Number(state.warpWeight) || 1)
+          weight: getFacedExpansionWeight(state.warpWeight)
         });
       }
 
@@ -6677,7 +6739,7 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
         seeds.push({
           color: state.weftColor || state.frontColor || "#ffffff",
           center: rowEdges[pickIndex] + rowHeights[pickIndex] / 2,
-          weight: Math.max(0.1, Number(state.weftWeight) || 1)
+          weight: getFacedExpansionWeight(state.weftWeight)
         });
       }
 
@@ -7228,6 +7290,56 @@ function renderWarpToolbar() {
   }
 }
 
+function renderTreadleToolbar() {
+  const div = document.getElementById("treadle-inserts");
+  div.innerHTML = "";
+  div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
+
+  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
+    const cell = document.createElement("div");
+    cell.className = "warp-insert-cell";
+    setElementSize(cell, draftCellSize, draftCellSize);
+
+    const plus = document.createElement("button");
+    plus.className = "insert-btn insert-btn-plus insert-btn-warp-plus-left";
+    plus.textContent = "+";
+
+    const minus = document.createElement("button");
+    minus.className = "insert-btn insert-btn-minus insert-btn-warp-minus";
+    minus.textContent = "−";
+    sizeWarpToolbarButtons(plus, minus);
+
+    plus.onclick = () => {
+      tieup.splice(treadleIndex, 0, Array(shafts).fill(0));
+      treadling.forEach(row => {
+        row.splice(treadleIndex, 0, 0);
+      });
+      treadles++;
+      document.getElementById("treadles").value = treadles;
+      renderAll();
+    };
+
+    minus.onclick = () => {
+      if (treadles <= 1) return;
+      if (tieup.length > treadleIndex) {
+        tieup.splice(treadleIndex, 1);
+      }
+      treadling.forEach(row => {
+        if (row.length > treadleIndex) {
+          row.splice(treadleIndex, 1);
+        }
+      });
+      treadles--;
+      document.getElementById("treadles").value = treadles;
+      renderAll();
+    };
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    div.appendChild(cell);
+  }
+}
+
 function renderWarpRuler() {
   const div = document.getElementById("warp-ruler");
   const columnWidths = getDrawdownColumnWidthsForRender(getDraftRenderStyle());
@@ -7312,6 +7424,58 @@ function renderPickToolbar() {
       if (treadling.length > j) treadling.splice(j, 1);
       picks--;
       document.getElementById("picks").value = picks;
+      renderAll();
+    };
+
+    cell.appendChild(plus);
+    cell.appendChild(minus);
+    div.appendChild(cell);
+  }
+}
+
+function renderShaftToolbar() {
+  const div = document.getElementById("shaft-inserts");
+  const rowHeights = Array.from({ length: shafts }, () => draftCellSize);
+  div.innerHTML = "";
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+  for (let displayRow = 0; displayRow < shafts; displayRow++) {
+    const shaftIndex = shafts - 1 - displayRow;
+    const cell = document.createElement("div");
+    cell.className = "pick-insert-cell";
+    setElementSize(cell, draftCellSize, rowHeights[displayRow]);
+
+    const plus = document.createElement("button");
+    plus.className = "insert-btn insert-btn-plus insert-btn-pick-plus-bottom";
+    plus.textContent = "+";
+
+    const minus = document.createElement("button");
+    minus.className = "insert-btn insert-btn-minus insert-btn-pick-minus";
+    minus.textContent = "−";
+    sizePickToolbarButtons(plus, minus);
+
+    plus.onclick = () => {
+      threading.splice(shaftIndex, 0, Array(warp).fill(0));
+      tieup.forEach(row => {
+        row.splice(shaftIndex, 0, 0);
+      });
+      shafts++;
+      document.getElementById("shafts").value = shafts;
+      renderAll();
+    };
+
+    minus.onclick = () => {
+      if (shafts <= 1) return;
+      if (threading.length > shaftIndex) {
+        threading.splice(shaftIndex, 1);
+      }
+      tieup.forEach(row => {
+        if (row.length > shaftIndex) {
+          row.splice(shaftIndex, 1);
+        }
+      });
+      shafts--;
+      document.getElementById("shafts").value = shafts;
       renderAll();
     };
 
