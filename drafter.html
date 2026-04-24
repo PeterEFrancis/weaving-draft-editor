@@ -139,9 +139,9 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
-    overflow: auto;
+    overflow: visible;
     gap: 0.85rem;
   }
 
@@ -678,8 +678,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
-    min-height: min(18rem, 40vh);
+    flex: 0 0 auto;
+    min-height: 0;
+    height: auto;
     overflow: hidden;
     padding: 0;
     border-radius: 1.15rem;
@@ -6488,15 +6489,65 @@ document.getElementById("draft-print-modal").addEventListener("hidden.bs.modal",
 });
 
 const repeatPreviewScroll = document.getElementById("repeat-preview-scroll");
+const pageShellElement = document.querySelector(".page-shell");
+const workspaceToolbarElement = document.querySelector(".workspace-toolbar");
+const draftStageElement = document.querySelector(".draft-stage");
+let draftStageHeightFrame = 0;
+
+function updateDraftStageHeight() {
+  if (!draftStageElement) {
+    return;
+  }
+
+  draftStageElement.style.height = "";
+
+  const shellStyles = pageShellElement ? getComputedStyle(pageShellElement) : null;
+  const shellPaddingBottom = Number.parseFloat(shellStyles?.paddingBottom || "0") || 0;
+  const viewportBottom = window.innerHeight - shellPaddingBottom;
+  const stageTop = draftStageElement.getBoundingClientRect().top;
+  const remainingHeight = Math.max(0, Math.floor(viewportBottom - stageTop));
+
+  draftStageElement.style.height = `${remainingHeight}px`;
+}
+
+function scheduleDraftStageHeightUpdate() {
+  if (draftStageHeightFrame) {
+    cancelAnimationFrame(draftStageHeightFrame);
+  }
+
+  draftStageHeightFrame = requestAnimationFrame(() => {
+    draftStageHeightFrame = requestAnimationFrame(() => {
+      draftStageHeightFrame = 0;
+      updateDraftStageHeight();
+    });
+  });
+}
 
 if ("ResizeObserver" in window) {
   const repeatPreviewResizeObserver = new ResizeObserver(() => {
     renderRepeatPreview();
   });
   repeatPreviewResizeObserver.observe(repeatPreviewScroll);
+
+  const draftStageResizeObserver = new ResizeObserver(() => {
+    scheduleDraftStageHeightUpdate();
+  });
+
+  if (pageShellElement) {
+    draftStageResizeObserver.observe(pageShellElement);
+  }
+
+  if (workspaceToolbarElement) {
+    draftStageResizeObserver.observe(workspaceToolbarElement);
+  }
 } else {
-  window.addEventListener("resize", renderRepeatPreview);
+  window.addEventListener("resize", () => {
+    renderRepeatPreview();
+    scheduleDraftStageHeightUpdate();
+  });
 }
+
+window.addEventListener("load", scheduleDraftStageHeightUpdate);
 
 function renderDraftStage() {
   updateDraftDimensionLimitsUI();
@@ -6511,12 +6562,14 @@ function renderDraftStage() {
   renderTieup();
   renderTreadling();
   renderDrawdown();
+  scheduleDraftStageHeightUpdate();
 }
 
 function renderAll() {
   renderDraftStage();
   renderRepeatPreview();
   syncPatternColorUsageUI();
+  scheduleDraftStageHeightUpdate();
   scheduleDraftAutosave();
   commitDraftHistoryState();
 }
