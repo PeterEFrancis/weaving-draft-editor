@@ -1939,7 +1939,7 @@ function setDraftRenderStyle(style, shouldRender = true) {
   }
 
   if (shouldRender) {
-    renderDrawdown();
+    renderDraftStage();
     scheduleDraftAutosave();
     commitDraftHistoryState();
   }
@@ -4079,6 +4079,22 @@ function getPickRowHeights() {
   return Array.from({length: picks}, (_, pickIndex) => getPickRowHeight(pickIndex));
 }
 
+function getDrawdownColumnWidthsForRender(renderStyle) {
+  if (renderStyle === "warp-faced") {
+    return Array.from({ length: warp }, () => draftCellSize);
+  }
+
+  return getWarpColumnWidths();
+}
+
+function getDrawdownRowHeightsForRender(renderStyle) {
+  if (renderStyle === "weft-faced") {
+    return Array.from({ length: picks }, () => draftCellSize);
+  }
+
+  return getPickRowHeights();
+}
+
 function formatGridTrackList(sizes) {
   return sizes.map(size => `${size}px`).join(" ");
 }
@@ -5764,8 +5780,8 @@ function createThreadingGridSegment(startIndex, endIndex, columnWidths) {
   return div;
 }
 
-function createPrintableThreadingSection(scale = 1) {
-  const columnWidths = getWarpColumnWidths();
+function createPrintableThreadingSection(scale = 1, renderStyle = getDraftRenderStyle()) {
+  const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
   const heddleSource = document.getElementById("heddle-count");
   const heddleWidth = Math.max(0, heddleSource?.offsetWidth || 0);
   const printableWidthBudget = getPrintablePageSpan(scale);
@@ -5860,8 +5876,8 @@ function createTreadlingGridSegment(startIndex, endIndex, rowHeights) {
   return div;
 }
 
-function createPrintableTreadlingSection(scale = 1) {
-  const rowHeights = getPickRowHeights();
+function createPrintableTreadlingSection(scale = 1, renderStyle = getDraftRenderStyle()) {
+  const rowHeights = getDrawdownRowHeightsForRender(renderStyle);
   const printableHeightBudget = Math.max(
     rowHeights[0] || draftCellSize,
     Math.min(780, 840 / Math.max(0.5, scale))
@@ -5922,8 +5938,8 @@ function createPrintableTreadlingSection(scale = 1) {
 
 function buildPrintableDrawdownElement(renderStyle) {
   const drawdown = document.createElement("div");
-  const columnWidths = getWarpColumnWidths();
-  const rowHeights = getPickRowHeights();
+  const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
+  const rowHeights = getDrawdownRowHeightsForRender(renderStyle);
 
   if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
     renderFacedDrawdown(drawdown, columnWidths, rowHeights, renderStyle);
@@ -5962,13 +5978,13 @@ function buildPrintableDraftElement(options) {
   if (!options.includeDrawdown) {
     const sections = document.createElement("div");
     sections.className = "draft-print-sections";
-    sections.appendChild(createPrintableThreadingSection(options.scale));
+    sections.appendChild(createPrintableThreadingSection(options.scale, options.drawdownRenderStyle));
 
     sections.appendChild(
       createPrintSection("Tie-Up", sanitizePrintNode(document.getElementById("tieup")))
     );
 
-    sections.appendChild(createPrintableTreadlingSection(options.scale));
+    sections.appendChild(createPrintableTreadlingSection(options.scale, options.drawdownRenderStyle));
 
     area.appendChild(sections);
     return area;
@@ -6493,6 +6509,7 @@ function getDrawdownCellState(pickIndex, warpIndex) {
   const warpAssignment = getWarpAssignment(warpIndex);
   const pickColorId = getPickColorId(pickIndex);
   const pickColor = getPatternColorValue(pickColorId) || "#ffffff";
+  const weftWeight = getPatternColorThickness(pickColorId);
   const hasWeft = Boolean(pickColorId);
 
   if (!warpAssignment) {
@@ -6503,12 +6520,15 @@ function getDrawdownCellState(pickIndex, warpIndex) {
       hasWarp: false,
       hasWeft,
       warpColor: null,
-      weftColor: pickColor
+      warpWeight: 1,
+      weftColor: pickColor,
+      weftWeight
     };
   }
 
   const { shaft, colorId } = warpAssignment;
   const warpColor = getPatternColorValue(colorId) || "#ffffff";
+  const warpWeight = getPatternColorThickness(colorId);
 
   if (!hasWeft) {
     return {
@@ -6518,7 +6538,9 @@ function getDrawdownCellState(pickIndex, warpIndex) {
       hasWarp: true,
       hasWeft: false,
       warpColor,
-      weftColor: null
+      warpWeight,
+      weftColor: null,
+      weftWeight: 1
     };
   }
 
@@ -6531,7 +6553,9 @@ function getDrawdownCellState(pickIndex, warpIndex) {
         hasWarp: true,
         hasWeft,
         warpColor,
-        weftColor: pickColor
+        warpWeight,
+        weftColor: pickColor,
+        weftWeight
       };
     }
   }
@@ -6543,7 +6567,9 @@ function getDrawdownCellState(pickIndex, warpIndex) {
     hasWarp: true,
     hasWeft,
     warpColor,
-    weftColor: pickColor
+    warpWeight,
+    weftColor: pickColor,
+    weftWeight
   };
 }
 
@@ -6599,7 +6625,8 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
 
         seeds.push({
           color: state.warpColor || state.frontColor || "#ffffff",
-          center: columnEdges[warpIndex] + columnWidths[warpIndex] / 2
+          center: columnEdges[warpIndex] + columnWidths[warpIndex] / 2,
+          weight: Math.max(0.1, Number(state.warpWeight) || 1)
         });
       }
 
@@ -6609,12 +6636,18 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
 
       for (let seedIndex = 0; seedIndex < seeds.length; seedIndex++) {
         const seed = seeds[seedIndex];
+        const leftNeighbor = seeds[seedIndex - 1];
         const leftEdge =
-          seedIndex === 0 ? 0 : (seeds[seedIndex - 1].center + seed.center) / 2;
+          seedIndex === 0
+            ? 0
+            : leftNeighbor.center +
+              (seed.center - leftNeighbor.center) * (leftNeighbor.weight / (leftNeighbor.weight + seed.weight));
         const rightEdge =
           seedIndex === seeds.length - 1
             ? columnEdges[columnEdges.length - 1]
-            : (seed.center + seeds[seedIndex + 1].center) / 2;
+            : seed.center +
+              (seeds[seedIndex + 1].center - seed.center) *
+                (seed.weight / (seed.weight + seeds[seedIndex + 1].weight));
         const patch = document.createElement("div");
         patch.style.position = "absolute";
         patch.style.left = `${leftEdge}px`;
@@ -6643,7 +6676,8 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
 
         seeds.push({
           color: state.weftColor || state.frontColor || "#ffffff",
-          center: rowEdges[pickIndex] + rowHeights[pickIndex] / 2
+          center: rowEdges[pickIndex] + rowHeights[pickIndex] / 2,
+          weight: Math.max(0.1, Number(state.weftWeight) || 1)
         });
       }
 
@@ -6653,12 +6687,18 @@ function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnW
 
       for (let seedIndex = 0; seedIndex < seeds.length; seedIndex++) {
         const seed = seeds[seedIndex];
+        const topNeighbor = seeds[seedIndex - 1];
         const topEdge =
-          seedIndex === 0 ? 0 : (seeds[seedIndex - 1].center + seed.center) / 2;
+          seedIndex === 0
+            ? 0
+            : topNeighbor.center +
+              (seed.center - topNeighbor.center) * (topNeighbor.weight / (topNeighbor.weight + seed.weight));
         const bottomEdge =
           seedIndex === seeds.length - 1
             ? rowEdges[rowEdges.length - 1]
-            : (seed.center + seeds[seedIndex + 1].center) / 2;
+            : seed.center +
+              (seeds[seedIndex + 1].center - seed.center) *
+                (seed.weight / (seed.weight + seeds[seedIndex + 1].weight));
         const patch = document.createElement("div");
         patch.style.position = "absolute";
         patch.style.left = `${columnEdges[warpIndex]}px`;
@@ -7138,7 +7178,7 @@ function renderRealisticDrawdown(div, columnWidths, rowHeights) {
 
 function renderWarpToolbar() {
   const div = document.getElementById("warp-inserts");
-  const columnWidths = getWarpColumnWidths();
+  const columnWidths = getDrawdownColumnWidthsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
@@ -7190,7 +7230,7 @@ function renderWarpToolbar() {
 
 function renderWarpRuler() {
   const div = document.getElementById("warp-ruler");
-  const columnWidths = getWarpColumnWidths();
+  const columnWidths = getDrawdownColumnWidthsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
@@ -7213,7 +7253,7 @@ function renderWarpRuler() {
 
 function renderPickRuler() {
   const div = document.getElementById("pick-ruler");
-  const rowHeights = getPickRowHeights();
+  const rowHeights = getDrawdownRowHeightsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
@@ -7235,7 +7275,7 @@ function renderPickRuler() {
 
 function renderPickToolbar() {
   const div = document.getElementById("pick-inserts");
-  const rowHeights = getPickRowHeights();
+  const rowHeights = getDrawdownRowHeightsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
@@ -7299,7 +7339,7 @@ function renderHeddleCount() {
 
 function renderThreading() {
   const div = document.getElementById("threading");
-  const columnWidths = getWarpColumnWidths();
+  const columnWidths = getDrawdownColumnWidthsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
 
@@ -7351,7 +7391,7 @@ function renderTieup() {
 
 function renderTreadling() {
   const div = document.getElementById("treadling");
-  const rowHeights = getPickRowHeights();
+  const rowHeights = getDrawdownRowHeightsForRender(getDraftRenderStyle());
   div.innerHTML = "";
   div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
   div.style.gridTemplateRows = formatGridTrackList(rowHeights);
@@ -7380,9 +7420,9 @@ function renderTreadling() {
 
 function renderDrawdown() {
   const div = document.getElementById("drawdown");
-  const columnWidths = getWarpColumnWidths();
-  const rowHeights = getPickRowHeights();
   const renderStyle = getDraftRenderStyle();
+  const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
+  const rowHeights = getDrawdownRowHeightsForRender(renderStyle);
 
   if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
     renderFacedDrawdown(div, columnWidths, rowHeights, renderStyle);
