@@ -1452,6 +1452,8 @@
               <select id="drawdown-render-style" class="form-select" aria-label="Drawdown render style">
                 <option value="structure">Structure</option>
                 <option value="color" selected>Color</option>
+                <option value="warp-faced">Warp-Faced</option>
+                <option value="weft-faced">Weft-Faced</option>
                 <option value="realistic">Interlacement</option>
               </select>
                 </div>
@@ -1645,6 +1647,8 @@
             <select id="draft-print-render-style" class="form-select" aria-label="Drawdown render for print">
               <option value="structure">Structure</option>
               <option value="color">Color</option>
+              <option value="warp-faced">Warp-Faced</option>
+              <option value="weft-faced">Weft-Faced</option>
               <option value="realistic">Interlacement</option>
             </select>
             <div class="form-text" id="draft-print-render-help">Choose how the drawdown itself should print.</div>
@@ -1917,7 +1921,9 @@ function clampDraftCellSize(value) {
 }
 
 function normalizeDraftRenderStyle(style) {
-  return ["structure", "color", "realistic"].includes(style) ? style : defaultDraftRenderStyle;
+  return ["structure", "color", "warp-faced", "weft-faced", "realistic"].includes(style)
+    ? style
+    : defaultDraftRenderStyle;
 }
 
 function getDraftRenderStyle() {
@@ -5919,6 +5925,11 @@ function buildPrintableDrawdownElement(renderStyle) {
   const columnWidths = getWarpColumnWidths();
   const rowHeights = getPickRowHeights();
 
+  if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
+    renderFacedDrawdown(drawdown, columnWidths, rowHeights, renderStyle);
+    return drawdown;
+  }
+
   if (renderStyle === "realistic") {
     renderRealisticDrawdown(drawdown, columnWidths, rowHeights);
     return drawdown;
@@ -5935,10 +5946,7 @@ function buildPrintableDrawdownElement(renderStyle) {
       const state = getDrawdownCellState(pickIndex, warpIndex);
       const cell = document.createElement("div");
       cell.className = "drawdown-cell";
-      cell.style.backgroundColor =
-        renderStyle === "structure"
-          ? (state.warpVisibleOnFront && state.hasWarp ? "var(--ink)" : "#ffffff")
-          : state.frontColor;
+      cell.style.backgroundColor = getDrawdownDisplayColor(state, renderStyle);
       setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
       drawdown.appendChild(cell);
     }
@@ -6539,6 +6547,32 @@ function getDrawdownCellState(pickIndex, warpIndex) {
   };
 }
 
+function getDrawdownDisplayColor(cellState, renderStyle) {
+  if (renderStyle === "structure") {
+    return cellState.warpVisibleOnFront && cellState.hasWarp ? "var(--ink)" : "#ffffff";
+  }
+
+  return cellState.frontColor;
+}
+
+function buildDrawdownStateGrid() {
+  return Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellState(pickIndex, warpIndex))
+  );
+}
+
+function getDrawdownFacedBaseColor(cellState, renderStyle) {
+  if (renderStyle === "warp-faced") {
+    return cellState?.warpColor || "#ffffff";
+  }
+
+  if (renderStyle === "weft-faced") {
+    return cellState?.weftColor || "#ffffff";
+  }
+
+  return cellState?.frontColor || "#ffffff";
+}
+
 function getTrackEdges(sizes) {
   const edges = [0];
   let offset = 0;
@@ -6549,6 +6583,143 @@ function getTrackEdges(sizes) {
   });
 
   return edges;
+}
+
+function buildFacedDrawdownOverlay(layer, states, columnEdges, rowEdges, columnWidths, rowHeights, renderStyle) {
+  if (renderStyle === "warp-faced") {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const seeds = [];
+
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const state = states[pickIndex][warpIndex];
+
+        if (!state?.hasWarp || !state.warpVisibleOnFront) {
+          continue;
+        }
+
+        seeds.push({
+          color: state.warpColor || state.frontColor || "#ffffff",
+          center: columnEdges[warpIndex] + columnWidths[warpIndex] / 2
+        });
+      }
+
+      if (!seeds.length) {
+        continue;
+      }
+
+      for (let seedIndex = 0; seedIndex < seeds.length; seedIndex++) {
+        const seed = seeds[seedIndex];
+        const leftEdge =
+          seedIndex === 0 ? 0 : (seeds[seedIndex - 1].center + seed.center) / 2;
+        const rightEdge =
+          seedIndex === seeds.length - 1
+            ? columnEdges[columnEdges.length - 1]
+            : (seed.center + seeds[seedIndex + 1].center) / 2;
+        const patch = document.createElement("div");
+        patch.style.position = "absolute";
+        patch.style.left = `${leftEdge}px`;
+        patch.style.top = `${rowEdges[pickIndex]}px`;
+        patch.style.width = `${Math.max(0, rightEdge - leftEdge)}px`;
+        patch.style.height = `${rowHeights[pickIndex]}px`;
+        patch.style.backgroundColor = seed.color;
+        patch.style.pointerEvents = "none";
+        layer.appendChild(patch);
+      }
+    }
+
+    return;
+  }
+
+  if (renderStyle === "weft-faced") {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const seeds = [];
+
+      for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+        const state = states[pickIndex][warpIndex];
+
+        if (!state?.hasWeft || state.warpVisibleOnFront) {
+          continue;
+        }
+
+        seeds.push({
+          color: state.weftColor || state.frontColor || "#ffffff",
+          center: rowEdges[pickIndex] + rowHeights[pickIndex] / 2
+        });
+      }
+
+      if (!seeds.length) {
+        continue;
+      }
+
+      for (let seedIndex = 0; seedIndex < seeds.length; seedIndex++) {
+        const seed = seeds[seedIndex];
+        const topEdge =
+          seedIndex === 0 ? 0 : (seeds[seedIndex - 1].center + seed.center) / 2;
+        const bottomEdge =
+          seedIndex === seeds.length - 1
+            ? rowEdges[rowEdges.length - 1]
+            : (seed.center + seeds[seedIndex + 1].center) / 2;
+        const patch = document.createElement("div");
+        patch.style.position = "absolute";
+        patch.style.left = `${columnEdges[warpIndex]}px`;
+        patch.style.top = `${topEdge}px`;
+        patch.style.width = `${columnWidths[warpIndex]}px`;
+        patch.style.height = `${Math.max(0, bottomEdge - topEdge)}px`;
+        patch.style.backgroundColor = seed.color;
+        patch.style.pointerEvents = "none";
+        layer.appendChild(patch);
+      }
+    }
+  }
+}
+
+function renderFacedDrawdown(div, columnWidths, rowHeights, renderStyle) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const states = buildDrawdownStateGrid();
+  const base = document.createElement("div");
+  const overlay = document.createElement("div");
+
+  div.className = "drawdown-faced";
+  div.innerHTML = "";
+  div.style.display = "block";
+  div.style.position = "relative";
+  div.style.width = `${totalWidth}px`;
+  div.style.height = `${totalHeight}px`;
+  div.style.background = "#ffffff";
+  div.style.overflow = "hidden";
+  div.style.gridTemplateColumns = "";
+  div.style.gridTemplateRows = "";
+
+  base.className = "grid";
+  base.style.position = "absolute";
+  base.style.inset = "0";
+  base.style.width = `${totalWidth}px`;
+  base.style.height = `${totalHeight}px`;
+  base.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+  base.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = states[pickIndex][warpIndex];
+      const cell = document.createElement("div");
+      cell.className = "drawdown-cell";
+      cell.style.backgroundColor = getDrawdownFacedBaseColor(state, renderStyle);
+      setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
+      base.appendChild(cell);
+    }
+  }
+
+  overlay.style.position = "absolute";
+  overlay.style.inset = "0";
+  overlay.style.pointerEvents = "none";
+
+  buildFacedDrawdownOverlay(overlay, states, columnEdges, rowEdges, columnWidths, rowHeights, renderStyle);
+
+  div.appendChild(base);
+  div.appendChild(overlay);
 }
 
 function getDrawdownRealisticThreadThickness(crossSize, isTopLayer) {
@@ -7213,6 +7384,11 @@ function renderDrawdown() {
   const rowHeights = getPickRowHeights();
   const renderStyle = getDraftRenderStyle();
 
+  if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
+    renderFacedDrawdown(div, columnWidths, rowHeights, renderStyle);
+    return;
+  }
+
   if (renderStyle === "realistic") {
     renderRealisticDrawdown(div, columnWidths, rowHeights);
     return;
@@ -7220,8 +7396,12 @@ function renderDrawdown() {
 
   div.className = "grid";
   div.innerHTML = "";
+  div.style.display = "";
+  div.style.position = "";
   div.style.width = "";
   div.style.height = "";
+  div.style.background = "";
+  div.style.overflow = "";
   div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
   div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
@@ -7230,10 +7410,7 @@ function renderDrawdown() {
       const state = getDrawdownCellState(j, i);
       const cell = document.createElement("div");
       cell.className = "drawdown-cell";
-      cell.style.backgroundColor =
-        renderStyle === "structure"
-          ? (state.warpVisibleOnFront && state.hasWarp ? "var(--ink)" : "#ffffff")
-          : state.frontColor;
+      cell.style.backgroundColor = getDrawdownDisplayColor(state, renderStyle);
       setElementSize(cell, columnWidths[i], rowHeights[j]);
       div.appendChild(cell);
     }
