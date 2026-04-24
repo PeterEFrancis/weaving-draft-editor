@@ -303,7 +303,7 @@
             <div class="eyebrow mb-3">Weaving Tool</div>
             <h1 class="display-title fw-semibold mb-3">Draft cloth structures forward or backward.</h1>
             <p class="lead-copy text-secondary mb-4">
-              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it. The two tools can also pass work back and forth through saved <code>.wdd</code> (Weaving Draft Document) and <code>.wdi</code> (Weaving Draft Inverse) files.
+              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it.
             </p>
             <div class="d-flex flex-wrap gap-3 align-items-center">
               <a class="btn btn-drafter" href="drafter.html">Open Drafter</a>
@@ -412,7 +412,7 @@
                     <div class="step-number mb-3">6</div>
                     <h3 class="h5">Save, reopen, and recover</h3>
                     <p class="text-secondary mb-0">
-                      <code>Save</code> writes a <code>.wdd</code> file, <code>Open</code> can reopen either <code>.wdd</code> drafts or generated <code>.wdi</code> inverse drafts, and the page also keeps local autosave plus undo and redo history while you work.
+                      <code>Save</code> writes a <code>.wdd</code> (Weaving Draft Document) file, <code>Open</code> can reopen either <code>.wdd</code> drafts or generated <code>.wdi</code> (Weaving Draft Inverse) drafts, and <code>To Inverse</code> sends the current draft straight into a new inverse-drafter tab. The page also keeps local autosave plus undo and redo history while you work.
                     </p>
                   </div>
                 </div>
@@ -486,7 +486,7 @@
                     <div class="step-number mb-3">6</div>
                     <h3 class="h5">Continue into the main drafter</h3>
                     <p class="text-secondary mb-0">
-                      Save the inverse draft as <code>.wdi</code> to keep the target and optimizer state. Opening that same file in the main drafter loads the currently selected generated draft so you can continue coloring and refining it there.
+                      Save the inverse draft as <code>.wdi</code> to keep the target and optimizer state, or use <code>To Drafter</code> to open the currently selected generated draft immediately in a new main-drafter tab. Opening that same file in the main drafter also loads the selected generated draft so you can continue coloring and refining it there.
                     </p>
                   </div>
                 </div>
@@ -530,7 +530,7 @@
                 </h3>
                 <div id="faqTwo" class="accordion-collapse collapse" aria-labelledby="faqTwoHeading" data-bs-parent="#faqAccordion">
                   <div class="accordion-body">
-                    Use <code>.wdd</code> for the main drafter and <code>.wdi</code> for the inverse drafter. The tools can also cross-open those formats: opening a <code>.wdi</code> in the main drafter loads the currently selected generated draft, and opening a <code>.wdd</code> in the inverse drafter uses its drawdown as a target.
+                    Use <code>.wdd</code> for the main drafter and <code>.wdi</code> for the inverse drafter. The tools can also hand work across directly with <code>To Inverse</code> and <code>To Drafter</code>, or cross-open those formats: opening a <code>.wdi</code> in the main drafter loads the currently selected generated draft, and opening a <code>.wdd</code> in the inverse drafter uses its drawdown as a target.
                   </div>
                 </div>
               </div>

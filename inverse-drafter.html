@@ -995,6 +995,15 @@
               </span>
               <span class="toolbar-action-label">Print</span>
             </button>
+            <button type="button" class="btn btn-soft toolbar-action" id="open-in-drafter-button">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 19 19 5"></path>
+                  <path d="M10 5h9v9"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">To Drafter</span>
+            </button>
           </div>
 
           <div class="workspace-toolbar-actions workspace-toolbar-actions-history">
@@ -1287,6 +1296,8 @@ const maxEditableCells = 20000;
 const inverseAutosaveStorageKeyPrefix = "weaving-inverse-drafter.autosave.v1.";
 const inverseActiveNameSessionKey = "weaving-inverse-drafter.active-name.v1";
 const inverseHistoryLimit = 120;
+const crossEditorTransferStoragePrefix = "weaving-cross-editor-transfer.v1.";
+const crossEditorTransferQueryParam = "transfer";
 
 let warp = defaultWarp;
 let picks = defaultPicks;
@@ -1615,11 +1626,18 @@ function buildInverseDataFromForwardDraft(data, { filename = "" } = {}) {
     targetDrawdown: targetMatrix
   });
 
+  const importedNameBase = normalizeDraftName(
+    data?.meta?.draftName ?? getDraftNameFromFilename(filename)
+  );
+  const importedDraftName = /\(From WDD\)$/i.test(importedNameBase)
+    ? importedNameBase
+    : normalizeDraftName(`${importedNameBase} (From WDD)`);
+
   return {
     meta: {
       kind: "weaving-inverse-draft",
       version: 1,
-      draftName: normalizeDraftName(data?.meta?.draftName ?? getDraftNameFromFilename(filename))
+      draftName: importedDraftName
     },
     state: nextState,
     history: {
@@ -3725,6 +3743,107 @@ async function saveInverseDraftToFile() {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function createCrossEditorTransferToken() {
+  if (typeof window.crypto?.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function getCrossEditorTransferStorageKey(token) {
+  return `${crossEditorTransferStoragePrefix}${token}`;
+}
+
+function storeCrossEditorTransferPayload(payload) {
+  const token = createCrossEditorTransferToken();
+  window.localStorage.setItem(
+    getCrossEditorTransferStorageKey(token),
+    JSON.stringify({
+      createdAt: Date.now(),
+      payload
+    })
+  );
+  return token;
+}
+
+function clearCrossEditorTransferQuery() {
+  const url = new URL(window.location.href);
+
+  if (!url.searchParams.has(crossEditorTransferQueryParam)) {
+    return;
+  }
+
+  url.searchParams.delete(crossEditorTransferQueryParam);
+  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+function openCurrentInverseDraftInDrafter() {
+  try {
+    const token = storeCrossEditorTransferPayload(buildSaveData());
+    const opened = window.open(
+      `drafter.html?${crossEditorTransferQueryParam}=${encodeURIComponent(token)}`,
+      "_blank"
+    );
+
+    if (opened) {
+      try {
+        opened.opener = null;
+      } catch (error) {
+        // Ignore cross-window opener failures.
+      }
+      return;
+    }
+
+    window.alert("Your browser blocked the new tab.");
+  } catch (error) {
+    window.alert("Unable to send this inverse draft to the main drafter in this browser.");
+  }
+}
+
+function consumeCrossEditorTransferIntoInverse() {
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get(crossEditorTransferQueryParam);
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getCrossEditorTransferStorageKey(token));
+    window.localStorage.removeItem(getCrossEditorTransferStorageKey(token));
+    clearCrossEditorTransferQuery();
+
+    if (!raw) {
+      return false;
+    }
+
+    const transferEntry = JSON.parse(raw);
+    const payload = transferEntry?.payload ?? transferEntry;
+
+    if (isForwardDraftData(payload)) {
+      const converted = buildInverseDataFromForwardDraft(payload);
+      applyLoadedData(converted);
+
+      if (converted.dimensionLimitChanged) {
+        showLimitAlert();
+      }
+
+      return true;
+    }
+
+    if (payload?.meta?.kind === "weaving-inverse-draft" && typeof payload?.state === "object") {
+      applyLoadedData(payload);
+      return true;
+    }
+  } catch (error) {
+    clearCrossEditorTransferQuery();
+    window.alert("Unable to open the transferred draft.");
+  }
+
+  return false;
+}
+
 function openInverseDraftFilePicker() {
   document.getElementById("inverse-draft-file-input").click();
 }
@@ -4343,6 +4462,7 @@ function isTextEditingTarget(target) {
 document.getElementById("save-button").addEventListener("click", saveInverseDraftToFile);
 document.getElementById("open-button").addEventListener("click", openInverseDraftFilePicker);
 document.getElementById("print-button").addEventListener("click", openInversePrintModal);
+document.getElementById("open-in-drafter-button").addEventListener("click", openCurrentInverseDraftInDrafter);
 document.getElementById("inverse-draft-file-input").addEventListener("change", handleInverseDraftFileOpen);
 document.getElementById("inverse-undo-button").addEventListener("click", undoInverseChange);
 document.getElementById("inverse-redo-button").addEventListener("click", redoInverseChange);
@@ -4463,8 +4583,11 @@ window.addEventListener("keydown", event => {
 });
 
 setDraftName(restoreActiveDraftName());
-const autosave = restoreAutosave();
-if (autosave) {
+const loadedFromTransfer = consumeCrossEditorTransferIntoInverse();
+const autosave = loadedFromTransfer ? null : restoreAutosave();
+if (loadedFromTransfer) {
+  updateHistoryButtons();
+} else if (autosave) {
   try {
     applyLoadedData(autosave, { draftNameOverride: autosave?.meta?.draftName || restoreActiveDraftName() });
   } catch (error) {
