@@ -293,10 +293,11 @@
     min-width: 0;
     padding: 0;
     margin: 0;
+    padding-left: 0.18rem;
   }
 
   .toolbar-name-label {
-    color: rgba(47, 36, 29, 0.56);
+    color: var(--accent-dark);
     font-size: 0.74rem;
     font-weight: 700;
     line-height: 1;
@@ -1216,6 +1217,46 @@
     transform: translate(-50%, -50%);
   }
 
+  .draft-print-modal .modal-content {
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.35rem;
+    background: rgba(255, 252, 245, 0.98);
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.14);
+  }
+
+  .draft-print-modal .modal-header,
+  .draft-print-modal .modal-footer {
+    border-color: rgba(47, 36, 29, 0.08);
+  }
+
+  .draft-print-modal .btn-close {
+    box-shadow: none;
+  }
+
+  .print-modal-stack {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .print-modal-card {
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .print-modal-card .control-label {
+    margin-bottom: 0.45rem;
+  }
+
+  .print-modal-card .form-text {
+    color: rgba(47, 36, 29, 0.62);
+  }
+
+  .print-modal-render-group.is-disabled {
+    opacity: 0.48;
+  }
+
   @media (max-width: 991.98px) {
     .hero-card,
     .editor-card {
@@ -1232,60 +1273,32 @@
       margin: 0.5in;
     }
 
+    html,
+    body {
+      height: auto !important;
+      overflow: visible !important;
+      background: #ffffff !important;
+    }
+
     body {
       background: #ffffff !important;
+      min-height: 0 !important;
     }
 
-    body * {
-      visibility: hidden !important;
-    }
-
-    .draft-print-area,
-    .draft-print-area * {
-      visibility: visible !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      color-adjust: exact !important;
-    }
-
-    .draft-print-area {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: max-content;
-      background: #ffffff !important;
-    }
-
-    .draft-stage {
-      overflow: visible !important;
-      padding: 0 !important;
-      border: 0 !important;
-      background: #ffffff !important;
-    }
-
+    .page-shell,
+    .workspace-card,
+    .workspace-toolbar,
+    .draft-stage,
     .draft-grid-scroll {
-      width: max-content !important;
+      height: auto !important;
+      min-height: 0 !important;
       max-height: none !important;
       overflow: visible !important;
-    }
-
-    .draft-print-area button {
-      -webkit-appearance: none !important;
-      appearance: none !important;
-      box-shadow: none !important;
-    }
-
-    .ruler-row,
-    .toolbar-row,
-    .ghost-cell,
-    .pick-ruler,
-    .draft-stage-actions,
-    .draft-stage-controls {
-      display: none !important;
-    }
-
-    .draft-print-area td {
       background: #ffffff !important;
+    }
+
+    .page-shell {
+      padding: 0 !important;
     }
   }
 </style>
@@ -1589,6 +1602,54 @@
 
 </main>
 
+<div class="modal fade draft-print-modal" id="draft-print-modal" tabindex="-1" aria-labelledby="draft-print-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2 class="h4 mb-0" id="draft-print-modal-label">Print Draft</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="print-modal-stack">
+          <div class="print-modal-card">
+            <label class="control-label" for="draft-print-size">Size</label>
+            <select id="draft-print-size" class="form-select" aria-label="Print size">
+              <option value="0.85">Compact</option>
+              <option value="1" selected>Standard</option>
+              <option value="1.2">Large</option>
+            </select>
+            <div class="form-text">Scale the printed draft without changing the editor itself.</div>
+          </div>
+
+          <div class="print-modal-card">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="draft-print-include-drawdown" checked>
+              <label class="form-check-label fw-semibold" for="draft-print-include-drawdown">Include drawdown</label>
+            </div>
+            <div class="form-text">Turn this off to print only the threading, tie-up, and treadling.</div>
+          </div>
+
+          <div class="print-modal-card print-modal-render-group" id="draft-print-render-group">
+            <label class="control-label" for="draft-print-render-style">Drawdown Render</label>
+            <select id="draft-print-render-style" class="form-select" aria-label="Drawdown render for print">
+              <option value="structure">Structure</option>
+              <option value="color">Color</option>
+              <option value="realistic">Interlacement</option>
+            </select>
+            <div class="form-text" id="draft-print-render-help">Choose how the drawdown itself should print.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-drafter" id="draft-print-confirm">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 let shafts = 4, treadles = 4, warp = 16, picks = 16;
 let threading = [];
@@ -1660,6 +1721,7 @@ let draftHistoryIndex = -1;
 let draftHistoryCommitTimeoutId = null;
 let isDraftAutosaveSuspended = false;
 let isDraftHistorySuspended = false;
+let pendingDraftPrintOptions = null;
 
 function createDefaultPatternColors() {
   return defaultPatternColors.map(color => ({...color}));
@@ -5035,9 +5097,11 @@ function getDraftPrintStyles() {
   return `
     :root {
       --cell-size: ${readVar("--cell-size", "20px")};
-      --cell-gap: ${readVar("--cell-gap", "2px")};
-      --grid-gap: ${readVar("--grid-gap", "0px")};
+      --cell-gap: 1px;
+      --grid-gap: 0px;
       --ink: ${readVar("--ink", "#2f241d")};
+      --print-grid-color: #000000;
+      --print-grid-line: #000000;
     }
 
     @page {
@@ -5054,6 +5118,47 @@ function getDraftPrintStyles() {
       width: max-content;
     }
 
+    .draft-print-stage {
+      display: inline-block;
+    }
+
+    .draft-print-stage-sections {
+      display: block;
+      width: max-content;
+    }
+
+    .draft-print-scale {
+      transform-origin: top left;
+    }
+
+    .draft-print-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-bottom: 1.4rem;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+    }
+
+    .draft-print-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.22rem;
+    }
+
+    .draft-print-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .draft-print-date {
+      font-size: 0.92rem;
+      line-height: 1.2;
+      color: rgba(47, 36, 29, 0.72);
+      white-space: nowrap;
+    }
+
     .draft-print-area,
     .draft-print-area * {
       -webkit-print-color-adjust: exact;
@@ -5065,6 +5170,93 @@ function getDraftPrintStyles() {
     .draft-print-area {
       width: max-content;
       background: #ffffff;
+    }
+
+    .draft-print-sections {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 1rem;
+      width: max-content;
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    .draft-print-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.45rem;
+    }
+
+    .draft-print-section-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      text-transform: uppercase;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .draft-print-threading-body,
+    .draft-print-treadling-body {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .draft-print-threading-segments {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .draft-print-treadling-rows {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .draft-print-treadling-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .draft-print-threading-segment {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.28rem;
+      break-inside: avoid-page;
+      page-break-inside: avoid;
+    }
+
+    .draft-print-treadling-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.28rem;
+      break-inside: avoid-page;
+      page-break-inside: avoid;
+    }
+
+    .draft-print-threading-ruler-row {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .draft-print-treadling-row {
+      break-inside: avoid-page;
+      page-break-inside: avoid;
+    }
+
+    .draft-print-heddle-spacer {
+      flex: 0 0 auto;
     }
 
     table.draft {
@@ -5081,18 +5273,137 @@ function getDraftPrintStyles() {
     td {
       padding: 0;
       vertical-align: top;
-      border: var(--cell-gap) solid var(--ink);
+      border: var(--cell-gap) solid var(--print-grid-color);
       background: #ffffff;
-    }
-
-    .toolbar-row,
-    .ghost-cell {
-      display: none !important;
     }
 
     .grid {
       display: grid;
+      gap: 0;
+      width: fit-content;
+      background: #ffffff;
+      border-left: 1px solid var(--print-grid-color);
+      border-top: 1px solid var(--print-grid-color);
+    }
+
+    .pick-wrap,
+    .pick-side-wrap {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .heddle-count-grid {
+      display: grid;
       gap: var(--grid-gap);
+      width: fit-content;
+      padding-right: 0.45rem;
+    }
+
+    .heddle-count-item {
+      min-width: 2.1rem;
+      height: var(--cell-size);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      color: rgba(47, 36, 29, 0.42);
+      font-size: calc(var(--cell-size) * 0.5);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+    .warp-ruler {
+      position: relative;
+      display: grid;
+      gap: var(--grid-gap);
+      width: fit-content;
+      min-height: calc(var(--cell-size) * 1.1);
+      margin-bottom: calc(var(--cell-gap) * 1.5);
+      border-bottom: 1px solid rgba(47, 36, 29, 0.22);
+      overflow: visible;
+    }
+
+    .warp-ruler-mark {
+      position: relative;
+      min-width: 1px;
+      height: calc(var(--cell-size) * 1.1);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .warp-ruler-mark::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 1px;
+      height: calc(var(--cell-size) * 0.28);
+      transform: translateX(-50%);
+      background: rgba(47, 36, 29, 0.28);
+    }
+
+    .warp-ruler-mark-major::after {
+      height: calc(var(--cell-size) * 0.52);
+      background: rgba(47, 36, 29, 0.45);
+    }
+
+    .warp-ruler-label {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      color: rgba(47, 36, 29, 0.58);
+      font-size: calc(var(--cell-size) * 0.42);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .pick-ruler {
+      position: relative;
+      display: grid;
+      gap: var(--grid-gap);
+      width: 2.8rem;
+      min-width: 2.8rem;
+      margin-left: calc(var(--cell-gap) * 2);
+      border-left: 1px solid rgba(47, 36, 29, 0.22);
+      overflow: visible;
+    }
+
+    .pick-ruler-mark {
+      position: relative;
+      min-height: 1px;
+      width: 100%;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .pick-ruler-mark::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: calc(var(--cell-size) * 0.28);
+      height: 1px;
+      transform: translateY(-50%);
+      background: rgba(47, 36, 29, 0.28);
+    }
+
+    .pick-ruler-mark-major::after {
+      width: calc(var(--cell-size) * 0.52);
+      background: rgba(47, 36, 29, 0.45);
+    }
+
+    .pick-ruler-label {
+      position: absolute;
+      top: 50%;
+      left: calc(var(--cell-size) * 0.52 + 0.3rem);
+      transform: translateY(-50%);
+      color: rgba(47, 36, 29, 0.58);
+      font-size: calc(var(--cell-size) * 0.42);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     button.cell {
@@ -5101,25 +5412,29 @@ function getDraftPrintStyles() {
       position: relative;
       width: var(--cell-size);
       height: var(--cell-size);
-      border: 1px solid rgba(47, 36, 29, 0.1);
+      border: 0;
+      border-right: 1px solid var(--print-grid-color);
+      border-bottom: 1px solid var(--print-grid-color);
       border-radius: 0;
       padding: 0;
       background: rgba(255, 255, 255, 0.94);
     }
 
     .cell-active {
-      box-shadow: inset 0 0 0 1.2px rgba(47, 36, 29, 0.34);
+      box-shadow: none;
     }
 
     .cell-structural-on {
-      background: var(--ink) !important;
-      border-color: var(--ink) !important;
+      background: var(--print-grid-color) !important;
+      border-color: var(--print-grid-color) !important;
     }
 
     .drawdown-cell {
       width: var(--cell-size);
       height: var(--cell-size);
-      border: 1px solid rgba(47, 36, 29, 0.1);
+      border: 0;
+      border-right: 1px solid var(--print-grid-color);
+      border-bottom: 1px solid var(--print-grid-color);
       border-radius: 0;
       box-sizing: border-box;
     }
@@ -5138,21 +5453,471 @@ function getDraftPrintStyles() {
     .drawdown-realistic-image {
       display: block;
     }
+
+    .ghost-cell {
+      border: 0 !important;
+      background: transparent !important;
+    }
+
+    .print-spacer-cell {
+      border: 0;
+      background: transparent !important;
+    }
   `;
 }
 
-function getPrintableDraftMarkup(source) {
+function getDraftPrintScale(value) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? Math.min(2, Math.max(0.5, parsed)) : 1;
+}
+
+function getDraftPrintOptions() {
+  return {
+    scale: getDraftPrintScale(document.getElementById("draft-print-size")?.value),
+    includeDrawdown: document.getElementById("draft-print-include-drawdown")?.checked !== false,
+    drawdownRenderStyle: normalizeDraftRenderStyle(document.getElementById("draft-print-render-style")?.value)
+  };
+}
+
+function getDraftPrintModalInstance() {
+  const modalElement = document.getElementById("draft-print-modal");
+
+  if (!modalElement || !window.bootstrap?.Modal) {
+    return null;
+  }
+
+  return window.bootstrap.Modal.getOrCreateInstance(modalElement);
+}
+
+function syncDraftPrintModalUI() {
+  const includeDrawdown = document.getElementById("draft-print-include-drawdown")?.checked !== false;
+  const renderGroup = document.getElementById("draft-print-render-group");
+  const renderSelect = document.getElementById("draft-print-render-style");
+  const renderHelp = document.getElementById("draft-print-render-help");
+
+  if (renderGroup) {
+    renderGroup.classList.toggle("is-disabled", !includeDrawdown);
+  }
+
+  if (renderSelect) {
+    renderSelect.disabled = !includeDrawdown;
+  }
+
+  if (renderHelp) {
+    renderHelp.textContent = includeDrawdown
+      ? "Choose how the drawdown itself should print."
+      : "Ignored when the drawdown is omitted from the printout.";
+  }
+}
+
+function openDraftPrintModal() {
+  const includeDrawdownInput = document.getElementById("draft-print-include-drawdown");
+  const sizeSelect = document.getElementById("draft-print-size");
+  const renderSelect = document.getElementById("draft-print-render-style");
+
+  if (includeDrawdownInput) {
+    includeDrawdownInput.checked = true;
+  }
+
+  if (sizeSelect) {
+    sizeSelect.value = "1";
+  }
+
+  if (renderSelect) {
+    renderSelect.value = getDraftRenderStyle();
+  }
+
+  pendingDraftPrintOptions = null;
+  syncDraftPrintModalUI();
+
+  const modal = getDraftPrintModalInstance();
+
+  if (!modal) {
+    runDraftPrintWithOptions(getDraftPrintOptions());
+    return;
+  }
+
+  modal.show();
+}
+
+function requestDraftPrintFromModal() {
+  pendingDraftPrintOptions = getDraftPrintOptions();
+  const modal = getDraftPrintModalInstance();
+
+  if (!modal) {
+    const options = pendingDraftPrintOptions;
+    pendingDraftPrintOptions = null;
+    runDraftPrintWithOptions(options);
+    return;
+  }
+
+  modal.hide();
+}
+
+function createPrintGhostCell(tagName = "td") {
+  const cell = document.createElement(tagName);
+  cell.className = "ghost-cell";
+  return cell;
+}
+
+function sanitizePrintNode(source) {
   const clone = source.cloneNode(true);
-  const sourceCanvases = source.querySelectorAll("canvas");
-  const cloneCanvases = clone.querySelectorAll("canvas");
+  clone.removeAttribute("id");
+  clone.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+  return clone;
+}
 
-  sourceCanvases.forEach((canvas, index) => {
-    const cloneCanvas = cloneCanvases[index];
+function createPrintSection(title, ...contentNodes) {
+  const section = document.createElement("div");
+  section.className = "draft-print-section";
 
-    if (!cloneCanvas) {
-      return;
+  const sectionTitle = document.createElement("div");
+  sectionTitle.className = "draft-print-section-title";
+  sectionTitle.textContent = title;
+  section.appendChild(sectionTitle);
+
+  contentNodes.forEach(node => {
+    if (node) {
+      section.appendChild(node);
+    }
+  });
+
+  return section;
+}
+
+function createWarpRulerSegment(startIndex, endIndex, columnWidths) {
+  const div = document.createElement("div");
+  div.className = "warp-ruler";
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths.slice(startIndex, endIndex));
+
+  for (let warpIndex = startIndex; warpIndex < endIndex; warpIndex++) {
+    const warpNumber = warp - warpIndex;
+    const mark = document.createElement("div");
+    const isMajor = warpNumber % 10 === 0;
+    mark.className = `warp-ruler-mark${isMajor ? " warp-ruler-mark-major" : ""}`;
+
+    if (isMajor) {
+      const label = document.createElement("span");
+      label.className = "warp-ruler-label";
+      label.textContent = String(warpNumber);
+      mark.appendChild(label);
     }
 
+    div.appendChild(mark);
+  }
+
+  return div;
+}
+
+function getPrintablePageSpan(scale = 1) {
+  return Math.max(240, 720 / Math.max(0.5, scale));
+}
+
+function createThreadingGridSegment(startIndex, endIndex, columnWidths) {
+  const div = document.createElement("div");
+  div.className = "grid";
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths.slice(startIndex, endIndex));
+
+  for (let shaftIndex = shafts - 1; shaftIndex >= 0; shaftIndex--) {
+    for (let warpIndex = startIndex; warpIndex < endIndex; warpIndex++) {
+      const cell = document.createElement("button");
+      styleCell(cell, threading[shaftIndex][warpIndex]);
+      setElementSize(cell, columnWidths[warpIndex], draftCellSize);
+      div.appendChild(cell);
+    }
+  }
+
+  return div;
+}
+
+function createPrintableThreadingSection(scale = 1) {
+  const columnWidths = getWarpColumnWidths();
+  const heddleSource = document.getElementById("heddle-count");
+  const heddleWidth = Math.max(0, heddleSource?.offsetWidth || 0);
+  const printableWidthBudget = getPrintablePageSpan(scale);
+  const maxThreadingWidth = Math.max(
+    columnWidths[0] || draftCellSize,
+    printableWidthBudget - heddleWidth - 16
+  );
+  const segments = [];
+  let segmentStart = 0;
+  let segmentWidth = 0;
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    const nextWidth = segmentWidth + columnWidths[warpIndex];
+
+    if (warpIndex > segmentStart && nextWidth > maxThreadingWidth) {
+      segments.push({ start: segmentStart, end: warpIndex });
+      segmentStart = warpIndex;
+      segmentWidth = 0;
+    }
+
+    segmentWidth += columnWidths[warpIndex];
+  }
+
+  segments.push({ start: segmentStart, end: warp });
+
+  const segmentStack = document.createElement("div");
+  segmentStack.className = "draft-print-threading-segments";
+
+  segments.forEach(({ start, end }) => {
+    const segment = document.createElement("div");
+    segment.className = "draft-print-threading-segment";
+
+    const rulerRow = document.createElement("div");
+    rulerRow.className = "draft-print-threading-ruler-row";
+    const spacer = document.createElement("div");
+    spacer.className = "draft-print-heddle-spacer";
+    spacer.style.width = `${heddleWidth}px`;
+    rulerRow.appendChild(spacer);
+    rulerRow.appendChild(createWarpRulerSegment(start, end, columnWidths));
+
+    const body = document.createElement("div");
+    body.className = "draft-print-threading-body";
+    body.appendChild(sanitizePrintNode(document.getElementById("heddle-count")));
+    body.appendChild(createThreadingGridSegment(start, end, columnWidths));
+
+    segment.appendChild(rulerRow);
+    segment.appendChild(body);
+    segmentStack.appendChild(segment);
+  });
+
+  return createPrintSection("Threading", segmentStack);
+}
+
+function createPickRulerSegment(startIndex, endIndex, rowHeights) {
+  const div = document.createElement("div");
+  div.className = "pick-ruler";
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights.slice(startIndex, endIndex));
+
+  for (let pickIndex = startIndex; pickIndex < endIndex; pickIndex++) {
+    const mark = document.createElement("div");
+    const isMajor = (pickIndex + 1) % 10 === 0;
+    mark.className = `pick-ruler-mark${isMajor ? " pick-ruler-mark-major" : ""}`;
+
+    if (isMajor) {
+      const label = document.createElement("span");
+      label.className = "pick-ruler-label";
+      label.textContent = String(pickIndex + 1);
+      mark.appendChild(label);
+    }
+
+    div.appendChild(mark);
+  }
+
+  return div;
+}
+
+function createTreadlingGridSegment(startIndex, endIndex, rowHeights) {
+  const div = document.createElement("div");
+  div.className = "grid";
+  div.style.gridTemplateColumns = `repeat(${treadles}, var(--cell-size))`;
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights.slice(startIndex, endIndex));
+
+  for (let pickIndex = startIndex; pickIndex < endIndex; pickIndex++) {
+    for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
+      const cell = document.createElement("button");
+      styleCell(cell, treadling[pickIndex][treadleIndex]);
+      setElementSize(cell, draftCellSize, rowHeights[pickIndex]);
+      div.appendChild(cell);
+    }
+  }
+
+  return div;
+}
+
+function createPrintableTreadlingSection(scale = 1) {
+  const rowHeights = getPickRowHeights();
+  const printableHeightBudget = Math.max(
+    rowHeights[0] || draftCellSize,
+    Math.min(780, 840 / Math.max(0.5, scale))
+  );
+  const pickRulerWidth = Math.max(0, document.getElementById("pick-ruler")?.offsetWidth || 44);
+  const printableWidthBudget = getPrintablePageSpan(scale);
+  const treadlingColumnWidth = Math.max(
+    draftCellSize,
+    treadles * draftCellSize + pickRulerWidth + 12
+  );
+  const maxColumnsPerRow = Math.max(
+    1,
+    Math.floor((printableWidthBudget + 12) / (treadlingColumnWidth + 12))
+  );
+  const segments = [];
+  let segmentStart = 0;
+  let segmentHeight = 0;
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const nextHeight = segmentHeight + rowHeights[pickIndex];
+
+    if (pickIndex > segmentStart && nextHeight > printableHeightBudget) {
+      segments.push({ start: segmentStart, end: pickIndex });
+      segmentStart = pickIndex;
+      segmentHeight = 0;
+    }
+
+    segmentHeight += rowHeights[pickIndex];
+  }
+
+  segments.push({ start: segmentStart, end: picks });
+
+  const rowStack = document.createElement("div");
+  rowStack.className = "draft-print-treadling-rows";
+
+  for (let rowStart = 0; rowStart < segments.length; rowStart += maxColumnsPerRow) {
+    const row = document.createElement("div");
+    row.className = "draft-print-treadling-row";
+
+    segments.slice(rowStart, rowStart + maxColumnsPerRow).forEach(({ start, end }) => {
+      const column = document.createElement("div");
+      column.className = "draft-print-treadling-column";
+
+      const body = document.createElement("div");
+      body.className = "draft-print-treadling-body";
+      body.appendChild(createTreadlingGridSegment(start, end, rowHeights));
+      body.appendChild(createPickRulerSegment(start, end, rowHeights));
+
+      column.appendChild(body);
+      row.appendChild(column);
+    });
+
+    rowStack.appendChild(row);
+  }
+
+  return createPrintSection("Treadling", rowStack);
+}
+
+function buildPrintableDrawdownElement(renderStyle) {
+  const drawdown = document.createElement("div");
+  const columnWidths = getWarpColumnWidths();
+  const rowHeights = getPickRowHeights();
+
+  if (renderStyle === "realistic") {
+    renderRealisticDrawdown(drawdown, columnWidths, rowHeights);
+    return drawdown;
+  }
+
+  drawdown.className = "grid";
+  drawdown.style.width = "";
+  drawdown.style.height = "";
+  drawdown.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+  drawdown.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = getDrawdownCellState(pickIndex, warpIndex);
+      const cell = document.createElement("div");
+      cell.className = "drawdown-cell";
+      cell.style.backgroundColor =
+        renderStyle === "structure"
+          ? (state.warpVisibleOnFront && state.hasWarp ? "var(--ink)" : "#ffffff")
+          : state.frontColor;
+      setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
+      drawdown.appendChild(cell);
+    }
+  }
+
+  return drawdown;
+}
+
+function buildPrintableDraftElement(options) {
+  const area = document.createElement("div");
+  area.className = "draft-print-area";
+
+  if (!options.includeDrawdown) {
+    const sections = document.createElement("div");
+    sections.className = "draft-print-sections";
+    sections.appendChild(createPrintableThreadingSection(options.scale));
+
+    sections.appendChild(
+      createPrintSection("Tie-Up", sanitizePrintNode(document.getElementById("tieup")))
+    );
+
+    sections.appendChild(createPrintableTreadlingSection(options.scale));
+
+    area.appendChild(sections);
+    return area;
+  }
+
+  const table = document.createElement("table");
+  table.className = "draft";
+
+  const rulerRow = document.createElement("tr");
+  rulerRow.className = "ruler-row";
+  rulerRow.appendChild(createPrintGhostCell("th"));
+  const rulerThreadingCell = document.createElement("th");
+  rulerThreadingCell.appendChild(sanitizePrintNode(document.getElementById("warp-ruler")));
+  rulerRow.appendChild(rulerThreadingCell);
+  rulerRow.appendChild(createPrintGhostCell("th"));
+  rulerRow.appendChild(createPrintGhostCell("th"));
+  table.appendChild(rulerRow);
+
+  const structureRow = document.createElement("tr");
+  const heddleCell = createPrintGhostCell();
+  heddleCell.appendChild(sanitizePrintNode(document.getElementById("heddle-count")));
+  structureRow.appendChild(heddleCell);
+  const threadingCell = document.createElement("td");
+  threadingCell.appendChild(sanitizePrintNode(document.getElementById("threading")));
+  structureRow.appendChild(threadingCell);
+  const tieupCell = document.createElement("td");
+  tieupCell.appendChild(sanitizePrintNode(document.getElementById("tieup")));
+  structureRow.appendChild(tieupCell);
+  structureRow.appendChild(createPrintGhostCell());
+  table.appendChild(structureRow);
+
+  const lowerRow = document.createElement("tr");
+  lowerRow.appendChild(createPrintGhostCell());
+
+  if (options.includeDrawdown) {
+    const drawdownCell = document.createElement("td");
+    drawdownCell.appendChild(buildPrintableDrawdownElement(options.drawdownRenderStyle));
+    lowerRow.appendChild(drawdownCell);
+  } else {
+    const spacerCell = document.createElement("td");
+    spacerCell.className = "print-spacer-cell";
+    lowerRow.appendChild(spacerCell);
+  }
+
+  const treadlingCell = document.createElement("td");
+  const pickWrap = document.createElement("div");
+  pickWrap.className = "pick-wrap";
+  pickWrap.appendChild(sanitizePrintNode(document.getElementById("treadling")));
+  treadlingCell.appendChild(pickWrap);
+  lowerRow.appendChild(treadlingCell);
+
+  const pickRulerCell = document.createElement("td");
+  pickRulerCell.className = "ghost-cell";
+  const pickSideWrap = document.createElement("div");
+  pickSideWrap.className = "pick-side-wrap";
+  pickSideWrap.appendChild(sanitizePrintNode(document.getElementById("pick-ruler")));
+  pickRulerCell.appendChild(pickSideWrap);
+  lowerRow.appendChild(pickRulerCell);
+
+  table.appendChild(lowerRow);
+  area.appendChild(table);
+  return area;
+}
+
+function measurePrintableDraftElement(element) {
+  const measureHost = document.createElement("div");
+  measureHost.style.position = "fixed";
+  measureHost.style.left = "-10000px";
+  measureHost.style.top = "0";
+  measureHost.style.visibility = "hidden";
+  measureHost.style.pointerEvents = "none";
+  measureHost.appendChild(element);
+  document.body.appendChild(measureHost);
+
+  const width = Math.ceil(element.scrollWidth || element.offsetWidth || 0);
+  const height = Math.ceil(element.scrollHeight || element.offsetHeight || 0);
+  measureHost.remove();
+
+  return { element, width, height };
+}
+
+function replacePrintCanvasesWithImages(root) {
+  const canvases = root.querySelectorAll("canvas");
+
+  canvases.forEach(canvas => {
     const image = document.createElement("img");
     image.className = `${canvas.className} drawdown-realistic-image`.trim();
     image.alt = "";
@@ -5160,18 +5925,103 @@ function getPrintableDraftMarkup(source) {
     image.src = canvas.toDataURL("image/png");
     image.style.width = canvas.style.width || `${canvas.clientWidth}px`;
     image.style.height = canvas.style.height || `${canvas.clientHeight}px`;
-    cloneCanvas.replaceWith(image);
+    canvas.replaceWith(image);
   });
-
-  return clone.outerHTML;
 }
 
-function printDraftGrid() {
-  const source = document.querySelector(".draft-print-area");
+function createPrintableDraftMarkup(options) {
+  const measured = measurePrintableDraftElement(buildPrintableDraftElement(options));
+  replacePrintCanvasesWithImages(measured.element);
+  return {
+    markup: measured.element.outerHTML,
+    width: measured.width,
+    height: measured.height
+  };
+}
 
-  if (!source) {
+function getDraftPrintHeaderMarkup() {
+  const draftTitle = normalizeDraftName(getDraftName(), "Untitled Draft")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const printedDate = new Date().toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  })
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return `
+    <div class="draft-print-header">
+      <div class="draft-print-meta">
+        <div class="draft-print-title">${draftTitle}</div>
+        <div class="draft-print-date">Printed ${printedDate}</div>
+      </div>
+    </div>
+  `;
+}
+
+function waitForPrintableDocument(documentNode) {
+  const images = Array.from(documentNode.images || []);
+
+  if (!images.length) {
+    return new Promise(resolve => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(resolve);
+      });
+    });
+  }
+
+  return Promise.all(
+    images.map(image => {
+      if (image.complete) {
+        return Promise.resolve();
+      }
+
+      return new Promise(resolve => {
+        const finish = () => resolve();
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", finish, { once: true });
+      });
+    })
+  ).then(
+    () =>
+      new Promise(resolve => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(resolve);
+        });
+      })
+  );
+}
+
+function runDraftPrintWithOptions(options) {
+  if (!options) {
     return;
   }
+
+  const printable = createPrintableDraftMarkup(options);
+  const printScale = options.scale;
+  const scaledWidth = Math.max(1, Math.ceil(printable.width * printScale));
+  const scaledHeight = Math.max(1, Math.ceil(printable.height * printScale));
+  const printTitle = normalizeDraftName(getDraftName(), "Draft Print")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const printBodyMarkup = options.includeDrawdown
+    ? `
+        <div class="draft-print-stage" style="width:${scaledWidth}px;height:${scaledHeight}px;">
+          <div class="draft-print-scale" style="transform:scale(${printScale});">
+            ${printable.markup}
+          </div>
+        </div>
+      `
+    : `
+        <div class="draft-print-stage-sections" style="zoom:${printScale};">
+          ${printable.markup}
+        </div>
+      `;
 
   const printFrame = document.createElement("iframe");
   printFrame.setAttribute("aria-hidden", "true");
@@ -5183,29 +6033,20 @@ function printDraftGrid() {
   printFrame.style.border = "0";
 
   document.body.appendChild(printFrame);
-
-  const printDocument = printFrame.contentDocument || printFrame.contentWindow?.document;
-
-  if (!printDocument) {
-    printFrame.remove();
-    return;
-  }
-
-  printDocument.open();
-  printDocument.write(`
+  const printMarkup = `
     <!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <title>Draft Print</title>
+        <title>${printTitle}</title>
         <style>${getDraftPrintStyles()}</style>
       </head>
       <body>
-        ${getPrintableDraftMarkup(source)}
+        ${getDraftPrintHeaderMarkup()}
+        ${printBodyMarkup}
       </body>
     </html>
-  `);
-  printDocument.close();
+  `;
 
   const cleanup = () => {
     window.setTimeout(() => {
@@ -5213,17 +6054,28 @@ function printDraftGrid() {
     }, 0);
   };
 
-  window.setTimeout(() => {
+  const triggerPrint = () => {
     const printWindow = printFrame.contentWindow;
-    if (!printWindow) {
+    const printDocument = printFrame.contentDocument || printWindow?.document;
+
+    if (!printWindow || !printDocument) {
       cleanup();
       return;
     }
 
-    printWindow.onafterprint = cleanup;
-    printWindow.focus();
-    printWindow.print();
-  }, 50);
+    waitForPrintableDocument(printDocument).then(() => {
+      printWindow.onafterprint = cleanup;
+      printWindow.focus();
+      printWindow.print();
+    }).catch(cleanup);
+  };
+
+  printFrame.addEventListener("load", triggerPrint, { once: true });
+  printFrame.srcdoc = printMarkup;
+}
+
+function printDraftGrid() {
+  openDraftPrintModal();
 }
 
 function confirmReset() {
@@ -5416,6 +6268,17 @@ document.getElementById("draft-name").addEventListener("change", event => {
 document.addEventListener("keydown", handleDraftHistoryShortcut);
 
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
+document.getElementById("draft-print-include-drawdown").addEventListener("change", syncDraftPrintModalUI);
+document.getElementById("draft-print-confirm").addEventListener("click", requestDraftPrintFromModal);
+document.getElementById("draft-print-modal").addEventListener("hidden.bs.modal", () => {
+  if (!pendingDraftPrintOptions) {
+    return;
+  }
+
+  const options = pendingDraftPrintOptions;
+  pendingDraftPrintOptions = null;
+  runDraftPrintWithOptions(options);
+});
 
 const repeatPreviewScroll = document.getElementById("repeat-preview-scroll");
 
