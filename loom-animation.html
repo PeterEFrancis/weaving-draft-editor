@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loom Animation</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg-cream: #f7f1e3;
+    --bg-warm: #ead8bf;
+    --ink: #2f241d;
+    --accent: #aa4a2b;
+    --accent-dark: #7a321c;
+    --line: rgba(47, 36, 29, 0.12);
+    --panel-bg: rgba(255, 252, 245, 0.84);
+    --draft-cell-size: 16px;
+    --draft-gap: 0.5rem;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+      radial-gradient(circle at right 20%, rgba(84, 115, 76, 0.12), transparent 28%),
+      linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 46%, var(--bg-warm) 100%);
+  }
+
+  .page-shell {
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-inline: clamp(1rem, 2vw, 2rem);
+    padding-block: clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  .workspace {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.08);
+    backdrop-filter: blur(10px);
+  }
+
+  .workspace-toolbar {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .workspace-toolbar-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .workspace-toolbar-action-groups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .workspace-toolbar-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+    padding: 0.4rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .workspace-toolbar-panel {
+    display: flex;
+    align-items: stretch;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  }
+
+  .workspace-toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.9rem;
+    width: 100%;
+  }
+
+  .toolbar-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 0.9rem;
+  }
+
+  .toolbar-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-action-icon svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .toolbar-action-label {
+    display: inline-block;
+  }
+
+  .btn-soft,
+  .btn-drafter {
+    min-height: 2.65rem;
+    padding: 0.62rem 0.9rem;
+    border-radius: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .btn-soft {
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+  }
+
+  .btn-soft:hover,
+  .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--ink);
+  }
+
+  .btn-drafter {
+    border: 0;
+    background: linear-gradient(135deg, var(--accent), #c87137);
+    color: #fff;
+    box-shadow: 0 0.9rem 2rem rgba(170, 74, 43, 0.16);
+  }
+
+  .btn-drafter:hover,
+  .btn-drafter:focus {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+    color: #fff;
+  }
+
+  .workspace-toolbar-actions .btn-soft,
+  .workspace-toolbar-actions .btn-drafter {
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    border-radius: 0.9rem;
+    box-shadow: none;
+  }
+
+  .workspace-toolbar-actions .btn-soft {
+    background: rgba(255, 255, 255, 0.82);
+    border-color: rgba(47, 36, 29, 0.1);
+  }
+
+  .workspace-toolbar-actions .btn-soft:hover,
+  .workspace-toolbar-actions .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  .control-label {
+    color: var(--accent-dark);
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .toolbar-field {
+    width: 150px;
+  }
+
+  .toolbar-field-speed {
+    width: 190px;
+  }
+
+  .playback-toolbar-panel {
+    padding: 0.4rem 0.55rem;
+    min-height: 3.45rem;
+  }
+
+  .playback-toolbar-panel .workspace-toolbar-row {
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .playback-toolbar-panel .toolbar-action {
+    flex: 0 0 auto;
+  }
+
+  .playback-toolbar-panel .toolbar-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    min-height: 2.65rem;
+  }
+
+  .playback-toolbar-panel .toolbar-field-speed {
+    width: 170px;
+  }
+
+  .toolbar-field-loop {
+    width: auto;
+  }
+
+  .playback-toolbar-panel .control-label {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1;
+  }
+
+  .playback-toolbar-panel .form-range {
+    flex: 1 1 auto;
+    min-height: 2.65rem;
+    margin: 0;
+    padding-block: 0.3rem;
+    padding-inline: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .toolbar-switch-wrap {
+    display: flex;
+    align-items: center;
+    min-height: 2.65rem;
+    padding-inline: 0.05rem;
+  }
+
+  .toolbar-switch-wrap .form-check {
+    min-height: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .toolbar-switch-wrap .form-check-input {
+    margin-top: 0;
+  }
+
+  .form-control,
+  .form-range {
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .stage-grid {
+    display: grid;
+    grid-template-columns: minmax(300px, 430px) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .panel-body {
+    padding: 1rem;
+  }
+
+  .panel-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .panel-copy {
+    margin: 0.25rem 0 0;
+    color: rgba(47, 36, 29, 0.6);
+    font-size: 0.92rem;
+  }
+
+  .draft-layout {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-template-rows: max-content max-content;
+    grid-template-areas:
+      "threading tieup"
+      "drawdown treadling";
+    gap: var(--draft-gap);
+    width: fit-content;
+    max-width: 100%;
+    align-content: start;
+    justify-content: start;
+  }
+
+  .draft-section {
+    min-width: 0;
+  }
+
+  .draft-section-threading { grid-area: threading; }
+  .draft-section-tieup { grid-area: tieup; }
+  .draft-section-drawdown { grid-area: drawdown; }
+  .draft-section-treadling { grid-area: treadling; }
+
+  .draft-grid {
+    display: grid;
+    gap: 0;
+  }
+
+  .draft-cell {
+    width: var(--draft-cell-size);
+    height: var(--draft-cell-size);
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.94);
+  }
+
+  .draft-cell.is-tieup-on {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .draft-cell.is-current-row {
+    box-shadow: inset 0 0 0 2px rgba(200, 113, 55, 0.65);
+  }
+
+  .draft-cell.is-current-press {
+    box-shadow: inset 0 0 0 2px rgba(170, 74, 43, 0.8);
+  }
+
+  .draft-cell.is-active-tieup {
+    box-shadow: inset 0 0 0 2px rgba(170, 74, 43, 0.8);
+  }
+
+  .draft-cell.is-lifted-shaft {
+    filter: saturate(1.08);
+    box-shadow: inset 0 0 0 2px rgba(122, 50, 28, 0.45);
+  }
+
+  .drawdown-canvas-wrap {
+    overflow: hidden;
+    background: #fff;
+    line-height: 0;
+  }
+
+  .drawdown-canvas {
+    display: block;
+    background: #fff;
+  }
+
+  .loom-panel {
+    min-height: 40rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .loom-canvas-wrap {
+    position: relative;
+    min-height: 0;
+    flex: 1 1 auto;
+    border-radius: 1rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 243, 234, 0.92));
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    overflow: hidden;
+  }
+
+  .loom-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .loom-panel .panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .draft-empty {
+    display: grid;
+    place-items: center;
+    min-height: 9rem;
+    border-radius: 0.9rem;
+    border: 1px dashed rgba(47, 36, 29, 0.16);
+    color: rgba(47, 36, 29, 0.58);
+    font-size: 0.92rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  @media (max-width: 1100px) {
+    .stage-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .loom-panel {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .status-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .draft-layout {
+      grid-template-columns: max-content;
+      grid-template-areas:
+        "threading"
+        "tieup"
+        "drawdown"
+        "treadling";
+    }
+
+  }
+</style>
+</head>
+<body>
+<main class="page-shell">
+  <div class="workspace">
+    <div class="workspace-toolbar">
+      <div class="workspace-toolbar-action-row">
+        <div class="workspace-toolbar-action-groups">
+          <div class="workspace-toolbar-actions">
+            <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 10.5 12 3l9 7.5"></path>
+                  <path d="M5.5 9.5V21h13V9.5"></path>
+                  <path d="M9.5 21v-6h5v6"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Home</span>
+            </a>
+            <button type="button" class="btn btn-soft toolbar-action" id="reset-animation-button">
+              <span class="toolbar-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                  <path d="M3 4v5h5"></path>
+                </svg>
+              </span>
+              <span class="toolbar-action-label">Restart</span>
+            </button>
+          </div>
+
+          <div class="workspace-toolbar-panel panel playback-toolbar-panel">
+            <div class="workspace-toolbar-row">
+              <button type="button" class="btn btn-drafter toolbar-action" id="play-pause-button">
+                <span class="toolbar-action-icon" aria-hidden="true">
+                  <svg id="play-pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 6.5v11"></path>
+                    <path d="M16 6.5v11"></path>
+                  </svg>
+                </span>
+                <span class="toolbar-action-label" id="play-pause-label">Pause</span>
+              </button>
+              <button type="button" class="btn btn-soft toolbar-action" id="step-button">
+                <span class="toolbar-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m8 7 8 5-8 5z"></path>
+                    <path d="M18 7v10"></path>
+                  </svg>
+                </span>
+                <span class="toolbar-action-label">Step Pick</span>
+              </button>
+              <div class="toolbar-field toolbar-field-speed">
+                <label class="control-label" for="speed-range">Speed</label>
+                <input id="speed-range" class="form-range" type="range" min="0.4" max="2.4" step="0.1" value="1">
+              </div>
+              <div class="toolbar-field toolbar-field-loop">
+                <label class="control-label" for="loop-toggle">Loop</label>
+                <div class="toolbar-switch-wrap">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="loop-toggle">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-grid">
+      <section class="panel">
+        <div class="panel-body">
+          <div class="panel-title-row">
+            <div>
+              <h2 class="panel-title">Draft</h2>
+              <p class="panel-copy">The active pick, pressed treadles, and lifted shafts are highlighted while the cloth grows row by row.</p>
+            </div>
+          </div>
+
+          <div id="draft-layout" class="draft-layout">
+            <section class="draft-section draft-section-threading">
+              <div id="threading-grid" class="draft-grid"></div>
+            </section>
+            <section class="draft-section draft-section-tieup">
+              <div id="tieup-grid" class="draft-grid"></div>
+            </section>
+            <section class="draft-section draft-section-drawdown">
+              <div class="drawdown-canvas-wrap">
+                <canvas id="drawdown-canvas" class="drawdown-canvas"></canvas>
+              </div>
+            </section>
+            <section class="draft-section draft-section-treadling">
+              <div id="treadling-grid" class="draft-grid"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel loom-panel">
+        <div class="panel-body">
+          <div class="panel-title-row">
+            <div>
+              <h2 class="panel-title">Loom Motion</h2>
+              <p class="panel-copy">Watch the current pick lift its shafts, open the shed, carry the weft, and beat the row into the pattern.</p>
+            </div>
+          </div>
+
+          <div class="loom-canvas-wrap" id="loom-canvas-wrap">
+            <canvas id="loom-canvas" class="loom-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script>
+const defaultDraftData = (() => {
+  const warpDark = "pattern-color-1";
+  const warpLight = "pattern-color-2";
+  const weftRust = "pattern-color-3";
+  const weftGold = "pattern-color-4";
+  const shafts = 4;
+  const treadles = 4;
+  const warp = 12;
+  const picks = 8;
+  const threading = Array.from({ length: shafts }, () => Array(warp).fill(0));
+  const treadling = Array.from({ length: picks }, () => Array(treadles).fill(0));
+  const tieup = [
+    [1, 1, 0, 0],
+    [0, 1, 1, 0],
+    [0, 0, 1, 1],
+    [1, 0, 0, 1]
+  ];
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    const shaftIndex = warpIndex % shafts;
+    const colorId = warpIndex % 2 === 0 ? warpDark : warpLight;
+    threading[shaftIndex][warpIndex] = colorId;
+  }
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const treadleIndex = pickIndex % treadles;
+    const colorId = pickIndex % 2 === 0 ? weftRust : weftGold;
+    treadling[pickIndex][treadleIndex] = colorId;
+  }
+
+  return {
+    format: "weaving-draft-data",
+    version: 3,
+    meta: {
+      draftName: "Sample Twill Walkthrough"
+    },
+    draft: {
+      shafts,
+      treadles,
+      warp,
+      picks,
+      threading,
+      treadling,
+      tieup,
+      patternColors: [
+        { id: warpDark, value: "#2f241d", thickness: 1 },
+        { id: warpLight, value: "#d4d4d4", thickness: 1 },
+        { id: weftRust, value: "#c65a3a", thickness: 1 },
+        { id: weftGold, value: "#d2a33c", thickness: 1 }
+      ],
+      activePatternColorId: warpDark,
+      nextPatternColorNumber: 5
+    }
+  };
+})();
+
+const playbackState = {
+  playing: true,
+  loop: false,
+  speed: 1,
+  completedPicks: 0,
+  cycleProgress: 0,
+  lastTimestamp: 0
+};
+
+let draftState = null;
+let threadingRefs = [];
+let tieupRefs = [];
+let treadlingRefs = [];
+
+const drawdownCanvas = document.getElementById("drawdown-canvas");
+const loomCanvas = document.getElementById("loom-canvas");
+const loomCanvasWrap = document.getElementById("loom-canvas-wrap");
+const settledClothCanvas = document.createElement("canvas");
+
+function normalizeDraftName(name) {
+  const trimmed = typeof name === "string" ? name.trim() : "";
+  return trimmed || "Untitled Draft";
+}
+
+function normalizeColorValue(value, fallback = "#ffffff") {
+  return /^#[0-9a-f]{6}$/i.test(value || "") ? value.toLowerCase() : fallback;
+}
+
+function normalizeDraftData(data) {
+  if (data?.format !== "weaving-draft-data" || typeof data?.draft !== "object") {
+    throw new Error("That file is not a valid WDD draft.");
+  }
+
+  const shafts = Math.max(1, Number.parseInt(data.draft.shafts, 10) || 1);
+  const treadles = Math.max(1, Number.parseInt(data.draft.treadles, 10) || 1);
+  const warp = Math.max(1, Number.parseInt(data.draft.warp, 10) || 1);
+  const picks = Math.max(1, Number.parseInt(data.draft.picks, 10) || 1);
+  const patternColors = Array.isArray(data.draft.patternColors) && data.draft.patternColors.length
+    ? data.draft.patternColors.map((color, index) => ({
+        id: typeof color?.id === "string" && color.id ? color.id : `pattern-color-${index + 1}`,
+        value: normalizeColorValue(color?.value, index === 0 ? "#2f241d" : "#d4d4d4"),
+        thickness: Math.max(0.1, Number.parseFloat(color?.thickness) || 1)
+      }))
+    : defaultDraftData.draft.patternColors.map(color => ({ ...color }));
+
+  const validColorIds = new Set(patternColors.map(color => color.id));
+  const colorValueById = new Map(patternColors.map(color => [color.id, color.value]));
+
+  const threading = Array.from({ length: shafts }, (_, shaftIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) => {
+      const value = data.draft.threading?.[shaftIndex]?.[warpIndex];
+      return validColorIds.has(value) ? value : 0;
+    })
+  );
+
+  const treadling = Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: treadles }, (_, treadleIndex) => {
+      const value = data.draft.treadling?.[pickIndex]?.[treadleIndex];
+      return validColorIds.has(value) ? value : 0;
+    })
+  );
+
+  const tieup = Array.from({ length: treadles }, (_, treadleIndex) =>
+    Array.from({ length: shafts }, (_, shaftIndex) => (data.draft.tieup?.[treadleIndex]?.[shaftIndex] ? 1 : 0))
+  );
+
+  const warpAssignments = Array.from({ length: warp }, (_, warpIndex) => {
+    for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
+      const colorId = threading[shaftIndex][warpIndex];
+      if (colorId) {
+        return {
+          shaft: shaftIndex,
+          colorId,
+          color: colorValueById.get(colorId) || "#ffffff"
+        };
+      }
+    }
+
+    return {
+      shaft: 0,
+      colorId: 0,
+      color: "#ffffff"
+    };
+  });
+
+  const pickStates = Array.from({ length: picks }, (_, pickIndex) => {
+    const pressedTreadles = [];
+    let weftColorId = 0;
+
+    for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
+      const colorId = treadling[pickIndex][treadleIndex];
+      if (colorId) {
+        pressedTreadles.push(treadleIndex);
+        if (!weftColorId) {
+          weftColorId = colorId;
+        }
+      }
+    }
+
+    const liftedShafts = new Set();
+    pressedTreadles.forEach(treadleIndex => {
+      for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
+        if (tieup[treadleIndex]?.[shaftIndex]) {
+          liftedShafts.add(shaftIndex);
+        }
+      }
+    });
+
+    return {
+      pressedTreadles,
+      liftedShafts,
+      weftColorId,
+      weftColor: colorValueById.get(weftColorId) || "#ffffff"
+    };
+  });
+
+  const drawdown = Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) => {
+      const assignment = warpAssignments[warpIndex];
+      const pickState = pickStates[pickIndex];
+      const warpVisible = assignment.colorId && pickState.liftedShafts.has(assignment.shaft);
+
+      return {
+        warpVisible,
+        color: warpVisible ? assignment.color : pickState.weftColor
+      };
+    })
+  );
+
+  return {
+    name: normalizeDraftName(data.meta?.draftName),
+    shafts,
+    treadles,
+    warp,
+    picks,
+    threading,
+    treadling,
+    tieup,
+    patternColors,
+    colorValueById,
+    warpAssignments,
+    pickStates,
+    drawdown
+  };
+}
+
+function getMiniCellSize() {
+  if (!draftState) {
+    return 16;
+  }
+
+  const threadingCell = Math.floor(Math.min(22, 320 / Math.max(draftState.warp, 1), 170 / Math.max(draftState.shafts, 1)));
+  const treadlingCell = Math.floor(Math.min(22, 170 / Math.max(draftState.treadles, 1), 320 / Math.max(draftState.picks, 1)));
+  return Math.max(9, Math.min(threadingCell, treadlingCell));
+}
+
+function setDraftNameLabel(name) {
+  const draftNameElement = document.getElementById("draft-name");
+  if (draftNameElement) {
+    draftNameElement.textContent = name;
+  }
+}
+
+function clearElement(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+function buildThreadingGrid() {
+  const element = document.getElementById("threading-grid");
+  clearElement(element);
+  threadingRefs = Array.from({ length: draftState.shafts }, () => Array(draftState.warp).fill(null));
+  element.style.gridTemplateColumns = `repeat(${draftState.warp}, var(--draft-cell-size))`;
+
+  for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+    for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+      const cell = document.createElement("div");
+      cell.className = "draft-cell";
+      const colorId = draftState.threading[shaftIndex][warpIndex];
+      if (colorId) {
+        cell.style.backgroundColor = draftState.colorValueById.get(colorId) || "#ffffff";
+      }
+      threadingRefs[shaftIndex][warpIndex] = cell;
+      element.appendChild(cell);
+    }
+  }
+}
+
+function buildTieupGrid() {
+  const element = document.getElementById("tieup-grid");
+  clearElement(element);
+  tieupRefs = Array.from({ length: draftState.shafts }, () => Array(draftState.treadles).fill(null));
+  element.style.gridTemplateColumns = `repeat(${draftState.treadles}, var(--draft-cell-size))`;
+
+  for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+    for (let treadleIndex = 0; treadleIndex < draftState.treadles; treadleIndex++) {
+      const cell = document.createElement("div");
+      cell.className = "draft-cell";
+      if (draftState.tieup[treadleIndex][shaftIndex]) {
+        cell.classList.add("is-tieup-on");
+      }
+      tieupRefs[shaftIndex][treadleIndex] = cell;
+      element.appendChild(cell);
+    }
+  }
+}
+
+function buildTreadlingGrid() {
+  const element = document.getElementById("treadling-grid");
+  clearElement(element);
+  treadlingRefs = Array.from({ length: draftState.picks }, () => Array(draftState.treadles).fill(null));
+  element.style.gridTemplateColumns = `repeat(${draftState.treadles}, var(--draft-cell-size))`;
+
+  for (let pickIndex = 0; pickIndex < draftState.picks; pickIndex++) {
+    for (let treadleIndex = 0; treadleIndex < draftState.treadles; treadleIndex++) {
+      const cell = document.createElement("div");
+      cell.className = "draft-cell";
+      const colorId = draftState.treadling[pickIndex][treadleIndex];
+      if (colorId) {
+        cell.style.backgroundColor = draftState.colorValueById.get(colorId) || "#ffffff";
+      }
+      treadlingRefs[pickIndex][treadleIndex] = cell;
+      element.appendChild(cell);
+    }
+  }
+}
+
+function resizeCanvasToDisplaySize(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(1, Math.round(rect.width * dpr));
+  const height = Math.max(1, Math.round(rect.height * dpr));
+
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  return {
+    width: rect.width,
+    height: rect.height,
+    dpr
+  };
+}
+
+function getCurrentAnimationState() {
+  if (!draftState) {
+    return null;
+  }
+
+  if (playbackState.completedPicks >= draftState.picks) {
+    return {
+      activePick: null,
+      phaseName: "Complete",
+      phaseCopy: "All picks have been woven. The full drawdown is now visible in the cloth and the draft panel.",
+      progress: 1,
+      liftAmount: 0,
+      shuttleProgress: 1,
+      insertedRowReveal: 0,
+      clothSlideProgress: 0,
+      shuttleDirection: 1,
+      pickState: null
+    };
+  }
+
+  const progress = Math.max(0, Math.min(1, playbackState.cycleProgress));
+  const activePick = playbackState.completedPicks;
+  const pickState = draftState.pickStates[activePick];
+  const shuttleDirection = activePick % 2 === 0 ? 1 : -1;
+  let phaseName = "";
+  let phaseCopy = "";
+  let liftAmount = 0;
+  let shuttleProgress = 0;
+  let insertedRowReveal = 0;
+  let clothSlideProgress = 0;
+  const liftEnd = 0.2;
+  const passEnd = 0.58;
+  const beatEnd = 0.8;
+  const settleEnd = 0.92;
+
+  if (progress < liftEnd) {
+    const local = progress / liftEnd;
+    liftAmount = 1 - Math.pow(1 - local, 2);
+    phaseName = "Lifting shafts";
+    phaseCopy = "The selected treadles pull their tied shafts upward, lifting the matching warp threads and opening the shed.";
+  } else if (progress < passEnd) {
+    const local = (progress - liftEnd) / (passEnd - liftEnd);
+    liftAmount = 1;
+    shuttleProgress = local;
+    phaseName = "Passing weft";
+    phaseCopy = "The weft yarn passes through the open shed while the lifted warp threads stay separated from the lower layer.";
+  } else if (progress < beatEnd) {
+    const local = (progress - passEnd) / (beatEnd - passEnd);
+    liftAmount = 1;
+    shuttleProgress = 1;
+    insertedRowReveal = local;
+    clothSlideProgress = local;
+    phaseName = "Beating in";
+    phaseCopy = "The weft is beaten into place at the fell line, turning this pick into a new row of the visible pattern.";
+  } else if (progress < settleEnd) {
+    const local = (progress - beatEnd) / (settleEnd - beatEnd);
+    liftAmount = 1 - local;
+    shuttleProgress = 1;
+    insertedRowReveal = 1;
+    clothSlideProgress = 1;
+    phaseName = "Settling";
+    phaseCopy = "The woven row stays in place while the warp threads and shafts relax back toward neutral before the next pick begins.";
+  } else {
+    liftAmount = 0;
+    shuttleProgress = 1;
+    insertedRowReveal = 1;
+    clothSlideProgress = 1;
+    phaseName = "Pause";
+    phaseCopy = "The loom pauses briefly before the next pick begins.";
+  }
+
+  return {
+    activePick,
+    phaseName,
+    phaseCopy,
+    progress,
+    liftAmount,
+    shuttleProgress,
+    insertedRowReveal,
+    clothSlideProgress,
+    shuttleDirection,
+    pickState
+  };
+}
+
+function updateStatusReadout() {
+  const animation = getCurrentAnimationState();
+
+  if (!draftState || !animation) {
+    return;
+  }
+
+  const phaseCopyElement = document.getElementById("phase-copy");
+  if (phaseCopyElement) {
+    phaseCopyElement.textContent = animation.phaseCopy;
+  }
+}
+
+function updatePlayPauseButton() {
+  const icon = document.getElementById("play-pause-icon");
+  const label = document.getElementById("play-pause-label");
+
+  if (playbackState.playing) {
+    icon.innerHTML = '<path d="M8 6.5v11"></path><path d="M16 6.5v11"></path>';
+    label.textContent = "Pause";
+  } else {
+    icon.innerHTML = '<path d="m9 7 8 5-8 5z"></path>';
+    label.textContent = playbackState.completedPicks >= draftState.picks ? "Replay" : "Play";
+  }
+}
+
+function updateDraftHighlights() {
+  const animation = getCurrentAnimationState();
+  const activePick = animation?.activePick;
+  const liftedShafts = animation?.pickState?.liftedShafts || new Set();
+  const pressedTreadles = animation?.pickState?.pressedTreadles || [];
+
+  for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+    const isLifted = liftedShafts.has(shaftIndex);
+    for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+      threadingRefs[shaftIndex][warpIndex]?.classList.toggle("is-lifted-shaft", isLifted);
+    }
+  }
+
+  for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+    for (let treadleIndex = 0; treadleIndex < draftState.treadles; treadleIndex++) {
+      const cell = tieupRefs[shaftIndex][treadleIndex];
+      const isActive = activePick !== null &&
+        pressedTreadles.includes(treadleIndex) &&
+        draftState.tieup[treadleIndex][shaftIndex];
+      cell?.classList.toggle("is-active-tieup", Boolean(isActive));
+      cell?.classList.toggle("is-lifted-shaft", activePick !== null && liftedShafts.has(shaftIndex));
+    }
+  }
+
+  for (let pickIndex = 0; pickIndex < draftState.picks; pickIndex++) {
+    for (let treadleIndex = 0; treadleIndex < draftState.treadles; treadleIndex++) {
+      const cell = treadlingRefs[pickIndex][treadleIndex];
+      const isCurrentRow = pickIndex === activePick;
+      const isCurrentPress = isCurrentRow && pressedTreadles.includes(treadleIndex) && Boolean(draftState.treadling[pickIndex][treadleIndex]);
+      cell?.classList.toggle("is-current-row", isCurrentRow);
+      cell?.classList.toggle("is-current-press", isCurrentPress);
+    }
+  }
+}
+
+function drawMiniDrawdown() {
+  if (!draftState) {
+    return;
+  }
+
+  const cellSize = getMiniCellSize();
+  const dpr = window.devicePixelRatio || 1;
+  const width = draftState.warp * cellSize;
+  const height = draftState.picks * cellSize;
+
+  drawdownCanvas.width = Math.max(1, Math.round(width * dpr));
+  drawdownCanvas.height = Math.max(1, Math.round(height * dpr));
+  drawdownCanvas.style.width = `${width}px`;
+  drawdownCanvas.style.height = `${height}px`;
+
+  const ctx = drawdownCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+  const animation = getCurrentAnimationState();
+  const activePick = animation?.activePick;
+  const phaseProgress = animation?.insertedRowReveal || 0;
+
+  for (let pickIndex = 0; pickIndex < draftState.picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+      const x = warpIndex * cellSize;
+      const y = pickIndex * cellSize;
+      const cell = draftState.drawdown[pickIndex][warpIndex];
+      let alpha = 0.14;
+
+      if (pickIndex < playbackState.completedPicks) {
+        alpha = 1;
+      } else if (pickIndex === activePick) {
+        alpha = 0.2 + phaseProgress * 0.8;
+      }
+
+      ctx.fillStyle = withAlpha(cell.color, alpha);
+      ctx.fillRect(x, y, cellSize, cellSize);
+      ctx.strokeStyle = pickIndex === activePick
+        ? "rgba(170, 74, 43, 0.65)"
+        : "rgba(47, 36, 29, 0.12)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
+    }
+  }
+}
+
+function withAlpha(hexColor, alpha) {
+  const normalized = normalizeColorValue(hexColor, "#ffffff");
+  const r = Number.parseInt(normalized.slice(1, 3), 16);
+  const g = Number.parseInt(normalized.slice(3, 5), 16);
+  const b = Number.parseInt(normalized.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
+}
+
+function appendRoundedRectSubpath(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  appendRoundedRectSubpath(ctx, x, y, width, height, radius);
+}
+
+function smoothStep(value) {
+  const clamped = Math.max(0, Math.min(1, value));
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
+function appendLinePoints(points, x0, y0, x1, y1, steps = 4) {
+  if (!points.length) {
+    points.push({ x: x0, y: y0 });
+  }
+
+  for (let index = 1; index <= steps; index++) {
+    const t = index / steps;
+    points.push({
+      x: x0 + (x1 - x0) * t,
+      y: y0 + (y1 - y0) * t
+    });
+  }
+}
+
+function appendQuadraticPoints(points, x0, y0, cx, cy, x1, y1, steps = 10) {
+  if (!points.length) {
+    points.push({ x: x0, y: y0 });
+  }
+
+  for (let index = 1; index <= steps; index++) {
+    const t = index / steps;
+    const inverse = 1 - t;
+    points.push({
+      x: inverse * inverse * x0 + 2 * inverse * t * cx + t * t * x1,
+      y: inverse * inverse * y0 + 2 * inverse * t * cy + t * t * y1
+    });
+  }
+}
+
+function tracePolyline(ctx, points) {
+  if (!points.length) {
+    return;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+
+  for (let index = 1; index < points.length; index++) {
+    ctx.lineTo(points[index].x, points[index].y);
+  }
+}
+
+function strokeYarnPath(ctx, points, color, width, lineCap = "round", embellishment = "full") {
+  if (points.length < 2) {
+    return;
+  }
+
+  ctx.save();
+  ctx.lineCap = lineCap;
+  ctx.lineJoin = "round";
+
+  if (embellishment === "full") {
+    ctx.save();
+    ctx.translate(0.45, 0.65);
+    ctx.strokeStyle = withAlpha("#000000", 0.08);
+    ctx.lineWidth = width * 1.08;
+    tracePolyline(ctx, points);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  tracePolyline(ctx, points);
+  ctx.stroke();
+
+  if (embellishment === "full" || embellishment === "highlight-only") {
+    const highlightAlpha = embellishment === "highlight-only" ? 0.14 : 0.18;
+    const highlightWidth = embellishment === "highlight-only"
+      ? Math.max(1.6, width * 0.22)
+      : Math.max(1.4, width * 0.24);
+    ctx.strokeStyle = withAlpha("#ffffff", highlightAlpha);
+    ctx.lineWidth = highlightWidth;
+    tracePolyline(ctx, points);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawTaperedYarnRibbon(ctx, points, widths, color) {
+  if (points.length < 2 || widths.length !== points.length) {
+    return;
+  }
+
+  const leftSide = [];
+  const rightSide = [];
+
+  for (let index = 0; index < points.length; index++) {
+    const point = points[index];
+    const previous = points[Math.max(0, index - 1)];
+    const next = points[Math.min(points.length - 1, index + 1)];
+    const dx = next.x - previous.x;
+    const dy = next.y - previous.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const normalX = -dy / length;
+    const normalY = dx / length;
+    const halfWidth = widths[index] / 2;
+
+    leftSide.push({
+      x: point.x + normalX * halfWidth,
+      y: point.y + normalY * halfWidth
+    });
+    rightSide.push({
+      x: point.x - normalX * halfWidth,
+      y: point.y - normalY * halfWidth
+    });
+  }
+
+  const drawRibbonPath = scale => {
+    ctx.beginPath();
+    ctx.moveTo(leftSide[0].x, leftSide[0].y);
+
+    for (let index = 1; index < leftSide.length; index++) {
+      ctx.lineTo(
+        points[index].x + (leftSide[index].x - points[index].x) * scale,
+        points[index].y + (leftSide[index].y - points[index].y) * scale
+      );
+    }
+
+    for (let index = rightSide.length - 1; index >= 0; index--) {
+      ctx.lineTo(
+        points[index].x + (rightSide[index].x - points[index].x) * scale,
+        points[index].y + (rightSide[index].y - points[index].y) * scale
+      );
+    }
+
+    ctx.closePath();
+  };
+
+  ctx.save();
+
+  ctx.save();
+  ctx.translate(0.4, 0.6);
+  ctx.fillStyle = withAlpha("#000000", 0.08);
+  drawRibbonPath(1.05);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.fillStyle = color;
+  drawRibbonPath(1);
+  ctx.fill();
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(points[0].x, points[0].y, widths[0] / 2, 0, Math.PI * 2);
+  ctx.arc(points[points.length - 1].x, points[points.length - 1].y, widths[widths.length - 1] / 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = withAlpha("#ffffff", 0.14);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = Math.max(1.6, Math.min(...widths) * 0.22);
+  tracePolyline(ctx, points);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawLoomScene() {
+  if (!draftState) {
+    return;
+  }
+
+  const size = resizeCanvasToDisplaySize(loomCanvas);
+  const ctx = loomCanvas.getContext("2d");
+  ctx.setTransform(size.dpr, 0, 0, size.dpr, 0, 0);
+  ctx.clearRect(0, 0, size.width, size.height);
+
+  const width = size.width;
+  const height = size.height;
+  const animation = getCurrentAnimationState();
+  const activePick = animation?.activePick;
+  const pickState = animation?.pickState;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+
+  const mechanismWidth = Math.max(150, Math.min(230, width * 0.24));
+  const left = 76;
+  const mechanismGap = 64;
+  const mechanismRightInset = 24;
+  const mechanismRight = width - mechanismRightInset;
+  const mechanismLeft = mechanismRight - mechanismWidth;
+  const provisionalRight = mechanismLeft - mechanismGap - 24;
+  const beamY = 22;
+  const shaftTop = 62;
+  const shaftGap = 34;
+  const heddleYBase = shaftTop + shaftGap * 0.92;
+  const fellY = height * 0.6;
+  const clothTop = fellY + 16;
+  const provisionalClothBottom = height - 28;
+  const warpThreadWidth = 16;
+  const weftThreadWidth = 17;
+  const weftY = fellY - 24;
+  const clothHeight = Math.max(24, provisionalClothBottom - clothTop);
+  const rowHeight = Math.min(14, clothHeight / Math.max(draftState.picks + 0.8, 1));
+  const settledRowSpacing = Math.max(rowHeight, weftThreadWidth + 9);
+  const fullClothWidth = Math.max(0, provisionalRight - left);
+  const balancedClothWidth = Math.min(fullClothWidth, settledRowSpacing * draftState.warp);
+  const clothWidth = fullClothWidth - (fullClothWidth - balancedClothWidth) * 0.5;
+  const right = left + clothWidth;
+  const cellWidth = (right - left) / draftState.warp;
+  const warpXs = Array.from({ length: draftState.warp }, (_, index) =>
+    left + (index + 0.5) * cellWidth
+  );
+  const baseShaftWidth = right - left + 36;
+  const shaftVisuals = [];
+  const warpStartY = -48;
+  const warpExitY = height + 48;
+  const clothBottom = height - Math.max(rowHeight * 0.55, settledRowSpacing * 0.35);
+  const getSettledRowTop = pickIndex => clothBottom - (pickIndex + 1) * settledRowSpacing;
+  const activeTargetRowTop = activePick !== null ? getSettledRowTop(activePick) : clothBottom - rowHeight;
+  const activeTargetCenterY = activeTargetRowTop + rowHeight / 2;
+  const activeCrossY = activePick !== null
+    ? weftY + (activeTargetCenterY - weftY) * (animation.clothSlideProgress || 0)
+    : weftY;
+  const lastSettledPickTop = playbackState.completedPicks > 0
+    ? getSettledRowTop(playbackState.completedPicks - 1)
+    : clothBottom;
+
+  for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+    const isLifted = activePick !== null && pickState?.liftedShafts.has(shaftIndex);
+    const shaftY = shaftTop + shaftIndex * shaftGap;
+    const shaftScaleX = isLifted ? 1 + 0.06 * animation.liftAmount : 1;
+    const shaftScaleY = isLifted ? 1 + 0.24 * animation.liftAmount : 1;
+    const shaftWidth = Math.min(width - 28, baseShaftWidth * shaftScaleX);
+    const shaftHeight = 18 * shaftScaleY;
+    const shaftX = (left - 18) - (shaftWidth - baseShaftWidth) / 2;
+    const shaftBarY = shaftY - shaftHeight / 2;
+    const slots = [];
+
+    draftState.warpAssignments.forEach((assignment, warpIndex) => {
+      if (!assignment.colorId || assignment.shaft !== shaftIndex) {
+        return;
+      }
+
+      const slotWidth = Math.max(12, (warpThreadWidth + 5) * shaftScaleX);
+      const slotHeight = 11.5 * shaftScaleY;
+      const slotX = warpXs[warpIndex] - slotWidth / 2;
+      const slotY = shaftY - slotHeight / 2;
+
+      slots.push({
+        slotWidth,
+        slotHeight,
+        slotX,
+        slotY,
+        slotCenterX: warpXs[warpIndex],
+        slotCenterY: shaftY
+      });
+    });
+
+    shaftVisuals.push({
+      isLifted,
+      shaftIndex,
+      shaftY,
+      shaftHeight,
+      shaftWidth,
+      shaftX,
+      shaftBarY,
+      slots
+    });
+
+  }
+
+  const drawWarpThread = warpIndex => {
+    const assignment = draftState.warpAssignments[warpIndex];
+    const lifted = activePick !== null && assignment.colorId && pickState?.liftedShafts.has(assignment.shaft);
+    const shaftY = shaftTop + assignment.shaft * shaftGap;
+    const heddleY = heddleYBase + assignment.shaft * shaftGap;
+    const upperLayerY = activeCrossY - (18 + 34 * animation.liftAmount);
+    const lowerLayerY = activeCrossY + (16 + 12 * animation.liftAmount);
+    const layerY = lifted ? upperLayerY : lowerLayerY;
+    const shoulderY = lifted
+      ? heddleY + 10 - 12 * animation.liftAmount
+      : heddleY + 16 + 8 * animation.liftAmount;
+    const clothEndY = warpExitY;
+    const taperEndY = Math.max(lastSettledPickTop, heddleY + 12);
+    const centerX = warpXs[warpIndex];
+    const points = [];
+
+    appendLinePoints(points, centerX, warpStartY, centerX, heddleY - 10, 5);
+    appendQuadraticPoints(points, centerX, heddleY - 10, centerX, heddleY + 6, centerX, shoulderY, 8);
+    appendQuadraticPoints(points, centerX, shoulderY, centerX, (shoulderY + layerY) / 2, centerX, layerY, 8);
+    appendQuadraticPoints(points, centerX, layerY, centerX, fellY + 10, centerX, clothEndY, 10);
+
+    const hasActiveTaper = activePick !== null && animation.liftAmount > 0.01;
+
+    if (!hasActiveTaper) {
+      strokeYarnPath(ctx, points, assignment.color, warpThreadWidth);
+      return;
+    }
+
+    if (lifted) {
+      const maxBulgeWidth = warpThreadWidth * (1.14 + 0.88 * animation.liftAmount);
+      const shaftScaleY = 1 + 0.24 * animation.liftAmount;
+      const coreHalfSpan = 5.5 * shaftScaleY;
+      const upperTaperSpan = Math.max(1, shaftY - warpStartY - coreHalfSpan);
+      const lowerTaperSpan = Math.max(1, taperEndY - shaftY - coreHalfSpan);
+      const ribbonWidths = points.map(point => {
+        const signedDistanceFromShaft = point.y - shaftY;
+        const distanceFromShaft = Math.abs(signedDistanceFromShaft);
+
+        if (distanceFromShaft <= coreHalfSpan) {
+          return maxBulgeWidth;
+        }
+
+        if (signedDistanceFromShaft < -coreHalfSpan) {
+          const t = smoothStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
+          return maxBulgeWidth + (warpThreadWidth - maxBulgeWidth) * t;
+        }
+
+        if (signedDistanceFromShaft > coreHalfSpan) {
+          const t = smoothStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
+          return maxBulgeWidth + (warpThreadWidth - maxBulgeWidth) * t;
+        }
+
+        return maxBulgeWidth;
+      });
+
+      drawTaperedYarnRibbon(ctx, points, ribbonWidths, assignment.color);
+      return;
+    }
+
+    const minPinchWidth = warpThreadWidth * (1 - 0.24 * animation.liftAmount);
+    const shaftScaleY = 1 + 0.24 * animation.liftAmount;
+    const coreHalfSpan = 5.5 * shaftScaleY;
+    const upperTaperSpan = Math.max(1, shaftY - warpStartY - coreHalfSpan);
+    const lowerTaperSpan = Math.max(1, taperEndY - shaftY - coreHalfSpan);
+    const ribbonWidths = points.map(point => {
+      const signedDistanceFromShaft = point.y - shaftY;
+      const distanceFromShaft = Math.abs(signedDistanceFromShaft);
+
+      if (distanceFromShaft <= coreHalfSpan) {
+        return minPinchWidth;
+      }
+
+      if (signedDistanceFromShaft < -coreHalfSpan) {
+        const t = smoothStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
+        return minPinchWidth + (warpThreadWidth - minPinchWidth) * t;
+      }
+
+      if (signedDistanceFromShaft > coreHalfSpan) {
+        const t = smoothStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
+        return minPinchWidth + (warpThreadWidth - minPinchWidth) * t;
+      }
+
+      return minPinchWidth;
+    });
+
+    drawTaperedYarnRibbon(ctx, points, ribbonWidths, assignment.color);
+  };
+
+  for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+    const assignment = draftState.warpAssignments[warpIndex];
+    const lifted = activePick !== null && assignment.colorId && pickState?.liftedShafts.has(assignment.shaft);
+
+    if (!lifted) {
+      drawWarpThread(warpIndex);
+    }
+  }
+
+  if (activePick !== null && pickState && pickState.pressedTreadles.length) {
+    const startX = animation.shuttleDirection > 0 ? left - 48 : right + 48;
+    const endX = animation.shuttleDirection > 0 ? right + 48 : left - 48;
+    const shuttleX = startX + (endX - startX) * animation.shuttleProgress;
+    const constrainedPickX = Math.max(left, Math.min(right, shuttleX));
+
+    if (animation.progress >= 0.22) {
+      const wovenStart = animation.shuttleDirection > 0 ? left : right;
+      const wovenEnd = animation.progress < 0.62
+        ? constrainedPickX
+        : (animation.shuttleDirection > 0 ? right : left);
+      strokeYarnPath(ctx, [
+        { x: wovenStart, y: activeCrossY },
+        { x: wovenEnd, y: activeCrossY }
+      ], pickState.weftColor, weftThreadWidth);
+    }
+
+  }
+
+  for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+    const assignment = draftState.warpAssignments[warpIndex];
+    const lifted = activePick !== null && assignment.colorId && pickState?.liftedShafts.has(assignment.shaft);
+
+    if (lifted) {
+      drawWarpThread(warpIndex);
+    }
+  }
+
+  shaftVisuals.forEach(shaftVisual => {
+    const { isLifted, shaftIndex, shaftY, shaftHeight, shaftWidth, shaftX, shaftBarY, slots } = shaftVisual;
+
+    ctx.save();
+    ctx.shadowColor = isLifted ? "rgba(47, 36, 29, 0.22)" : "rgba(47, 36, 29, 0.18)";
+    ctx.shadowBlur = isLifted ? 10 : 7;
+    ctx.shadowOffsetY = 2;
+    ctx.fillStyle = isLifted ? "#4b3329" : "#3a2a22";
+    ctx.strokeStyle = isLifted ? "#2a1b15" : "#241813";
+    ctx.lineWidth = 1.35;
+    drawRoundedRect(ctx, shaftX, shaftBarY, shaftWidth, shaftHeight, 0);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    slots.forEach(slot => {
+      ctx.fillStyle = "#e7d2ad";
+      ctx.strokeStyle = "#2a1b15";
+      ctx.lineWidth = 0.95;
+      ctx.beginPath();
+      ctx.arc(slot.slotCenterX, slot.slotCenterY, Math.max(5.2, slot.slotHeight * 0.42), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    });
+
+  });
+  const drawTreadleMechanism = () => {
+    const mechanismTop = shaftTop - 10;
+    const mechanismBottom = clothBottom + 8;
+    const treadleRailY = mechanismBottom - 36;
+    const treadleBaseWidth = Math.max(28, Math.min(42, (mechanismRight - mechanismLeft - 18) / Math.max(draftState.treadles, 1) - 6));
+    const treadleGap = Math.max(6, Math.min(10, (mechanismRight - mechanismLeft - draftState.treadles * treadleBaseWidth) / Math.max(draftState.treadles - 1, 1)));
+    const treadleTravel = 18 * animation.liftAmount;
+    const pulleyRadius = 6;
+    const treadleCenters = Array.from({ length: draftState.treadles }, (_, treadleIndex) =>
+      mechanismLeft + treadleBaseWidth / 2 + treadleIndex * (treadleBaseWidth + treadleGap)
+    );
+    const shaftVisualByIndex = new Map(shaftVisuals.map(shaftVisual => [shaftVisual.shaftIndex, shaftVisual]));
+    const pulleyConnections = [];
+
+    ctx.strokeStyle = "rgba(47, 36, 29, 0.12)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(mechanismLeft, treadleRailY + 16);
+    ctx.lineTo(mechanismRight, treadleRailY + 16);
+    ctx.stroke();
+
+    for (let treadleIndex = 0; treadleIndex < draftState.treadles; treadleIndex++) {
+      const isPressed = activePick !== null && pickState?.pressedTreadles.includes(treadleIndex);
+      const treadleCenterX = treadleCenters[treadleIndex];
+      const treadleY = treadleRailY + (isPressed ? treadleTravel : 0);
+      const treadleTopY = treadleY - 10;
+
+      for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
+        if (!draftState.tieup[treadleIndex]?.[shaftIndex]) {
+          continue;
+        }
+
+        const shaftVisual = shaftVisualByIndex.get(shaftIndex);
+        const shaftAnchorY = shaftVisual?.shaftY ?? (shaftTop + shaftIndex * shaftGap);
+        const shaftRightEdge = shaftVisual ? shaftVisual.shaftX + shaftVisual.shaftWidth : mechanismLeft;
+        const pulleyX = treadleCenterX;
+        const pulleyY = mechanismTop + 16 + shaftIndex * shaftGap;
+
+        pulleyConnections.push({
+          isPressed,
+          shaftAnchorY,
+          shaftRightEdge,
+          pulleyX,
+          pulleyY,
+          treadleCenterX,
+          treadleTopY
+        });
+      }
+
+      ctx.strokeStyle = "rgba(47, 36, 29, 0.12)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(treadleCenterX, treadleTopY);
+      ctx.lineTo(treadleCenterX, treadleRailY + 16);
+      ctx.stroke();
+
+      ctx.fillStyle = isPressed ? "rgba(170, 74, 43, 0.2)" : "rgba(255, 255, 255, 0.72)";
+      ctx.strokeStyle = isPressed ? "rgba(170, 74, 43, 0.62)" : "rgba(47, 36, 29, 0.24)";
+      ctx.lineWidth = isPressed ? 1.6 : 1.1;
+      drawRoundedRect(
+        ctx,
+        treadleCenterX - treadleBaseWidth / 2,
+        treadleY,
+        treadleBaseWidth,
+        18,
+        4
+      );
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = isPressed ? "rgba(122, 50, 28, 0.4)" : "rgba(47, 36, 29, 0.08)";
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(treadleCenterX - treadleBaseWidth * 0.26, treadleY + 6);
+      ctx.lineTo(treadleCenterX + treadleBaseWidth * 0.26, treadleY + 6);
+      ctx.stroke();
+    }
+
+    pulleyConnections.forEach(connection => {
+      const { isPressed, shaftAnchorY, shaftRightEdge, pulleyX, pulleyY, treadleCenterX, treadleTopY } = connection;
+      const pulleyTopY = pulleyY - pulleyRadius;
+      const pulleyRightX = pulleyX + pulleyRadius;
+
+      ctx.strokeStyle = isPressed ? "rgba(170, 74, 43, 0.72)" : "rgba(47, 36, 29, 0.12)";
+      ctx.lineWidth = isPressed ? 1.9 : 1;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(shaftRightEdge + 6, shaftAnchorY);
+      ctx.lineTo(pulleyX, shaftAnchorY);
+      ctx.lineTo(pulleyX, pulleyTopY);
+      ctx.arc(pulleyX, pulleyY, pulleyRadius, -Math.PI / 2, 0, false);
+      ctx.lineTo(pulleyRightX, treadleTopY);
+      ctx.lineTo(treadleCenterX, treadleTopY);
+      ctx.stroke();
+    });
+
+    pulleyConnections.forEach(connection => {
+      const { isPressed, pulleyX, pulleyY } = connection;
+
+      ctx.fillStyle = isPressed ? "rgba(170, 74, 43, 0.18)" : "rgba(255, 255, 255, 0.78)";
+      ctx.strokeStyle = isPressed ? "rgba(170, 74, 43, 0.58)" : "rgba(47, 36, 29, 0.26)";
+      ctx.lineWidth = isPressed ? 1.45 : 1.05;
+      ctx.beginPath();
+      ctx.arc(pulleyX, pulleyY, pulleyRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = isPressed ? "rgba(122, 50, 28, 0.34)" : "rgba(47, 36, 29, 0.14)";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(pulleyX, pulleyY, pulleyRadius * 0.35, 0, Math.PI * 2);
+      ctx.moveTo(pulleyX - pulleyRadius * 0.78, pulleyY);
+      ctx.lineTo(pulleyX + pulleyRadius * 0.78, pulleyY);
+      ctx.moveTo(pulleyX, pulleyY - pulleyRadius * 0.78);
+      ctx.lineTo(pulleyX, pulleyY + pulleyRadius * 0.78);
+      ctx.stroke();
+    });
+  };
+
+  const drawClothRow = (pickIndex, y, alpha = 1) => {
+    if (pickIndex === null || pickIndex < 0 || pickIndex >= draftState.picks) {
+      return;
+    }
+
+    if (y > clothBottom || y + rowHeight < beamY) {
+      return;
+    }
+
+    const rowCenterY = y + rowHeight / 2;
+    const weftColor = alpha >= 0.999
+      ? draftState.pickStates[pickIndex].weftColor
+      : withAlpha(draftState.pickStates[pickIndex].weftColor, alpha);
+    const clothWeftWidth = weftThreadWidth;
+    const clothWarpWidth = warpThreadWidth;
+    const warpSegmentHalfSpan = Math.max(warpThreadWidth * 0.8, rowHeight * 0.95);
+
+    strokeYarnPath(ctx, [
+      { x: left, y: rowCenterY },
+      { x: right, y: rowCenterY }
+    ], weftColor, clothWeftWidth);
+
+    for (let warpIndex = 0; warpIndex < draftState.warp; warpIndex++) {
+      if (!draftState.drawdown[pickIndex][warpIndex].warpVisible) {
+        continue;
+      }
+
+      const warpColor = alpha >= 0.999
+        ? draftState.warpAssignments[warpIndex].color
+        : withAlpha(draftState.warpAssignments[warpIndex].color, alpha);
+      const x = left + (warpIndex + 0.5) * cellWidth;
+
+      strokeYarnPath(ctx, [
+        { x, y: rowCenterY - warpSegmentHalfSpan },
+        { x, y: rowCenterY },
+        { x, y: rowCenterY + warpSegmentHalfSpan }
+      ], warpColor, clothWarpWidth, "butt", "highlight-only");
+    }
+  };
+
+  for (let pickIndex = 0; pickIndex < playbackState.completedPicks; pickIndex++) {
+    drawClothRow(pickIndex, getSettledRowTop(pickIndex));
+  }
+
+  drawTreadleMechanism();
+
+}
+
+function rebuildDraftUI() {
+  if (!draftState) {
+    return;
+  }
+
+  const cellSize = getMiniCellSize();
+  document.documentElement.style.setProperty("--draft-cell-size", `${cellSize}px`);
+  setDraftNameLabel(draftState.name);
+  buildThreadingGrid();
+  buildTieupGrid();
+  buildTreadlingGrid();
+  updateDraftHighlights();
+  drawMiniDrawdown();
+  drawLoomScene();
+  updateStatusReadout();
+  updatePlayPauseButton();
+}
+
+function resetPlayback(shouldPlay = playbackState.playing) {
+  playbackState.completedPicks = 0;
+  playbackState.cycleProgress = 0;
+  playbackState.lastTimestamp = 0;
+  playbackState.playing = shouldPlay;
+  updatePlayPauseButton();
+}
+
+function applyDraftData(data) {
+  draftState = normalizeDraftData(data);
+  resetPlayback(true);
+  rebuildDraftUI();
+}
+
+function completeCurrentPick() {
+  if (!draftState || playbackState.completedPicks >= draftState.picks) {
+    return;
+  }
+
+  playbackState.completedPicks += 1;
+  playbackState.cycleProgress = 0;
+
+  if (playbackState.completedPicks >= draftState.picks) {
+    if (playbackState.loop) {
+      playbackState.completedPicks = 0;
+      playbackState.cycleProgress = 0;
+    } else {
+      playbackState.playing = false;
+    }
+  }
+}
+
+function stepOnePick() {
+  if (!draftState) {
+    return;
+  }
+
+  if (playbackState.completedPicks >= draftState.picks) {
+    playbackState.completedPicks = 0;
+  } else {
+    playbackState.completedPicks += 1;
+  }
+
+  if (playbackState.completedPicks >= draftState.picks) {
+    if (playbackState.loop) {
+      playbackState.completedPicks = 0;
+    } else {
+      playbackState.playing = false;
+    }
+  }
+
+  playbackState.cycleProgress = 0;
+  playbackState.lastTimestamp = 0;
+  updatePlayPauseButton();
+}
+
+function tick(now) {
+  if (draftState && playbackState.playing) {
+    if (!playbackState.lastTimestamp) {
+      playbackState.lastTimestamp = now;
+    }
+
+    const delta = now - playbackState.lastTimestamp;
+    playbackState.lastTimestamp = now;
+    const cycleDuration = 3000 / playbackState.speed;
+    playbackState.cycleProgress += delta / cycleDuration;
+
+    while (playbackState.cycleProgress >= 1 && draftState) {
+      playbackState.cycleProgress -= 1;
+      completeCurrentPick();
+
+      if (!playbackState.playing) {
+        playbackState.cycleProgress = 1;
+        break;
+      }
+    }
+  } else {
+    playbackState.lastTimestamp = now;
+  }
+
+  updateStatusReadout();
+  updateDraftHighlights();
+  drawMiniDrawdown();
+  drawLoomScene();
+  updatePlayPauseButton();
+  window.requestAnimationFrame(tick);
+}
+
+document.getElementById("play-pause-button").addEventListener("click", () => {
+  if (playbackState.completedPicks >= draftState.picks) {
+    resetPlayback(true);
+  } else {
+    playbackState.playing = !playbackState.playing;
+    playbackState.lastTimestamp = 0;
+  }
+
+  updatePlayPauseButton();
+});
+
+document.getElementById("step-button").addEventListener("click", () => {
+  playbackState.playing = false;
+  stepOnePick();
+});
+
+document.getElementById("reset-animation-button").addEventListener("click", () => {
+  resetPlayback(playbackState.playing);
+});
+
+document.getElementById("speed-range").addEventListener("input", event => {
+  playbackState.speed = Math.max(0.4, Number.parseFloat(event.target.value) || 1);
+});
+
+document.getElementById("loop-toggle").addEventListener("change", event => {
+  playbackState.loop = event.target.checked;
+});
+
+if ("ResizeObserver" in window) {
+  const loomResizeObserver = new ResizeObserver(() => {
+    drawLoomScene();
+  });
+  loomResizeObserver.observe(loomCanvasWrap);
+}
+
+window.addEventListener("resize", () => {
+  drawMiniDrawdown();
+  drawLoomScene();
+});
+
+applyDraftData(defaultDraftData);
+window.requestAnimationFrame(tick);
+</script>
+</body>
+</html>
