@@ -285,7 +285,7 @@
     display: grid;
     grid-template-columns: minmax(300px, 430px) minmax(0, 1fr);
     gap: 1rem;
-    align-items: stretch;
+    align-items: start;
   }
 
   .panel-body {
@@ -387,7 +387,7 @@
   }
 
   .loom-panel {
-    min-height: 40rem;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
@@ -398,7 +398,7 @@
     align-items: flex-start;
     justify-content: center;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     border-radius: 1rem;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 243, 234, 0.92));
     border: 1px solid rgba(47, 36, 29, 0.08);
@@ -416,7 +416,7 @@
   .loom-panel .panel-body {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
   }
 
@@ -1311,9 +1311,9 @@ function drawTaperedYarnRibbon(ctx, points, widths, color, depth = "normal", sha
   ctx.arc(points[points.length - 1].x, points[points.length - 1].y, widths[widths.length - 1] / 2, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.strokeStyle = withAlpha("#ffffff", 0.14);
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
+  ctx.strokeStyle = withAlpha("#ffffff", 0.14);
   ctx.lineWidth = Math.max(1.6, Math.min(...widths) * 0.22);
   tracePolyline(ctx, points);
   ctx.stroke();
