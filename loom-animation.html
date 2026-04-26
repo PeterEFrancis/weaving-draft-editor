@@ -409,7 +409,7 @@
     display: block;
     width: min(100%, 1080px);
     height: auto;
-    aspect-ratio: 1080 / 720;
+    aspect-ratio: 1080 / 640;
     flex: 0 0 auto;
   }
 
@@ -639,7 +639,7 @@ const loomCanvas = document.getElementById("loom-canvas");
 const loomCanvasWrap = document.getElementById("loom-canvas-wrap");
 const settledClothCanvas = document.createElement("canvas");
 const LOOM_SCENE_WIDTH = 1080;
-const LOOM_SCENE_HEIGHT = 720;
+const LOOM_SCENE_HEIGHT = 640;
 
 function normalizeDraftName(name) {
   const trimmed = typeof name === "string" ? name.trim() : "";
@@ -1092,6 +1092,10 @@ function smoothStep(value) {
   return clamped * clamped * (3 - 2 * clamped);
 }
 
+function linearStep(value) {
+  return Math.max(0, Math.min(1, value));
+}
+
 function appendLinePoints(points, x0, y0, x1, y1, steps = 4) {
   if (!points.length) {
     points.push({ x: x0, y: y0 });
@@ -1172,7 +1176,7 @@ function strokeYarnPath(ctx, points, color, width, lineCap = "round", embellishm
   ctx.restore();
 }
 
-function drawTaperedYarnRibbon(ctx, points, widths, color) {
+function drawTaperedYarnRibbon(ctx, points, widths, color, depth = "normal", shadowClipY = null, shadowLiftAmount = 1) {
   if (points.length < 2 || widths.length !== points.length) {
     return;
   }
@@ -1225,10 +1229,76 @@ function drawTaperedYarnRibbon(ctx, points, widths, color) {
   ctx.save();
 
   ctx.save();
-  ctx.translate(0.4, 0.6);
-  ctx.fillStyle = withAlpha("#000000", 0.08);
-  drawRibbonPath(1.05);
-  ctx.fill();
+  const isLiftedDepth = depth === "lifted";
+  const liftedShadowAmount = isLiftedDepth ? linearStep(shadowLiftAmount) : 0;
+
+  if (isLiftedDepth && liftedShadowAmount > 0.001) {
+    const shadowBottomY = Number.isFinite(shadowClipY) ? shadowClipY : points[points.length - 1].y;
+    const shadowTopY = Math.min(...points.map(point => point.y));
+    const shadowSpan = Math.max(1, shadowBottomY - shadowTopY);
+    const shadowLeftSide = [];
+    const shadowRightSide = [];
+
+    for (let index = 0; index < points.length; index++) {
+      const point = points[index];
+      const previous = points[Math.max(0, index - 1)];
+      const next = points[Math.min(points.length - 1, index + 1)];
+      const dx = next.x - previous.x;
+      const dy = next.y - previous.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const normalX = -dy / length;
+      const normalY = dx / length;
+      const topWeight = linearStep((shadowBottomY - point.y) / shadowSpan);
+      const localLift = liftedShadowAmount * topWeight;
+      const shadowOffsetX = 0.5 + 4.8 * localLift;
+      const shadowOffsetY = 0.8 + 7.2 * localLift;
+      const shadowSpread = 1.02 + 0.42 * localLift;
+      const shadowPointX = point.x + shadowOffsetX;
+      const shadowPointY = point.y + shadowOffsetY;
+      const halfWidth = widths[index] * shadowSpread / 2;
+
+      shadowLeftSide.push({
+        x: shadowPointX + normalX * halfWidth,
+        y: shadowPointY + normalY * halfWidth
+      });
+      shadowRightSide.push({
+        x: shadowPointX - normalX * halfWidth,
+        y: shadowPointY - normalY * halfWidth
+      });
+    }
+
+    if (Number.isFinite(shadowClipY)) {
+      ctx.beginPath();
+      ctx.rect(-1000, -1000, 4000, shadowClipY + 1000);
+      ctx.clip();
+    }
+
+    ctx.filter = `blur(${0.8 + 3.4 * liftedShadowAmount}px)`;
+    ctx.fillStyle = withAlpha("#4b362d", 0.1 + 0.22 * liftedShadowAmount);
+    ctx.beginPath();
+    ctx.moveTo(shadowLeftSide[0].x, shadowLeftSide[0].y);
+
+    for (let index = 1; index < shadowLeftSide.length; index++) {
+      ctx.lineTo(shadowLeftSide[index].x, shadowLeftSide[index].y);
+    }
+
+    for (let index = shadowRightSide.length - 1; index >= 0; index--) {
+      ctx.lineTo(shadowRightSide[index].x, shadowRightSide[index].y);
+    }
+
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    if (isLiftedDepth && Number.isFinite(shadowClipY)) {
+      ctx.beginPath();
+      ctx.rect(-1000, -1000, 4000, shadowClipY + 1000);
+      ctx.clip();
+    }
+    ctx.translate(0.4, 0.6);
+    ctx.fillStyle = withAlpha("#000000", 0.08);
+    drawRibbonPath(1.05);
+    ctx.fill();
+  }
   ctx.restore();
 
   ctx.fillStyle = color;
@@ -1283,7 +1353,7 @@ function drawLoomScene() {
   const shaftTop = 56;
   const shaftGap = Math.max(42, shaftBaseHeight * 1.58);
   const heddleYBase = shaftTop + shaftGap * 0.92;
-  const fellY = 390;
+  const fellY = 327;
   const clothTop = fellY + 16;
   const provisionalClothBottom = height - 28;
   const warpThreadWidth = 16;
@@ -1291,7 +1361,7 @@ function drawLoomScene() {
   const weftY = fellY - 24;
   const clothHeight = Math.max(24, provisionalClothBottom - clothTop);
   const rowHeight = Math.min(14, clothHeight / Math.max(draftState.picks + 0.8, 1));
-  const settledRowSpacing = Math.max(rowHeight, weftThreadWidth + 9);
+  const settledRowSpacing = Math.max(rowHeight, weftThreadWidth + 13);
   const fullClothWidth = Math.max(0, provisionalRight - left);
   const balancedClothWidth = Math.min(fullClothWidth, settledRowSpacing * draftState.warp);
   const clothWidth = fullClothWidth - (fullClothWidth - balancedClothWidth) * 0.5;
@@ -1302,9 +1372,9 @@ function drawLoomScene() {
   );
   const baseShaftWidth = right - left + 36;
   const shaftVisuals = [];
-  const warpStartY = -48;
+  const warpStartY = -400;
   const warpExitY = height + 48;
-  const clothBottom = height - Math.max(rowHeight * 0.55, settledRowSpacing * 0.35);
+  const clothBottom = 622;
   const getSettledRowTop = pickIndex => clothBottom - (pickIndex + 1) * settledRowSpacing;
   const activeTargetRowTop = activePick !== null ? getSettledRowTop(activePick) : clothBottom - rowHeight;
   const activeTargetCenterY = activeTargetRowTop + rowHeight / 2;
@@ -1314,6 +1384,9 @@ function drawLoomScene() {
   const lastSettledPickTop = playbackState.completedPicks > 0
     ? getSettledRowTop(playbackState.completedPicks - 1)
     : clothBottom;
+  const liftedShadowClipY = playbackState.completedPicks > 0
+    ? lastSettledPickTop
+    : height;
 
   for (let shaftIndex = 0; shaftIndex < draftState.shafts; shaftIndex++) {
     const isLifted = activePick !== null && pickState?.liftedShafts.has(shaftIndex);
@@ -1341,6 +1414,7 @@ function drawLoomScene() {
         slotHeight,
         slotX,
         slotY,
+        shaftHeight,
         slotCenterX: warpXs[warpIndex],
         slotCenterY: shaftY
       });
@@ -1402,19 +1476,19 @@ function drawLoomScene() {
         }
 
         if (signedDistanceFromShaft < -coreHalfSpan) {
-          const t = smoothStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
+          const t = linearStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
           return maxBulgeWidth + (warpThreadWidth - maxBulgeWidth) * t;
         }
 
         if (signedDistanceFromShaft > coreHalfSpan) {
-          const t = smoothStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
+          const t = linearStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
           return maxBulgeWidth + (warpThreadWidth - maxBulgeWidth) * t;
         }
 
         return maxBulgeWidth;
       });
 
-      drawTaperedYarnRibbon(ctx, points, ribbonWidths, assignment.color);
+      drawTaperedYarnRibbon(ctx, points, ribbonWidths, assignment.color, "lifted", liftedShadowClipY, animation.liftAmount);
       return;
     }
 
@@ -1432,12 +1506,12 @@ function drawLoomScene() {
       }
 
       if (signedDistanceFromShaft < -coreHalfSpan) {
-        const t = smoothStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
+        const t = linearStep((distanceFromShaft - coreHalfSpan) / upperTaperSpan);
         return minPinchWidth + (warpThreadWidth - minPinchWidth) * t;
       }
 
       if (signedDistanceFromShaft > coreHalfSpan) {
-        const t = smoothStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
+        const t = linearStep((distanceFromShaft - coreHalfSpan) / lowerTaperSpan);
         return minPinchWidth + (warpThreadWidth - minPinchWidth) * t;
       }
 
@@ -1488,11 +1562,11 @@ function drawLoomScene() {
     const { isLifted, shaftIndex, shaftY, shaftHeight, shaftWidth, shaftX, shaftBarY, slots } = shaftVisual;
 
     ctx.save();
-    ctx.shadowColor = isLifted ? "rgba(47, 36, 29, 0.22)" : "rgba(47, 36, 29, 0.18)";
+    ctx.shadowColor = isLifted ? "rgba(92, 55, 30, 0.24)" : "rgba(92, 55, 30, 0.18)";
     ctx.shadowBlur = isLifted ? 10 : 7;
     ctx.shadowOffsetY = 2;
-    ctx.fillStyle = isLifted ? "#4b3329" : "#3a2a22";
-    ctx.strokeStyle = isLifted ? "#2a1b15" : "#241813";
+    ctx.fillStyle = "#704421";
+    ctx.strokeStyle = "#3a2111";
     ctx.lineWidth = 1.35;
     drawRoundedRect(ctx, shaftX, shaftBarY, shaftWidth, shaftHeight, 0);
     ctx.fill();
@@ -1500,27 +1574,27 @@ function drawLoomScene() {
     ctx.restore();
 
     slots.forEach(slot => {
-      ctx.fillStyle = "#e7d2ad";
-      ctx.strokeStyle = "#2a1b15";
+      ctx.fillStyle = "#21130c";
+      ctx.strokeStyle = "#0f0906";
       ctx.lineWidth = 0.95;
       ctx.beginPath();
-      ctx.arc(slot.slotCenterX, slot.slotCenterY, Math.max(5.2, slot.slotHeight * 0.42), 0, Math.PI * 2);
+      ctx.arc(slot.slotCenterX, slot.slotCenterY, slot.shaftHeight * 0.4, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     });
 
   });
   const drawTreadleMechanism = () => {
-    const mechanismTop = shaftTop - 10;
     const mechanismBottom = clothBottom + 8;
     const treadleRailY = mechanismBottom - 36;
     const treadleBaseWidth = Math.max(28, Math.min(42, (mechanismRight - mechanismLeft - 18) / Math.max(draftState.treadles, 1) - 6));
     const treadleGap = Math.max(6, Math.min(10, (mechanismRight - mechanismLeft - draftState.treadles * treadleBaseWidth) / Math.max(draftState.treadles - 1, 1)));
     const treadleTravel = 18 * animation.liftAmount;
-    const pulleyRadius = 6;
-    const treadleCenters = Array.from({ length: draftState.treadles }, (_, treadleIndex) =>
+    const pulleyRadius = 8;
+    const pulleyCenters = Array.from({ length: draftState.treadles }, (_, treadleIndex) =>
       mechanismLeft + treadleBaseWidth / 2 + treadleIndex * (treadleBaseWidth + treadleGap)
     );
+    const treadleCenters = pulleyCenters.map(pulleyX => pulleyX + pulleyRadius);
     const shaftVisualByIndex = new Map(shaftVisuals.map(shaftVisual => [shaftVisual.shaftIndex, shaftVisual]));
     const pulleyConnections = [];
 
@@ -1545,8 +1619,8 @@ function drawLoomScene() {
         const shaftVisual = shaftVisualByIndex.get(shaftIndex);
         const shaftAnchorY = shaftVisual?.shaftY ?? (shaftTop + shaftIndex * shaftGap);
         const shaftRightEdge = shaftVisual ? shaftVisual.shaftX + shaftVisual.shaftWidth : mechanismLeft;
-        const pulleyX = treadleCenterX;
-        const pulleyY = mechanismTop + 16 + shaftIndex * shaftGap;
+        const pulleyX = pulleyCenters[treadleIndex];
+        const pulleyY = shaftAnchorY + pulleyRadius;
 
         pulleyConnections.push({
           isPressed,
@@ -1603,7 +1677,6 @@ function drawLoomScene() {
       ctx.lineTo(pulleyX, pulleyTopY);
       ctx.arc(pulleyX, pulleyY, pulleyRadius, -Math.PI / 2, 0, false);
       ctx.lineTo(pulleyRightX, treadleTopY);
-      ctx.lineTo(treadleCenterX, treadleTopY);
       ctx.stroke();
     });
 
