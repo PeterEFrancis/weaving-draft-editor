@@ -176,22 +176,21 @@
 
   .workspace-toolbar-row {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: flex-end;
     gap: 0.75rem;
     min-width: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-gutter: stable;
+    overflow: visible;
   }
 
   .workspace-toolbar-main {
     display: flex;
-    flex-wrap: nowrap;
-    align-items: flex-end;
+    flex-wrap: wrap;
+    align-items: start;
     gap: 0.75rem;
     flex: 1 1 auto;
     min-width: 0;
+    width: 100%;
   }
 
   .workspace-toolbar-actions {
@@ -211,22 +210,20 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 0.65rem;
     align-self: stretch;
     width: 100%;
     max-width: 100%;
+    overflow: visible;
   }
 
   .workspace-toolbar-action-groups {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 0.65rem;
-    min-width: 0;
+    display: contents;
   }
 
   .workspace-toolbar-actions-secondary {
+    margin-left: 0;
     border-color: rgba(170, 74, 43, 0.14);
     background: linear-gradient(180deg, rgba(251, 242, 236, 0.9), rgba(247, 233, 224, 0.8));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 0.35rem 1rem rgba(170, 74, 43, 0.06);
@@ -362,22 +359,24 @@
 
   .controls-toolbar {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.65rem;
     align-items: flex-end;
-    flex: 0 0 auto;
+    flex: 2 1 32rem;
+    min-width: min(100%, 24rem);
   }
 
   .toolbar-field {
-    width: 82px;
+    width: 5.8rem;
+    min-width: 0;
   }
 
   .toolbar-field-render-style {
-    width: 132px;
+    width: 9.5rem;
   }
 
   .toolbar-field-zoom {
-    width: 136px;
+    width: 8.6rem;
   }
 
   .toolbar-field .control-label {
@@ -454,7 +453,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
-    flex: 1 1 auto;
+    flex: 1 1 16rem;
     min-width: 0;
   }
 
@@ -671,6 +670,23 @@
   @media (max-width: 767.98px) {
     .pattern-colors-tools {
       justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .workspace-toolbar-main {
+      display: flex;
+    }
+
+    .controls-toolbar {
+      flex-basis: 100%;
+      min-width: 0;
+    }
+
+    .toolbar-field,
+    .toolbar-field-render-style,
+    .toolbar-field-zoom {
+      width: 100%;
     }
   }
 
@@ -1359,6 +1375,19 @@
         <div class="workspace-toolbar">
           <div class="workspace-toolbar-action-row">
             <div class="workspace-toolbar-action-groups">
+              <div class="workspace-toolbar-actions">
+                <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 10.5 12 3l9 7.5"></path>
+                      <path d="M5.5 9.5V21h13V9.5"></path>
+                      <path d="M9.5 21v-6h5v6"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Home</span>
+                </a>
+              </div>
+
               <div class="workspace-toolbar-actions workspace-toolbar-actions-name">
                 <div class="toolbar-name-field">
                   <label class="toolbar-name-label" for="draft-name">Name</label>
@@ -1376,16 +1405,6 @@
               </div>
 
               <div class="workspace-toolbar-actions">
-                <a href="index.html" class="btn btn-soft toolbar-action" aria-label="Back to home" title="Back to home">
-                  <span class="toolbar-action-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M3 10.5 12 3l9 7.5"></path>
-                      <path d="M5.5 9.5V21h13V9.5"></path>
-                      <path d="M9.5 21v-6h5v6"></path>
-                    </svg>
-                  </span>
-                  <span class="toolbar-action-label">Home</span>
-                </a>
                 <button type="button" class="btn btn-soft toolbar-action" onclick="saveDraftToFile()">
                   <span class="toolbar-action-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -1726,13 +1745,10 @@ let treadling = [];
 let tieup = [];
 let patternColors = [
   { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
-  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 },
-  { id: "pattern-color-3", value: "#c84d36", thickness: 1 },
-  { id: "pattern-color-4", value: "#3f9159", thickness: 1 },
-  { id: "pattern-color-5", value: "#2f6fa8", thickness: 1 }
+  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 }
 ];
 let activePatternColorId = "pattern-color-1";
-let nextPatternColorNumber = 6;
+let nextPatternColorNumber = 3;
 let draftName = "Untitled Draft";
 let draftRenderStyle = "color";
 let previewRenderMode = "plain";
@@ -1774,10 +1790,7 @@ const patternColorSeedValues = [
 ];
 const defaultPatternColors = [
   { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
-  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 },
-  { id: "pattern-color-3", value: "#c84d36", thickness: 1 },
-  { id: "pattern-color-4", value: "#3f9159", thickness: 1 },
-  { id: "pattern-color-5", value: "#2f6fa8", thickness: 1 }
+  { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 }
 ];
 const draftAutosaveStorageKeyPrefix = "weaving-draft-editor.autosave.v2.";
 const draftActiveNameSessionKey = "weaving-draft-editor.active-name.v1";

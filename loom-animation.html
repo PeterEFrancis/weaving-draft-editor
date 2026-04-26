@@ -292,6 +292,10 @@
     padding: 1rem;
   }
 
+  .stage-grid > .panel:first-child .panel-body {
+    overflow-x: auto;
+  }
+
   .panel-title-row {
     display: flex;
     align-items: flex-start;
@@ -322,7 +326,7 @@
       "drawdown treadling";
     gap: var(--draft-gap);
     width: fit-content;
-    max-width: 100%;
+    max-width: none;
     align-content: start;
     justify-content: start;
   }
@@ -390,18 +394,23 @@
 
   .loom-canvas-wrap {
     position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     min-height: 0;
     flex: 1 1 auto;
     border-radius: 1rem;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 243, 234, 0.92));
     border: 1px solid rgba(47, 36, 29, 0.08);
-    overflow: hidden;
+    overflow: auto;
   }
 
   .loom-canvas {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: min(100%, 1080px);
+    height: auto;
+    aspect-ratio: 1080 / 720;
+    flex: 0 0 auto;
   }
 
   .loom-panel .panel-body {
@@ -438,15 +447,6 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .draft-layout {
-      grid-template-columns: max-content;
-      grid-template-areas:
-        "threading"
-        "tieup"
-        "drawdown"
-        "treadling";
-    }
-
   }
 </style>
 </head>
@@ -467,15 +467,6 @@
               </span>
               <span class="toolbar-action-label">Home</span>
             </a>
-            <button type="button" class="btn btn-soft toolbar-action" id="reset-animation-button">
-              <span class="toolbar-action-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 12a9 9 0 1 0 3-6.7"></path>
-                  <path d="M3 4v5h5"></path>
-                </svg>
-              </span>
-              <span class="toolbar-action-label">Restart</span>
-            </button>
           </div>
 
           <div class="workspace-toolbar-panel panel playback-toolbar-panel">
@@ -488,6 +479,15 @@
                   </svg>
                 </span>
                 <span class="toolbar-action-label" id="play-pause-label">Pause</span>
+              </button>
+              <button type="button" class="btn btn-soft toolbar-action" id="reset-animation-button">
+                <span class="toolbar-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                    <path d="M3 4v5h5"></path>
+                  </svg>
+                </span>
+                <span class="toolbar-action-label">Restart</span>
               </button>
               <button type="button" class="btn btn-soft toolbar-action" id="step-button">
                 <span class="toolbar-action-icon" aria-hidden="true">
@@ -638,6 +638,8 @@ const drawdownCanvas = document.getElementById("drawdown-canvas");
 const loomCanvas = document.getElementById("loom-canvas");
 const loomCanvasWrap = document.getElementById("loom-canvas-wrap");
 const settledClothCanvas = document.createElement("canvas");
+const LOOM_SCENE_WIDTH = 1080;
+const LOOM_SCENE_HEIGHT = 720;
 
 function normalizeDraftName(name) {
   const trimmed = typeof name === "string" ? name.trim() : "";
@@ -848,20 +850,19 @@ function buildTreadlingGrid() {
   }
 }
 
-function resizeCanvasToDisplaySize(canvas) {
-  const rect = canvas.getBoundingClientRect();
+function resizeCanvasToFixedSceneSize(canvas, width, height) {
   const dpr = window.devicePixelRatio || 1;
-  const width = Math.max(1, Math.round(rect.width * dpr));
-  const height = Math.max(1, Math.round(rect.height * dpr));
+  const backingWidth = Math.max(1, Math.round(width * dpr));
+  const backingHeight = Math.max(1, Math.round(height * dpr));
 
-  if (canvas.width !== width || canvas.height !== height) {
-    canvas.width = width;
-    canvas.height = height;
+  if (canvas.width !== backingWidth || canvas.height !== backingHeight) {
+    canvas.width = backingWidth;
+    canvas.height = backingHeight;
   }
 
   return {
-    width: rect.width,
-    height: rect.height,
+    width,
+    height,
     dpr
   };
 }
@@ -1255,7 +1256,7 @@ function drawLoomScene() {
     return;
   }
 
-  const size = resizeCanvasToDisplaySize(loomCanvas);
+  const size = resizeCanvasToFixedSceneSize(loomCanvas, LOOM_SCENE_WIDTH, LOOM_SCENE_HEIGHT);
   const ctx = loomCanvas.getContext("2d");
   ctx.setTransform(size.dpr, 0, 0, size.dpr, 0, 0);
   ctx.clearRect(0, 0, size.width, size.height);
@@ -1269,7 +1270,7 @@ function drawLoomScene() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
-  const mechanismWidth = Math.max(150, Math.min(230, width * 0.24));
+  const mechanismWidth = 220;
   const left = 76;
   const mechanismGap = 64;
   const mechanismRightInset = 24;
@@ -1277,10 +1278,12 @@ function drawLoomScene() {
   const mechanismLeft = mechanismRight - mechanismWidth;
   const provisionalRight = mechanismLeft - mechanismGap - 24;
   const beamY = 22;
-  const shaftTop = 62;
-  const shaftGap = 34;
+  const shaftBaseHeight = 27;
+  const shaftLiftScaleBonus = 0.24;
+  const shaftTop = 56;
+  const shaftGap = Math.max(42, shaftBaseHeight * 1.58);
   const heddleYBase = shaftTop + shaftGap * 0.92;
-  const fellY = height * 0.6;
+  const fellY = 390;
   const clothTop = fellY + 16;
   const provisionalClothBottom = height - 28;
   const warpThreadWidth = 16;
@@ -1316,9 +1319,9 @@ function drawLoomScene() {
     const isLifted = activePick !== null && pickState?.liftedShafts.has(shaftIndex);
     const shaftY = shaftTop + shaftIndex * shaftGap;
     const shaftScaleX = isLifted ? 1 + 0.06 * animation.liftAmount : 1;
-    const shaftScaleY = isLifted ? 1 + 0.24 * animation.liftAmount : 1;
+    const shaftScaleY = isLifted ? 1 + shaftLiftScaleBonus * animation.liftAmount : 1;
     const shaftWidth = Math.min(width - 28, baseShaftWidth * shaftScaleX);
-    const shaftHeight = 18 * shaftScaleY;
+    const shaftHeight = shaftBaseHeight * shaftScaleY;
     const shaftX = (left - 18) - (shaftWidth - baseShaftWidth) / 2;
     const shaftBarY = shaftY - shaftHeight / 2;
     const slots = [];
@@ -1329,7 +1332,7 @@ function drawLoomScene() {
       }
 
       const slotWidth = Math.max(12, (warpThreadWidth + 5) * shaftScaleX);
-      const slotHeight = 11.5 * shaftScaleY;
+      const slotHeight = shaftBaseHeight * 0.64 * shaftScaleY;
       const slotX = warpXs[warpIndex] - slotWidth / 2;
       const slotY = shaftY - slotHeight / 2;
 
@@ -1386,8 +1389,8 @@ function drawLoomScene() {
 
     if (lifted) {
       const maxBulgeWidth = warpThreadWidth * (1.14 + 0.88 * animation.liftAmount);
-      const shaftScaleY = 1 + 0.24 * animation.liftAmount;
-      const coreHalfSpan = 5.5 * shaftScaleY;
+      const shaftScaleY = 1 + shaftLiftScaleBonus * animation.liftAmount;
+      const coreHalfSpan = (shaftBaseHeight / 2) * shaftScaleY;
       const upperTaperSpan = Math.max(1, shaftY - warpStartY - coreHalfSpan);
       const lowerTaperSpan = Math.max(1, taperEndY - shaftY - coreHalfSpan);
       const ribbonWidths = points.map(point => {
@@ -1416,8 +1419,8 @@ function drawLoomScene() {
     }
 
     const minPinchWidth = warpThreadWidth * (1 - 0.24 * animation.liftAmount);
-    const shaftScaleY = 1 + 0.24 * animation.liftAmount;
-    const coreHalfSpan = 5.5 * shaftScaleY;
+    const shaftScaleY = 1 + shaftLiftScaleBonus * animation.liftAmount;
+    const coreHalfSpan = (shaftBaseHeight / 2) * shaftScaleY;
     const upperTaperSpan = Math.max(1, shaftY - warpStartY - coreHalfSpan);
     const lowerTaperSpan = Math.max(1, taperEndY - shaftY - coreHalfSpan);
     const ribbonWidths = points.map(point => {

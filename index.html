@@ -321,12 +321,11 @@
             <div class="eyebrow mb-3">Weaving Tool</div>
             <h1 class="display-title fw-semibold mb-3">Draft cloth structures forward or backward.</h1>
             <p class="lead-copy text-secondary mb-4">
-              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, use the inverse drafter to sketch a target drawdown first and generate draft options from it, or watch the loom animation to see picks build cloth row by row.
+              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it.
             </p>
             <div class="d-flex flex-wrap gap-3 align-items-center">
               <a class="btn btn-drafter" href="drafter.html">Open Drafter</a>
               <a class="btn btn-outline-dark btn-drafter-outline" href="inverse-drafter.html">Open Inverse Drafter</a>
-              <a class="btn btn-loom" href="loom-animation.html">Open Loom Animation</a>
             </div>
           </div>
         </div>
@@ -364,6 +363,12 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="mt-4 d-flex flex-wrap gap-3 align-items-center">
+          <a class="btn btn-loom" href="loom-animation.html">Watch Draft Animation</a>
+          <p class="text-secondary mb-0">
+            See how threading, tie-up, and treadling work together as each pick becomes cloth.
+          </p>
         </div>
       </div>
     </section>
@@ -520,62 +525,6 @@
       <div class="info-card p-4 p-lg-5">
         <div class="row g-4 align-items-start">
           <div class="col-lg-4">
-            <p class="eyebrow mb-3">Using The Loom Animation</p>
-            <h2 class="section-title mb-3">Watch the draft weave.</h2>
-            <p class="text-secondary mb-0">
-              The animation page turns a sample draft into a loom-motion walkthrough, showing the shed opening, the weft passing, and the cloth building one pick at a time.
-            </p>
-          </div>
-          <div class="col-lg-8">
-            <div class="walkthrough-stack">
-              <div class="row walkthrough-grid">
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">1</div>
-                    <h3 class="h5">Read the draft on the left</h3>
-                    <p class="text-secondary mb-0">
-                      The left panel shows the same four-part draft layout: threading, tie-up, drawdown, and treadling. As the animation runs, the active pick, tied treadles, and lifted shafts highlight there too.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">2</div>
-                    <h3 class="h5">Control the playback</h3>
-                    <p class="text-secondary mb-0">
-                      Use <code>Pause</code>, <code>Step Pick</code>, the speed slider, and <code>Loop</code> to slow the motion down or advance one pick at a time.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">3</div>
-                    <h3 class="h5">Watch the mechanism</h3>
-                    <p class="text-secondary mb-0">
-                      The right side shows the shafts rising, the tie-up cords and pulleys redirecting force, and the treadles pressing down in sync with the currently active pick.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
-                    <div class="step-number mb-3">4</div>
-                    <h3 class="h5">See the cloth build</h3>
-                    <p class="text-secondary mb-0">
-                      Each pick passes through the shed, settles into the growing cloth, and leaves the newest interlacement visible at the fell before the next pick begins.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="hero-shell mx-auto mt-4">
-      <div class="info-card p-4 p-lg-5">
-        <div class="row g-4 align-items-start">
-          <div class="col-lg-4">
             <p class="eyebrow mb-3">FAQ</p>
             <h2 class="section-title mb-3">Common questions.</h2>
             <p class="text-secondary mb-0">
@@ -670,7 +619,7 @@
 
   <footer class="site-footer text-center text-lg-start">
     <span>Peter E. Francis</span>
-    <span class="mx-2 d-none d-lg-inline">|</span>
+    <span class="mx-2" aria-hidden="true">|</span>
     <a href="https://peterefrancis.com" target="_blank" rel="noopener noreferrer">peterefrancis.com</a>
   </footer>
 
