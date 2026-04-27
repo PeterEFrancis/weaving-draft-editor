@@ -241,6 +241,140 @@ number of distinct reduced row types. It is the size of the smallest family of
 basic treadle lift patterns whose Boolean unions of size at most \(R\) cover all
 reduced row types.
 
+\subsection*{Exact recovery algorithm}
+
+The proposition gives a direct complete algorithm for recovering a draft
+\((A,B,C)\) from a target drawdown \(\widehat{D}\), if such a draft exists under
+the size constraints. The algorithm starts from \(\mathcal{R}\), because after
+duplicate warp-column behaviors are removed, \(\mathcal{R}\) is equivalent to
+the target for the purpose of deciding which treadle lift patterns are needed.
+Repeated picks only repeat rows of \(A\), and repeated warp-column behaviors
+only repeat columns of \(C\).
+
+\paragraph{Input.}
+A target drawdown \(\widehat{D}\in\{0,1\}^{P\times W}\), a shaft bound \(S\), a
+treadle bound \(T\), and a maximum number \(R\) of treadles pressed on a pick.
+
+\paragraph{Step 1: recover the threading.}
+Group the columns of \(\widehat{D}\) by equality. Let
+\[
+  c(j)\in\{1,\dots,S_0\}
+\]
+be the column class of warp end \(j\), and let \(S_0\) be the number of distinct
+column classes. If \(S_0>S\), stop: no draft with at most \(S\) shafts exists.
+Otherwise define \(C\in\{0,1\}^{S\times W}\) by
+\[
+  C_{s j}
+  =
+  \begin{cases}
+    1, & s=c(j),\\
+    0, & \text{otherwise}.
+  \end{cases}
+\]
+Unused shafts \(S_0+1,\dots,S\) are left empty.
+
+\paragraph{Step 2: reduce to row types.}
+Delete duplicate column classes from \(\widehat{D}\) to obtain
+\[
+  E_{\mathrm{col}}\in\{0,1\}^{P\times S_0}.
+\]
+Let \(\mathcal{R}\subseteq\{0,1\}^{S_0}\) be the set of distinct rows of
+\(E_{\mathrm{col}}\). For each pick \(i\), record its reduced row type
+\[
+  r(i)\in\mathcal{R}.
+\]
+At this point the remaining problem is equivalent to finding treadle generators
+whose Boolean unions produce the rows in \(\mathcal{R}\).
+
+\paragraph{Step 3: solve the generator problem.}
+Form the finite candidate set
+\[
+  \mathcal{C}
+  =
+  \{b\in\{0,1\}^{S_0}: b\le r \text{ coordinatewise for some }
+  r\in\mathcal{R}\}.
+\]
+Search over subsets \(\mathcal{B}\subseteq\mathcal{C}\) with
+\(|\mathcal{B}|\le T\). For each candidate \(\mathcal{B}\), compute
+\(\mathcal{U}_R(\mathcal{B})\). If
+\[
+  \mathcal{R}\subseteq\mathcal{U}_R(\mathcal{B}),
+\]
+then choose, for every row type \(r\in\mathcal{R}\), a representation
+\[
+  r=b_{t_1}\vee\cdots\vee b_{t_k},
+  \qquad
+  k\le R,
+  \qquad
+  b_{t_\ell}\in\mathcal{B}.
+\]
+If no such \(\mathcal{B}\) exists, stop: no draft with the prescribed
+\((S,T,R)\) constraints exists.
+
+\paragraph{Step 4: recover the tie-up and treadling.}
+Index the selected generators as
+\[
+  \mathcal{B}=\{b_1,\dots,b_m\},
+  \qquad
+  m\le T.
+\]
+Define \(B\in\{0,1\}^{S\times T}\) by
+\[
+  B_{s t}
+  =
+  \begin{cases}
+    (b_t)_s, & 1\le s\le S_0,\ 1\le t\le m,\\
+    0, & \text{otherwise}.
+  \end{cases}
+\]
+For each pick \(i\), use the chosen representation of \(r(i)\) and set
+\[
+  A_{i t}
+  =
+  \begin{cases}
+    1, & b_t \text{ is used in the chosen representation of } r(i),\\
+    0, & \text{otherwise}.
+  \end{cases}
+\]
+Then each row of \(A\) has at most \(R\) nonzero entries.
+
+\begin{proposition}[Correctness of exact recovery]
+The algorithm above returns matrices \(A,B,C\) satisfying
+\[
+  \widehat{D}_{ij}
+  =
+  \mathbf{1}\{(AB^TC)_{ij}>0\}
+\]
+whenever such matrices exist under the constraints \(S,T,R\). If the algorithm
+reports failure, no such draft exists.
+\end{proposition}
+
+\begin{proof}
+Step 1 is forced: warp ends with different columns in \(\widehat{D}\) cannot be
+threaded on the same shaft, since shafts move their warp ends together. Thus
+any exact draft must use at least \(S_0\) shafts, and grouping equal columns
+loses no information.
+
+After this reduction, each treadle corresponds to a vector in
+\(\{0,1\}^{S_0}\), recording which column classes it lifts. If a treadle vector
+appears in a union producing a row \(r\), then it must be coordinatewise
+contained in \(r\). Therefore every useful treadle vector lies in the candidate
+set \(\mathcal{C}\); vectors outside \(\mathcal{C}\) either cannot be used or
+would lift a shaft in a row where it should remain unlifted.
+
+Thus an exact draft exists precisely when there is a set
+\(\mathcal{B}\subseteq\mathcal{C}\) of at most \(T\) treadle vectors such that
+every reduced row type in \(\mathcal{R}\) is a Boolean union of at most \(R\)
+vectors from \(\mathcal{B}\). Step 3 searches this finite space exhaustively, so
+it finds such a family if one exists and fails only if none exists.
+
+Given such a family, Step 4 makes \(B\) from the selected generators and makes
+\(A\) from the chosen union representation of each pick. By construction, the
+thresholded product \(AB^TC\) reproduces every reduced row on the corresponding
+column classes, and \(C\) then repeats those column classes across the original
+warp ends. Therefore the thresholded drawdown is exactly \(\widehat{D}\).
+\end{proof}
+
 The periodic version of this statement uses the language of prefabrics and
 fabrics, which we recall here.
 
