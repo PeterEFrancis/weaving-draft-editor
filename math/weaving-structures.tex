@@ -1,0 +1,508 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage[hidelinks]{hyperref}
+
+\title{Algorithms for Approximate Inversion of Weave Structures}
+% \author{Peter E. Francis}
+\date{\today}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{proposition}{Proposition}
+\newtheorem{example}{Example}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+These notes study the inverse problem for shaft-loom weaving: given a desired
+binary drawdown, find a threading, tie-up, and treadling that reproduce it
+exactly when possible, and approximate it well when exact reproduction is
+impossible under loom constraints.
+\end{abstract}
+
+\section{Introduction}
+
+A single-layer woven structure may be idealized as a binary matrix
+\[
+  \widehat{D} \in \{0,1\}^{P \times W},
+\]
+where \(P\) is the number of weft picks and \(W\) is the number of warp ends.
+Rows index picks and columns index warp ends. We use the convention
+\[
+  \widehat{D}_{ij}
+  =
+  \begin{cases}
+    1, & \text{warp end } j \text{ passes over weft pick } i,\\
+    0, & \text{weft pick } i \text{ passes over warp end } j.
+  \end{cases}
+\]
+In this language, a Jacquard loom is essentially unconstrained: each warp end
+may be controlled independently on each pick, so every finite binary matrix is
+attainable, ignoring physical considerations such as yarn behavior, abrasion,
+float length, and cloth stability. Matrix and algebraic models of loom
+constraints go back at least to Lourie's work on loom-constrained designs, which
+represents a weave as a binary matrix and studies how to recover loom data from
+that matrix~\cite{lourie1969}.
+
+The situation is very different for a shaft loom. A warp end is threaded through
+one shaft, and all warp ends on the same shaft move together. Thus a shaft loom
+cannot directly control individual warp ends; it controls equivalence classes of
+warp ends. Let \(T\) be the number of treadles, \(S\) the number of shafts, and
+\(R\) the maximum number of treadles allowed to be pressed on a single pick.
+We encode a draft by three binary matrices:
+\[
+  A \in \{0,1\}^{P \times T},
+  \qquad
+  B \in \{0,1\}^{S \times T},
+  \qquad
+  C \in \{0,1\}^{S \times W}.
+\]
+Here \(A\) is the treadling matrix, with \(A_{it}=1\) if treadle \(t\) is pressed
+on pick \(i\); \(B\) is the tie-up matrix, with \(B_{st}=1\) if treadle \(t\)
+lifts shaft \(s\); and \(C\) is the threading matrix, with \(C_{sj}=1\) if warp
+end \(j\) is threaded on shaft \(s\). Each column of \(C\) contains exactly one
+nonzero entry, and each row of \(A\) contains at most \(R\) nonzero entries.
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}[
+    x=0.54cm,
+    y=0.54cm,
+    gridline/.style={draw=black!22, line width=0.25pt},
+    sectionline/.style={draw=black!70, line width=0.7pt},
+    block/.style={fill=black!86},
+    label/.style={font=\small\bfseries}
+  ]
+    \def\gap{0.45}
+    \newcommand{\sectiongrid}[2]{%
+      \foreach \x in {0,...,#1} {\draw[gridline] (\x,0) -- (\x,#2);}
+      \foreach \y in {0,...,#2} {\draw[gridline] (0,\y) -- (#1,\y);}
+      \draw[sectionline] (0,0) rectangle (#1,#2);
+    }
+
+    \begin{scope}[shift={(0,12+\gap)}]
+      \foreach \x/\y in {0/3,1/2,2/1,3/0,4/1,5/2,6/3,7/2,8/1,9/0,10/1,11/2} {
+        \fill[block] (\x,\y) rectangle ++(1,1);
+      }
+      \sectiongrid{12}{4}
+      \node[label, above] at (6,4.45) {threading \(C\)};
+    \end{scope}
+
+    \begin{scope}[shift={(12+\gap,12+\gap)}]
+      \foreach \x/\y in {0/3,0/2,1/2,1/1,2/1,2/0,3/0,3/3,4/3,4/1,5/2,5/0} {
+        \fill[block] (\x,\y) rectangle ++(1,1);
+      }
+      \sectiongrid{6}{4}
+      \node[label, above] at (3,4.45) {tie-up \(B\)};
+    \end{scope}
+
+    \begin{scope}
+      \foreach \x/\y in {
+        0/11,1/11,5/11,6/11,7/11,11/11,
+        1/10,2/10,4/10,5/10,7/10,8/10,10/10,11/10,
+        2/9,3/9,4/9,8/9,9/9,10/9,
+        0/8,3/8,6/8,9/8,
+        0/7,2/7,4/7,6/7,8/7,10/7,
+        1/6,3/6,5/6,7/6,9/6,11/6,
+        0/5,1/5,5/5,6/5,7/5,11/5,
+        0/4,3/4,6/4,9/4,
+        1/3,2/3,4/3,5/3,7/3,8/3,10/3,11/3,
+        0/2,2/2,4/2,6/2,8/2,10/2,
+        2/1,3/1,4/1,8/1,9/1,10/1,
+        1/0,3/0,5/0,7/0,9/0,11/0
+      } {
+        \fill[block] (\x,\y) rectangle ++(1,1);
+      }
+      \sectiongrid{12}{12}
+      \node[label, below] at (6,-0.45) {drawdown \(\widehat{D}\)};
+    \end{scope}
+
+    \begin{scope}[shift={(12+\gap,0)}]
+      \foreach \x/\y in {0/11,1/10,2/9,3/8,4/7,5/6,0/5,3/4,1/3,4/2,2/1,5/0} {
+        \fill[block] (\x,\y) rectangle ++(1,1);
+      }
+      \sectiongrid{6}{12}
+      \node[label, below] at (3,-0.45) {treadling \(A\)};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{A draft written as matrices.  Dark cells are entries equal to \(1\).
+  This example uses \(W=P=12\), \(S=4\), and \(T=6\): the threading \(C\),
+  tie-up \(B\), and treadling \(A\) determine the drawdown by thresholding the
+  redundancy matrix \(D=AB^TC\).}
+  \label{fig:example-draft}
+\end{figure}
+
+The natural product in this notation is
+\[
+  D = A B^{T} C.
+\]
+The matrix \(D\) is not merely binary. It records the redundancy with which each
+cell is activated: \(D_{ij}=0\) means that warp end \(j\) is not lifted over pick
+\(i\), \(D_{ij}=1\) means that it is lifted by one pressed treadle, and
+\(D_{ij}=2\) means that two pressed treadles both lift the shaft carrying warp
+end \(j\), and so on. The binary drawdown associated to the draft is therefore
+\[
+  \widehat{D}_{ij}
+  =
+  \begin{cases}
+    0, & D_{ij}=0,\\
+    1, & D_{ij}>0.
+  \end{cases}
+\]
+This is not ordinary unconstrained matrix factorization; it is a discrete
+factorization through treadle, shaft, and warp-thread incidence matrices.
+
+\begin{proposition}[Finite shaft-loom attainability with multiple treadles]
+Let \(E\in\{0,1\}^{P\times W}\) be a finite binary drawdown. Delete duplicate
+columns of \(E\), and call the resulting matrix \(E_{\mathrm{col}}\). Let
+\(S_0\) be the number of columns of \(E_{\mathrm{col}}\), and let
+\(\mathcal{R}\subseteq\{0,1\}^{S_0}\) be the set of distinct rows of
+\(E_{\mathrm{col}}\).
+
+For a set \(\mathcal{B}\subseteq\{0,1\}^{S_0}\), define its
+\(R\)-fold union closure by
+\[
+  \mathcal{U}_R(\mathcal{B})
+  =
+  \left\{
+    b_1\vee b_2\vee\cdots\vee b_k
+    :
+    0\le k\le R,\ b_1,\dots,b_k\in\mathcal{B}
+  \right\},
+\]
+where \(\vee\) denotes coordinatewise Boolean OR and the empty union is the
+zero vector. Then \(E\) is attainable on a shaft loom with at most \(S\) shafts,
+\(T\) treadles, and at most \(R\) treadles pressed on any pick if and only if
+\[
+  S_0\le S
+  \qquad\text{and}\qquad
+  \mathcal{R}\subseteq \mathcal{U}_R(\mathcal{B})
+\]
+for some set \(\mathcal{B}\subseteq\{0,1\}^{S_0}\) with
+\(|\mathcal{B}|\le T\).
+
+When \(R=1\) and each pick is required to use a single treadle, this reduces to
+the simpler criterion that the reduced drawdown has at most \(S\) distinct
+column types and at most \(T\) distinct row types. With enough treadles or with a
+dobby-style liftplan, the minimum number of shafts is the number of distinct
+warp-column behaviors. For an infinite periodic prefabric, the same criterion
+applies to a fundamental period block.
+\end{proposition}
+
+\begin{proof}
+First suppose that \(E\) is produced by a shaft loom with at most \(S\) shafts,
+\(T\) treadles, and at most \(R\) treadles pressed on a pick. If two warp ends
+are threaded on the same shaft, then they are lifted on exactly the same picks,
+so their columns in \(E\) are identical. Therefore the number of distinct column
+behaviors is at most the number of shafts, hence \(S_0\le S\).
+
+After duplicate columns are removed, each treadle determines a binary vector in
+\(\{0,1\}^{S_0}\): its entries record which of the \(S_0\) column types are
+lifted by that treadle. Let \(\mathcal{B}\) be the set of these treadle vectors.
+Then \(|\mathcal{B}|\le T\). If pick \(i\) presses treadles
+\(t_1,\dots,t_k\), with \(k\le R\), then its reduced row is the Boolean union
+of the corresponding treadle vectors,
+\[
+  b_{t_1}\vee\cdots\vee b_{t_k}.
+\]
+Thus every distinct reduced row lies in \(\mathcal{U}_R(\mathcal{B})\).
+
+Conversely, suppose \(S_0\le S\) and
+\(\mathcal{R}\subseteq\mathcal{U}_R(\mathcal{B})\) for some
+\(\mathcal{B}=\{b_1,\dots,b_m\}\subseteq\{0,1\}^{S_0}\) with \(m\le T\).
+Assign each distinct column type to one shaft, threading every warp end with
+that column behavior through the corresponding shaft. Assign the vector
+\(b_t\) to treadle \(t\), tying it to exactly those shafts whose column types
+have value \(1\) in \(b_t\). Since every reduced row of \(E\) is a Boolean union
+of at most \(R\) vectors from \(\mathcal{B}\), choose one such representation
+for each pick and press the corresponding treadles. The resulting thresholded
+drawdown is exactly \(E\).
+
+For \(R=1\), each reduced row must itself be one of the treadle vectors, so the
+criterion reduces to counting distinct reduced row types. If pressing no treadle
+is disallowed, one simply omits the empty union from
+\(\mathcal{U}_R(\mathcal{B})\).
+
+For a periodic prefabric, all rows and columns are determined by a finite
+fundamental period block, so applying the same argument to that block gives the
+periodic statement.
+\end{proof}
+
+Thus, when \(R>1\), the minimum number of treadles is no longer simply the
+number of distinct reduced row types. It is the size of the smallest family of
+basic treadle lift patterns whose Boolean unions of size at most \(R\) cover all
+reduced row types.
+
+The periodic version of this statement uses the language of prefabrics and
+fabrics, which we recall here.
+
+\begin{definition}[Prefabric]
+A \emph{prefabric} is a formal infinite over-under assignment for two transverse
+families of strands, one warp-like and one weft-like. A prefabric need not hang
+together as a physical cloth; it may fall apart into independent layers, strips,
+or components~\cite{grunbaum1980,clapham1980,enns1984}.
+\end{definition}
+
+\begin{definition}[Fabric and isonemal fabric]
+A \emph{fabric} is a prefabric whose strands interlace sufficiently to hang
+together. A fabric is \emph{isonemal} if its symmetry group acts transitively on
+the set of strands; equivalently, for any two strands, there is a symmetry of
+the fabric that sends one strand to the other~\cite{grunbaum1980,grunbaum1988}.
+\end{definition}
+
+The symmetry theory of periodic fabrics, including isonemal fabrics, is largely
+orthogonal to shaft attainability. A design can be highly symmetric and still
+require many shaft-column behaviors. Conversely, a design can be attainable on
+few shafts while failing to be a good physical cloth because of floats,
+instability, or other textile constraints.
+
+The inverse problem considered here begins with a target drawdown \(D^\ast\) and
+asks for shaft-loom data \((A,B,C)\) producing a drawdown
+\[
+  \widehat{D}_{ij}
+  =
+  \mathbf{1}\{(AB^T C)_{ij}>0\}
+\]
+that is equal to \(D^\ast\), or, when exact equality is impossible under the
+available numbers of shafts, treadles, and simultaneously pressed treadles, is
+close to \(D^\ast\) according to a chosen objective function.
+
+This turns inverse drafting into a constrained binary approximation problem.
+The exact problem asks whether \(D^\ast\) factors through a sufficiently small
+tie-up matrix. The approximate problem asks which factorization should be chosen
+when the target has too many distinct column or row behaviors. A natural first
+objective is Hamming error,
+\[
+  \operatorname{err}(\widehat{D},D^\ast)
+  =
+  \#\{(i,j) : \widehat{D}_{ij} \ne D^\ast_{ij}\},
+\]
+but this is rarely the whole story. Different errors may have different visual
+or structural importance. For sparse targets, moving an isolated black cell may
+be preferable to toggling several neighboring cells. For line-like or motif-like
+targets, preserving continuity and local shape may matter more than minimizing
+raw binary disagreement. For cloth, objectives should also penalize long warp or
+weft floats, disconnected prefabric behavior, or other non-clothlike structures.
+
+The purpose of these notes is to develop and compare algorithms for this
+approximate inversion problem. The central questions are:
+\begin{enumerate}[label=(\roman*)]
+  \item how to find exact factorizations when they exist;
+  \item how to search efficiently when the target exceeds the available loom
+  constraints;
+  \item how different cost functions change the chosen approximation;
+  \item how to incorporate clothlike constraints such as float tolerance; and
+  \item how to test an inversion engine using targets known to be generated by
+  random drafts as well as targets generated by random binary drawdowns.
+\end{enumerate}
+
+\section{Related Work}
+
+There are two closely related mathematical traditions behind this note. The
+first is the algebraic and algorithmic analysis of weave drafts. Lourie's
+``loom-constrained designs'' paper formulates the problem of determining a loom
+mechanism, threading-like initial conditions, and dynamic control information
+from a binary representation of a weave~\cite{lourie1969}. Hoskins and Hoskins
+studied matrix equations and factoring algorithms arising from structural
+analysis of woven fabrics~\cite{hoskins1981,hoskins1983}, while later work on
+binary interlacement arrays and bounded-float twills develops related finite
+combinatorial models~\cite{hoskins1984,hpstreet1983}.
+
+The second tradition is the geometry and symmetry theory of fabrics and
+prefabrics. Gr\"unbaum and Shephard introduced the modern mathematical
+treatment of satins, twills, prefabrics, and isonemal fabrics
+\cite{grunbaum1980,grunbaum1985,grunbaum1986,grunbaum1988}. Roth classified the
+symmetry groups of periodic isonemal fabrics~\cite{roth1993}, and Thomas
+refined Roth's taxonomy for prefabrics with parallel axes, perpendicular axes,
+and no axes of symmetry~\cite{thomas2009,thomas2010perp,thomas2010noaxes}.
+Questions about whether a prefabric ``hangs together'' are separate from
+symmetry classification and lead to their own graph-like connectivity
+criteria~\cite{clapham1980,delaney1986,enns1984}.
+
+The present notes use the same binary-matrix language, but focus on a slightly
+different computational question: when an exact shaft-loom factorization is
+unavailable or undesirable, how should one approximate the target drawdown? In
+particular, we keep track of the integer redundancy matrix \(D=AB^TC\), allow
+multiple treadles to be pressed on a pick, and compare objective functions that
+may value visual locality, motif continuity, or clothlike float behavior
+differently from raw Hamming error.
+
+\section{Problem Setup}
+
+Let \(D^\ast \in \{0,1\}^{P \times W}\) be a target drawdown. The approximate
+inverse-drafting problem is to choose matrices
+\[
+  A \in \{0,1\}^{P \times T},
+  \qquad
+  B \in \{0,1\}^{S \times T},
+  \qquad
+  C \in \{0,1\}^{S \times W}
+\]
+so as to minimize a cost
+\[
+  C_{\mathrm{obj}}(\widehat{D},D^\ast;A,B,C),
+  \qquad
+  \widehat{D}_{ij}=\mathbf{1}\{(AB^T C)_{ij}>0\}.
+\]
+The matrix \(C\) is constrained to have exactly one \(1\) in each column, since
+each warp end is threaded on exactly one shaft. The matrix \(A\) is constrained
+by the maximum number of simultaneously pressed treadles:
+\[
+  \sum_{t=1}^{T} A_{it} \le R
+  \qquad
+  \text{for all } i=1,\dots,P.
+\]
+
+\begin{theorem}[Redundancy Matrix]
+Let \(A\in\{0,1\}^{P\times T}\) be a treadling matrix, let
+\(B\in\{0,1\}^{S\times T}\) be a tie-up matrix, and let
+\(C\in\{0,1\}^{S\times W}\) be a threading matrix with exactly one nonzero entry
+in each column. Define
+\[
+  D = A B^{T} C.
+\]
+Then \(D\in\mathbb{Z}_{\ge 0}^{P\times W}\), and \(D_{ij}\) is the number of
+pressed treadles on pick \(i\) that lift the shaft containing warp end \(j\).
+In particular, if
+\[
+  \widehat{D}_{ij}=\mathbf{1}\{D_{ij}>0\},
+\]
+then \(\widehat{D}_{ij}=1\) exactly when warp end \(j\) is lifted over pick
+\(i\). Moreover, if at most \(R\) treadles are pressed on each pick, then
+\[
+  0 \le D_{ij} \le R
+  \qquad
+  \text{for all } i,j.
+\]
+\end{theorem}
+
+\begin{proof}
+By the definition of matrix multiplication,
+\[
+  D_{ij}
+  =
+  (AB^{T}C)_{ij}
+  =
+  \sum_{t=1}^{T}\sum_{s=1}^{S} A_{it}B_{st}C_{sj}.
+\]
+Since warp end \(j\) is threaded on exactly one shaft, there is a unique shaft
+\(s(j)\) such that \(C_{s(j),j}=1\), and \(C_{sj}=0\) for \(s\ne s(j)\).
+Therefore the double sum collapses to
+\[
+  D_{ij}
+  =
+  \sum_{t=1}^{T} A_{it}B_{s(j),t}.
+\]
+For a fixed pick \(i\), the factor \(A_{it}\) is \(1\) exactly when treadle
+\(t\) is pressed. The factor \(B_{s(j),t}\) is \(1\) exactly when treadle \(t\)
+lifts the shaft \(s(j)\) carrying warp end \(j\). Thus each summand is \(1\)
+exactly for a pressed treadle that lifts the shaft containing warp end \(j\), and
+is \(0\) otherwise. Hence \(D_{ij}\) counts those treadles.
+
+It follows that \(D_{ij}>0\) exactly when at least one pressed treadle lifts the
+shaft containing warp end \(j\). This is precisely the event that warp end \(j\)
+is lifted over pick \(i\), so the binary drawdown is
+\(\widehat{D}_{ij}=\mathbf{1}\{D_{ij}>0\}\). Finally, if at most \(R\) treadles
+are pressed on pick \(i\), then at most \(R\) terms in
+\(\sum_{t=1}^{T} A_{it}B_{s(j),t}\) can be nonzero, so \(D_{ij}\le R\).
+\end{proof}
+
+\clearpage
+\begin{thebibliography}{99}
+
+\bibitem{lourie1969}
+Janice R. Lourie.
+\newblock Loom-constrained designs: An algebraic solution.
+\newblock In \emph{Proceedings of the 1969 24th National Conference}, ACM,
+pages 185--192, 1969.
+
+\bibitem{hoskins1981}
+J. Hoskins and W. Hoskins.
+\newblock The solutions of certain matrix equations arising from the structural
+analysis of woven fabrics.
+\newblock \emph{Ars Combinatoria}, 11:51--59, 1981.
+
+\bibitem{hoskins1983}
+J. Hoskins and W. Hoskins.
+\newblock A faster algorithm for factoring binary matrices.
+\newblock \emph{Ars Combinatoria}, 16-B:341--350, 1983.
+
+\bibitem{hoskins1984}
+J. Hoskins, A. Street, and R. Stanton.
+\newblock Binary interlacement arrays and how to find them.
+\newblock \emph{Congressus Numerantium}, 42:321--376, 1984.
+
+\bibitem{hpstreet1983}
+J. Hoskins, C. Praeger, and A. Street.
+\newblock Twills with bounded float length.
+\newblock \emph{Bulletin of the Australian Mathematical Society}, 28:255--281,
+1983.
+
+\bibitem{grunbaum1980}
+Branko Gr\"unbaum and G. C. Shephard.
+\newblock Satins and twills: An introduction to the geometry of fabrics.
+\newblock \emph{Mathematics Magazine}, 53(3):139--161, 1980.
+
+\bibitem{grunbaum1985}
+Branko Gr\"unbaum and G. C. Shephard.
+\newblock A catalogue of isonemal fabrics.
+\newblock In J. E. Goodman, editor, \emph{Discrete Geometry and Convexity},
+Annals of the New York Academy of Sciences, volume 440, pages 279--298, 1985.
+
+\bibitem{grunbaum1986}
+Branko Gr\"unbaum and G. C. Shephard.
+\newblock An extension to the catalogue of isonemal fabrics.
+\newblock \emph{Discrete Mathematics}, 60:155--192, 1986.
+
+\bibitem{grunbaum1988}
+Branko Gr\"unbaum and G. C. Shephard.
+\newblock Isonemal fabrics.
+\newblock \emph{The American Mathematical Monthly}, 95(1):5--30, 1988.
+
+\bibitem{roth1993}
+Richard L. Roth.
+\newblock The symmetry groups of periodic isonemal fabrics.
+\newblock \emph{Geometriae Dedicata}, 48:191--210, 1993.
+
+\bibitem{thomas2009}
+R. S. D. Thomas.
+\newblock Isonemal prefabrics with only parallel axes of symmetry.
+\newblock \emph{Discrete Mathematics}, 309(9):2696--2711, 2009.
+
+\bibitem{thomas2010perp}
+R. S. D. Thomas.
+\newblock Isonemal prefabrics with perpendicular axes of symmetry.
+\newblock \emph{Utilitas Mathematica}, 82:33--70, 2010.
+
+\bibitem{thomas2010noaxes}
+R. S. D. Thomas.
+\newblock Isonemal prefabrics with no axes of symmetry.
+\newblock \emph{Discrete Mathematics}, 310(8):1307--1324, 2010.
+
+\bibitem{clapham1980}
+C. R. J. Clapham.
+\newblock When a fabric hangs together.
+\newblock \emph{Bulletin of the London Mathematical Society}, 12:161--164,
+1980.
+
+\bibitem{delaney1986}
+Cathy Delaney.
+\newblock When a fabric hangs together.
+\newblock \emph{Ars Combinatoria A}, 21:71--79, 1986.
+
+\bibitem{enns1984}
+T. C. Enns.
+\newblock An efficient algorithm determining when a fabric hangs together.
+\newblock \emph{Geometriae Dedicata}, 15:259--260, 1984.
+
+\end{thebibliography}
+
+\end{document}

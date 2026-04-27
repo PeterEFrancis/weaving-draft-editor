@@ -319,6 +319,211 @@
     white-space: nowrap;
   }
 
+  .engine-test-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .engine-test-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+    padding: 0.45rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.38);
+  }
+
+  .engine-test-group-title {
+    align-self: center;
+    color: rgba(122, 50, 28, 0.82);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .engine-test-run-field {
+    display: grid;
+    gap: 0.28rem;
+    min-width: 5.4rem;
+  }
+
+  .engine-test-label-row {
+    display: grid;
+    grid-template-columns: 5.4rem 4.6rem;
+    column-gap: 0;
+  }
+
+  .engine-test-input-group {
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  .engine-test-trial-input {
+    width: 5.4rem;
+    min-width: 5.4rem;
+    max-width: 5.4rem;
+    min-height: 2.35rem;
+    border-radius: 0.85rem;
+    border-color: rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.82);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .engine-test-p-input {
+    width: 4.6rem;
+    min-width: 4.6rem;
+    max-width: 4.6rem;
+  }
+
+  .engine-test-input-group .engine-test-trial-input,
+  .engine-test-input-group .engine-test-p-input {
+    border-radius: 0;
+    border-right: 0;
+  }
+
+  .engine-test-input-group .engine-test-trial-input:first-child {
+    border-radius: 0.85rem 0 0 0.85rem;
+  }
+
+  .engine-test-input-group .toggle-button {
+    min-height: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0 0.85rem 0.85rem 0;
+  }
+
+  .engine-test-input-group .engine-test-trial-input:focus,
+  .engine-test-input-group .engine-test-p-input:focus {
+    position: relative;
+    z-index: 1;
+  }
+
+  .engine-test-trial-input:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .toggle-button-small {
+    padding-inline: 0.65rem;
+  }
+
+  .engine-test-result {
+    min-width: 9rem;
+    color: rgba(47, 36, 29, 0.58);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .engine-test-chart {
+    display: block;
+    width: min(26rem, 34vw);
+    min-width: 13rem;
+    height: 7.5rem;
+    border: 1px solid rgba(47, 36, 29, 0.1);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .engine-test-dock {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.7rem;
+    width: auto;
+    padding: 0.55rem clamp(1rem, 2vw, 2rem);
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 0;
+    background: rgba(252, 248, 240, 0.94);
+    box-shadow: 0 -1rem 2.4rem rgba(47, 36, 29, 0.16), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
+    backdrop-filter: blur(14px);
+  }
+
+  .engine-test-dock-lead {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .engine-test-dock-title {
+    display: grid;
+    gap: 0.1rem;
+    padding-inline: 0.35rem 0.2rem;
+  }
+
+  .engine-test-dock-title strong {
+    color: rgba(122, 50, 28, 0.86);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .engine-test-dock-title span {
+    color: rgba(47, 36, 29, 0.54);
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .engine-test-dock .engine-test-actions {
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .engine-test-collapse {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    padding-inline: 0;
+  }
+
+  .engine-test-collapse-icon {
+    display: inline-block;
+    line-height: 1;
+    transition: transform 160ms ease;
+  }
+
+  .engine-test-dock.is-collapsed {
+    inset-inline: auto clamp(1rem, 2vw, 2rem);
+    grid-template-columns: auto;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .engine-test-dock.is-collapsed .engine-test-actions,
+  .engine-test-dock.is-collapsed .engine-test-dock-lead {
+    display: none;
+  }
+
+  .engine-test-dock.is-collapsed .engine-test-collapse {
+    border-radius: 0.85rem 0.85rem 0 0;
+    background: rgba(252, 248, 240, 0.96);
+    box-shadow: 0 -0.5rem 1.4rem rgba(47, 36, 29, 0.14);
+  }
+
+  .engine-test-dock.is-collapsed .engine-test-collapse-icon {
+    transform: rotate(180deg);
+  }
+
   .toolbar-field-cell {
     min-width: 11rem;
   }
@@ -420,16 +625,19 @@
   .work-panel {
     position: relative;
     z-index: 1;
+    min-width: 0;
     padding: 1rem 1.1rem 1.1rem;
   }
 
   #generated-panel {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   #generated-panel .panel-scroll {
     flex: 1 1 auto;
+    max-width: 100%;
     min-height: 0;
   }
 
@@ -543,6 +751,7 @@
   }
 
   .panel-scroll {
+    min-width: 0;
     overflow: auto;
   }
 
@@ -778,7 +987,10 @@
 
   .generated-layout {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    width: max-content;
+    min-width: 100%;
+    box-sizing: border-box;
     padding: 0.2rem 0 0.5rem;
   }
 
@@ -790,6 +1002,8 @@
       "drawdown treadling";
     gap: 0.75em;
     align-items: start;
+    width: max-content;
+    margin-inline: auto;
   }
 
   .generated-section-threading {
@@ -883,6 +1097,27 @@
     }
   }
 
+  @media (max-width: 700px) {
+    .engine-test-dock {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+
+    .engine-test-dock .engine-test-actions {
+      grid-column: 1 / -1;
+    }
+
+    .engine-test-chart {
+      width: 100%;
+      min-width: 100%;
+      order: 3;
+    }
+
+    .engine-test-dock.is-collapsed {
+      grid-template-columns: auto;
+    }
+  }
+
   @media (max-width: 900px) {
     .work-panel-header {
       flex-direction: column;
@@ -914,6 +1149,7 @@
     .option-rail,
     .option-list,
     .flow-overlay,
+    .engine-test-dock,
     .toggle-button {
       display: none !important;
     }
@@ -1228,6 +1464,60 @@
   </div>
 </main>
 
+<aside id="engine-test-dock" class="panel engine-test-dock" aria-label="Engine test tools">
+  <div class="engine-test-dock-lead">
+    <div class="engine-test-dock-title">
+      <strong>Engine Test</strong>
+      <span>Hidden random-draft checks</span>
+    </div>
+  </div>
+
+  <div class="engine-test-actions">
+    <div class="engine-test-group">
+      <div class="engine-test-group-title">Draft targets</div>
+      <button type="button" class="toggle-button" id="random-test-button" title="Create a random draft within the optimizer limits and load its drawdown into the target.">Random Draft</button>
+      <div class="engine-test-run-field">
+        <label class="control-label" for="random-draft-trials-input">Trials</label>
+        <div class="engine-test-input-group">
+          <input id="random-draft-trials-input" class="form-control engine-test-trial-input" type="number" value="1000" min="1" step="1" inputmode="numeric">
+          <button type="button" class="toggle-button toggle-button-small" id="random-trials-run-button" title="Run hidden random drafts and chart the top-result match distribution.">Run</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="engine-test-group">
+      <div class="engine-test-group-title">Cell targets</div>
+      <button type="button" class="toggle-button" id="random-target-button" title="Create a random target where each cell is black with probability p.">Random Target</button>
+      <div class="engine-test-run-field">
+        <div class="engine-test-label-row">
+          <label class="control-label" for="random-target-trials-input">Trials</label>
+          <label class="control-label" for="random-target-p-input">P</label>
+        </div>
+        <div class="engine-test-input-group">
+          <input id="random-target-trials-input" class="form-control engine-test-trial-input" type="number" value="1000" min="1" step="1" inputmode="numeric">
+          <input id="random-target-p-input" class="form-control engine-test-trial-input engine-test-p-input" type="number" value="0.5" min="0" max="1" step="0.05" inputmode="decimal">
+          <button type="button" class="toggle-button toggle-button-small" id="random-target-run-button" title="Run hidden target drawdowns where each cell is black with probability p.">Run</button>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="random-trials-chart" class="engine-test-chart" width="416" height="176" aria-label="Distribution of hidden trial match results"></canvas>
+    <span class="engine-test-result" id="random-trials-result" aria-live="polite"></span>
+  </div>
+
+  <button
+    type="button"
+    class="toggle-button toggle-button-small engine-test-collapse"
+    id="engine-test-collapse"
+    aria-label="Collapse engine test panel"
+    aria-controls="engine-test-dock"
+    aria-expanded="true"
+    title="Collapse engine test panel"
+  >
+    <span class="engine-test-collapse-icon" aria-hidden="true">⌄</span>
+  </button>
+</aside>
+
 <div class="modal fade inverse-print-modal" id="inverse-print-modal" tabindex="-1" aria-labelledby="inverse-print-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -1283,6 +1573,9 @@ const defaultMaxPressedTreadles = 2;
 const defaultOptimizerEngine = "balanced";
 const defaultFloatTolerance = 2;
 const maxGeneratedOptions = 6;
+const defaultRandomTrialCount = 1000;
+const randomTrialBatchSize = 20;
+const randomTrialBinCount = 48;
 const minInverseZoomPercent = 1;
 const maxInverseZoomPercent = 300;
 const minInverseCellSize = (defaultCellSize * minInverseZoomPercent) / 100;
@@ -1326,6 +1619,8 @@ let queuedGeneratedRenderResetSelection = false;
 let queuedFlowOverlayRender = false;
 let draftName = defaultDraftName;
 let pendingInversePrintOptions = null;
+let lastRandomTrialDistribution = null;
+let lastRandomTrialMeta = null;
 
 function createMatrix(rows, columns, fillValue = 0) {
   return Array.from({ length: rows }, () => Array(columns).fill(fillValue));
@@ -2674,6 +2969,658 @@ function rebuildDrawdown(threading, tieup, treadling) {
       return 0;
     })
   );
+}
+
+function getRandomInteger(maximum) {
+  const normalizedMaximum = Math.max(1, Number.parseInt(maximum, 10) || 1);
+  if (window.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    const limit = Math.floor(0x100000000 / normalizedMaximum) * normalizedMaximum;
+    do {
+      window.crypto.getRandomValues(values);
+    } while (values[0] >= limit);
+    return values[0] % normalizedMaximum;
+  }
+  return Math.floor(Math.random() * normalizedMaximum);
+}
+
+function getRandomUnitInterval() {
+  return getRandomInteger(0x100000000) / 0x100000000;
+}
+
+function createRandomThreading(shaftCount, warpCount) {
+  const threading = createMatrix(shaftCount, warpCount, 0);
+
+  for (let column = 0; column < warpCount; column++) {
+    threading[getRandomInteger(shaftCount)][column] = 1;
+  }
+
+  return threading;
+}
+
+function createRandomTieup(treadleCount, shaftCount) {
+  return Array.from({ length: treadleCount }, () =>
+    Array.from({ length: shaftCount }, () => getRandomInteger(2))
+  );
+}
+
+function countCombinations(total, choose) {
+  if (choose < 0 || choose > total) {
+    return 0;
+  }
+  const normalizedChoose = Math.min(choose, total - choose);
+  let result = 1;
+  for (let index = 1; index <= normalizedChoose; index++) {
+    result = result * (total - normalizedChoose + index) / index;
+  }
+  return Math.round(result);
+}
+
+function getAllowedTreadleSubsetCount(treadleCount, pressedLimit) {
+  const maximumPressed = Math.max(0, Math.min(pressedLimit, treadleCount));
+  let total = 0;
+  for (let size = 0; size <= maximumPressed; size++) {
+    total += countCombinations(treadleCount, size);
+  }
+  return total;
+}
+
+function unrankCombination(total, choose, rank) {
+  const combination = [];
+  let remainingRank = rank;
+  let nextMinimum = 0;
+
+  for (let slot = 0; slot < choose; slot++) {
+    for (let candidate = nextMinimum; candidate < total; candidate++) {
+      const countWithCandidate = countCombinations(total - candidate - 1, choose - slot - 1);
+      if (remainingRank < countWithCandidate) {
+        combination.push(candidate);
+        nextMinimum = candidate + 1;
+        break;
+      }
+      remainingRank -= countWithCandidate;
+    }
+  }
+
+  return combination;
+}
+
+function createRandomTreadleRow(treadleCount, pressedLimit) {
+  const maximumPressed = Math.max(0, Math.min(pressedLimit, treadleCount));
+  let rank = getRandomInteger(getAllowedTreadleSubsetCount(treadleCount, maximumPressed));
+  let pressedCount = 0;
+
+  for (; pressedCount <= maximumPressed; pressedCount++) {
+    const countForSize = countCombinations(treadleCount, pressedCount);
+    if (rank < countForSize) {
+      break;
+    }
+    rank -= countForSize;
+  }
+
+  const row = Array(treadleCount).fill(0);
+  unrankCombination(treadleCount, pressedCount, rank).forEach(treadle => {
+    row[treadle] = 1;
+  });
+  return row;
+}
+
+function createRandomTreadling(pickCount, treadleCount, pressedLimit) {
+  return Array.from({ length: pickCount }, () =>
+    createRandomTreadleRow(treadleCount, pressedLimit)
+  );
+}
+
+function syncRandomTestSettingsFromControls() {
+  const warpInput = document.getElementById("warp-input");
+  const picksInput = document.getElementById("picks-input");
+  const maxShaftsInput = document.getElementById("max-shafts-input");
+  const maxTreadlesInput = document.getElementById("max-treadles-input");
+  const maxPressedTreadlesInput = document.getElementById("max-pressed-treadles-input");
+  const requestedWarp = sanitizePositiveIntegerInput(warpInput);
+  const requestedPicks = sanitizePositiveIntegerInput(picksInput);
+  const requestedMaxShafts = sanitizePositiveIntegerInput(maxShaftsInput);
+  const requestedMaxTreadles = sanitizePositiveIntegerInput(maxTreadlesInput);
+  const requestedMaxPressedTreadles = sanitizePositiveIntegerInput(maxPressedTreadlesInput);
+  const limited = clampDimensions(requestedWarp, requestedPicks);
+  const wasLimited = limited.warp !== requestedWarp || limited.picks !== requestedPicks;
+
+  warp = limited.warp;
+  picks = limited.picks;
+  maxShafts = Math.max(1, Math.min(requestedMaxShafts, warp));
+  maxTreadles = Math.max(1, Math.min(requestedMaxTreadles, picks));
+  maxPressedTreadles = Math.max(1, Math.min(requestedMaxPressedTreadles, maxTreadles));
+  floatTolerance = Math.max(1, Math.min(floatTolerance, getMaxFloatTolerance()));
+  updateDimensionInputs();
+
+  if (wasLimited) {
+    showLimitAlert();
+  }
+}
+
+function createRandomDraftDrawdownFromCurrentSettings() {
+  const shaftCount = Math.max(1, Math.min(maxShafts, warp));
+  const treadleCount = Math.max(1, Math.min(maxTreadles, picks));
+  const pressedLimit = Math.max(1, Math.min(maxPressedTreadles, treadleCount));
+  const threading = createRandomThreading(shaftCount, warp);
+  const tieup = createRandomTieup(treadleCount, shaftCount);
+  const treadling = createRandomTreadling(picks, treadleCount, pressedLimit);
+
+  return rebuildDrawdown(threading, tieup, treadling);
+}
+
+function createRandomCellDrawdownFromCurrentSettings(blackProbability = 0.5) {
+  const probability = Math.max(0, Math.min(1, Number(blackProbability) || 0));
+  return Array.from({ length: picks }, () =>
+    Array.from({ length: warp }, () => (getRandomUnitInterval() < probability ? 1 : 0))
+  );
+}
+
+function createTrialTargetDrawdown(settings) {
+  if (settings?.targetKind === "cells") {
+    return createRandomCellDrawdownFromCurrentSettings(settings.blackProbability);
+  }
+  return createRandomDraftDrawdownFromCurrentSettings();
+}
+
+function createRandomDraftTarget() {
+  syncRandomTestSettingsFromControls();
+
+  selectedOptionIndex = 0;
+  targetDrawdown = createRandomDraftDrawdownFromCurrentSettings();
+  renderTargetGrid();
+  renderGeneratedDraft({ preserveSignature: false });
+  pushHistorySnapshot();
+}
+
+function createRandomCellTarget() {
+  syncRandomTestSettingsFromControls();
+
+  selectedOptionIndex = 0;
+  targetDrawdown = createRandomCellDrawdownFromCurrentSettings(getRandomTargetProbabilityFromInput());
+  renderTargetGrid();
+  renderGeneratedDraft({ preserveSignature: false });
+  pushHistorySnapshot();
+}
+
+function setEngineTestDockCollapsed(isCollapsed) {
+  const dock = document.getElementById("engine-test-dock");
+  const button = document.getElementById("engine-test-collapse");
+  if (!dock || !button) {
+    return;
+  }
+
+  dock.classList.toggle("is-collapsed", isCollapsed);
+  button.setAttribute("aria-expanded", String(!isCollapsed));
+  button.setAttribute("aria-label", isCollapsed ? "Expand engine test panel" : "Collapse engine test panel");
+  button.title = isCollapsed ? "Expand engine test panel" : "Collapse engine test panel";
+}
+
+function toggleEngineTestDock() {
+  const dock = document.getElementById("engine-test-dock");
+  setEngineTestDockCollapsed(!dock?.classList.contains("is-collapsed"));
+}
+
+function isTopGeneratedOptionExact(option) {
+  return Boolean(option && (option.exactMatch || option.mismatchCount === 0));
+}
+
+function getRandomTrialSettings(targetKind = "draft", blackProbability = 0.5) {
+  return {
+    warp,
+    picks,
+    maxShafts,
+    maxTreadles,
+    maxPressedTreadles,
+    optimizerEngine,
+    floatTolerance,
+    useFloatToleranceInOptimization,
+    maxGeneratedOptions,
+    binCount: randomTrialBinCount,
+    targetKind,
+    blackProbability
+  };
+}
+
+function getRandomTrialCountFromInput(inputId) {
+  return sanitizePositiveIntegerInput(document.getElementById(inputId));
+}
+
+function getRandomTargetProbabilityFromInput() {
+  const input = document.getElementById("random-target-p-input");
+  const sanitized = String(input.value || "").replace(/[^\d.]/g, "");
+  const parsed = Number.parseFloat(sanitized);
+  const nextValue = Math.max(0, Math.min(1, Number.isFinite(parsed) ? parsed : 0.5));
+  input.value = String(nextValue);
+  return nextValue;
+}
+
+function createEmptyRandomTrialDistribution() {
+  return {
+    bins: Array(randomTrialBinCount).fill(0),
+    exactCount: 0,
+    completed: 0
+  };
+}
+
+function getRandomTrialBinIndex(matchRatio, binCount = randomTrialBinCount) {
+  const normalized = Math.max(0, Math.min(1, Number(matchRatio) || 0));
+  return Math.min(binCount - 1, Math.floor(normalized * binCount));
+}
+
+function addRandomTrialSample(distribution, option) {
+  const matchRatio = Math.max(0, Math.min(1, option?.matchRatio ?? 0));
+  distribution.bins[getRandomTrialBinIndex(matchRatio, distribution.bins.length)]++;
+  distribution.completed++;
+  if (isTopGeneratedOptionExact(option)) {
+    distribution.exactCount++;
+  }
+}
+
+function mergeRandomTrialDistribution(target, source) {
+  source.bins.forEach((count, index) => {
+    target.bins[index] = (target.bins[index] || 0) + count;
+  });
+  target.exactCount += source.exactCount || 0;
+  target.completed += source.completed || 0;
+  return target;
+}
+
+function getRandomTrialChartContext() {
+  const canvas = document.getElementById("random-trials-chart");
+  return canvas ? { canvas, context: canvas.getContext("2d") } : null;
+}
+
+function smoothRandomTrialBins(bins) {
+  const sigma = 1.65;
+  const radius = 4;
+  const weights = Array.from({ length: radius * 2 + 1 }, (_, index) => {
+    const distance = index - radius;
+    return Math.exp(-(distance * distance) / (2 * sigma * sigma));
+  });
+
+  return bins.map((_, binIndex) => {
+    let weightedTotal = 0;
+    let weightTotal = 0;
+
+    weights.forEach((weight, weightIndex) => {
+      const sourceIndex = binIndex + weightIndex - radius;
+      if (sourceIndex < 0 || sourceIndex >= bins.length) {
+        return;
+      }
+      weightedTotal += bins[sourceIndex] * weight;
+      weightTotal += weight;
+    });
+
+    return weightTotal ? weightedTotal / weightTotal : 0;
+  });
+}
+
+function drawSmoothPdfPath(context, points) {
+  if (!points.length) {
+    return;
+  }
+
+  for (let index = 0; index < points.length - 1; index++) {
+    const current = points[index];
+    const next = points[index + 1];
+    const previous = points[index - 1] || current;
+    const following = points[index + 2] || next;
+    const controlOne = {
+      x: current.x + (next.x - previous.x) / 6,
+      y: current.y + (next.y - previous.y) / 6
+    };
+    const controlTwo = {
+      x: next.x - (following.x - current.x) / 6,
+      y: next.y - (following.y - current.y) / 6
+    };
+
+    context.bezierCurveTo(controlOne.x, controlOne.y, controlTwo.x, controlTwo.y, next.x, next.y);
+  }
+}
+
+function resizeRandomTrialChartCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(240, Math.round(rect.width || canvas.width || 416));
+  const height = Math.max(120, Math.round(rect.height || canvas.height || 176));
+  const scale = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  const nextWidth = Math.round(width * scale);
+  const nextHeight = Math.round(height * scale);
+
+  if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
+  }
+
+  return { width, height, scale };
+}
+
+function drawRandomTrialDistribution(distribution = lastRandomTrialDistribution, meta = lastRandomTrialMeta) {
+  const chart = getRandomTrialChartContext();
+  if (!chart?.context) {
+    return;
+  }
+
+  const { canvas, context } = chart;
+  const { width, height, scale } = resizeRandomTrialChartCanvas(canvas);
+  const bins = distribution?.bins?.length ? distribution.bins : Array(randomTrialBinCount).fill(0);
+  const completed = distribution?.completed || 0;
+  const exactCount = distribution?.exactCount || 0;
+  const smoothedBins = smoothRandomTrialBins(bins);
+  const maximum = Math.max(1, ...smoothedBins);
+  const padding = { left: 24, right: 12, top: 12, bottom: 24 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const baselineY = padding.top + chartHeight;
+  const points = smoothedBins.map((count, index) => ({
+    x: padding.left + (index / Math.max(1, smoothedBins.length - 1)) * chartWidth,
+    y: baselineY - (count / maximum) * chartHeight
+  }));
+
+  context.setTransform(scale, 0, 0, scale, 0, 0);
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "rgba(255, 255, 255, 0.82)";
+  context.fillRect(0, 0, width, height);
+
+  context.strokeStyle = "rgba(47, 36, 29, 0.12)";
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(padding.left, padding.top);
+  context.lineTo(padding.left, baselineY);
+  context.lineTo(padding.left + chartWidth, baselineY);
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(points[0]?.x || padding.left, baselineY);
+  context.lineTo(points[0]?.x || padding.left, points[0]?.y || baselineY);
+  drawSmoothPdfPath(context, points);
+  context.lineTo(points[points.length - 1]?.x || padding.left + chartWidth, baselineY);
+  context.closePath();
+  const fillGradient = context.createLinearGradient(0, padding.top, 0, baselineY);
+  fillGradient.addColorStop(0, "rgba(170, 74, 43, 0.34)");
+  fillGradient.addColorStop(1, "rgba(195, 132, 63, 0.08)");
+  context.fillStyle = fillGradient;
+  context.fill();
+
+  context.beginPath();
+  context.moveTo(points[0]?.x || padding.left, points[0]?.y || baselineY);
+  drawSmoothPdfPath(context, points);
+  context.strokeStyle = "rgba(170, 74, 43, 0.88)";
+  context.lineWidth = 2.25;
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.stroke();
+
+  context.fillStyle = "rgba(47, 36, 29, 0.56)";
+  context.font = "700 10px sans-serif";
+  context.textAlign = "left";
+  context.textBaseline = "alphabetic";
+  context.fillText("0%", padding.left, height - 6);
+  context.textAlign = "center";
+  context.fillText("50%", padding.left + chartWidth / 2, height - 6);
+  context.textAlign = "right";
+  context.fillText("100%", padding.left + chartWidth, height - 6);
+
+  if (meta?.isRunning) {
+    const trialCount = Math.max(1, meta.trialCount || defaultRandomTrialCount);
+    context.fillStyle = "rgba(170, 74, 43, 0.12)";
+    context.fillRect(padding.left, padding.top, chartWidth * Math.min(1, completed / trialCount), 4);
+  }
+}
+
+function getRandomTrialWorkerFunctionSource() {
+  return [
+    createMatrix,
+    cloneMatrix,
+    countMatrixMismatches,
+    getMatchRatio,
+    getClothlikeReferenceTolerance,
+    countMatrixOnes,
+    computeBlurField,
+    computeBlurMismatch,
+    computeLineMismatch,
+    computeDraftEngineMetrics,
+    compareDraftEngineMetrics,
+    computeDrawdownClothlikeAnalysis,
+    limitColumnRuns,
+    limitRowRuns,
+    repairMatrixFloatStress,
+    patternToKey,
+    countPatternOnes,
+    isZeroPattern,
+    isPatternSubset,
+    intersectPatterns,
+    findPatternCombination,
+    buildOneHotTreadleRepresentation,
+    compressTreadleRepresentation,
+    rebuildDrawdown,
+    getColumnVectors,
+    getRowVectors,
+    hammingDistance,
+    seededRandom,
+    createInitialAssignments,
+    computeTieupStatsFromAssignments,
+    rebalanceAssignments,
+    updateRowAssignments,
+    updateColumnAssignments,
+    trimGroupsToAssignments,
+    buildApproximateDrawdownFromAssignments,
+    chooseAmbiguousTieupValuesForClothlike,
+    mergeDuplicateShafts,
+    mergeDuplicateTreadles,
+    buildDraftFromAssignments,
+    optimizeApproximateDraft,
+    decorateDraftOptionForTarget,
+    generateExactDraftFromDrawdown,
+    buildConstrainedDraftOptions,
+    serializeDraftSignature,
+    getRandomUnitInterval,
+    createRandomThreading,
+    createRandomTieup,
+    countCombinations,
+    getAllowedTreadleSubsetCount,
+    unrankCombination,
+    createRandomTreadleRow,
+    createRandomTreadling,
+    createRandomDraftDrawdownFromCurrentSettings,
+    createRandomCellDrawdownFromCurrentSettings,
+    createTrialTargetDrawdown
+  ].map(fn => fn.toString()).join("\n\n");
+}
+
+function createRandomTrialWorkerSource() {
+  return `
+let warp = 1;
+let picks = 1;
+let maxShafts = 1;
+let maxTreadles = 1;
+let maxPressedTreadles = 1;
+let optimizerEngine = "balanced";
+let floatTolerance = 1;
+let useFloatToleranceInOptimization = false;
+let maxGeneratedOptions = 6;
+let exactRequirements = { shafts: 1, treadles: 1, pressed: 1 };
+
+function getRandomInteger(maximum) {
+  const normalizedMaximum = Math.max(1, Number.parseInt(maximum, 10) || 1);
+  if (self.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    const limit = Math.floor(0x100000000 / normalizedMaximum) * normalizedMaximum;
+    do {
+      self.crypto.getRandomValues(values);
+    } while (values[0] >= limit);
+    return values[0] % normalizedMaximum;
+  }
+  return Math.floor(Math.random() * normalizedMaximum);
+}
+
+${getRandomTrialWorkerFunctionSource()}
+
+function configure(settings) {
+  warp = settings.warp;
+  picks = settings.picks;
+  maxShafts = settings.maxShafts;
+  maxTreadles = settings.maxTreadles;
+  maxPressedTreadles = settings.maxPressedTreadles;
+  optimizerEngine = settings.optimizerEngine;
+  floatTolerance = settings.floatTolerance;
+  useFloatToleranceInOptimization = settings.useFloatToleranceInOptimization;
+  maxGeneratedOptions = settings.maxGeneratedOptions;
+}
+
+function getBinIndex(matchRatio, binCount) {
+  const normalized = Math.max(0, Math.min(1, Number(matchRatio) || 0));
+  return Math.min(binCount - 1, Math.floor(normalized * binCount));
+}
+
+self.onmessage = event => {
+  const { settings, trialCount } = event.data;
+  configure(settings);
+
+  const bins = Array(settings.binCount).fill(0);
+  let exactCount = 0;
+
+  for (let trial = 0; trial < trialCount; trial++) {
+    const trialDrawdown = createTrialTargetDrawdown(settings);
+    const trialOptions = buildConstrainedDraftOptions(trialDrawdown, maxShafts, maxTreadles);
+    const option = trialOptions[0] || null;
+    const matchRatio = Math.max(0, Math.min(1, option?.matchRatio ?? 0));
+    bins[getBinIndex(matchRatio, settings.binCount)]++;
+    if (option && (option.exactMatch || option.mismatchCount === 0)) {
+      exactCount++;
+    }
+  }
+
+  self.postMessage({ bins, exactCount, completed: trialCount });
+};
+`;
+}
+
+function runRandomTrialWorkerBatch(settings, trialCount) {
+  return new Promise((resolve, reject) => {
+    const source = createRandomTrialWorkerSource();
+    const blob = new Blob([source], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+
+    const cleanup = () => {
+      worker.terminate();
+      URL.revokeObjectURL(url);
+    };
+
+    worker.onmessage = event => {
+      cleanup();
+      resolve(event.data);
+    };
+
+    worker.onerror = error => {
+      cleanup();
+      reject(error);
+    };
+
+    worker.postMessage({ settings, trialCount });
+  });
+}
+
+async function runRandomDraftTrialsSequentially(settings, trialCount, onProgress) {
+  const distribution = createEmptyRandomTrialDistribution();
+  const savedExactRequirements = { ...exactRequirements };
+
+  try {
+    for (let trial = 0; trial < trialCount; trial++) {
+      const trialDrawdown = createTrialTargetDrawdown(settings);
+      const trialOptions = buildConstrainedDraftOptions(trialDrawdown, settings.maxShafts, settings.maxTreadles);
+      addRandomTrialSample(distribution, trialOptions[0]);
+
+      if ((trial + 1) % randomTrialBatchSize === 0) {
+        onProgress?.(distribution);
+        await new Promise(resolve => window.setTimeout(resolve, 0));
+      }
+    }
+  } finally {
+    exactRequirements = savedExactRequirements;
+  }
+
+  return distribution;
+}
+
+async function runRandomDraftTrials() {
+  return runRandomEngineTrials({
+    targetKind: "draft",
+    trialInputId: "random-draft-trials-input",
+    runningLabel: "draft-target"
+  });
+}
+
+async function runRandomTargetTrials() {
+  return runRandomEngineTrials({
+    targetKind: "cells",
+    trialInputId: "random-target-trials-input",
+    blackProbability: getRandomTargetProbabilityFromInput(),
+    runningLabel: "cell-target"
+  });
+}
+
+async function runRandomEngineTrials({ targetKind, trialInputId, blackProbability = 0.5, runningLabel }) {
+  syncRandomTestSettingsFromControls();
+
+  const trialCount = getRandomTrialCountFromInput(trialInputId);
+  const disabledElements = [
+    "random-test-button",
+    "random-draft-trials-input",
+    "random-trials-run-button",
+    "random-target-button",
+    "random-target-trials-input",
+    "random-target-p-input",
+    "random-target-run-button"
+  ].map(id => document.getElementById(id)).filter(Boolean);
+  const result = document.getElementById("random-trials-result");
+  const settings = getRandomTrialSettings(targetKind, blackProbability);
+  const savedExactRequirements = { ...exactRequirements };
+  const distribution = createEmptyRandomTrialDistribution();
+
+  disabledElements.forEach(element => {
+    element.disabled = true;
+  });
+  result.textContent = `Running ${trialCount} ${runningLabel} trials...`;
+  lastRandomTrialDistribution = distribution;
+  lastRandomTrialMeta = { isRunning: true, trialCount };
+  drawRandomTrialDistribution(distribution, lastRandomTrialMeta);
+
+  try {
+    if (window.Worker) {
+      const workerCount = Math.max(1, Math.min(trialCount, navigator.hardwareConcurrency || 4, 8));
+      const baseTrialCount = Math.floor(trialCount / workerCount);
+      const remainder = trialCount % workerCount;
+      const workerRuns = Array.from({ length: workerCount }, (_, index) =>
+        runRandomTrialWorkerBatch(settings, baseTrialCount + (index < remainder ? 1 : 0))
+      );
+
+      const batchResults = await Promise.all(workerRuns);
+      batchResults.forEach(batch => mergeRandomTrialDistribution(distribution, batch));
+    } else {
+      await runRandomDraftTrialsSequentially(settings, trialCount, progress => {
+        lastRandomTrialDistribution = { ...progress, bins: progress.bins.slice() };
+        drawRandomTrialDistribution(lastRandomTrialDistribution, lastRandomTrialMeta);
+        result.textContent = `${progress.completed}/${trialCount} trials`;
+      }).then(batch => mergeRandomTrialDistribution(distribution, batch));
+    }
+
+    lastRandomTrialDistribution = distribution;
+    lastRandomTrialMeta = { isRunning: false };
+    drawRandomTrialDistribution(distribution, lastRandomTrialMeta);
+    result.textContent = `${distribution.exactCount} exact / ${distribution.completed} ${runningLabel} trials`;
+  } catch (error) {
+    console.error(error);
+    result.textContent = "Trial error";
+    lastRandomTrialMeta = { isRunning: false };
+    drawRandomTrialDistribution(lastRandomTrialDistribution, lastRandomTrialMeta);
+  } finally {
+    exactRequirements = savedExactRequirements;
+    disabledElements.forEach(element => {
+      element.disabled = false;
+    });
+  }
 }
 
 function serializeDraftSignature({ threading, tieup, treadling }) {
@@ -4482,6 +5429,11 @@ document.getElementById("inverse-print-modal").addEventListener("hidden.bs.modal
   runInversePrintWithOptions(options);
 });
 document.getElementById("invert-button").addEventListener("click", invertTargetDrawdown);
+document.getElementById("random-test-button").addEventListener("click", createRandomDraftTarget);
+document.getElementById("random-target-button").addEventListener("click", createRandomCellTarget);
+document.getElementById("random-trials-run-button").addEventListener("click", runRandomDraftTrials);
+document.getElementById("random-target-run-button").addEventListener("click", runRandomTargetTrials);
+document.getElementById("engine-test-collapse").addEventListener("click", toggleEngineTestDock);
 document.getElementById("clear-button").addEventListener("click", () => {
   clearTargetDrawdown();
 });
@@ -4539,13 +5491,44 @@ document.getElementById("inverse-draft-name").addEventListener("change", event =
   saveAutosave();
 });
 
-["warp-input", "picks-input", "max-shafts-input", "max-treadles-input", "max-pressed-treadles-input", "float-tolerance-input"].forEach(id => {
+["warp-input", "picks-input", "max-shafts-input", "max-treadles-input", "max-pressed-treadles-input", "float-tolerance-input", "random-draft-trials-input", "random-target-trials-input"].forEach(id => {
   document.getElementById(id).addEventListener("keydown", event => {
     if (["-", "+", ".", ",", "e", "E"].includes(event.key)) {
       event.preventDefault();
     }
   });
 });
+
+document.getElementById("random-draft-trials-input").addEventListener("change", () => getRandomTrialCountFromInput("random-draft-trials-input"));
+document.getElementById("random-draft-trials-input").addEventListener("blur", () => getRandomTrialCountFromInput("random-draft-trials-input"));
+document.getElementById("random-draft-trials-input").addEventListener("keydown", event => {
+  if (event.key !== "Enter") {
+    return;
+  }
+  event.preventDefault();
+  runRandomDraftTrials();
+});
+document.getElementById("random-target-trials-input").addEventListener("change", () => getRandomTrialCountFromInput("random-target-trials-input"));
+document.getElementById("random-target-trials-input").addEventListener("blur", () => getRandomTrialCountFromInput("random-target-trials-input"));
+document.getElementById("random-target-trials-input").addEventListener("keydown", event => {
+  if (event.key !== "Enter") {
+    return;
+  }
+  event.preventDefault();
+  runRandomTargetTrials();
+});
+document.getElementById("random-target-p-input").addEventListener("keydown", event => {
+  if (["-", "+", ",", "e", "E"].includes(event.key)) {
+    event.preventDefault();
+  }
+  if (event.key !== "Enter") {
+    return;
+  }
+  event.preventDefault();
+  runRandomTargetTrials();
+});
+document.getElementById("random-target-p-input").addEventListener("change", getRandomTargetProbabilityFromInput);
+document.getElementById("random-target-p-input").addEventListener("blur", getRandomTargetProbabilityFromInput);
 
 document.getElementById("warp-input").addEventListener("change", () => resizeFromControls("warp"));
 document.getElementById("picks-input").addEventListener("change", () => resizeFromControls("picks"));
@@ -4562,6 +5545,7 @@ window.addEventListener("pointerup", stopPainting);
 window.addEventListener("pointercancel", stopPainting);
 window.addEventListener("beforeunload", saveAutosave);
 window.addEventListener("resize", scheduleFlowOverlayRender);
+window.addEventListener("resize", () => drawRandomTrialDistribution());
 window.addEventListener("keydown", event => {
   const modifier = event.metaKey || event.ctrlKey;
   if (!modifier) {
@@ -4634,6 +5618,7 @@ if (loadedFromTransfer) {
   updateHistoryButtons();
   saveAutosave();
 }
+drawRandomTrialDistribution();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

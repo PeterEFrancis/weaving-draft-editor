@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image Inverter</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-cream: #f7f1e3;
+    --bg-warm: #ead8bf;
+    --ink: #2f241d;
+    --accent: #aa4a2b;
+    --accent-dark: #7a321c;
+    --line: rgb(223, 214, 201);
+    --panel-bg: rgb(252, 248, 240);
+    --flow-amber: rgba(195, 132, 63, 0.84);
+    --flow-orange: rgba(170, 74, 43, 0.82);
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+      radial-gradient(circle at right 20%, rgba(84, 115, 76, 0.12), transparent 28%),
+      linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 46%, var(--bg-warm) 100%);
+  }
+
+  .page-shell {
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-inline: clamp(1rem, 2vw, 2rem);
+    padding-block: clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  .workspace {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.08);
+    background-clip: padding-box;
+  }
+
+  .workspace-toolbar {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .workspace-toolbar-action-row,
+  .workspace-toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .workspace-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+    padding: 0.4rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.1rem;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .workspace-toolbar-panel {
+    padding: 0.8rem 0.9rem;
+    background: rgba(255, 255, 255, 0.26);
+  }
+
+  .toolbar-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.65rem;
+    height: 2.65rem;
+    padding: 0.62rem 0.88rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 0.9rem;
+  }
+
+  .toolbar-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-action-icon svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .btn-soft,
+  .btn-drafter {
+    min-height: 2.65rem;
+    padding: 0.62rem 0.9rem;
+    border-radius: 0.9rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .btn-soft {
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--ink);
+  }
+
+  .btn-soft:hover,
+  .btn-soft:focus {
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--ink);
+  }
+
+  .btn-drafter {
+    border: 0;
+    background: linear-gradient(135deg, var(--accent), #c87137);
+    color: #fff;
+    box-shadow: none;
+  }
+
+  .btn-drafter:hover,
+  .btn-drafter:focus {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+    color: #fff;
+  }
+
+  .btn-drafter:disabled,
+  .btn-soft:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+  }
+
+  .toolbar-field {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .control-label {
+    color: rgba(122, 50, 28, 0.82);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .toolbar-field .form-control,
+  .toolbar-field .form-select {
+    width: 7rem;
+    min-height: 2.35rem;
+    border-radius: 0.85rem;
+    border-color: rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .toolbar-field-wide .form-select {
+    width: 10.5rem;
+  }
+
+  .toolbar-field .form-control:focus,
+  .toolbar-field .form-select:focus {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .toolbar-field .form-control[readonly] {
+    background: rgba(255, 255, 255, 0.54);
+    color: rgba(47, 36, 29, 0.62);
+    cursor: default;
+  }
+
+  .toggle-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.35rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .toggle-button.active {
+    border-color: rgba(170, 74, 43, 0.34);
+    background: rgba(255, 243, 235, 0.95);
+    color: var(--accent-dark);
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: minmax(16rem, 0.95fr) minmax(11rem, 12rem) minmax(20rem, 1.45fr);
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .work-panel {
+    padding: 1rem 1.1rem 1.1rem;
+  }
+
+  .work-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .work-panel-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .work-panel-header p {
+    margin: 0.25rem 0 0;
+    color: rgba(47, 36, 29, 0.64);
+  }
+
+  .target-header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .target-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.35rem;
+    padding: 0.18rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+  }
+
+  .target-view-option {
+    min-height: 1.95rem;
+    padding: 0.35rem 0.7rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: transparent;
+    color: rgba(47, 36, 29, 0.62);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .target-view-option.active {
+    background: rgba(255, 243, 235, 0.95);
+    color: var(--accent-dark);
+    box-shadow: inset 0 0 0 1px rgba(170, 74, 43, 0.28);
+  }
+
+  .target-view-option:disabled {
+    opacity: 0.48;
+  }
+
+  .target-zoom-controls {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.35rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+  }
+
+  .target-zoom-button {
+    width: 2.2rem;
+    min-height: 2.35rem;
+    border: 0;
+    background: transparent;
+    color: rgba(47, 36, 29, 0.72);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .target-zoom-button:hover,
+  .target-zoom-button:focus {
+    background: rgba(170, 74, 43, 0.08);
+    color: var(--accent-dark);
+  }
+
+  .target-zoom-value {
+    min-width: 3.35rem;
+    color: rgba(47, 36, 29, 0.64);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .panel-scroll {
+    overflow: auto;
+  }
+
+  .canvas-frame {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 10rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(47, 36, 29, 0.1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.72);
+    overflow: auto;
+  }
+
+  .preview-canvas,
+  .draft-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #fff;
+  }
+
+  #target-canvas-frame {
+    display: block;
+    text-align: center;
+  }
+
+  #target-canvas {
+    flex: 0 0 auto;
+    margin-inline: auto;
+    max-width: none;
+  }
+
+  .upload-drop {
+    display: grid;
+    place-items: center;
+    min-height: 13rem;
+    padding: 1.2rem;
+    border: 2px dashed rgba(170, 74, 43, 0.28);
+    border-radius: 1rem;
+    background:
+      linear-gradient(135deg, rgba(170, 74, 43, 0.08), rgba(255, 255, 255, 0.72)),
+      repeating-linear-gradient(45deg, rgba(47, 36, 29, 0.035) 0 8px, transparent 8px 16px);
+    color: rgba(47, 36, 29, 0.68);
+    text-align: center;
+  }
+
+  .upload-drop strong {
+    display: block;
+    color: var(--accent-dark);
+  }
+
+  .palette-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+  }
+
+  .palette-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(47, 36, 29, 0.7);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .palette-swatch {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid rgba(47, 36, 29, 0.25);
+    border-radius: 999px;
+    flex: 0 0 auto;
+  }
+
+  .option-panel {
+    padding: 0.85rem;
+  }
+
+  .option-list {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .option-button {
+    display: grid;
+    gap: 0.22rem;
+    width: 100%;
+    padding: 0.65rem 0.7rem;
+    border: 2px solid rgba(195, 132, 63, 0.76);
+    border-radius: 0.9rem;
+    background: rgba(255, 249, 241, 0.9);
+    color: rgba(122, 50, 28, 0.9);
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .option-button.active {
+    border-color: rgba(170, 74, 43, 0.84);
+    background: rgba(255, 242, 233, 0.98);
+    color: var(--accent-dark);
+  }
+
+  .option-button-muted {
+    color: rgba(122, 50, 28, 0.54);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .generated-stack {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .generated-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.9rem;
+    margin-top: 0.75rem;
+  }
+
+  .status-line {
+    color: rgba(47, 36, 29, 0.68);
+    font-size: 0.88rem;
+    line-height: 1.25;
+  }
+
+  .status-line-strong {
+    color: rgba(47, 36, 29, 0.84);
+    font-weight: 600;
+  }
+
+  .empty-copy {
+    color: rgba(47, 36, 29, 0.58);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 1150px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .option-list {
+      grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    }
+  }
+</style>
+</head>
+
+<body>
+<main class="container-fluid page-shell">
+  <div class="workspace">
+    <section class="workspace-toolbar">
+      <div class="workspace-toolbar-action-row">
+        <div class="workspace-toolbar-actions">
+          <a class="btn btn-soft toolbar-action" href="index.html">
+            <span class="toolbar-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m3 11 9-8 9 8"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M10 20v-6h4v6"></path>
+              </svg>
+            </span>
+            Home
+          </a>
+        </div>
+
+        <div class="workspace-toolbar-actions">
+          <button type="button" class="btn btn-soft toolbar-action" id="open-image-button">
+            <span class="toolbar-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 17V7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path>
+                <path d="m8 14 2.2-2.2a1 1 0 0 1 1.4 0L14 14l1-1a1 1 0 0 1 1.4 0L19 15.6"></path>
+              </svg>
+            </span>
+            Open Image
+          </button>
+          <button type="button" class="btn btn-drafter toolbar-action" id="generate-button" disabled>
+            Generate
+          </button>
+          <button type="button" class="btn btn-soft toolbar-action" id="to-drafter-button" disabled>
+            <span class="toolbar-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17 17 7"></path>
+                <path d="M8 7h9v9"></path>
+              </svg>
+            </span>
+            To Drafter
+          </button>
+          <button type="button" class="btn btn-soft toolbar-action" id="reset-button">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="panel workspace-toolbar-panel">
+        <div class="workspace-toolbar-row">
+          <div class="toolbar-field">
+            <label class="control-label" for="warp-input">Warp Threads</label>
+            <input class="form-control" id="warp-input" type="number" min="4" step="1" value="32">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="picks-input">Weft Threads</label>
+            <input class="form-control" id="picks-input" type="number" min="4" step="1" value="32" readonly title="Calculated from the image aspect ratio">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="colors-input">Colors</label>
+            <input class="form-control" id="colors-input" type="number" min="2" step="1" value="4">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="shafts-input">Max Shafts</label>
+            <input class="form-control" id="shafts-input" type="number" min="2" max="24" step="1" value="8">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="treadles-input">Max Treadles</label>
+            <input class="form-control" id="treadles-input" type="number" min="2" max="24" step="1" value="10">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="pressed-input">Max Pressed</label>
+            <input class="form-control" id="pressed-input" type="number" min="1" max="4" step="1" value="2">
+          </div>
+          <div class="toolbar-field">
+            <label class="control-label" for="float-input">Float Tolerance</label>
+            <input class="form-control" id="float-input" type="number" min="1" max="160" step="1" value="7">
+          </div>
+          <div class="toolbar-field toolbar-field-wide">
+            <label class="control-label" for="engine-select">Engine</label>
+            <select class="form-select" id="engine-select">
+              <option value="color">Color match</option>
+              <option value="float">Float aware</option>
+              <option value="warp">Warp detail</option>
+              <option value="weft">Weft detail</option>
+            </select>
+          </div>
+          <div class="toolbar-field">
+            <span class="control-label">Tolerance</span>
+            <button type="button" class="toggle-button active" id="use-tolerance-button" aria-pressed="true">Use Float Tolerance</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <section class="panel work-panel" id="target-panel">
+        <div class="work-panel-header">
+          <div>
+            <h2>Target Image</h2>
+          <p>The circles image loads by default; upload an image to replace it.</p>
+          </div>
+          <div class="target-header-controls">
+            <div class="target-view-toggle" role="group" aria-label="Target image preview">
+              <button type="button" class="target-view-option" data-target-view="original" aria-pressed="false">Original</button>
+              <button type="button" class="target-view-option active" data-target-view="compressed" aria-pressed="true">Compressed</button>
+            </div>
+            <div class="target-zoom-controls" aria-label="Target image zoom controls">
+              <button type="button" class="target-zoom-button" id="target-zoom-out" aria-label="Zoom target image out">-</button>
+              <span class="target-zoom-value" id="target-zoom-value">100%</span>
+              <button type="button" class="target-zoom-button" id="target-zoom-in" aria-label="Zoom target image in">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="upload-drop" id="upload-drop">
+          <div>
+            <strong>Drop an image here</strong>
+            <span>or use Open Image to choose a file.</span>
+          </div>
+        </div>
+        <div class="canvas-frame mt-3 d-none" id="target-canvas-frame">
+          <canvas class="preview-canvas" id="target-canvas"></canvas>
+        </div>
+        <div class="palette-row" id="palette-row"></div>
+      </section>
+
+      <aside class="panel option-panel">
+        <div class="work-panel-header">
+          <div>
+            <h2>Options</h2>
+            <p>Ranked weave approximations.</p>
+          </div>
+        </div>
+        <div class="option-list" id="option-list">
+          <p class="empty-copy mb-0">Upload an image to generate options.</p>
+        </div>
+      </aside>
+
+      <section class="panel work-panel" id="generated-panel">
+        <div class="work-panel-header">
+          <div>
+            <h2>Generated Weave</h2>
+            <p>Preview the color approximation and the draft structure behind it.</p>
+          </div>
+        </div>
+        <div class="generated-stack">
+          <div class="canvas-frame">
+            <canvas class="draft-canvas" id="generated-draft-canvas"></canvas>
+          </div>
+        </div>
+        <div class="generated-meta" id="generated-meta">
+          <div class="status-line">No generated draft yet.</div>
+        </div>
+      </section>
+    </section>
+  </div>
+</main>
+
+<input id="image-file-input" type="file" accept="image/*" hidden>
+
+<script>
+const crossEditorTransferStoragePrefix = "weaving-cross-editor-transfer.v1.";
+const crossEditorTransferQueryParam = "transfer";
+const defaultImageName = "Circles In Circle";
+const defaultImageUrl = "assets/default-circles.png";
+const defaultImageSize = 32;
+
+const elements = {
+  fileInput: document.getElementById("image-file-input"),
+  openImageButton: document.getElementById("open-image-button"),
+  generateButton: document.getElementById("generate-button"),
+  toDrafterButton: document.getElementById("to-drafter-button"),
+  resetButton: document.getElementById("reset-button"),
+  uploadDrop: document.getElementById("upload-drop"),
+  targetViewButtons: [...document.querySelectorAll("[data-target-view]")],
+  targetZoomOut: document.getElementById("target-zoom-out"),
+  targetZoomIn: document.getElementById("target-zoom-in"),
+  targetZoomValue: document.getElementById("target-zoom-value"),
+  targetCanvasFrame: document.getElementById("target-canvas-frame"),
+  targetCanvas: document.getElementById("target-canvas"),
+  generatedDraftCanvas: document.getElementById("generated-draft-canvas"),
+  paletteRow: document.getElementById("palette-row"),
+  optionList: document.getElementById("option-list"),
+  generatedMeta: document.getElementById("generated-meta"),
+  useToleranceButton: document.getElementById("use-tolerance-button"),
+  controls: {
+    warp: document.getElementById("warp-input"),
+    picks: document.getElementById("picks-input"),
+    colors: document.getElementById("colors-input"),
+    shafts: document.getElementById("shafts-input"),
+    treadles: document.getElementById("treadles-input"),
+    pressed: document.getElementById("pressed-input"),
+    floatTolerance: document.getElementById("float-input"),
+    engine: document.getElementById("engine-select")
+  }
+};
+
+let loadedImage = null;
+let sourceName = "Image Weave";
+let target = null;
+let generatedOptions = [];
+let selectedOptionIndex = 0;
+let useFloatTolerance = true;
+let targetViewMode = "compressed";
+let targetZoom = 1;
+
+function clampInteger(value, minimum, maximum, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+  const boundedValue = Math.max(minimum, parsed);
+  return Number.isFinite(maximum) ? Math.min(maximum, boundedValue) : boundedValue;
+}
+
+function calculateWeftThreads(warp) {
+  const sourceWidth = loadedImage?.naturalWidth || loadedImage?.width || defaultImageSize;
+  const sourceHeight = loadedImage?.naturalHeight || loadedImage?.height || defaultImageSize;
+  const aspectPicks = Math.round(warp * sourceHeight / Math.max(1, sourceWidth));
+  return Math.max(4, aspectPicks);
+}
+
+function getSettings() {
+  const warp = clampInteger(elements.controls.warp.value, 4, Infinity, defaultImageSize);
+  const picks = calculateWeftThreads(warp);
+  const colors = clampInteger(elements.controls.colors.value, 2, Infinity, 4);
+  const shafts = clampInteger(elements.controls.shafts.value, 2, Math.min(24, warp), 8);
+  const treadles = clampInteger(elements.controls.treadles.value, 2, 24, 10);
+  const pressed = clampInteger(elements.controls.pressed.value, 1, 4, 2);
+  const floatTolerance = clampInteger(elements.controls.floatTolerance.value, 1, Math.max(warp, picks), 7);
+
+  elements.controls.warp.value = warp;
+  elements.controls.picks.value = picks;
+  elements.controls.colors.value = colors;
+  elements.controls.shafts.value = shafts;
+  elements.controls.treadles.value = treadles;
+  elements.controls.pressed.value = pressed;
+  elements.controls.floatTolerance.max = Math.max(warp, picks);
+  elements.controls.floatTolerance.value = floatTolerance;
+
+  return {
+    warp,
+    picks,
+    colors,
+    shafts,
+    treadles,
+    pressed,
+    floatTolerance,
+    engine: elements.controls.engine.value,
+    useFloatTolerance
+  };
+}
+
+function normalizeColorComponent(value) {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function rgbToHex(color) {
+  return `#${[color.r, color.g, color.b].map(value => normalizeColorComponent(value).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function rgbToCss(color) {
+  return `rgb(${normalizeColorComponent(color.r)} ${normalizeColorComponent(color.g)} ${normalizeColorComponent(color.b)})`;
+}
+
+function createDefaultImageDataUrl() {
+  const canvas = document.createElement("canvas");
+  canvas.width = defaultImageSize;
+  canvas.height = defaultImageSize;
+  const ctx = canvas.getContext("2d");
+  const warpColors = ["#2f241d", "#d4d4d4"];
+  const weftColors = ["#c95b3b", "#d8aa35"];
+
+  ctx.imageSmoothingEnabled = false;
+
+  for (let row = 0; row < defaultImageSize; row++) {
+    for (let column = 0; column < defaultImageSize; column++) {
+      const warpColor = warpColors[Math.floor(column / 4) % warpColors.length];
+      const weftColor = weftColors[Math.floor(row / 4) % weftColors.length];
+      const warpIsVisible = (row + column) % 4 < 2;
+      ctx.fillStyle = warpIsVisible ? warpColor : weftColor;
+      ctx.fillRect(column, row, 1, 1);
+    }
+  }
+
+  return canvas.toDataURL("image/png");
+}
+
+function hexToRgb(hex) {
+  const value = /^#[0-9a-f]{6}$/i.test(hex) ? hex : "#000000";
+  return {
+    r: Number.parseInt(value.slice(1, 3), 16),
+    g: Number.parseInt(value.slice(3, 5), 16),
+    b: Number.parseInt(value.slice(5, 7), 16)
+  };
+}
+
+function colorDistanceSquared(a, b) {
+  const dr = a.r - b.r;
+  const dg = a.g - b.g;
+  const db = a.b - b.b;
+  return dr * dr + dg * dg + db * db;
+}
+
+function luminance(color) {
+  return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+}
+
+function sampleImageToPixels(image, warp, picks) {
+  const canvas = document.createElement("canvas");
+  canvas.width = warp;
+  canvas.height = picks;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.imageSmoothingEnabled = true;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, warp, picks);
+  ctx.drawImage(image, 0, 0, warp, picks);
+  const data = ctx.getImageData(0, 0, warp, picks).data;
+  const pixels = [];
+
+  for (let index = 0; index < data.length; index += 4) {
+    const alpha = data[index + 3] / 255;
+    pixels.push({
+      r: data[index] * alpha + 255 * (1 - alpha),
+      g: data[index + 1] * alpha + 255 * (1 - alpha),
+      b: data[index + 2] * alpha + 255 * (1 - alpha)
+    });
+  }
+
+  return pixels;
+}
+
+function quantizePixels(pixels, requestedColors) {
+  const k = Math.max(2, Math.min(requestedColors, pixels.length));
+  const sorted = pixels.slice().sort((a, b) => luminance(a) - luminance(b));
+  let centers = Array.from({ length: k }, (_, index) => {
+    const source = sorted[Math.min(sorted.length - 1, Math.floor((index + 0.5) * sorted.length / k))];
+    return { ...source };
+  });
+  let assignments = new Array(pixels.length).fill(0);
+
+  for (let iteration = 0; iteration < 14; iteration++) {
+    const sums = Array.from({ length: k }, () => ({ r: 0, g: 0, b: 0, count: 0 }));
+
+    pixels.forEach((pixel, pixelIndex) => {
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+
+      centers.forEach((center, centerIndex) => {
+        const distance = colorDistanceSquared(pixel, center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = centerIndex;
+        }
+      });
+
+      assignments[pixelIndex] = bestIndex;
+      sums[bestIndex].r += pixel.r;
+      sums[bestIndex].g += pixel.g;
+      sums[bestIndex].b += pixel.b;
+      sums[bestIndex].count += 1;
+    });
+
+    centers = centers.map((center, index) => {
+      const sum = sums[index];
+      if (!sum.count) {
+        return center;
+      }
+      return {
+        r: sum.r / sum.count,
+        g: sum.g / sum.count,
+        b: sum.b / sum.count
+      };
+    });
+  }
+
+  return {
+    palette: centers.map(rgbToHex),
+    paletteRgb: centers.map(center => ({
+      r: normalizeColorComponent(center.r),
+      g: normalizeColorComponent(center.g),
+      b: normalizeColorComponent(center.b)
+    })),
+    assignments
+  };
+}
+
+function rebuildTarget() {
+  if (!loadedImage) {
+    return null;
+  }
+
+  const settings = getSettings();
+  const pixels = sampleImageToPixels(loadedImage, settings.warp, settings.picks);
+  const quantized = quantizePixels(pixels, settings.colors);
+  const grid = Array.from({ length: settings.picks }, (_, row) =>
+    Array.from({ length: settings.warp }, (_, column) => quantized.assignments[row * settings.warp + column])
+  );
+
+  target = {
+    warp: settings.warp,
+    picks: settings.picks,
+    pixels,
+    palette: quantized.palette,
+    paletteRgb: quantized.paletteRgb,
+    grid
+  };
+
+  return target;
+}
+
+function countByPalette(values, paletteLength) {
+  const counts = Array.from({ length: paletteLength }, () => 0);
+  values.forEach(value => {
+    counts[value] = (counts[value] || 0) + 1;
+  });
+  return counts;
+}
+
+function dominantIndex(values, paletteLength, avoidIndex = -1) {
+  const counts = countByPalette(values, paletteLength);
+  let bestIndex = 0;
+  let bestCount = -1;
+
+  counts.forEach((count, index) => {
+    const adjusted = index === avoidIndex ? count - 0.35 : count;
+    if (adjusted > bestCount) {
+      bestCount = adjusted;
+      bestIndex = index;
+    }
+  });
+
+  return bestIndex;
+}
+
+function chooseColorPlans(targetData, mode) {
+  const paletteLength = targetData.palette.length;
+  const allValues = targetData.grid.flat();
+  const globalDominant = dominantIndex(allValues, paletteLength);
+  const globalCounts = countByPalette(allValues, paletteLength);
+  const globalOrder = globalCounts
+    .map((count, index) => ({ count, index }))
+    .sort((a, b) => b.count - a.count)
+    .map(entry => entry.index);
+  const secondaryGlobal = globalOrder.find(index => index !== globalDominant) ?? globalDominant;
+  const columnDominants = Array.from({ length: targetData.warp }, (_, column) =>
+    dominantIndex(targetData.grid.map(row => row[column]), paletteLength)
+  );
+  const rowDominants = targetData.grid.map(row => dominantIndex(row, paletteLength));
+
+  if (mode === "warp-detail") {
+    return {
+      warpColors: columnDominants,
+      weftColors: targetData.grid.map(row => dominantIndex(row, paletteLength, dominantIndex(row, paletteLength)))
+    };
+  }
+
+  if (mode === "weft-detail") {
+    return {
+      warpColors: columnDominants.map(() => secondaryGlobal),
+      weftColors: rowDominants
+    };
+  }
+
+  if (mode === "high-contrast") {
+    const darkest = targetData.paletteRgb
+      .map((color, index) => ({ index, light: luminance(color) }))
+      .sort((a, b) => a.light - b.light)[0]?.index ?? globalDominant;
+    const lightest = targetData.paletteRgb
+      .map((color, index) => ({ index, light: luminance(color) }))
+      .sort((a, b) => b.light - a.light)[0]?.index ?? secondaryGlobal;
+    return {
+      warpColors: columnDominants.map((value, column) => column % 2 ? value : darkest),
+      weftColors: rowDominants.map((value, row) => row % 2 ? value : lightest)
+    };
+  }
+
+  return {
+    warpColors: columnDominants,
+    weftColors: rowDominants
+  };
+}
+
+function buildNearestStructure(targetData, warpColors, weftColors) {
+  return Array.from({ length: targetData.picks }, (_, row) =>
+    Array.from({ length: targetData.warp }, (_, column) => {
+      const targetColor = targetData.paletteRgb[targetData.grid[row][column]];
+      const warpColor = targetData.paletteRgb[warpColors[column]];
+      const weftColor = targetData.paletteRgb[weftColors[row]];
+      return colorDistanceSquared(targetColor, warpColor) <= colorDistanceSquared(targetColor, weftColor) ? 1 : 0;
+    })
+  );
+}
+
+function repairRunsInLine(values, tolerance) {
+  if (tolerance < 1) {
+    return values;
+  }
+
+  const repaired = values.slice();
+  let start = 0;
+
+  while (start < repaired.length) {
+    let end = start + 1;
+    while (end < repaired.length && repaired[end] === repaired[start]) {
+      end += 1;
+    }
+
+    const runLength = end - start;
+    if (runLength > tolerance) {
+      for (let index = start + tolerance; index < end; index += tolerance + 1) {
+        repaired[index] = repaired[index] ? 0 : 1;
+      }
+    }
+
+    start = end;
+  }
+
+  return repaired;
+}
+
+function repairFloatStress(matrix, tolerance) {
+  let repaired = matrix.map(row => repairRunsInLine(row, tolerance));
+  const picks = repaired.length;
+  const warp = repaired[0]?.length || 0;
+
+  for (let column = 0; column < warp; column++) {
+    const columnValues = repaired.map(row => row[column]);
+    const repairedColumn = repairRunsInLine(columnValues, tolerance);
+    for (let row = 0; row < picks; row++) {
+      repaired[row][column] = repairedColumn[row];
+    }
+  }
+
+  return repaired;
+}
+
+function hammingDistance(a, b) {
+  let distance = 0;
+  for (let index = 0; index < a.length; index++) {
+    if (a[index] !== b[index]) {
+      distance += 1;
+    }
+  }
+  return distance;
+}
+
+function patternKey(pattern) {
+  return pattern.join("");
+}
+
+function countPatternOnes(pattern) {
+  return pattern.reduce((total, value) => total + (value ? 1 : 0), 0);
+}
+
+function isZeroPattern(pattern) {
+  return !pattern.some(Boolean);
+}
+
+function isPatternSubset(subsetPattern, targetPattern) {
+  for (let index = 0; index < subsetPattern.length; index++) {
+    if (subsetPattern[index] && !targetPattern[index]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function intersectPatterns(left, right) {
+  return left.map((value, index) => value && right[index] ? 1 : 0);
+}
+
+function clusterBinaryPatterns(patterns, maxClusters) {
+  const patternLength = patterns[0]?.length || 0;
+  const counts = new Map();
+
+  patterns.forEach(pattern => {
+    const key = patternKey(pattern);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  const desiredClusterCount = Math.max(1, Math.min(maxClusters, counts.size || patterns.length || 1));
+  const centers = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, desiredClusterCount)
+    .map(([key]) => key.split("").map(value => Number(value)));
+
+  if (!centers.length) {
+    centers.push(Array(patternLength).fill(0));
+  }
+
+  let assignments = new Array(patterns.length).fill(0);
+
+  for (let iteration = 0; iteration < 8; iteration++) {
+    const groups = centers.map(() => []);
+
+    patterns.forEach((pattern, patternIndex) => {
+      let bestIndex = 0;
+      let bestDistance = Infinity;
+
+      centers.forEach((center, centerIndex) => {
+        const distance = hammingDistance(pattern, center);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = centerIndex;
+        }
+      });
+
+      assignments[patternIndex] = bestIndex;
+      groups[bestIndex].push(pattern);
+    });
+
+    groups.forEach((group, groupIndex) => {
+      if (!group.length) {
+        return;
+      }
+
+      centers[groupIndex] = Array.from({ length: patternLength }, (_, bitIndex) => {
+        const ones = group.reduce((total, pattern) => total + pattern[bitIndex], 0);
+        return ones * 2 >= group.length ? 1 : 0;
+      });
+    });
+  }
+
+  const compactIndexByKey = new Map();
+  const compactCenters = [];
+  const compactAssignments = assignments.map(assignment => {
+    const key = patternKey(centers[assignment] || Array(patternLength).fill(0));
+    if (!compactIndexByKey.has(key)) {
+      compactIndexByKey.set(key, compactCenters.length);
+      compactCenters.push((centers[assignment] || Array(patternLength).fill(0)).slice());
+    }
+    return compactIndexByKey.get(key);
+  });
+
+  return {
+    centers: compactCenters.length ? compactCenters : [Array(patternLength).fill(0)],
+    assignments: compactAssignments
+  };
+}
+
+function generateTreadleCombos(treadleCount, maxPressed) {
+  const limit = Math.max(1, Math.min(maxPressed, treadleCount, 4));
+  const combos = [[]];
+
+  function visit(start, combo, depthLimit) {
+    if (combo.length === depthLimit) {
+      combos.push(combo.slice());
+      return;
+    }
+
+    for (let index = start; index < treadleCount; index++) {
+      combo.push(index);
+      visit(index + 1, combo, depthLimit);
+      combo.pop();
+      if (combos.length > 2500) {
+        return;
+      }
+    }
+  }
+
+  for (let depth = 1; depth <= limit; depth++) {
+    visit(0, [], depth);
+    if (combos.length > 2500) {
+      break;
+    }
+  }
+
+  return combos;
+}
+
+function unionTieupPatterns(tieup, combo) {
+  const shafts = tieup[0]?.length || 0;
+  return Array.from({ length: shafts }, (_, shaft) =>
+    combo.some(treadle => tieup[treadle]?.[shaft]) ? 1 : 0
+  );
+}
+
+function getUniquePatternEntries(patterns) {
+  const entries = [];
+  const indexByKey = new Map();
+
+  patterns.forEach(pattern => {
+    const key = patternKey(pattern);
+    if (!indexByKey.has(key)) {
+      indexByKey.set(key, entries.length);
+      entries.push({ pattern: pattern.slice(), count: 0, key });
+    }
+    entries[indexByKey.get(key)].count += 1;
+  });
+
+  return entries;
+}
+
+function buildTreadleBasisCandidates(rowPatterns, maxPressed) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const uniqueEntries = getUniquePatternEntries(rowPatterns);
+  const candidatesByKey = new Map();
+
+  function addCandidate(pattern) {
+    if (isZeroPattern(pattern)) {
+      return;
+    }
+    const key = patternKey(pattern);
+    if (!candidatesByKey.has(key)) {
+      candidatesByKey.set(key, pattern.slice());
+    }
+  }
+
+  uniqueEntries.forEach(entry => addCandidate(entry.pattern));
+
+  for (let shaft = 0; shaft < patternLength; shaft++) {
+    if (!uniqueEntries.some(entry => entry.pattern[shaft])) {
+      continue;
+    }
+    const singleton = Array(patternLength).fill(0);
+    singleton[shaft] = 1;
+    addCandidate(singleton);
+  }
+
+  if (maxPressed > 1 && uniqueEntries.length <= 72) {
+    for (let leftIndex = 0; leftIndex < uniqueEntries.length; leftIndex++) {
+      for (let rightIndex = leftIndex + 1; rightIndex < uniqueEntries.length; rightIndex++) {
+        addCandidate(intersectPatterns(uniqueEntries[leftIndex].pattern, uniqueEntries[rightIndex].pattern));
+      }
+    }
+  }
+
+  return Array.from(candidatesByKey.values()).sort((left, right) => {
+    const leftScore = scoreTreadleCandidate(left, uniqueEntries);
+    const rightScore = scoreTreadleCandidate(right, uniqueEntries);
+    return rightScore - leftScore || countPatternOnes(right) - countPatternOnes(left) || patternKey(left).localeCompare(patternKey(right));
+  });
+}
+
+function scoreTreadleCandidate(candidate, uniqueEntries) {
+  const ones = countPatternOnes(candidate);
+  return uniqueEntries.reduce((score, entry) => {
+    if (!isPatternSubset(candidate, entry.pattern)) {
+      return score;
+    }
+    const exactPenalty = patternKey(candidate) === entry.key ? 0.86 : 1;
+    return score + entry.count * Math.pow(ones, 1.3) * exactPenalty;
+  }, 0);
+}
+
+function findPatternCombination(targetPattern, basisPatterns, maxPressed) {
+  const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
+
+  if (isZeroPattern(targetPattern)) {
+    return [];
+  }
+
+  if (normalizedMaxPressed === 0 || !basisPatterns.length) {
+    return null;
+  }
+
+  const targetKey = patternKey(targetPattern);
+  const targetOnes = countPatternOnes(targetPattern);
+  const candidates = basisPatterns
+    .map((pattern, index) => ({ pattern, index, ones: countPatternOnes(pattern) }))
+    .filter(({ pattern, ones }) => ones > 0 && isPatternSubset(pattern, targetPattern))
+    .sort((left, right) => right.ones - left.ones || left.index - right.index);
+  const exactCandidate = candidates.find(({ pattern }) => patternKey(pattern) === targetKey);
+
+  if (exactCandidate) {
+    return [exactCandidate.index];
+  }
+
+  let match = null;
+
+  function search(startIndex, remainingSlots, covered, coveredOnes, chosen) {
+    if (coveredOnes === targetOnes) {
+      match = chosen.slice();
+      return true;
+    }
+    if (remainingSlots === 0) {
+      return false;
+    }
+
+    for (let candidateIndex = startIndex; candidateIndex < candidates.length; candidateIndex++) {
+      const candidate = candidates[candidateIndex];
+      const nextCovered = covered.slice();
+      let gain = 0;
+
+      candidate.pattern.forEach((value, position) => {
+        if (value && !nextCovered[position]) {
+          nextCovered[position] = 1;
+          gain++;
+        }
+      });
+
+      if (!gain) {
+        continue;
+      }
+
+      chosen.push(candidate.index);
+      if (search(candidateIndex + 1, remainingSlots - 1, nextCovered, coveredOnes + gain, chosen)) {
+        return true;
+      }
+      chosen.pop();
+    }
+
+    return false;
+  }
+
+  search(0, normalizedMaxPressed, Array(targetPattern.length).fill(0), 0, []);
+  return match;
+}
+
+function findBestApproximateCombination(targetPattern, basisPatterns, maxPressed) {
+  const combos = generateTreadleCombos(basisPatterns.length, maxPressed);
+  let bestCombo = [];
+  let bestDistance = Infinity;
+  let bestPressed = Infinity;
+
+  combos.forEach(combo => {
+    const combined = unionTieupPatterns(basisPatterns, combo);
+    const distance = hammingDistance(targetPattern, combined);
+    if (distance < bestDistance || (distance === bestDistance && combo.length < bestPressed)) {
+      bestDistance = distance;
+      bestPressed = combo.length;
+      bestCombo = combo.slice();
+    }
+  });
+
+  return {
+    combo: bestCombo,
+    distance: bestDistance
+  };
+}
+
+function finalizeTreadleRepresentation(rowPatterns, basisPatterns, rowCombinations) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const usedBasisIndices = [];
+
+  rowCombinations.forEach(combination => {
+    combination.forEach(index => {
+      if (!usedBasisIndices.includes(index)) {
+        usedBasisIndices.push(index);
+      }
+    });
+  });
+  usedBasisIndices.sort((left, right) => left - right);
+
+  const remap = new Map();
+  usedBasisIndices.forEach((index, nextIndex) => {
+    remap.set(index, nextIndex);
+  });
+
+  const tieup = usedBasisIndices.length
+    ? usedBasisIndices.map(index => basisPatterns[index].slice())
+    : [Array(patternLength).fill(0)];
+  const treadling = rowCombinations.map(combination => {
+    const row = Array(tieup.length || 1).fill(0);
+    combination.forEach(index => {
+      if (remap.has(index)) {
+        row[remap.get(index)] = 1;
+      }
+    });
+    return row;
+  });
+  const firstUse = tieup.map((_, tieupIndex) => treadling.findIndex(row => row[tieupIndex]));
+  const order = tieup
+    .map((_, index) => index)
+    .sort((left, right) => {
+      const leftUse = firstUse[left] < 0 ? Number.POSITIVE_INFINITY : firstUse[left];
+      const rightUse = firstUse[right] < 0 ? Number.POSITIVE_INFINITY : firstUse[right];
+      return leftUse - rightUse || left - right;
+    });
+  const reorderedTieup = order.map(index => tieup[index]);
+  const reorderedTreadling = treadling.map(row => order.map(index => row[index] || 0));
+
+  return {
+    tieup: reorderedTieup,
+    treadling: reorderedTreadling,
+    maxPressedUsed: reorderedTreadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+  };
+}
+
+function compressExactTreadleRepresentation(rowPatterns, maxPressed, maxTreadles) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const uniqueEntries = getUniquePatternEntries(rowPatterns);
+  let basisPatterns = buildTreadleBasisCandidates(rowPatterns, maxPressed)
+    .sort((left, right) => countPatternOnes(right) - countPatternOnes(left) || patternKey(left).localeCompare(patternKey(right)));
+  let removedPattern = true;
+
+  while (removedPattern && basisPatterns.length > 1) {
+    removedPattern = false;
+    for (let index = 0; index < basisPatterns.length; index++) {
+      const trialBasis = basisPatterns.filter((_, patternIndex) => patternIndex !== index);
+      const allRepresentable = uniqueEntries.every(entry => findPatternCombination(entry.pattern, trialBasis, maxPressed) !== null);
+      if (allRepresentable) {
+        basisPatterns = trialBasis;
+        removedPattern = true;
+        break;
+      }
+    }
+  }
+
+  if (!basisPatterns.length) {
+    basisPatterns = [Array(patternLength).fill(0)];
+  }
+
+  if (basisPatterns.length > maxTreadles) {
+    return null;
+  }
+
+  const rowCombinations = [];
+  for (const pattern of rowPatterns) {
+    const combination = findPatternCombination(pattern, basisPatterns, maxPressed);
+    if (combination === null) {
+      return null;
+    }
+    rowCombinations.push(combination);
+  }
+
+  return finalizeTreadleRepresentation(rowPatterns, basisPatterns, rowCombinations);
+}
+
+function evaluateApproximateBasis(uniqueEntries, basisPatterns, maxPressed) {
+  let totalDistance = 0;
+
+  uniqueEntries.forEach(entry => {
+    const best = findBestApproximateCombination(entry.pattern, basisPatterns, maxPressed);
+    totalDistance += best.distance * entry.count;
+  });
+
+  return totalDistance;
+}
+
+function buildApproximateTreadleRepresentation(rowPatterns, maxPressed, maxTreadles) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const uniqueEntries = getUniquePatternEntries(rowPatterns);
+  const candidates = buildTreadleBasisCandidates(rowPatterns, maxPressed).slice(0, 420);
+  const selected = [];
+  let currentDistance = uniqueEntries.reduce((total, entry) => total + countPatternOnes(entry.pattern) * entry.count, 0);
+
+  while (selected.length < maxTreadles && currentDistance > 0) {
+    let bestCandidate = null;
+    let bestDistance = currentDistance;
+
+    candidates.forEach(candidate => {
+      if (selected.some(pattern => patternKey(pattern) === patternKey(candidate))) {
+        return;
+      }
+
+      const trialBasis = [...selected, candidate];
+      const distance = evaluateApproximateBasis(uniqueEntries, trialBasis, maxPressed);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestCandidate = candidate;
+      }
+    });
+
+    if (!bestCandidate) {
+      break;
+    }
+
+    selected.push(bestCandidate);
+    currentDistance = bestDistance;
+  }
+
+  const basisPatterns = selected.length ? selected : [Array(patternLength).fill(0)];
+  const rowCombinations = rowPatterns.map(pattern =>
+    findBestApproximateCombination(pattern, basisPatterns, maxPressed).combo
+  );
+
+  return finalizeTreadleRepresentation(rowPatterns, basisPatterns, rowCombinations);
+}
+
+function fitTreadleRepresentation(rowPatterns, settings) {
+  const maxTreadles = Math.max(1, Number.parseInt(settings.treadles, 10) || 1);
+  const maxPressed = Math.max(1, Number.parseInt(settings.pressed, 10) || 1);
+  return compressExactTreadleRepresentation(rowPatterns, maxPressed, maxTreadles)
+    || buildApproximateTreadleRepresentation(rowPatterns, maxPressed, maxTreadles);
+}
+
+function compressStructure(binary, settings) {
+  const picks = binary.length;
+  const warp = binary[0]?.length || 0;
+  const columnPatterns = Array.from({ length: warp }, (_, column) =>
+    Array.from({ length: picks }, (_, row) => binary[row][column])
+  );
+  const shaftCount = Math.max(1, Math.min(settings.shafts, warp));
+  const columnClusters = clusterBinaryPatterns(columnPatterns, shaftCount);
+  const threading = Array.from({ length: columnClusters.centers.length }, (_, shaft) =>
+    Array.from({ length: warp }, (_, column) => columnClusters.assignments[column] === shaft ? 1 : 0)
+  );
+  const rowByShaft = Array.from({ length: picks }, (_, row) =>
+    Array.from({ length: columnClusters.centers.length }, (_, shaft) => {
+      const columns = columnClusters.assignments
+        .map((assignment, column) => assignment === shaft ? column : -1)
+        .filter(column => column >= 0);
+      const ones = columns.reduce((total, column) => total + binary[row][column], 0);
+      return ones * 2 >= columns.length ? 1 : 0;
+    })
+  );
+  const treadleFit = fitTreadleRepresentation(rowByShaft, settings);
+  const tieup = treadleFit.tieup;
+  const treadling = treadleFit.treadling;
+  const treadlingCombos = treadling.map(row =>
+    row.map((value, treadle) => value ? treadle : -1).filter(treadle => treadle >= 0)
+  );
+  const generatedBinary = Array.from({ length: picks }, (_, row) =>
+    Array.from({ length: warp }, (_, column) => {
+      const shaft = columnClusters.assignments[column];
+      return treadlingCombos[row].some(treadle => tieup[treadle]?.[shaft]) ? 1 : 0;
+    })
+  );
+
+  return {
+    shafts: threading.length,
+    treadles: tieup.length,
+    threading,
+    tieup,
+    treadling,
+    generatedBinary,
+    maxPressedUsed: treadleFit.maxPressedUsed || 0
+  };
+}
+
+function computeFloatAnalysis(binary, tolerance) {
+  const picks = binary.length;
+  const warp = binary[0]?.length || 0;
+  let worstWeft = 0;
+  let worstWarp = 0;
+  let stressedCells = 0;
+
+  function scanLine(values) {
+    let worst = 0;
+    let stressed = 0;
+    let start = 0;
+
+    while (start < values.length) {
+      let end = start + 1;
+      while (end < values.length && values[end] === values[start]) {
+        end += 1;
+      }
+      const length = end - start;
+      worst = Math.max(worst, length);
+      if (length > tolerance) {
+        stressed += length - tolerance;
+      }
+      start = end;
+    }
+
+    return { worst, stressed };
+  }
+
+  for (let row = 0; row < picks; row++) {
+    const result = scanLine(binary[row]);
+    worstWeft = Math.max(worstWeft, result.worst);
+    stressedCells += result.stressed;
+  }
+
+  for (let column = 0; column < warp; column++) {
+    const result = scanLine(binary.map(row => row[column]));
+    worstWarp = Math.max(worstWarp, result.worst);
+    stressedCells += result.stressed;
+  }
+
+  return {
+    worstWeft,
+    worstWarp,
+    stressedCells,
+    clothlike: Math.max(0, Math.round(100 * (1 - stressedCells / Math.max(1, picks * warp * 2))))
+  };
+}
+
+function evaluateCandidate(targetData, candidate, settings, mode) {
+  let totalDistance = 0;
+  let exact = 0;
+  const generatedGrid = Array.from({ length: targetData.picks }, (_, row) =>
+    Array.from({ length: targetData.warp }, (_, column) => {
+      const colorIndex = candidate.generatedBinary[row][column]
+        ? candidate.warpColors[column]
+        : candidate.weftColors[row];
+      const targetIndex = targetData.grid[row][column];
+      const distance = Math.sqrt(colorDistanceSquared(targetData.paletteRgb[targetIndex], targetData.paletteRgb[colorIndex]));
+      totalDistance += distance;
+      if (targetIndex === colorIndex) {
+        exact += 1;
+      }
+      return colorIndex;
+    })
+  );
+  const cells = targetData.picks * targetData.warp;
+  const averageDistance = totalDistance / Math.max(1, cells);
+  const perceptualMatch = Math.max(0, Math.round(100 * (1 - averageDistance / Math.sqrt(3 * 255 * 255))));
+  const exactMatch = Math.round(100 * exact / Math.max(1, cells));
+  const floatAnalysis = computeFloatAnalysis(candidate.generatedBinary, settings.floatTolerance);
+
+  return {
+    ...candidate,
+    mode,
+    generatedGrid,
+    averageDistance,
+    perceptualMatch,
+    exactMatch,
+    floatAnalysis
+  };
+}
+
+function generateCandidateForMode(targetData, settings, mode) {
+  const colorPlan = chooseColorPlans(targetData, mode);
+  let binary = buildNearestStructure(targetData, colorPlan.warpColors, colorPlan.weftColors);
+
+  if (settings.useFloatTolerance) {
+    binary = repairFloatStress(binary, settings.floatTolerance);
+  }
+
+  const compressed = compressStructure(binary, settings);
+
+  return evaluateCandidate(targetData, {
+    ...compressed,
+    warpColors: colorPlan.warpColors,
+    weftColors: colorPlan.weftColors
+  }, settings, mode);
+}
+
+function sortOptions(options, engine) {
+  const weights = {
+    color: option => option.averageDistance + option.floatAnalysis.stressedCells * 0.02,
+    float: option => option.averageDistance + option.floatAnalysis.stressedCells * 1.8,
+    warp: option => option.averageDistance + option.warpColors.filter((value, index, array) => array.indexOf(value) === index).length * -0.4,
+    weft: option => option.averageDistance + option.weftColors.filter((value, index, array) => array.indexOf(value) === index).length * -0.4
+  };
+  const scorer = weights[engine] || weights.color;
+  return options.slice().sort((a, b) => scorer(a) - scorer(b));
+}
+
+function generateOptions() {
+  if (!loadedImage) {
+    return;
+  }
+
+  const settings = getSettings();
+  const targetData = rebuildTarget();
+  const modes = ["balanced", "warp-detail", "weft-detail", "high-contrast"];
+
+  generatedOptions = sortOptions(
+    modes.map(mode => generateCandidateForMode(targetData, settings, mode)),
+    settings.engine
+  );
+  selectedOptionIndex = 0;
+  renderAll();
+}
+
+function getPreviewCellSize(warp, picks, maximum = 440) {
+  return Math.max(3, Math.min(16, Math.floor(maximum / Math.max(warp, picks))));
+}
+
+function getTargetPreviewSize(maximum = 440) {
+  const width = Math.max(1, Math.round(maximum * targetZoom));
+  return {
+    width,
+    height: Math.max(1, Math.round(width * getLoadedImageAspectRatio()))
+  };
+}
+
+function getLoadedImageAspectRatio() {
+  const sourceWidth = loadedImage?.naturalWidth || loadedImage?.width || target?.warp || defaultImageSize;
+  const sourceHeight = loadedImage?.naturalHeight || loadedImage?.height || target?.picks || defaultImageSize;
+  return sourceHeight / Math.max(1, sourceWidth);
+}
+
+function setupCanvas(canvas, width, height) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.round(width * dpr));
+  canvas.height = Math.max(1, Math.round(height * dpr));
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  return ctx;
+}
+
+function drawPreviewGridLines(ctx, warp, picks, cellSize, width, height, stroke) {
+  drawPreviewRectGridLines(ctx, warp, picks, cellSize, cellSize, width, height, stroke);
+}
+
+function drawPreviewRectGridLines(ctx, warp, picks, cellWidth, cellHeight, width, height, stroke) {
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 1;
+
+  for (let x = 0; x <= warp; x++) {
+    ctx.beginPath();
+    ctx.moveTo(x * cellWidth + 0.5, 0);
+    ctx.lineTo(x * cellWidth + 0.5, height);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y <= picks; y++) {
+    ctx.beginPath();
+    ctx.moveTo(0, y * cellHeight + 0.5);
+    ctx.lineTo(width, y * cellHeight + 0.5);
+    ctx.stroke();
+  }
+}
+
+function drawColorGrid(canvas, grid, palette, options = {}) {
+  const picks = grid.length;
+  const warp = grid[0]?.length || 0;
+  const cellSize = options.cellSize || getPreviewCellSize(warp, picks);
+  const width = options.width || warp * cellSize;
+  const height = options.height || picks * cellSize;
+  const cellWidth = width / Math.max(1, warp);
+  const cellHeight = height / Math.max(1, picks);
+  const ctx = setupCanvas(canvas, width, height);
+  const showGrid = options.showGrid !== false;
+
+  for (let row = 0; row < picks; row++) {
+    for (let column = 0; column < warp; column++) {
+      ctx.fillStyle = palette[grid[row][column]] || "#ffffff";
+      ctx.fillRect(column * cellWidth, row * cellHeight, cellWidth, cellHeight);
+    }
+  }
+
+  if (showGrid && cellWidth >= 4 && cellHeight >= 4) {
+    drawPreviewRectGridLines(ctx, warp, picks, cellWidth, cellHeight, width, height, options.gridStroke || "rgba(47, 36, 29, 0.26)");
+  }
+}
+
+function drawPixelGrid(canvas, pixels, warp, picks, options = {}) {
+  const cellSize = options.cellSize || getPreviewCellSize(warp, picks);
+  const width = warp * cellSize;
+  const height = picks * cellSize;
+  const ctx = setupCanvas(canvas, width, height);
+  const showGrid = options.showGrid !== false;
+
+  for (let row = 0; row < picks; row++) {
+    for (let column = 0; column < warp; column++) {
+      ctx.fillStyle = rgbToCss(pixels[row * warp + column] || { r: 255, g: 255, b: 255 });
+      ctx.fillRect(column * cellSize, row * cellSize, cellSize, cellSize);
+    }
+  }
+
+  if (showGrid && cellSize >= 4) {
+    drawPreviewGridLines(ctx, warp, picks, cellSize, width, height, options.gridStroke || "rgba(47, 36, 29, 0.32)");
+  }
+}
+
+function drawOriginalImageGrid(canvas, image, warp, picks, options = {}) {
+  const width = options.width || Math.max(1, Math.round(warp * (options.cellSize || getPreviewCellSize(warp, picks))));
+  const height = options.height || Math.max(1, Math.round(width * getLoadedImageAspectRatio()));
+  const ctx = setupCanvas(canvas, width, height);
+  const showGrid = options.showGrid !== false;
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(image, 0, 0, width, height);
+
+  if (showGrid && width / Math.max(1, warp) >= 4) {
+    drawPreviewRectGridLines(
+      ctx,
+      warp,
+      picks,
+      width / Math.max(1, warp),
+      height / Math.max(1, picks),
+      width,
+      height,
+      options.gridStroke || "rgba(47, 36, 29, 0.34)"
+    );
+  }
+}
+
+function drawGridCell(ctx, x, y, size, fill, stroke = "#000") {
+  ctx.fillStyle = fill;
+  ctx.fillRect(x, y, size, size);
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, size, size);
+}
+
+function drawGeneratedDraft(option) {
+  if (!option || !target) {
+    const ctx = setupCanvas(elements.generatedDraftCanvas, 420, 220);
+    ctx.fillStyle = "rgba(47, 36, 29, 0.55)";
+    ctx.font = "16px sans-serif";
+    ctx.fillText("Upload an image to generate a color draft.", 24, 110);
+    return;
+  }
+
+  const cell = Math.max(5, Math.min(13, Math.floor(560 / Math.max(target.warp + option.treadles, target.picks + option.shafts))));
+  const gap = Math.round(cell * 0.75);
+  const threadingWidth = target.warp * cell;
+  const threadingHeight = option.shafts * cell;
+  const tieupWidth = option.treadles * cell;
+  const tieupHeight = option.shafts * cell;
+  const drawdownWidth = target.warp * cell;
+  const drawdownHeight = target.picks * cell;
+  const treadlingWidth = option.treadles * cell;
+  const treadlingHeight = target.picks * cell;
+  const width = threadingWidth + gap + tieupWidth;
+  const height = threadingHeight + gap + drawdownHeight;
+  const ctx = setupCanvas(elements.generatedDraftCanvas, width, height);
+  const tieupX = threadingWidth + gap;
+  const drawdownY = threadingHeight + gap;
+  const treadlingX = tieupX;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+
+  for (let shaft = 0; shaft < option.shafts; shaft++) {
+    for (let column = 0; column < target.warp; column++) {
+      const color = option.threading[shaft][column] ? target.palette[option.warpColors[column]] : "#ffffff";
+      drawGridCell(ctx, column * cell, shaft * cell, cell, color, "rgba(0,0,0,0.72)");
+    }
+  }
+
+  for (let treadle = 0; treadle < option.treadles; treadle++) {
+    for (let shaft = 0; shaft < option.shafts; shaft++) {
+      const color = option.tieup[treadle][shaft] ? "#241813" : "#ffffff";
+      drawGridCell(ctx, tieupX + treadle * cell, shaft * cell, cell, color, "rgba(0,0,0,0.72)");
+    }
+  }
+
+  for (let row = 0; row < target.picks; row++) {
+    for (let column = 0; column < target.warp; column++) {
+      drawGridCell(
+        ctx,
+        column * cell,
+        drawdownY + row * cell,
+        cell,
+        target.palette[option.generatedGrid[row][column]],
+        "rgba(0,0,0,0.42)"
+      );
+    }
+  }
+
+  for (let row = 0; row < target.picks; row++) {
+    for (let treadle = 0; treadle < option.treadles; treadle++) {
+      const color = option.treadling[row][treadle] ? target.palette[option.weftColors[row]] : "#ffffff";
+      drawGridCell(ctx, treadlingX + treadle * cell, drawdownY + row * cell, cell, color, "rgba(0,0,0,0.72)");
+    }
+  }
+}
+
+function renderPalette() {
+  elements.paletteRow.innerHTML = "";
+
+  if (!target) {
+    return;
+  }
+
+  target.palette.forEach((color, index) => {
+    const chip = document.createElement("span");
+    chip.className = "palette-chip";
+    chip.innerHTML = `<span class="palette-swatch" style="background:${color}"></span><span>${index + 1}</span>`;
+    elements.paletteRow.appendChild(chip);
+  });
+}
+
+function renderTargetView() {
+  if (!target) {
+    elements.targetViewButtons.forEach(button => {
+      button.disabled = true;
+    });
+    elements.targetZoomOut.disabled = true;
+    elements.targetZoomIn.disabled = true;
+    elements.targetZoomValue.textContent = `${Math.round(targetZoom * 100)}%`;
+    return;
+  }
+
+  elements.targetViewButtons.forEach(button => {
+    const isActive = button.dataset.targetView === targetViewMode;
+    button.disabled = false;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+  elements.targetZoomOut.disabled = targetZoom <= 0.5;
+  elements.targetZoomIn.disabled = targetZoom >= 4;
+  elements.targetZoomValue.textContent = `${Math.round(targetZoom * 100)}%`;
+
+  const gridStroke = targetViewMode === "compressed"
+    ? "rgba(47, 36, 29, 0.38)"
+    : "rgba(47, 36, 29, 0.34)";
+  const previewSize = getTargetPreviewSize();
+
+  if (targetViewMode === "compressed") {
+    drawColorGrid(elements.targetCanvas, target.grid, target.palette, {
+      width: previewSize.width,
+      height: previewSize.height,
+      gridStroke
+    });
+    return;
+  }
+
+  drawOriginalImageGrid(elements.targetCanvas, loadedImage, target.warp, target.picks, {
+    width: previewSize.width,
+    height: previewSize.height,
+    gridStroke
+  });
+}
+
+function renderOptions() {
+  elements.optionList.innerHTML = "";
+
+  if (!generatedOptions.length) {
+    const copy = document.createElement("p");
+    copy.className = "empty-copy mb-0";
+    copy.textContent = loadedImage ? "Click Generate to create weave options." : "Upload an image to generate options.";
+    elements.optionList.appendChild(copy);
+    return;
+  }
+
+  generatedOptions.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `option-button${index === selectedOptionIndex ? " active" : ""}`;
+    button.innerHTML = `
+      <span>Option ${index + 1}</span>
+      <span class="option-button-muted">${option.perceptualMatch}% match, ${option.exactMatch}% exact</span>
+      <span class="option-button-muted">${option.shafts}S / ${option.treadles}T / ${option.maxPressedUsed || 0}P / worst ${option.floatAnalysis.worstWarp}/${option.floatAnalysis.worstWeft}</span>
+    `;
+    button.addEventListener("click", () => {
+      selectedOptionIndex = index;
+      renderAll();
+    });
+    elements.optionList.appendChild(button);
+  });
+}
+
+function renderMeta(option) {
+  elements.generatedMeta.innerHTML = "";
+
+  if (!option) {
+    const empty = document.createElement("div");
+    empty.className = "status-line";
+    empty.textContent = "No generated draft yet.";
+    elements.generatedMeta.appendChild(empty);
+    return;
+  }
+
+  const lines = [
+    ["Match", `${option.perceptualMatch}% color match (${option.exactMatch}% exact)`],
+    ["Structure", `${option.shafts} shafts, ${option.treadles} treadles, ${option.maxPressedUsed || 0} pressed`],
+    ["Floats", `Worst ${option.floatAnalysis.worstWarp} warp / ${option.floatAnalysis.worstWeft} weft`],
+    ["Cloth-like", `${option.floatAnalysis.clothlike}%`]
+  ];
+
+  lines.forEach(([label, value]) => {
+    const line = document.createElement("div");
+    line.className = "status-line";
+    line.innerHTML = `<span class="status-line-strong">${label}:</span> ${value}`;
+    elements.generatedMeta.appendChild(line);
+  });
+}
+
+function renderAll() {
+  if (target) {
+    elements.uploadDrop.classList.add("d-none");
+    elements.targetCanvasFrame.classList.remove("d-none");
+    renderTargetView();
+  } else {
+    elements.targetViewButtons.forEach(button => {
+      button.disabled = true;
+    });
+  }
+
+  renderPalette();
+  renderOptions();
+
+  const option = generatedOptions[selectedOptionIndex] || null;
+  drawGeneratedDraft(option);
+  renderMeta(option);
+  elements.toDrafterButton.disabled = !option;
+}
+
+function createCrossEditorTransferToken() {
+  if (typeof window.crypto?.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function getCrossEditorTransferStorageKey(token) {
+  return `${crossEditorTransferStoragePrefix}${token}`;
+}
+
+function buildDraftSaveDataFromOption(option) {
+  const usedColorIndexes = new Set([
+    ...option.warpColors,
+    ...option.weftColors
+  ]);
+  const sortedColorIndexes = [...usedColorIndexes].sort((a, b) => a - b);
+  const colorIdByIndex = new Map(sortedColorIndexes.map((colorIndex, index) => [colorIndex, `image-color-${index + 1}`]));
+  const patternColors = sortedColorIndexes.map((colorIndex, index) => ({
+    id: `image-color-${index + 1}`,
+    value: target.palette[colorIndex],
+    thickness: 1
+  }));
+
+  return {
+    format: "weaving-draft-data",
+    version: 3,
+    meta: {
+      draftName: `${sourceName} Image Weave`
+    },
+    draft: {
+      shafts: option.shafts,
+      treadles: option.treadles,
+      warp: target.warp,
+      picks: target.picks,
+      threading: option.threading.map(row => row.map((value, column) => value ? colorIdByIndex.get(option.warpColors[column]) : 0)),
+      tieup: option.tieup.map(row => row.slice()),
+      treadling: option.treadling.map((row, pick) => row.map(value => value ? colorIdByIndex.get(option.weftColors[pick]) : 0)),
+      patternColors,
+      activePatternColorId: patternColors[0]?.id || "image-color-1",
+      nextPatternColorNumber: patternColors.length + 1
+    },
+    preview: {
+      repeatX: 4,
+      repeatY: 4,
+      renderMode: "plain",
+      sett: 0.7,
+      backgroundColor: "#ffffff"
+    },
+    ui: {
+      draftCellSize: 16,
+      draftRenderStyle: "color"
+    }
+  };
+}
+
+function openSelectedOptionInDrafter() {
+  const option = generatedOptions[selectedOptionIndex];
+  if (!option) {
+    return;
+  }
+
+  try {
+    const token = createCrossEditorTransferToken();
+    window.localStorage.setItem(
+      getCrossEditorTransferStorageKey(token),
+      JSON.stringify({
+        createdAt: Date.now(),
+        payload: buildDraftSaveDataFromOption(option)
+      })
+    );
+    const opened = window.open(`drafter.html?${crossEditorTransferQueryParam}=${encodeURIComponent(token)}`, "_blank");
+
+    if (!opened) {
+      window.alert("Your browser blocked the new tab.");
+    }
+  } catch (error) {
+    window.alert("Unable to send this image weave to the drafter in this browser.");
+  }
+}
+
+function setLoadedImage(image, name) {
+  loadedImage = image;
+  sourceName = name;
+  targetViewMode = "compressed";
+  targetZoom = 1;
+  elements.generateButton.disabled = false;
+  generateOptions();
+}
+
+function loadDefaultImage() {
+  const image = new Image();
+  image.addEventListener("load", () => setLoadedImage(image, defaultImageName));
+  image.addEventListener("error", () => {
+    image.src = createDefaultImageDataUrl();
+  }, { once: true });
+  image.src = defaultImageUrl;
+}
+
+function loadImageFile(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    const image = new Image();
+    image.addEventListener("load", () => {
+      setLoadedImage(image, file.name.replace(/\.[^.]+$/, "").trim() || "Image Weave");
+    });
+    image.src = reader.result;
+  });
+  reader.readAsDataURL(file);
+}
+
+function resetPage() {
+  loadedImage = null;
+  target = null;
+  generatedOptions = [];
+  selectedOptionIndex = 0;
+  useFloatTolerance = true;
+  targetViewMode = "compressed";
+  targetZoom = 1;
+  elements.controls.warp.value = defaultImageSize;
+  elements.controls.picks.value = defaultImageSize;
+  elements.controls.colors.value = 4;
+  elements.controls.shafts.value = 8;
+  elements.controls.treadles.value = 10;
+  elements.controls.pressed.value = 2;
+  elements.controls.floatTolerance.value = 7;
+  elements.controls.engine.value = "color";
+  elements.useToleranceButton.classList.add("active");
+  elements.useToleranceButton.setAttribute("aria-pressed", "true");
+  elements.fileInput.value = "";
+  elements.generateButton.disabled = true;
+  elements.toDrafterButton.disabled = true;
+  elements.uploadDrop.classList.remove("d-none");
+  elements.targetCanvasFrame.classList.add("d-none");
+  elements.paletteRow.innerHTML = "";
+  renderAll();
+  loadDefaultImage();
+}
+
+elements.openImageButton.addEventListener("click", () => elements.fileInput.click());
+elements.fileInput.addEventListener("change", event => loadImageFile(event.target.files?.[0]));
+elements.generateButton.addEventListener("click", generateOptions);
+elements.toDrafterButton.addEventListener("click", openSelectedOptionInDrafter);
+elements.resetButton.addEventListener("click", resetPage);
+elements.targetViewButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    targetViewMode = button.dataset.targetView || "compressed";
+    renderAll();
+  });
+});
+elements.targetZoomOut.addEventListener("click", () => {
+  targetZoom = Math.max(0.5, targetZoom - 0.25);
+  renderAll();
+});
+elements.targetZoomIn.addEventListener("click", () => {
+  targetZoom = Math.min(4, targetZoom + 0.25);
+  renderAll();
+});
+elements.useToleranceButton.addEventListener("click", () => {
+  useFloatTolerance = !useFloatTolerance;
+  elements.useToleranceButton.classList.toggle("active", useFloatTolerance);
+  elements.useToleranceButton.setAttribute("aria-pressed", String(useFloatTolerance));
+  if (loadedImage) {
+    generateOptions();
+  }
+});
+
+Object.values(elements.controls).forEach(control => {
+  control.addEventListener("change", () => {
+    getSettings();
+    if (loadedImage) {
+      generateOptions();
+    }
+  });
+});
+
+elements.uploadDrop.addEventListener("dragover", event => {
+  event.preventDefault();
+});
+elements.uploadDrop.addEventListener("drop", event => {
+  event.preventDefault();
+  loadImageFile(event.dataTransfer?.files?.[0]);
+});
+
+renderAll();
+loadDefaultImage();
+</script>
+</body>
+</html>
