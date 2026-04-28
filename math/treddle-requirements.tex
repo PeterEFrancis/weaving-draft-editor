@@ -1,0 +1,244 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\title{Treadle Requirements for Two-Foot Shaft Selection}
+\author{}
+\date{\today}
+
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Problem}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{example}{Example}
+\newtheorem{observation}{Observation}
+
+\newcommand{\pow}{\mathcal{P}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\twounions}{\langle \A\rangle_2}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+These notes study a combinatorial design problem motivated by treadle loom
+construction. If a loom has \(n\) shafts and the weaver can press at most two
+treadles at once, how many treadles are required so that every nonempty
+combination of shafts can be lifted? Equivalently, what is the smallest family
+\(\A \subseteq \pow([n])\) such that every nonempty subset of \([n]\) is the
+union of at most two members of \(\A\)?
+\end{abstract}
+
+\section{The Problem}
+
+Let
+\[
+  [n] = \{1,2,\ldots,n\}
+\]
+denote the set of shafts. A treadle may be tied to any subset of shafts. If two
+treadles are pressed simultaneously, then the lifted shafts are the union of
+the two tied subsets.
+
+\begin{definition}
+  A family \(\A \subseteq \pow([n])\setminus\{\varnothing\}\) is called a
+  \emph{two-foot treadle basis} for \([n]\) if every nonempty subset
+  \(X \subseteq [n]\) can be written as
+  \[
+    X = U \cup V
+  \]
+  for some \(U,V \in \A\). We allow \(U=V\), which models pressing one treadle
+  rather than two.
+\end{definition}
+
+\begin{definition}
+  Define
+  \[
+    \tau_2(n)
+    =
+    \min\bigl\{|\A| : \A \subseteq \pow([n])\setminus\{\varnothing\}
+    \text{ is a two-foot treadle basis for } [n]\bigr\}.
+  \]
+  Thus \(\tau_2(n)\) is the minimum number of treadles needed to make every
+  nonempty shaft combination available with at most two feet.
+\end{definition}
+
+The central question is:
+
+\begin{problem}
+  Determine \(\tau_2(n)\), and describe the extremal families \(\A\) attaining
+  it.
+\end{problem}
+
+\section{Small Values}
+
+We use the shorthand \(13\) for the subset \(\{1,3\}\), \(456\) for
+\(\{4,5,6\}\), and so on. The known small values are:
+\[
+\begin{array}{c|c|l}
+  n & \tau_2(n) & \text{example of an optimal family } \A\\
+  \hline
+  1 & 1  & \{1\}\\
+  2 & 2  & \{1,2\}\\
+  3 & 4  & \{1,2,3,12\}\\
+  4 & 6  & \{1,2,3,4,13,24\}\\
+  5 & 10 & \{1,2,3,4,5,12,13,23,45,123\}\\
+  6 & 14 & \{1,2,3,4,5,6,12,23,13,45,56,46,123,456\}
+\end{array}
+\]
+
+These examples all come from the same construction: split the shafts into two
+blocks and include every nonempty subset inside each block.
+
+\section{The Split Construction}
+
+\begin{proposition}[Split construction]
+  Let \([n]=X\sqcup Y\) be a partition into two disjoint blocks. Define
+  \[
+    \A_{X,Y}
+    =
+    \bigl(\pow(X)\setminus\{\varnothing\}\bigr)
+    \cup
+    \bigl(\pow(Y)\setminus\{\varnothing\}\bigr).
+  \]
+  Then \(\A_{X,Y}\) is a two-foot treadle basis for \([n]\).
+\end{proposition}
+
+\begin{proof}
+  Let \(S\subseteq[n]\) be nonempty. Then
+  \[
+    S = (S\cap X)\cup(S\cap Y).
+  \]
+  If both intersections are nonempty, each is a member of \(\A_{X,Y}\). If one
+  intersection is empty, then \(S\) itself is a nonempty subset of the other
+  block, hence \(S\in\A_{X,Y}\). Therefore \(S\) is the union of at most two
+  members of \(\A_{X,Y}\).
+\end{proof}
+
+Choosing \(X\) and \(Y\) as evenly as possible gives
+\[
+  \tau_2(n)
+  \le
+  \left(2^{\lfloor n/2\rfloor}-1\right)
+  +
+  \left(2^{\lceil n/2\rceil}-1\right)
+  =
+  2^{\lfloor n/2\rfloor}
+  +
+  2^{\lceil n/2\rceil}
+  -2.
+\]
+
+For \(n=1,2,\ldots,6\), this upper bound gives
+\[
+  1,\ 2,\ 4,\ 6,\ 10,\ 14,
+\]
+which matches the small values listed above.
+
+\begin{conjecture}[Balanced split optimality]
+  For every \(n\ge 1\),
+  \[
+    \tau_2(n)
+    =
+    2^{\lfloor n/2\rfloor}
+    +
+    2^{\lceil n/2\rceil}
+    -2.
+  \]
+  Equivalently, the balanced split construction is optimal.
+\end{conjecture}
+
+\section{Elementary Lower Bounds}
+
+The first lower bounds are simple but useful.
+
+\begin{observation}[Singletons are forced]
+  Every two-foot treadle basis \(\A\) must contain all singleton subsets
+  \[
+    \{1\},\{2\},\ldots,\{n\}.
+  \]
+\end{observation}
+
+\begin{proof}
+  Suppose \(\{i\}=U\cup V\) with \(U,V\in\A\). Since \(U\) and \(V\) are
+  nonempty and their union is \(\{i\}\), both \(U\) and \(V\) must equal
+  \(\{i\}\). Hence \(\{i\}\in\A\).
+\end{proof}
+
+\begin{proposition}[Counting bound]
+  If \(\A\) is a two-foot treadle basis and \(|\A|=m\), then
+  \[
+    \binom{m+1}{2} \ge 2^n-1.
+  \]
+  Therefore
+  \[
+    \tau_2(n)
+    \ge
+    \left\lceil
+      \frac{\sqrt{1+8(2^n-1)}-1}{2}
+    \right\rceil.
+  \]
+\end{proposition}
+
+\begin{proof}
+  There are \(m\) choices for a one-treadle union and \(\binom{m}{2}\) choices
+  for a union of two distinct treadles. Thus there are at most
+  \[
+    m+\binom{m}{2}=\binom{m+1}{2}
+  \]
+  possible unions of at most two members of \(\A\). These unions must include
+  all \(2^n-1\) nonempty subsets of \([n]\).
+\end{proof}
+
+This counting bound has the right exponential order, namely
+\(\tau_2(n)=\Omega(2^{n/2})\), but it does not by itself prove the balanced
+split conjecture. The gap is only a constant factor asymptotically, but closing
+that gap appears to require using more of the structure of union than just the
+number of available pairs.
+
+\section{Equivalent Formulations}
+
+The same problem can be described in several equivalent ways.
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Loom language.} Choose the smallest set of treadle tie-ups so
+  that every shaft liftplan is available by pressing one or two treadles.
+
+  \item \textbf{Boolean lattice language.} Find the smallest
+  \(\A\subseteq\pow([n])\setminus\{\varnothing\}\) such that
+  \[
+    \pow([n])\setminus\{\varnothing\}
+    =
+    \{U\cup V : U,V\in\A\}.
+  \]
+
+  \item \textbf{Semilattice basis language.} Find the smallest generating set
+  for the join-semilattice \((\pow([n])\setminus\{\varnothing\},\cup)\) when
+  every element must be generated using at most two basis elements.
+\end{itemize}
+
+\section{Questions}
+
+The main open direction is to prove, disprove, or refine the balanced split
+conjecture. Some more concrete questions are:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Can one prove that every optimal family must have size at least
+  \(2^{\lfloor n/2\rfloor}+2^{\lceil n/2\rceil}-2\)?
+
+  \item Are all extremal families essentially balanced split constructions, up
+  to relabeling of the shafts?
+
+  \item What changes if the weaver can press at most \(r\) treadles at once
+  instead of at most two?
+
+  \item What changes if some treadle tie-ups are physically undesirable, for
+  instance because they lift too many shafts at once?
+\end{enumerate}
+
+\end{document}

@@ -1377,7 +1377,8 @@
           <div class="toolbar-field">
             <label class="control-label" for="optimizer-engine-select">Engine</label>
             <select id="optimizer-engine-select" class="form-select" aria-label="Optimizer engine">
-              <option value="balanced">Balanced</option>
+              <option value="default">Default</option>
+              <option value="heuristic">Heuristic</option>
               <option value="motif">Motif</option>
               <option value="linework">Linework</option>
             </select>
@@ -1479,7 +1480,7 @@
       <div class="engine-test-run-field">
         <label class="control-label" for="random-draft-trials-input">Trials</label>
         <div class="engine-test-input-group">
-          <input id="random-draft-trials-input" class="form-control engine-test-trial-input" type="number" value="1000" min="1" step="1" inputmode="numeric">
+          <input id="random-draft-trials-input" class="form-control engine-test-trial-input" type="number" value="100" min="1" step="1" inputmode="numeric">
           <button type="button" class="toggle-button toggle-button-small" id="random-trials-run-button" title="Run hidden random drafts and chart the top-result match distribution.">Run</button>
         </div>
       </div>
@@ -1494,7 +1495,7 @@
           <label class="control-label" for="random-target-p-input">P</label>
         </div>
         <div class="engine-test-input-group">
-          <input id="random-target-trials-input" class="form-control engine-test-trial-input" type="number" value="1000" min="1" step="1" inputmode="numeric">
+          <input id="random-target-trials-input" class="form-control engine-test-trial-input" type="number" value="100" min="1" step="1" inputmode="numeric">
           <input id="random-target-p-input" class="form-control engine-test-trial-input engine-test-p-input" type="number" value="0.5" min="0" max="1" step="0.05" inputmode="decimal">
           <button type="button" class="toggle-button toggle-button-small" id="random-target-run-button" title="Run hidden target drawdowns where each cell is black with probability p.">Run</button>
         </div>
@@ -1570,10 +1571,10 @@ const defaultCellSize = 18;
 const defaultMaxShafts = 4;
 const defaultMaxTreadles = 6;
 const defaultMaxPressedTreadles = 2;
-const defaultOptimizerEngine = "balanced";
+const defaultOptimizerEngine = "default";
 const defaultFloatTolerance = 2;
 const maxGeneratedOptions = 6;
-const defaultRandomTrialCount = 1000;
+const defaultRandomTrialCount = 100;
 const randomTrialBatchSize = 20;
 const randomTrialBinCount = 48;
 const minInverseZoomPercent = 1;
@@ -1656,7 +1657,13 @@ function createDefaultTargetDrawdown(rows, columns) {
 }
 
 function normalizeOptimizerEngine(value) {
-  return ["balanced", "motif", "linework"].includes(value) ? value : defaultOptimizerEngine;
+  if (value === "mathematical") {
+    return "default";
+  }
+  if (value === "balanced") {
+    return "heuristic";
+  }
+  return ["default", "heuristic", "motif", "linework"].includes(value) ? value : defaultOptimizerEngine;
 }
 
 function normalizeDraftName(value, fallback = defaultDraftName) {
@@ -2514,6 +2521,17 @@ function computeDraftEngineMetrics(targetMatrix, draftMatrix) {
 }
 
 function compareDraftEngineMetrics(left, right) {
+  if (optimizerEngine === "default") {
+    return (
+      left.mismatchCount - right.mismatchCount ||
+      (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+        (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+    );
+  }
+
   if (optimizerEngine === "motif") {
     return (
       left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
@@ -2717,6 +2735,312 @@ function intersectPatterns(left, right) {
   return left.map((value, index) => (value && right[index] ? 1 : 0));
 }
 
+function patternToMask(pattern) {
+  let mask = 0n;
+  for (let index = 0; index < pattern.length; index++) {
+    if (pattern[index]) {
+      mask |= 1n << BigInt(index);
+    }
+  }
+  return mask;
+}
+
+function maskToPattern(mask, patternLength) {
+  return Array.from({ length: patternLength }, (_, index) =>
+    (mask & (1n << BigInt(index))) ? 1 : 0
+  );
+}
+
+function countMaskOnes(mask) {
+  let count = 0;
+  let remaining = mask;
+  while (remaining > 0n) {
+    if (remaining & 1n) {
+      count++;
+    }
+    remaining >>= 1n;
+  }
+  return count;
+}
+
+function isMaskSubset(subsetMask, targetMask) {
+  return (subsetMask & ~targetMask) === 0n;
+}
+
+function compareGeneratorMasks(left, right) {
+  const onesDifference = countMaskOnes(right) - countMaskOnes(left);
+  if (onesDifference) {
+    return onesDifference;
+  }
+  return left.toString().localeCompare(right.toString());
+}
+
+function getUniquePatterns(patterns) {
+  const uniquePatterns = [];
+  const uniquePatternMap = new Map();
+
+  patterns.forEach(pattern => {
+    const key = patternToKey(pattern);
+    if (!uniquePatternMap.has(key)) {
+      uniquePatternMap.set(key, uniquePatterns.length);
+      uniquePatterns.push(pattern.slice());
+    }
+  });
+
+  return uniquePatterns;
+}
+
+function buildExactGeneratorCandidateMasks(targetMasks) {
+  const candidateLimit = 8192;
+  const scannedSubmaskLimit = 200000;
+  const candidateMap = new Map();
+  let scannedSubmasks = 0;
+
+  for (const targetMask of targetMasks) {
+    let submask = targetMask;
+    while (submask > 0n) {
+      candidateMap.set(submask.toString(), submask);
+      scannedSubmasks++;
+
+      if (candidateMap.size > candidateLimit || scannedSubmasks > scannedSubmaskLimit) {
+        return null;
+      }
+
+      submask = (submask - 1n) & targetMask;
+    }
+  }
+
+  return Array.from(candidateMap.values()).sort(compareGeneratorMasks);
+}
+
+function enumerateExactRepresentationsForTarget(targetMask, candidateMasks, maxPressed) {
+  const representationLimit = 60000;
+  const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
+
+  if (targetMask === 0n) {
+    return [[]];
+  }
+
+  if (normalizedMaxPressed === 0) {
+    return null;
+  }
+
+  const candidates = candidateMasks
+    .map((mask, index) => ({ mask, index }))
+    .filter(({ mask }) => mask > 0n && isMaskSubset(mask, targetMask))
+    .sort((left, right) => compareGeneratorMasks(left.mask, right.mask));
+
+  if (!candidates.length) {
+    return null;
+  }
+
+  const suffixUnion = Array(candidates.length + 1).fill(0n);
+  for (let index = candidates.length - 1; index >= 0; index--) {
+    suffixUnion[index] = suffixUnion[index + 1] | candidates[index].mask;
+  }
+
+  const representations = [];
+  let complete = true;
+
+  function search(startIndex, remainingSlots, coveredMask, chosen) {
+    if (coveredMask === targetMask) {
+      representations.push(chosen.slice());
+      if (representations.length > representationLimit) {
+        complete = false;
+        return false;
+      }
+      return true;
+    }
+
+    if (remainingSlots === 0 || startIndex >= candidates.length) {
+      return true;
+    }
+
+    const missingMask = targetMask & ~coveredMask;
+    if ((suffixUnion[startIndex] & missingMask) !== missingMask) {
+      return true;
+    }
+
+    for (let index = startIndex; index < candidates.length; index++) {
+      const candidate = candidates[index];
+      const nextCoveredMask = coveredMask | candidate.mask;
+
+      if (nextCoveredMask === coveredMask) {
+        continue;
+      }
+
+      chosen.push(candidate.index);
+      if (!search(index + 1, remainingSlots - 1, nextCoveredMask, chosen)) {
+        return false;
+      }
+      chosen.pop();
+    }
+
+    return true;
+  }
+
+  search(0, normalizedMaxPressed, 0n, []);
+
+  if (!complete || !representations.length) {
+    return null;
+  }
+
+  return representations.sort((left, right) => left.length - right.length || left[0] - right[0]);
+}
+
+function countNewGeneratorIndices(indices, selectedIndices) {
+  return indices.reduce((total, index) => total + (selectedIndices.has(index) ? 0 : 1), 0);
+}
+
+function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPressedTreadles, maxTreadleCount = Number.POSITIVE_INFINITY) {
+  const patternLength = rowPatterns[0]?.length || 1;
+  const uniquePatterns = getUniquePatterns(rowPatterns);
+  const uniqueMasks = uniquePatterns.map(patternToMask);
+  const nonzeroUniqueCount = uniqueMasks.filter(mask => mask > 0n).length;
+  const normalizedCap = Number.isFinite(maxTreadleCount)
+    ? Math.max(1, Number.parseInt(maxTreadleCount, 10) || 1)
+    : Math.max(1, nonzeroUniqueCount || 1);
+
+  if (!nonzeroUniqueCount) {
+    return {
+      tieup: [Array(patternLength).fill(0)],
+      treadling: rowPatterns.map(() => [0]),
+      maxPressedUsed: 0,
+      engine: "default"
+    };
+  }
+
+  const candidateMasks = buildExactGeneratorCandidateMasks(uniqueMasks);
+  if (!candidateMasks) {
+    return null;
+  }
+
+  const entries = [];
+  const emptyKey = "0";
+
+  for (const targetMask of uniqueMasks) {
+    const key = targetMask.toString();
+    if (key === emptyKey || entries.some(entry => entry.key === key)) {
+      continue;
+    }
+
+    const representations = enumerateExactRepresentationsForTarget(targetMask, candidateMasks, maxPressed);
+    if (!representations) {
+      return null;
+    }
+
+    entries.push({
+      key,
+      mask: targetMask,
+      representations
+    });
+  }
+
+  entries.sort((left, right) =>
+    left.representations.length - right.representations.length ||
+    countMaskOnes(right.mask) - countMaskOnes(left.mask)
+  );
+
+  const nodeLimit = 250000;
+  let searchNodes = 0;
+  let aborted = false;
+  let bestChoices = null;
+  let bestSelected = null;
+  let bestCount = normalizedCap + 1;
+
+  function branch(entryIndex, selectedIndices, choicesByTargetKey) {
+    searchNodes++;
+    if (searchNodes > nodeLimit) {
+      aborted = true;
+      return;
+    }
+
+    if (selectedIndices.size >= bestCount || selectedIndices.size > normalizedCap) {
+      return;
+    }
+
+    if (entryIndex >= entries.length) {
+      bestCount = selectedIndices.size;
+      bestSelected = Array.from(selectedIndices);
+      bestChoices = new Map(choicesByTargetKey);
+      return;
+    }
+
+    const entry = entries[entryIndex];
+    const orderedRepresentations = entry.representations.slice().sort((left, right) =>
+      countNewGeneratorIndices(left, selectedIndices) - countNewGeneratorIndices(right, selectedIndices) ||
+      left.length - right.length
+    );
+
+    for (const representation of orderedRepresentations) {
+      const addedIndices = representation.filter(index => !selectedIndices.has(index));
+      const nextSize = selectedIndices.size + addedIndices.length;
+
+      if (nextSize > normalizedCap || nextSize >= bestCount) {
+        continue;
+      }
+
+      addedIndices.forEach(index => selectedIndices.add(index));
+      choicesByTargetKey.set(entry.key, representation);
+      branch(entryIndex + 1, selectedIndices, choicesByTargetKey);
+      choicesByTargetKey.delete(entry.key);
+      addedIndices.forEach(index => selectedIndices.delete(index));
+
+      if (aborted) {
+        return;
+      }
+    }
+  }
+
+  branch(0, new Set(), new Map([[emptyKey, []]]));
+
+  if (aborted || !bestChoices || !bestSelected) {
+    return null;
+  }
+
+  const firstUseByCandidate = new Map();
+  rowPatterns.forEach((pattern, rowIndex) => {
+    const representation = bestChoices.get(patternToMask(pattern).toString()) || [];
+    representation.forEach(candidateIndex => {
+      if (!firstUseByCandidate.has(candidateIndex)) {
+        firstUseByCandidate.set(candidateIndex, rowIndex);
+      }
+    });
+  });
+
+  const orderedCandidateIndices = bestSelected.sort((left, right) =>
+    (firstUseByCandidate.get(left) ?? Number.POSITIVE_INFINITY) -
+      (firstUseByCandidate.get(right) ?? Number.POSITIVE_INFINITY) ||
+    compareGeneratorMasks(candidateMasks[left], candidateMasks[right])
+  );
+  const remap = new Map();
+  orderedCandidateIndices.forEach((candidateIndex, nextIndex) => {
+    remap.set(candidateIndex, nextIndex);
+  });
+
+  const tieup = orderedCandidateIndices.length
+    ? orderedCandidateIndices.map(candidateIndex => maskToPattern(candidateMasks[candidateIndex], patternLength))
+    : [Array(patternLength).fill(0)];
+
+  const treadling = rowPatterns.map(pattern => {
+    const row = Array(tieup.length || 1).fill(0);
+    const representation = bestChoices.get(patternToMask(pattern).toString()) || [];
+    representation.forEach(candidateIndex => {
+      if (remap.has(candidateIndex)) {
+        row[remap.get(candidateIndex)] = 1;
+      }
+    });
+    return row;
+  });
+
+  return {
+    tieup,
+    treadling,
+    maxPressedUsed: treadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0),
+    engine: "default"
+  };
+}
+
 function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPressedTreadles) {
   const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
 
@@ -2816,6 +3140,13 @@ function buildOneHotTreadleRepresentation(rowPatterns) {
 }
 
 function compressTreadleRepresentation(rowPatterns, maxPressed = maxPressedTreadles, maxTreadleCount = Number.POSITIVE_INFINITY) {
+  if (optimizerEngine === "default") {
+    const defaultCompression = compressTreadleRepresentationDefault(rowPatterns, maxPressed, maxTreadleCount);
+    if (defaultCompression) {
+      return defaultCompression;
+    }
+  }
+
   const patternLength = rowPatterns[0]?.length || 1;
   const normalizedCap = Number.isFinite(maxTreadleCount)
     ? Math.max(1, Number.parseInt(maxTreadleCount, 10) || 1)
@@ -3390,6 +3721,16 @@ function getRandomTrialWorkerFunctionSource() {
     isZeroPattern,
     isPatternSubset,
     intersectPatterns,
+    patternToMask,
+    maskToPattern,
+    countMaskOnes,
+    isMaskSubset,
+    compareGeneratorMasks,
+    getUniquePatterns,
+    buildExactGeneratorCandidateMasks,
+    enumerateExactRepresentationsForTarget,
+    countNewGeneratorIndices,
+    compressTreadleRepresentationDefault,
     findPatternCombination,
     buildOneHotTreadleRepresentation,
     compressTreadleRepresentation,
@@ -3435,7 +3776,7 @@ let picks = 1;
 let maxShafts = 1;
 let maxTreadles = 1;
 let maxPressedTreadles = 1;
-let optimizerEngine = "balanced";
+let optimizerEngine = "default";
 let floatTolerance = 1;
 let useFloatToleranceInOptimization = false;
 let maxGeneratedOptions = 6;
