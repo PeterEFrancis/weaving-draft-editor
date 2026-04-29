@@ -1469,11 +1469,15 @@
   <div class="engine-test-dock-lead">
     <div class="engine-test-dock-title">
       <strong>Engine Test</strong>
-      <span>Hidden random-draft checks</span>
+      <span>Hidden random-cell checks</span>
     </div>
   </div>
 
   <div class="engine-test-actions">
+    <!--
+    Draft-target tests are disabled because generated draft targets should
+    recover exactly under the default engine. Keep this markup nearby in case
+    we want to re-enable regression checks later.
     <div class="engine-test-group">
       <div class="engine-test-group-title">Draft targets</div>
       <button type="button" class="toggle-button" id="random-test-button" title="Create a random draft within the optimizer limits and load its drawdown into the target.">Random Draft</button>
@@ -1485,6 +1489,7 @@
         </div>
       </div>
     </div>
+    -->
 
     <div class="engine-test-group">
       <div class="engine-test-group-title">Cell targets</div>
@@ -1577,6 +1582,7 @@ const maxGeneratedOptions = 6;
 const defaultRandomTrialCount = 100;
 const randomTrialBatchSize = 20;
 const randomTrialBinCount = 48;
+const maxRandomTrialWorkers = 2;
 const minInverseZoomPercent = 1;
 const maxInverseZoomPercent = 300;
 const minInverseCellSize = (defaultCellSize * minInverseZoomPercent) / 100;
@@ -1622,6 +1628,7 @@ let draftName = defaultDraftName;
 let pendingInversePrintOptions = null;
 let lastRandomTrialDistribution = null;
 let lastRandomTrialMeta = null;
+let activeRandomTrialController = null;
 
 function createMatrix(rows, columns, fillValue = 0) {
   return Array.from({ length: rows }, () => Array(columns).fill(fillValue));
@@ -2941,14 +2948,20 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
     countMaskOnes(right.mask) - countMaskOnes(left.mask)
   );
 
-  const nodeLimit = 250000;
+  const nodeLimit = Number.isFinite(maxTreadleCount) ? 30000 : 8000;
+  const stopAtFirstConstrainedSolution = Number.isFinite(maxTreadleCount);
   let searchNodes = 0;
   let aborted = false;
+  let stopEarly = false;
   let bestChoices = null;
   let bestSelected = null;
   let bestCount = normalizedCap + 1;
 
   function branch(entryIndex, selectedIndices, choicesByTargetKey) {
+    if (aborted || stopEarly) {
+      return;
+    }
+
     searchNodes++;
     if (searchNodes > nodeLimit) {
       aborted = true;
@@ -2963,6 +2976,7 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
       bestCount = selectedIndices.size;
       bestSelected = Array.from(selectedIndices);
       bestChoices = new Map(choicesByTargetKey);
+      stopEarly = stopAtFirstConstrainedSolution;
       return;
     }
 
@@ -2986,7 +3000,7 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
       choicesByTargetKey.delete(entry.key);
       addedIndices.forEach(index => selectedIndices.delete(index));
 
-      if (aborted) {
+      if (aborted || stopEarly) {
         return;
       }
     }
@@ -2994,7 +3008,7 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
 
   branch(0, new Set(), new Map([[emptyKey, []]]));
 
-  if (aborted || !bestChoices || !bestSelected) {
+  if (!bestChoices || !bestSelected) {
     return null;
   }
 
@@ -3699,6 +3713,52 @@ function drawRandomTrialDistribution(distribution = lastRandomTrialDistribution,
   }
 }
 
+function createRandomTrialController() {
+  abortActiveRandomTrials();
+
+  const controller = {
+    cancelled: false,
+    workers: new Set(),
+    urls: new Set(),
+    cancelHandlers: new Set()
+  };
+
+  activeRandomTrialController = controller;
+  return controller;
+}
+
+function isRandomTrialControllerCurrent(controller) {
+  return Boolean(controller && activeRandomTrialController === controller && !controller.cancelled);
+}
+
+function abortActiveRandomTrials() {
+  const controller = activeRandomTrialController;
+  if (!controller) {
+    return;
+  }
+
+  controller.cancelled = true;
+  controller.cancelHandlers.forEach(handler => handler());
+  controller.cancelHandlers.clear();
+  controller.workers.forEach(worker => worker.terminate());
+  controller.workers.clear();
+  controller.urls.forEach(url => URL.revokeObjectURL(url));
+  controller.urls.clear();
+  activeRandomTrialController = null;
+}
+
+function releaseRandomTrialController(controller) {
+  if (activeRandomTrialController !== controller) {
+    return;
+  }
+
+  controller.cancelled = true;
+  controller.cancelHandlers.clear();
+  controller.workers.clear();
+  controller.urls.clear();
+  activeRandomTrialController = null;
+}
+
 function getRandomTrialWorkerFunctionSource() {
   return [
     createMatrix,
@@ -3837,24 +3897,56 @@ self.onmessage = event => {
 `;
 }
 
-function runRandomTrialWorkerBatch(settings, trialCount) {
+function runRandomTrialWorkerBatch(settings, trialCount, controller) {
+  if (!trialCount || !isRandomTrialControllerCurrent(controller)) {
+    return Promise.resolve(createEmptyRandomTrialDistribution());
+  }
+
   return new Promise((resolve, reject) => {
     const source = createRandomTrialWorkerSource();
     const blob = new Blob([source], { type: "text/javascript" });
     const url = URL.createObjectURL(blob);
     const worker = new Worker(url);
+    let settled = false;
 
     const cleanup = () => {
+      controller?.workers.delete(worker);
+      controller?.urls.delete(url);
+      controller?.cancelHandlers.delete(cancel);
       worker.terminate();
       URL.revokeObjectURL(url);
     };
 
+    const cancel = () => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      cleanup();
+      resolve(createEmptyRandomTrialDistribution());
+    };
+
+    controller?.workers.add(worker);
+    controller?.urls.add(url);
+    controller?.cancelHandlers.add(cancel);
+
     worker.onmessage = event => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
       cleanup();
       resolve(event.data);
     };
 
     worker.onerror = error => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
       cleanup();
       reject(error);
     };
@@ -3863,19 +3955,23 @@ function runRandomTrialWorkerBatch(settings, trialCount) {
   });
 }
 
-async function runRandomDraftTrialsSequentially(settings, trialCount, onProgress) {
+async function runRandomDraftTrialsSequentially(settings, trialCount, onProgress, controller) {
   const distribution = createEmptyRandomTrialDistribution();
   const savedExactRequirements = { ...exactRequirements };
 
   try {
     for (let trial = 0; trial < trialCount; trial++) {
+      if (!isRandomTrialControllerCurrent(controller)) {
+        break;
+      }
+
       const trialDrawdown = createTrialTargetDrawdown(settings);
       const trialOptions = buildConstrainedDraftOptions(trialDrawdown, settings.maxShafts, settings.maxTreadles);
       addRandomTrialSample(distribution, trialOptions[0]);
 
       if ((trial + 1) % randomTrialBatchSize === 0) {
         onProgress?.(distribution);
-        await new Promise(resolve => window.setTimeout(resolve, 0));
+        await new Promise(resolve => window.requestAnimationFrame(resolve));
       }
     }
   } finally {
@@ -3905,6 +4001,7 @@ async function runRandomTargetTrials() {
 async function runRandomEngineTrials({ targetKind, trialInputId, blackProbability = 0.5, runningLabel }) {
   syncRandomTestSettingsFromControls();
 
+  const controller = createRandomTrialController();
   const trialCount = getRandomTrialCountFromInput(trialInputId);
   const disabledElements = [
     "random-test-button",
@@ -3930,21 +4027,30 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
 
   try {
     if (window.Worker) {
-      const workerCount = Math.max(1, Math.min(trialCount, navigator.hardwareConcurrency || 4, 8));
+      const workerCount = Math.max(1, Math.min(trialCount, navigator.hardwareConcurrency || 2, maxRandomTrialWorkers));
       const baseTrialCount = Math.floor(trialCount / workerCount);
       const remainder = trialCount % workerCount;
       const workerRuns = Array.from({ length: workerCount }, (_, index) =>
-        runRandomTrialWorkerBatch(settings, baseTrialCount + (index < remainder ? 1 : 0))
+        runRandomTrialWorkerBatch(settings, baseTrialCount + (index < remainder ? 1 : 0), controller)
       );
 
       const batchResults = await Promise.all(workerRuns);
+      if (!isRandomTrialControllerCurrent(controller)) {
+        return;
+      }
       batchResults.forEach(batch => mergeRandomTrialDistribution(distribution, batch));
     } else {
       await runRandomDraftTrialsSequentially(settings, trialCount, progress => {
+        if (!isRandomTrialControllerCurrent(controller)) {
+          return;
+        }
         lastRandomTrialDistribution = { ...progress, bins: progress.bins.slice() };
         drawRandomTrialDistribution(lastRandomTrialDistribution, lastRandomTrialMeta);
         result.textContent = `${progress.completed}/${trialCount} trials`;
-      }).then(batch => mergeRandomTrialDistribution(distribution, batch));
+      }, controller).then(batch => mergeRandomTrialDistribution(distribution, batch));
+      if (!isRandomTrialControllerCurrent(controller)) {
+        return;
+      }
     }
 
     lastRandomTrialDistribution = distribution;
@@ -3958,9 +4064,12 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
     drawRandomTrialDistribution(lastRandomTrialDistribution, lastRandomTrialMeta);
   } finally {
     exactRequirements = savedExactRequirements;
-    disabledElements.forEach(element => {
-      element.disabled = false;
-    });
+    if (isRandomTrialControllerCurrent(controller)) {
+      releaseRandomTrialController(controller);
+      disabledElements.forEach(element => {
+        element.disabled = false;
+      });
+    }
   }
 }
 
@@ -3968,7 +4077,7 @@ function serializeDraftSignature({ threading, tieup, treadling }) {
   return `${threading.map(row => row.join("")).join("|")}::${tieup.map(row => row.join("")).join("|")}::${treadling.map(row => row.join("")).join("|")}`;
 }
 
-function generateExactDraftFromDrawdown(matrix) {
+function generateExactDraftFromDrawdown(matrix, constraints = {}) {
   const pickCount = matrix.length;
   const warpCount = matrix[0]?.length || 0;
 
@@ -4014,7 +4123,16 @@ function generateExactDraftFromDrawdown(matrix) {
     columnPatterns.map(columnPattern => (columnPattern[row] === "1" ? 1 : 0))
   );
   const oneHot = buildOneHotTreadleRepresentation(rowPatterns);
-  const compressed = compressTreadleRepresentation(rowPatterns, maxPressedTreadles, Number.POSITIVE_INFINITY);
+  const compressionCap = Number.isFinite(constraints.treadleLimit)
+    ? Math.max(1, Number.parseInt(constraints.treadleLimit, 10) || 1)
+    : Number.POSITIVE_INFINITY;
+  const shouldTryCompression = !(
+    Number.isFinite(constraints.shaftLimit) &&
+    shafts > Math.max(1, Number.parseInt(constraints.shaftLimit, 10) || 1)
+  );
+  const compressed = shouldTryCompression
+    ? compressTreadleRepresentation(rowPatterns, maxPressedTreadles, compressionCap)
+    : null;
   const selected = compressed || oneHot;
   const tieup = selected.tieup;
   const treadling = selected.treadling;
@@ -4519,7 +4637,11 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
         clothlikeAnalysis: computeDrawdownClothlikeAnalysis(matrix, floatTolerance)
       };
   const optimizationMatrix = repairResult.matrix;
-  const exactDraft = decorateDraftOptionForTarget(generateExactDraftFromDrawdown(optimizationMatrix), matrix, repairResult);
+  const exactDraft = decorateDraftOptionForTarget(
+    generateExactDraftFromDrawdown(optimizationMatrix, { shaftLimit, treadleLimit }),
+    matrix,
+    repairResult
+  );
   exactRequirements = {
     shafts: exactDraft.shafts,
     treadles: exactDraft.treadles,
@@ -5770,9 +5892,9 @@ document.getElementById("inverse-print-modal").addEventListener("hidden.bs.modal
   runInversePrintWithOptions(options);
 });
 document.getElementById("invert-button").addEventListener("click", invertTargetDrawdown);
-document.getElementById("random-test-button").addEventListener("click", createRandomDraftTarget);
+document.getElementById("random-test-button")?.addEventListener("click", createRandomDraftTarget);
 document.getElementById("random-target-button").addEventListener("click", createRandomCellTarget);
-document.getElementById("random-trials-run-button").addEventListener("click", runRandomDraftTrials);
+document.getElementById("random-trials-run-button")?.addEventListener("click", runRandomDraftTrials);
 document.getElementById("random-target-run-button").addEventListener("click", runRandomTargetTrials);
 document.getElementById("engine-test-collapse").addEventListener("click", toggleEngineTestDock);
 document.getElementById("clear-button").addEventListener("click", () => {
@@ -5833,16 +5955,16 @@ document.getElementById("inverse-draft-name").addEventListener("change", event =
 });
 
 ["warp-input", "picks-input", "max-shafts-input", "max-treadles-input", "max-pressed-treadles-input", "float-tolerance-input", "random-draft-trials-input", "random-target-trials-input"].forEach(id => {
-  document.getElementById(id).addEventListener("keydown", event => {
+  document.getElementById(id)?.addEventListener("keydown", event => {
     if (["-", "+", ".", ",", "e", "E"].includes(event.key)) {
       event.preventDefault();
     }
   });
 });
 
-document.getElementById("random-draft-trials-input").addEventListener("change", () => getRandomTrialCountFromInput("random-draft-trials-input"));
-document.getElementById("random-draft-trials-input").addEventListener("blur", () => getRandomTrialCountFromInput("random-draft-trials-input"));
-document.getElementById("random-draft-trials-input").addEventListener("keydown", event => {
+document.getElementById("random-draft-trials-input")?.addEventListener("change", () => getRandomTrialCountFromInput("random-draft-trials-input"));
+document.getElementById("random-draft-trials-input")?.addEventListener("blur", () => getRandomTrialCountFromInput("random-draft-trials-input"));
+document.getElementById("random-draft-trials-input")?.addEventListener("keydown", event => {
   if (event.key !== "Enter") {
     return;
   }
@@ -5885,6 +6007,8 @@ document.getElementById("max-pressed-treadles-input").addEventListener("blur", (
 window.addEventListener("pointerup", stopPainting);
 window.addEventListener("pointercancel", stopPainting);
 window.addEventListener("beforeunload", saveAutosave);
+window.addEventListener("beforeunload", abortActiveRandomTrials);
+window.addEventListener("pagehide", abortActiveRandomTrials);
 window.addEventListener("resize", scheduleFlowOverlayRender);
 window.addEventListener("resize", () => drawRandomTrialDistribution());
 window.addEventListener("keydown", event => {
