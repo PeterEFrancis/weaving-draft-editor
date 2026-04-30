@@ -723,9 +723,8 @@
     width: 100%;
     max-width: 100%;
     max-height: none;
-    overflow: auto;
+    overflow: hidden;
     box-sizing: border-box;
-    scrollbar-gutter: stable both-edges;
     padding: 1rem;
   }
 
@@ -946,6 +945,45 @@
     margin: 0 auto;
   }
 
+  .draft-print-area {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .draft-x-scroll-mirror,
+  .draft-y-scroll-mirror,
+  .drawdown-scroll {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .draft-x-scroll-mirror,
+  .draft-y-scroll-mirror {
+    overflow: hidden;
+  }
+
+  .drawdown-scroll {
+    overflow: auto;
+    max-width: 100%;
+    max-height: 100%;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .drawdown-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
   th {
     padding: 0;
     border: 0;
@@ -985,11 +1023,11 @@
     background: transparent !important;
   }
 
-  .draft-stage #threading,
+  .draft-stage #threading-viewport,
   .draft-stage #tieup,
-  .draft-stage #drawdown,
-  .draft-stage #treadling {
-    outline: var(--cell-gap) solid var(--ink);
+  .draft-stage #drawdown-scroll,
+  .draft-stage #treadling-viewport {
+    border: var(--cell-gap) solid var(--ink);
     background: rgba(255, 255, 255, 0.3);
   }
 
@@ -1354,7 +1392,12 @@
     .workspace-card,
     .workspace-toolbar,
     .draft-stage,
-    .draft-grid-scroll {
+    .draft-grid-scroll,
+    .draft-print-area,
+    .draft-x-scroll-mirror,
+    .draft-y-scroll-mirror,
+    .drawdown-scroll {
+      width: auto !important;
       height: auto !important;
       min-height: 0 !important;
       max-height: none !important;
@@ -1578,7 +1621,9 @@
               <tr class="ruler-row">
                 <th class="ghost-cell"></th>
                 <th class="draft-section-col-left">
-                  <div id="warp-ruler" class="warp-ruler"></div>
+                  <div id="warp-ruler-viewport" class="draft-x-scroll-mirror">
+                    <div id="warp-ruler" class="warp-ruler"></div>
+                  </div>
                 </th>
                 <th class="ghost-cell"></th>
                 <th class="ghost-cell"></th>
@@ -1587,7 +1632,9 @@
               <tr class="toolbar-row">
                 <th class="ghost-cell"></th>
                 <th class="draft-section-col-left">
-                  <div id="warp-inserts" class="warp-toolbar"></div>
+                  <div id="warp-inserts-viewport" class="draft-x-scroll-mirror">
+                    <div id="warp-inserts" class="warp-toolbar"></div>
+                  </div>
                 </th>
                 <th class="draft-section-col-right">
                   <div id="treadle-inserts" class="warp-toolbar"></div>
@@ -1597,7 +1644,11 @@
 
               <tr>
                 <td class="ghost-cell"><div id="heddle-count"></div></td>
-                <td class="draft-section-cell draft-section-col-left draft-section-row-top"><div id="threading" class="grid"></div></td>
+                <td class="draft-section-cell draft-section-col-left draft-section-row-top">
+                  <div id="threading-viewport" class="draft-x-scroll-mirror">
+                    <div id="threading" class="grid"></div>
+                  </div>
+                </td>
                 <td class="draft-section-cell draft-section-col-right draft-section-row-top"><div id="tieup" class="grid"></div></td>
                 <td class="ghost-cell"><div id="shaft-inserts" class="pick-toolbar"></div></td>
               </tr>
@@ -1605,17 +1656,25 @@
               <tr>
                 <td class="ghost-cell"></td>
                 <td class="draft-section-cell draft-section-col-left draft-section-row-bottom">
-                  <div id="drawdown" class="grid"></div>
+                  <div id="drawdown-scroll" class="drawdown-scroll">
+                    <div id="drawdown" class="grid"></div>
+                  </div>
                 </td>
                 <td class="draft-section-cell draft-section-col-right draft-section-row-bottom">
                   <div class="pick-wrap">
-                    <div id="treadling" class="grid"></div>
+                    <div id="treadling-viewport" class="draft-y-scroll-mirror">
+                      <div id="treadling" class="grid"></div>
+                    </div>
                   </div>
                 </td>
                 <td class="ghost-cell draft-section-row-bottom">
                   <div class="pick-side-wrap">
-                    <div id="pick-inserts" class="pick-toolbar"></div>
-                    <div id="pick-ruler" class="pick-ruler"></div>
+                    <div id="pick-inserts-viewport" class="draft-y-scroll-mirror">
+                      <div id="pick-inserts" class="pick-toolbar"></div>
+                    </div>
+                    <div id="pick-ruler-viewport" class="draft-y-scroll-mirror">
+                      <div id="pick-ruler" class="pick-ruler"></div>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -3990,7 +4049,12 @@ function normalizeLoadedDraftHistory(data, fallbackSerializedState) {
 }
 
 function applyLoadedDraftData(data, options = {}) {
-  const { restoreHistory = true, draftNameOverride = null, preserveDraftName = false } = options;
+  const {
+    restoreHistory = true,
+    draftNameOverride = null,
+    preserveDraftName = false,
+    scrollToDraftOrigin = true
+  } = options;
 
   if (data?.format !== "weaving-draft-data" || typeof data?.draft !== "object") {
     throw new Error("That file is not a valid WDD draft.");
@@ -4042,6 +4106,9 @@ function applyLoadedDraftData(data, options = {}) {
   setDraftRenderStyle(nextDraftRenderStyle, false);
   applyDraftZoom();
   renderPatternColors();
+  if (scrollToDraftOrigin) {
+    queueDraftOriginScroll();
+  }
   renderAll();
 
   if (restoreHistory) {
@@ -4130,7 +4197,11 @@ function applyDraftHistoryEntry(nextIndex) {
   try {
     isDraftAutosaveSuspended = true;
     isDraftHistorySuspended = true;
-    applyLoadedDraftData(JSON.parse(entry), { restoreHistory: false, preserveDraftName: true });
+    applyLoadedDraftData(JSON.parse(entry), {
+      restoreHistory: false,
+      preserveDraftName: true,
+      scrollToDraftOrigin: false
+    });
     draftHistoryIndex = nextIndex;
   } catch (error) {
     window.alert("Unable to restore that draft state.");
@@ -6474,6 +6545,7 @@ function loadDefaultHoundstoothDraft() {
   setPreviewRenderMode("plain", false);
   setDraftRenderStyle(defaultDraftRenderStyle, false);
   renderPatternColors();
+  queueDraftOriginScroll();
   renderAll();
 }
 
@@ -6481,6 +6553,7 @@ function init() {
   threading = Array.from({length: shafts}, () => Array(warp).fill(0));
   treadling = Array.from({length: picks}, () => Array(treadles).fill(0));
   tieup = Array.from({length: treadles}, () => Array(shafts).fill(0));
+  queueDraftOriginScroll();
   renderAll();
 }
 
@@ -6632,7 +6705,244 @@ const repeatPreviewScroll = document.getElementById("repeat-preview-scroll");
 const pageShellElement = document.querySelector(".page-shell");
 const workspaceToolbarElement = document.querySelector(".workspace-toolbar");
 const draftStageElement = document.querySelector(".draft-stage");
+const draftGridScrollElement = document.querySelector(".draft-grid-scroll");
+const drawdownScrollElement = document.getElementById("drawdown-scroll");
 let draftStageHeightFrame = 0;
+let draftLayoutFrame = 0;
+let draftScrollState = { left: 0, top: 0 };
+let pendingDraftOriginScroll = false;
+
+function sumTrackSizes(sizes) {
+  return sizes.reduce((total, size) => total + (Number(size) || 0), 0);
+}
+
+function parseCssLength(value, contextElement = document.documentElement) {
+  const trimmed = String(value || "").trim();
+  const numeric = Number.parseFloat(trimmed);
+
+  if (!Number.isFinite(numeric)) {
+    return 0;
+  }
+
+  if (trimmed.endsWith("rem")) {
+    return numeric * (Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+  }
+
+  if (trimmed.endsWith("em")) {
+    return numeric * (Number.parseFloat(getComputedStyle(contextElement).fontSize) || 16);
+  }
+
+  return numeric;
+}
+
+function getDraftGridContentBox() {
+  if (!draftGridScrollElement) {
+    return { width: 0, height: 0, bottom: 0 };
+  }
+
+  const styles = getComputedStyle(draftGridScrollElement);
+  const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
+  const paddingRight = Number.parseFloat(styles.paddingRight) || 0;
+  const paddingBottom = Number.parseFloat(styles.paddingBottom) || 0;
+  const rect = draftGridScrollElement.getBoundingClientRect();
+
+  return {
+    width: Math.max(0, draftGridScrollElement.clientWidth - paddingLeft - paddingRight),
+    height: Math.max(0, draftGridScrollElement.clientHeight - paddingBottom),
+    bottom: rect.bottom - paddingBottom
+  };
+}
+
+function getDraftSectionGapPx() {
+  return parseCssLength(
+    getComputedStyle(document.documentElement).getPropertyValue("--draft-section-gap"),
+    document.documentElement
+  );
+}
+
+function setDraftMirrorViewportSize(width, height) {
+  const xMirrorIds = ["warp-ruler-viewport", "warp-inserts-viewport", "threading-viewport"];
+  const yMirrorIds = ["treadling-viewport", "pick-inserts-viewport", "pick-ruler-viewport"];
+  const widthValue = `${Math.max(1, width)}px`;
+  const heightValue = `${Math.max(1, height)}px`;
+
+  if (drawdownScrollElement) {
+    drawdownScrollElement.style.width = widthValue;
+    drawdownScrollElement.style.height = heightValue;
+  }
+
+  xMirrorIds.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.width = widthValue;
+    }
+  });
+
+  yMirrorIds.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.height = heightValue;
+    }
+  });
+}
+
+function syncDraftScrollMirrors() {
+  if (!drawdownScrollElement) {
+    return;
+  }
+
+  const scrollLeft = drawdownScrollElement.scrollLeft;
+  const scrollTop = drawdownScrollElement.scrollTop;
+  const xMirrorIds = ["warp-ruler-viewport", "warp-inserts-viewport", "threading-viewport"];
+  const yMirrorIds = ["treadling-viewport", "pick-inserts-viewport", "pick-ruler-viewport"];
+
+  draftScrollState = { left: scrollLeft, top: scrollTop };
+
+  xMirrorIds.forEach(id => {
+    const element = document.getElementById(id);
+    if (element && element.scrollLeft !== scrollLeft) {
+      element.scrollLeft = scrollLeft;
+    }
+  });
+
+  yMirrorIds.forEach(id => {
+    const element = document.getElementById(id);
+    if (element && element.scrollTop !== scrollTop) {
+      element.scrollTop = scrollTop;
+    }
+  });
+}
+
+function queueDraftOriginScroll() {
+  pendingDraftOriginScroll = true;
+  draftScrollState = { left: Number.POSITIVE_INFINITY, top: 0 };
+}
+
+function restoreDraftScrollPosition() {
+  if (!drawdownScrollElement) {
+    return;
+  }
+
+  const maxLeft = Math.max(0, drawdownScrollElement.scrollWidth - drawdownScrollElement.clientWidth);
+  const maxTop = Math.max(0, drawdownScrollElement.scrollHeight - drawdownScrollElement.clientHeight);
+  const targetLeft = pendingDraftOriginScroll ? maxLeft : draftScrollState.left;
+  const targetTop = pendingDraftOriginScroll ? 0 : draftScrollState.top;
+
+  drawdownScrollElement.scrollLeft = Math.min(targetLeft, maxLeft);
+  drawdownScrollElement.scrollTop = Math.min(targetTop, maxTop);
+  pendingDraftOriginScroll = false;
+  syncDraftScrollMirrors();
+}
+
+function scrollDraftBy(deltaX, deltaY) {
+  if (!drawdownScrollElement) {
+    return false;
+  }
+
+  const previousLeft = drawdownScrollElement.scrollLeft;
+  const previousTop = drawdownScrollElement.scrollTop;
+  const maxLeft = Math.max(0, drawdownScrollElement.scrollWidth - drawdownScrollElement.clientWidth);
+  const maxTop = Math.max(0, drawdownScrollElement.scrollHeight - drawdownScrollElement.clientHeight);
+  const nextLeft = Math.max(0, Math.min(maxLeft, previousLeft + deltaX));
+  const nextTop = Math.max(0, Math.min(maxTop, previousTop + deltaY));
+
+  if (nextLeft === previousLeft && nextTop === previousTop) {
+    return false;
+  }
+
+  drawdownScrollElement.scrollLeft = nextLeft;
+  drawdownScrollElement.scrollTop = nextTop;
+  syncDraftScrollMirrors();
+
+  return true;
+}
+
+function normalizeDraftWheelDelta(event) {
+  const lineHeight = draftCellSize || defaultDraftCellSize;
+  const pageHeight = drawdownScrollElement?.clientHeight || lineHeight;
+  const multiplier = event.deltaMode === 1 ? lineHeight : event.deltaMode === 2 ? pageHeight : 1;
+  let deltaX = event.deltaX * multiplier;
+  let deltaY = event.deltaY * multiplier;
+
+  if (event.shiftKey && !deltaX) {
+    deltaX = deltaY;
+    deltaY = 0;
+  }
+
+  return { deltaX, deltaY };
+}
+
+function forwardDraftWheel(event) {
+  if (event.ctrlKey || event.metaKey) {
+    return;
+  }
+
+  const { deltaX, deltaY } = normalizeDraftWheelDelta(event);
+
+  if (scrollDraftBy(deltaX, deltaY)) {
+    event.preventDefault();
+  }
+}
+
+function attachDraftMirrorWheelForwarding() {
+  [
+    "drawdown-scroll",
+    "warp-ruler-viewport",
+    "warp-inserts-viewport",
+    "threading-viewport",
+    "treadling-viewport",
+    "pick-inserts-viewport",
+    "pick-ruler-viewport"
+  ].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.addEventListener("wheel", forwardDraftWheel, { passive: false });
+    }
+  });
+}
+
+function layoutDraftScrollContainers() {
+  if (!draftGridScrollElement || !drawdownScrollElement) {
+    return;
+  }
+
+  const renderStyle = getDraftRenderStyle();
+  const drawdownWidth = sumTrackSizes(getDrawdownColumnWidthsForRender(renderStyle));
+  const drawdownHeight = sumTrackSizes(getDrawdownRowHeightsForRender(renderStyle));
+  const contentBox = getDraftGridContentBox();
+  const sectionGap = getDraftSectionGapPx();
+  const heddleWidth = document.getElementById("heddle-count")?.offsetWidth || 0;
+  const tieupWidth = document.getElementById("tieup")?.offsetWidth || treadles * draftCellSize;
+  const treadlingWidth = document.getElementById("treadling")?.offsetWidth || treadles * draftCellSize;
+  const treadleToolbarWidth = document.getElementById("treadle-inserts")?.offsetWidth || treadles * draftCellSize;
+  const rightDraftWidth = Math.max(tieupWidth, treadlingWidth, treadleToolbarWidth);
+  const shaftToolbarWidth = document.getElementById("shaft-inserts")?.offsetWidth || 0;
+  const pickSideWidth = document.querySelector(".pick-side-wrap")?.offsetWidth || 0;
+  const sideRailWidth = Math.max(shaftToolbarWidth, pickSideWidth);
+  const fixedWidth = heddleWidth + rightDraftWidth + sideRailWidth + sectionGap * 3;
+  const availableDrawdownWidth = Math.max(1, contentBox.width - fixedWidth);
+  const viewportWidth = Math.max(1, Math.min(drawdownWidth, availableDrawdownWidth));
+
+  setDraftMirrorViewportSize(viewportWidth, Math.max(1, drawdownHeight));
+
+  const drawdownTop = drawdownScrollElement.getBoundingClientRect().top;
+  const availableDrawdownHeight = Math.max(1, contentBox.bottom - drawdownTop);
+  const viewportHeight = Math.max(1, Math.min(drawdownHeight, availableDrawdownHeight));
+
+  setDraftMirrorViewportSize(viewportWidth, viewportHeight);
+  restoreDraftScrollPosition();
+}
+
+function scheduleDraftLayoutUpdate() {
+  if (draftLayoutFrame) {
+    cancelAnimationFrame(draftLayoutFrame);
+  }
+
+  draftLayoutFrame = requestAnimationFrame(() => {
+    draftLayoutFrame = 0;
+    layoutDraftScrollContainers();
+  });
+}
 
 function updateDraftStageHeight() {
   if (!draftStageElement) {
@@ -6648,6 +6958,7 @@ function updateDraftStageHeight() {
   const remainingHeight = Math.max(0, Math.floor(viewportBottom - stageTop));
 
   draftStageElement.style.height = `${remainingHeight}px`;
+  scheduleDraftLayoutUpdate();
 }
 
 function scheduleDraftStageHeightUpdate() {
@@ -6687,6 +6998,12 @@ if ("ResizeObserver" in window) {
   });
 }
 
+if (drawdownScrollElement) {
+  drawdownScrollElement.addEventListener("scroll", syncDraftScrollMirrors, { passive: true });
+}
+
+attachDraftMirrorWheelForwarding();
+
 window.addEventListener("load", scheduleDraftStageHeightUpdate);
 
 function renderDraftStage() {
@@ -6702,6 +7019,7 @@ function renderDraftStage() {
   renderTieup();
   renderTreadling();
   renderDrawdown();
+  scheduleDraftLayoutUpdate();
   scheduleDraftStageHeightUpdate();
 }
 
