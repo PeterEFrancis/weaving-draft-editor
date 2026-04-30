@@ -1568,7 +1568,7 @@
               </div>
             </div>
           </div>
-          <input id="draft-file-input" type="file" accept=".wdd,.wdi,application/json" class="d-none">
+          <input id="draft-file-input" type="file" accept=".wdd.svg,.wdi.svg,.svg,.wdd,.wdi,application/json,image/svg+xml" class="d-none">
         </div>
 
         <div class="draft-stage">
@@ -1596,15 +1596,10 @@
               </tr>
 
               <tr>
-                <td class="ghost-cell">
-                  <div class="shaft-side-wrap">
-                    <div id="heddle-count"></div>
-                    <div id="shaft-inserts" class="pick-toolbar"></div>
-                  </div>
-                </td>
+                <td class="ghost-cell"><div id="heddle-count"></div></td>
                 <td class="draft-section-cell draft-section-col-left draft-section-row-top"><div id="threading" class="grid"></div></td>
                 <td class="draft-section-cell draft-section-col-right draft-section-row-top"><div id="tieup" class="grid"></div></td>
-                <td class="ghost-cell"></td>
+                <td class="ghost-cell"><div id="shaft-inserts" class="pick-toolbar"></div></td>
               </tr>
 
               <tr>
@@ -1873,7 +1868,12 @@ function sanitizeDraftFilenameBase(name = getDraftName()) {
 }
 
 function getDraftNameFromFilename(filename) {
-  return normalizeDraftName(String(filename || "").replace(/\.[^.]+$/, ""), defaultDraftName);
+  return normalizeDraftName(
+    String(filename || "")
+      .replace(/\.(wdd|wdi)\.svg$/i, "")
+      .replace(/\.[^.]+$/, ""),
+    defaultDraftName
+  );
 }
 
 function getSelectedPatternColorId() {
@@ -3653,7 +3653,7 @@ function getDraftSuggestedFilename(includeTime = false) {
   const baseName = sanitizeDraftFilenameBase();
 
   if (!includeTime) {
-    return `${baseName}.wdd`;
+    return `${baseName}.wdd.svg`;
   }
 
   const now = new Date();
@@ -3664,11 +3664,11 @@ function getDraftSuggestedFilename(includeTime = false) {
   const minutes = String(now.getMinutes()).padStart(2, "0");
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  return `${baseName}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdd`;
+  return `${baseName}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdd.svg`;
 }
 
-function downloadDraftFile(contents, filename) {
-  const blob = new Blob([contents], {type: "application/json"});
+function downloadTextFile(contents, filename, type) {
+  const blob = new Blob([contents], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
@@ -3680,8 +3680,138 @@ function downloadDraftFile(contents, filename) {
   URL.revokeObjectURL(url);
 }
 
+function escapeSvgText(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeSvgAttribute(value) {
+  return escapeSvgText(value)
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function encodeBase64Utf8(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return window.btoa(binary);
+}
+
+function decodeBase64Utf8(value) {
+  const binary = window.atob(String(value || "").replace(/\s+/g, ""));
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new TextDecoder().decode(bytes);
+}
+
+function appendSvgCell(parts, x, y, width, height, fill, stroke = "#d8d0c5") {
+  parts.push(
+    `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${escapeSvgAttribute(fill)}" stroke="${stroke}" stroke-width="1" shape-rendering="crispEdges"/>`
+  );
+}
+
+function getSvgDrawdownCellFill(cellState, renderStyle) {
+  if (renderStyle === "structure") {
+    return cellState?.warpVisibleOnFront && cellState?.hasWarp ? "#2f241d" : "#ffffff";
+  }
+
+  return cellState?.frontColor || "#ffffff";
+}
+
+function buildDraftSvgDocument() {
+  const saveData = buildDraftSaveData();
+  const serializedDraft = JSON.stringify(saveData);
+  const embeddedDraft = encodeBase64Utf8(serializedDraft);
+  const renderStyle = getDraftRenderStyle();
+  const cellSize = 16;
+  const drawdownX = 0;
+  const drawdownY = 0;
+  const drawdownWidth = warp * cellSize;
+  const drawdownHeight = picks * cellSize;
+  const width = Math.max(cellSize, drawdownWidth);
+  const height = Math.max(cellSize, drawdownHeight);
+  const parts = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="draft-title draft-desc">`,
+    `<title id="draft-title">${escapeSvgText(getDraftName())}</title>`,
+    `<desc id="draft-desc">A weaving draft drawdown preview. The complete .wdd draft data is embedded as base64 JSON metadata.</desc>`,
+    `<metadata id="wdd-data" data-format="application/vnd.weaving-draft-document+json" data-encoding="base64">${embeddedDraft}</metadata>`
+  ];
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      appendSvgCell(
+        parts,
+        drawdownX + warpIndex * cellSize,
+        drawdownY + pickIndex * cellSize,
+        cellSize,
+        cellSize,
+        getSvgDrawdownCellFill(getDrawdownCellState(pickIndex, warpIndex), renderStyle)
+      );
+    }
+  }
+
+  parts.push(`</svg>`);
+  return parts.join("\n");
+}
+
+function normalizeDraftSvgFilename(filename, fallbackName = getDraftSuggestedFilename(true)) {
+  const trimmed = String(filename || "").trim();
+
+  if (!trimmed) {
+    return fallbackName;
+  }
+
+  const withoutKnownExtension = trimmed
+    .replace(/(?:\.wdd)?\.svg$/i, "")
+    .replace(/\.wdd$/i, "");
+
+  return `${withoutKnownExtension || sanitizeDraftFilenameBase()}.wdd.svg`;
+}
+
+function parseEmbeddedDraftSvgData(text) {
+  const doc = new DOMParser().parseFromString(text, "image/svg+xml");
+
+  if (doc.querySelector("parsererror")) {
+    throw new Error("That SVG file could not be read.");
+  }
+
+  const metadata = doc.querySelector("metadata[data-format], #wdd-data, #wdi-data");
+
+  if (!metadata) {
+    throw new Error("That SVG does not contain weaving draft data.");
+  }
+
+  const encoding = String(metadata.getAttribute("data-encoding") || "").toLowerCase();
+  const raw = String(metadata.textContent || "").trim();
+  const decoded = encoding === "base64" ? decodeBase64Utf8(raw) : raw;
+  return JSON.parse(decoded);
+}
+
+function parseDraftFileContents(contents) {
+  const text = String(contents || "").trim();
+
+  if (text.startsWith("<")) {
+    return parseEmbeddedDraftSvgData(text);
+  }
+
+  return JSON.parse(text);
+}
+
 async function saveDraftToFile() {
-  const contents = JSON.stringify(buildDraftSaveData(), null, 2);
+  const contents = buildDraftSvgDocument();
   const suggestedName = getDraftSuggestedFilename();
 
   if (typeof window.showSaveFilePicker === "function") {
@@ -3689,9 +3819,9 @@ async function saveDraftToFile() {
       const handle = await window.showSaveFilePicker({
         suggestedName,
         types: [{
-          description: "Weaving Draft Document",
+          description: "Weaving Draft Document SVG",
           accept: {
-            "application/json": [".wdd"]
+            "image/svg+xml": [".wdd.svg", ".svg"]
           }
         }]
       });
@@ -3713,12 +3843,9 @@ async function saveDraftToFile() {
     return;
   }
 
-  const trimmedName = fallbackName.trim();
-  const filename = trimmedName
-    ? (trimmedName.toLowerCase().endsWith(".wdd") ? trimmedName : `${trimmedName}.wdd`)
-    : fallbackSuggestedName;
+  const filename = normalizeDraftSvgFilename(fallbackName, fallbackSuggestedName);
 
-  downloadDraftFile(contents, filename);
+  downloadTextFile(contents, filename, "image/svg+xml;charset=utf-8");
 }
 
 function createCrossEditorTransferToken() {
@@ -3940,7 +4067,7 @@ function handleDraftFileChange(event) {
   const reader = new FileReader();
   reader.onload = loadEvent => {
     try {
-      const parsed = JSON.parse(String(loadEvent.target?.result || ""));
+      const parsed = parseDraftFileContents(loadEvent.target?.result || "");
       if (isInverseDraftData(parsed)) {
         const converted = buildDraftDataFromInverseState(parsed, { filename: file.name });
         applyLoadedDraftData(converted.data);
@@ -4183,19 +4310,19 @@ function getInsertButtonSize() {
   return Math.max(1, (draftCellSize - buttonGap) / 2);
 }
 
-function sizeWarpToolbarButtons(plusButton, minusButton) {
+function sizeWarpToolbarButtons(...buttons) {
   const buttonSize = getInsertButtonSize();
 
-  [plusButton, minusButton].forEach(button => {
+  buttons.filter(Boolean).forEach(button => {
     setElementSize(button, buttonSize, buttonSize);
     button.style.fontSize = `${Math.max(1, buttonSize * 0.85)}px`;
   });
 }
 
-function sizePickToolbarButtons(plusButton, minusButton) {
+function sizePickToolbarButtons(...buttons) {
   const buttonSize = getInsertButtonSize();
 
-  [plusButton, minusButton].forEach(button => {
+  buttons.filter(Boolean).forEach(button => {
     setElementSize(button, buttonSize, buttonSize);
     button.style.fontSize = `${Math.max(1, buttonSize * 0.85)}px`;
   });
@@ -7315,16 +7442,23 @@ function renderWarpToolbar() {
     cell.className = "warp-insert-cell";
     setElementSize(cell, columnWidths[i], draftCellSize);
 
-    const plus = document.createElement("button");
-    plus.className = "insert-btn insert-btn-plus insert-btn-warp-plus";
-    plus.textContent = "+";
+    const plusBefore = document.createElement("button");
+    plusBefore.className = "insert-btn insert-btn-plus insert-btn-warp-plus-left";
+    plusBefore.textContent = "+";
+    plusBefore.title = "Insert warp before this end";
+
+    const plusAfter = document.createElement("button");
+    plusAfter.className = "insert-btn insert-btn-plus insert-btn-warp-plus";
+    plusAfter.textContent = "+";
+    plusAfter.title = "Insert warp after this end";
 
     const minus = document.createElement("button");
     minus.className = "insert-btn insert-btn-minus insert-btn-warp-minus";
     minus.textContent = "−";
-    sizeWarpToolbarButtons(plus, minus);
+    minus.title = "Delete this warp end";
+    sizeWarpToolbarButtons(plusBefore, plusAfter, minus);
 
-    plus.onclick = () => {
+    const insertWarpAt = insertIndex => {
       const nextDimensions = applyDraftDimensionLimits(warp + 1, picks, "warp");
 
       if (nextDimensions.warp !== warp + 1) {
@@ -7333,12 +7467,14 @@ function renderWarpToolbar() {
       }
 
       for (let s = 0; s < shafts; s++) {
-        threading[s].splice(i + 1, 0, 0);
+        threading[s].splice(insertIndex, 0, 0);
       }
       warp++;
       document.getElementById("warp").value = warp;
       renderAll();
     };
+    plusBefore.onclick = () => insertWarpAt(i);
+    plusAfter.onclick = () => insertWarpAt(i + 1);
 
     minus.onclick = () => {
       if (warp <= 1) return;
@@ -7350,7 +7486,8 @@ function renderWarpToolbar() {
       renderAll();
     };
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     div.appendChild(cell);
   }
@@ -7366,24 +7503,33 @@ function renderTreadleToolbar() {
     cell.className = "warp-insert-cell";
     setElementSize(cell, draftCellSize, draftCellSize);
 
-    const plus = document.createElement("button");
-    plus.className = "insert-btn insert-btn-plus insert-btn-warp-plus-left";
-    plus.textContent = "+";
+    const plusBefore = document.createElement("button");
+    plusBefore.className = "insert-btn insert-btn-plus insert-btn-warp-plus-left";
+    plusBefore.textContent = "+";
+    plusBefore.title = "Insert treadle before this treadle";
+
+    const plusAfter = document.createElement("button");
+    plusAfter.className = "insert-btn insert-btn-plus insert-btn-warp-plus";
+    plusAfter.textContent = "+";
+    plusAfter.title = "Insert treadle after this treadle";
 
     const minus = document.createElement("button");
     minus.className = "insert-btn insert-btn-minus insert-btn-warp-minus";
     minus.textContent = "−";
-    sizeWarpToolbarButtons(plus, minus);
+    minus.title = "Delete this treadle";
+    sizeWarpToolbarButtons(plusBefore, plusAfter, minus);
 
-    plus.onclick = () => {
-      tieup.splice(treadleIndex, 0, Array(shafts).fill(0));
+    const insertTreadleAt = insertIndex => {
+      tieup.splice(insertIndex, 0, Array(shafts).fill(0));
       treadling.forEach(row => {
-        row.splice(treadleIndex, 0, 0);
+        row.splice(insertIndex, 0, 0);
       });
       treadles++;
       document.getElementById("treadles").value = treadles;
       renderAll();
     };
+    plusBefore.onclick = () => insertTreadleAt(treadleIndex);
+    plusAfter.onclick = () => insertTreadleAt(treadleIndex + 1);
 
     minus.onclick = () => {
       if (treadles <= 1) return;
@@ -7400,7 +7546,8 @@ function renderTreadleToolbar() {
       renderAll();
     };
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     div.appendChild(cell);
   }
@@ -7462,16 +7609,23 @@ function renderPickToolbar() {
     cell.className = "pick-insert-cell";
     setElementSize(cell, draftCellSize, rowHeights[j]);
 
-    const plus = document.createElement("button");
-    plus.className = "insert-btn insert-btn-plus insert-btn-pick-plus";
-    plus.textContent = "+";
+    const plusBefore = document.createElement("button");
+    plusBefore.className = "insert-btn insert-btn-plus insert-btn-pick-plus";
+    plusBefore.textContent = "+";
+    plusBefore.title = "Insert pick above this pick";
+
+    const plusAfter = document.createElement("button");
+    plusAfter.className = "insert-btn insert-btn-plus insert-btn-pick-plus-bottom";
+    plusAfter.textContent = "+";
+    plusAfter.title = "Insert pick below this pick";
 
     const minus = document.createElement("button");
     minus.className = "insert-btn insert-btn-minus insert-btn-pick-minus";
     minus.textContent = "−";
-    sizePickToolbarButtons(plus, minus);
+    minus.title = "Delete this pick";
+    sizePickToolbarButtons(plusBefore, plusAfter, minus);
 
-    plus.onclick = () => {
+    const insertPickAt = insertIndex => {
       const nextDimensions = applyDraftDimensionLimits(warp, picks + 1, "picks");
 
       if (nextDimensions.picks !== picks + 1) {
@@ -7479,11 +7633,13 @@ function renderPickToolbar() {
         return;
       }
 
-      treadling.splice(j, 0, Array(treadles).fill(0));
+      treadling.splice(insertIndex, 0, Array(treadles).fill(0));
       picks++;
       document.getElementById("picks").value = picks;
       renderAll();
     };
+    plusBefore.onclick = () => insertPickAt(j);
+    plusAfter.onclick = () => insertPickAt(j + 1);
 
     minus.onclick = () => {
       if (picks <= 1) return;
@@ -7493,7 +7649,8 @@ function renderPickToolbar() {
       renderAll();
     };
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     div.appendChild(cell);
   }
@@ -7511,24 +7668,33 @@ function renderShaftToolbar() {
     cell.className = "pick-insert-cell";
     setElementSize(cell, draftCellSize, rowHeights[displayRow]);
 
-    const plus = document.createElement("button");
-    plus.className = "insert-btn insert-btn-plus insert-btn-pick-plus-bottom";
-    plus.textContent = "+";
+    const plusBefore = document.createElement("button");
+    plusBefore.className = "insert-btn insert-btn-plus insert-btn-pick-plus";
+    plusBefore.textContent = "+";
+    plusBefore.title = "Insert shaft above this shaft";
+
+    const plusAfter = document.createElement("button");
+    plusAfter.className = "insert-btn insert-btn-plus insert-btn-pick-plus-bottom";
+    plusAfter.textContent = "+";
+    plusAfter.title = "Insert shaft below this shaft";
 
     const minus = document.createElement("button");
     minus.className = "insert-btn insert-btn-minus insert-btn-pick-minus";
     minus.textContent = "−";
-    sizePickToolbarButtons(plus, minus);
+    minus.title = "Delete this shaft";
+    sizePickToolbarButtons(plusBefore, plusAfter, minus);
 
-    plus.onclick = () => {
-      threading.splice(shaftIndex, 0, Array(warp).fill(0));
+    const insertShaftAt = insertIndex => {
+      threading.splice(insertIndex, 0, Array(warp).fill(0));
       tieup.forEach(row => {
-        row.splice(shaftIndex, 0, 0);
+        row.splice(insertIndex, 0, 0);
       });
       shafts++;
       document.getElementById("shafts").value = shafts;
       renderAll();
     };
+    plusBefore.onclick = () => insertShaftAt(shaftIndex + 1);
+    plusAfter.onclick = () => insertShaftAt(shaftIndex);
 
     minus.onclick = () => {
       if (shafts <= 1) return;
@@ -7545,7 +7711,8 @@ function renderShaftToolbar() {
       renderAll();
     };
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     div.appendChild(cell);
   }

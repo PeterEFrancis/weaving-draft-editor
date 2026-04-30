@@ -347,6 +347,13 @@
     white-space: nowrap;
   }
 
+  .engine-test-control-cluster {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
   .engine-test-run-field {
     display: grid;
     gap: 0.28rem;
@@ -431,6 +438,24 @@
     background: rgba(255, 255, 255, 0.72);
   }
 
+  .engine-test-tooltip {
+    position: fixed;
+    z-index: 1000;
+    max-width: 14rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid rgba(122, 50, 28, 0.18);
+    border-radius: 0.6rem;
+    background: rgba(47, 36, 29, 0.92);
+    color: #fffaf0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: pre-line;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 0.55rem));
+    box-shadow: 0 0.5rem 1.3rem rgba(47, 36, 29, 0.2);
+  }
+
   .engine-test-dock {
     position: fixed;
     inset-inline: 0;
@@ -487,19 +512,44 @@
   }
 
   .engine-test-collapse {
-    width: 2.35rem;
-    min-width: 2.35rem;
-    padding-inline: 0;
+    width: 2.65rem;
+    min-width: 2.65rem;
+    min-height: 2.05rem;
+    padding: 0;
+    border-color: rgba(170, 74, 43, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(122, 50, 28, 0.78);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.72),
+      0 0.25rem 0.8rem rgba(47, 36, 29, 0.08);
   }
 
   .engine-test-collapse-icon {
-    display: inline-block;
-    line-height: 1;
+    display: inline-flex;
+    width: 1rem;
+    height: 1rem;
+    align-items: center;
+    justify-content: center;
     transition: transform 160ms ease;
+  }
+
+  .engine-test-collapse-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .engine-test-collapse:hover,
+  .engine-test-collapse:focus-visible {
+    border-color: rgba(170, 74, 43, 0.32);
+    background: rgba(255, 250, 242, 0.94);
+    color: rgba(122, 50, 28, 0.96);
   }
 
   .engine-test-dock.is-collapsed {
     inset-inline: auto clamp(1rem, 2vw, 2rem);
+    transform: none;
     grid-template-columns: auto;
     width: auto;
     padding: 0;
@@ -515,9 +565,15 @@
   }
 
   .engine-test-dock.is-collapsed .engine-test-collapse {
-    border-radius: 0.85rem 0.85rem 0 0;
+    width: 3.2rem;
+    min-width: 3.2rem;
+    min-height: 2.15rem;
+    border-bottom: 0;
+    border-radius: 0.95rem 0.95rem 0 0;
     background: rgba(252, 248, 240, 0.96);
-    box-shadow: 0 -0.5rem 1.4rem rgba(47, 36, 29, 0.14);
+    box-shadow:
+      0 -0.5rem 1.4rem rgba(47, 36, 29, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
 
   .engine-test-dock.is-collapsed .engine-test-collapse-icon {
@@ -881,10 +937,22 @@
     transform: translate(50%, -50%);
   }
 
+  .target-insert-btn-warp-plus-left {
+    left: 0;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .target-insert-btn-pick-plus {
     left: 50%;
     top: 0;
     transform: translate(-50%, -50%);
+  }
+
+  .target-insert-btn-pick-plus-bottom {
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
   }
 
   .draft-cell-ambiguous {
@@ -1342,7 +1410,7 @@
       </section>
     </div>
 
-    <input id="inverse-draft-file-input" type="file" accept=".wdi,.wdd,application/json" hidden>
+    <input id="inverse-draft-file-input" type="file" accept=".wdi.svg,.wdd.svg,.svg,.wdi,.wdd,application/json,image/svg+xml" hidden>
 
     <section id="inverse-content-grid" class="content-grid">
       <svg id="flow-overlay" class="flow-overlay" aria-hidden="true"></svg>
@@ -1465,7 +1533,7 @@
   </div>
 </main>
 
-<aside id="engine-test-dock" class="panel engine-test-dock" aria-label="Engine test tools">
+<aside id="engine-test-dock" class="panel engine-test-dock is-collapsed" aria-label="Engine test tools">
   <div class="engine-test-dock-lead">
     <div class="engine-test-dock-title">
       <strong>Engine Test</strong>
@@ -1490,9 +1558,7 @@
       </div>
     </div>
     -->
-
-    <div class="engine-test-group">
-      <div class="engine-test-group-title">Cell targets</div>
+    <div class="engine-test-control-cluster">
       <button type="button" class="toggle-button" id="random-target-button" title="Create a random target where each cell is black with probability p.">Random Target</button>
       <div class="engine-test-run-field">
         <div class="engine-test-label-row">
@@ -1515,14 +1581,19 @@
     type="button"
     class="toggle-button toggle-button-small engine-test-collapse"
     id="engine-test-collapse"
-    aria-label="Collapse engine test panel"
+    aria-label="Expand engine test panel"
     aria-controls="engine-test-dock"
-    aria-expanded="true"
-    title="Collapse engine test panel"
+    aria-expanded="false"
+    title="Expand engine test panel"
   >
-    <span class="engine-test-collapse-icon" aria-hidden="true">⌄</span>
+    <span class="engine-test-collapse-icon" aria-hidden="true">
+      <svg viewBox="0 0 16 16" focusable="false">
+        <path d="M4 6.25 8 10l4-3.75" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
   </button>
 </aside>
+<span id="random-trials-tooltip" class="engine-test-tooltip" hidden></span>
 
 <div class="modal fade inverse-print-modal" id="inverse-print-modal" tabindex="-1" aria-labelledby="inverse-print-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -1581,7 +1652,6 @@ const defaultFloatTolerance = 2;
 const maxGeneratedOptions = 6;
 const defaultRandomTrialCount = 100;
 const randomTrialBatchSize = 20;
-const randomTrialBinCount = 48;
 const maxRandomTrialWorkers = 2;
 const minInverseZoomPercent = 1;
 const maxInverseZoomPercent = 300;
@@ -1628,6 +1698,7 @@ let draftName = defaultDraftName;
 let pendingInversePrintOptions = null;
 let lastRandomTrialDistribution = null;
 let lastRandomTrialMeta = null;
+let lastRandomTrialChartPoints = [];
 let activeRandomTrialController = null;
 
 function createMatrix(rows, columns, fillValue = 0) {
@@ -1728,7 +1799,7 @@ function sanitizeFilenameBase(name = getDraftName()) {
 function getSuggestedFilename(includeTimestamp = false) {
   const base = sanitizeFilenameBase();
   if (!includeTimestamp) {
-    return `${base}.wdi`;
+    return `${base}.wdi.svg`;
   }
   const now = new Date();
   const year = String(now.getFullYear());
@@ -1737,11 +1808,133 @@ function getSuggestedFilename(includeTimestamp = false) {
   const hours = String(now.getHours()).padStart(2, "0");
   const minutes = String(now.getMinutes()).padStart(2, "0");
   const seconds = String(now.getSeconds()).padStart(2, "0");
-  return `${base}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdi`;
+  return `${base}-${year}-${month}-${day}-${hours}${minutes}${seconds}.wdi.svg`;
 }
 
 function getDraftNameFromFilename(filename) {
-  return normalizeDraftName(String(filename || "").replace(/\.[^.]+$/, ""), defaultDraftName);
+  return normalizeDraftName(
+    String(filename || "")
+      .replace(/\.(wdd|wdi)\.svg$/i, "")
+      .replace(/\.[^.]+$/, ""),
+    defaultDraftName
+  );
+}
+
+function escapeSvgText(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeSvgAttribute(value) {
+  return escapeSvgText(value)
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function encodeBase64Utf8(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return window.btoa(binary);
+}
+
+function decodeBase64Utf8(value) {
+  const binary = window.atob(String(value || "").replace(/\s+/g, ""));
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new TextDecoder().decode(bytes);
+}
+
+function appendSvgCell(parts, x, y, width, height, fill, stroke = "#d8d0c5") {
+  parts.push(
+    `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${escapeSvgAttribute(fill)}" stroke="${stroke}" stroke-width="1" shape-rendering="crispEdges"/>`
+  );
+}
+
+function buildInverseDraftSvgDocument() {
+  const saveData = buildSaveData();
+  const serializedDraft = JSON.stringify(saveData);
+  const embeddedDraft = encodeBase64Utf8(serializedDraft);
+  const cellSize = 16;
+  const width = Math.max(cellSize, warp * cellSize);
+  const height = Math.max(cellSize, picks * cellSize);
+  const parts = [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="inverse-draft-title inverse-draft-desc">`,
+    `<title id="inverse-draft-title">${escapeSvgText(getDraftName())}</title>`,
+    `<desc id="inverse-draft-desc">A weaving inverse-draft target preview. The complete .wdi draft data is embedded as base64 JSON metadata.</desc>`,
+    `<metadata id="wdi-data" data-format="application/vnd.weaving-draft-inverse+json" data-encoding="base64">${embeddedDraft}</metadata>`
+  ];
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      appendSvgCell(
+        parts,
+        warpIndex * cellSize,
+        pickIndex * cellSize,
+        cellSize,
+        cellSize,
+        targetDrawdown[pickIndex]?.[warpIndex] ? "#2f241d" : "#ffffff"
+      );
+    }
+  }
+
+  parts.push(`</svg>`);
+  return parts.join("\n");
+}
+
+function normalizeInverseSvgFilename(filename, fallbackName = getSuggestedFilename(true)) {
+  const trimmed = String(filename || "").trim();
+
+  if (!trimmed) {
+    return fallbackName;
+  }
+
+  const withoutKnownExtension = trimmed
+    .replace(/(?:\.wdi)?\.svg$/i, "")
+    .replace(/\.wdi$/i, "");
+
+  return `${withoutKnownExtension || sanitizeFilenameBase()}.wdi.svg`;
+}
+
+function parseEmbeddedDraftSvgData(text) {
+  const doc = new DOMParser().parseFromString(text, "image/svg+xml");
+
+  if (doc.querySelector("parsererror")) {
+    throw new Error("That SVG file could not be read.");
+  }
+
+  const metadata = doc.querySelector("metadata[data-format], #wdd-data, #wdi-data");
+
+  if (!metadata) {
+    throw new Error("That SVG does not contain weaving draft data.");
+  }
+
+  const encoding = String(metadata.getAttribute("data-encoding") || "").toLowerCase();
+  const raw = String(metadata.textContent || "").trim();
+  const decoded = encoding === "base64" ? decodeBase64Utf8(raw) : raw;
+  return JSON.parse(decoded);
+}
+
+function parseInverseFileContents(contents) {
+  const text = String(contents || "").trim();
+
+  if (text.startsWith("<")) {
+    return parseEmbeddedDraftSvgData(text);
+  }
+
+  return JSON.parse(text);
 }
 
 function getCellSize() {
@@ -2270,12 +2463,19 @@ function renderTargetWarpInsertToolbar() {
     const cell = document.createElement("div");
     cell.className = "target-warp-insert-cell";
 
-    const plus = document.createElement("button");
-    plus.type = "button";
-    plus.className = "target-insert-btn target-insert-btn-warp-plus";
-    plus.textContent = "+";
-    plus.title = `Insert warp after column ${column + 1}`;
-    plus.addEventListener("click", () => insertTargetWarpAfter(column));
+    const plusBefore = document.createElement("button");
+    plusBefore.type = "button";
+    plusBefore.className = "target-insert-btn target-insert-btn-warp-plus-left";
+    plusBefore.textContent = "+";
+    plusBefore.title = `Insert warp before column ${column + 1}`;
+    plusBefore.addEventListener("click", () => insertTargetWarpAt(column));
+
+    const plusAfter = document.createElement("button");
+    plusAfter.type = "button";
+    plusAfter.className = "target-insert-btn target-insert-btn-warp-plus";
+    plusAfter.textContent = "+";
+    plusAfter.title = `Insert warp after column ${column + 1}`;
+    plusAfter.addEventListener("click", () => insertTargetWarpAt(column + 1));
 
     const minus = document.createElement("button");
     minus.type = "button";
@@ -2285,7 +2485,8 @@ function renderTargetWarpInsertToolbar() {
     minus.disabled = warp <= 1;
     minus.addEventListener("click", () => deleteTargetWarp(column));
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     toolbar.appendChild(cell);
   }
@@ -2300,12 +2501,19 @@ function renderTargetPickInsertToolbar() {
     const cell = document.createElement("div");
     cell.className = "target-pick-insert-cell";
 
-    const plus = document.createElement("button");
-    plus.type = "button";
-    plus.className = "target-insert-btn target-insert-btn-pick-plus";
-    plus.textContent = "+";
-    plus.title = `Insert pick before row ${row + 1}`;
-    plus.addEventListener("click", () => insertTargetPickBefore(row));
+    const plusBefore = document.createElement("button");
+    plusBefore.type = "button";
+    plusBefore.className = "target-insert-btn target-insert-btn-pick-plus";
+    plusBefore.textContent = "+";
+    plusBefore.title = `Insert pick before row ${row + 1}`;
+    plusBefore.addEventListener("click", () => insertTargetPickAt(row));
+
+    const plusAfter = document.createElement("button");
+    plusAfter.type = "button";
+    plusAfter.className = "target-insert-btn target-insert-btn-pick-plus-bottom";
+    plusAfter.textContent = "+";
+    plusAfter.title = `Insert pick after row ${row + 1}`;
+    plusAfter.addEventListener("click", () => insertTargetPickAt(row + 1));
 
     const minus = document.createElement("button");
     minus.type = "button";
@@ -2315,21 +2523,23 @@ function renderTargetPickInsertToolbar() {
     minus.disabled = picks <= 1;
     minus.addEventListener("click", () => deleteTargetPick(row));
 
-    cell.appendChild(plus);
+    cell.appendChild(plusBefore);
+    cell.appendChild(plusAfter);
     cell.appendChild(minus);
     toolbar.appendChild(cell);
   }
 }
 
-function insertTargetWarpAfter(columnIndex) {
+function insertTargetWarpAt(insertIndex) {
   const nextDimensions = clampDimensions(warp + 1, picks, "warp");
   if (nextDimensions.warp !== warp + 1) {
     showLimitAlert();
     return;
   }
 
+  const boundedIndex = Math.max(0, Math.min(warp, insertIndex));
   targetDrawdown.forEach(row => {
-    row.splice(columnIndex + 1, 0, 0);
+    row.splice(boundedIndex, 0, 0);
   });
   warp++;
   updateDimensionInputs();
@@ -2355,14 +2565,15 @@ function deleteTargetWarp(columnIndex) {
   pushHistorySnapshot();
 }
 
-function insertTargetPickBefore(rowIndex) {
+function insertTargetPickAt(insertIndex) {
   const nextDimensions = clampDimensions(warp, picks + 1, "picks");
   if (nextDimensions.picks !== picks + 1) {
     showLimitAlert();
     return;
   }
 
-  targetDrawdown.splice(rowIndex, 0, Array(warp).fill(0));
+  const boundedIndex = Math.max(0, Math.min(picks, insertIndex));
+  targetDrawdown.splice(boundedIndex, 0, Array(warp).fill(0));
   picks++;
   updateDimensionInputs();
   renderTargetGrid();
@@ -3495,6 +3706,9 @@ function setEngineTestDockCollapsed(isCollapsed) {
     return;
   }
 
+  if (isCollapsed) {
+    hideRandomTrialChartTooltip();
+  }
   dock.classList.toggle("is-collapsed", isCollapsed);
   button.setAttribute("aria-expanded", String(!isCollapsed));
   button.setAttribute("aria-label", isCollapsed ? "Expand engine test panel" : "Collapse engine test panel");
@@ -3521,10 +3735,16 @@ function getRandomTrialSettings(targetKind = "draft", blackProbability = 0.5) {
     floatTolerance,
     useFloatToleranceInOptimization,
     maxGeneratedOptions,
-    binCount: randomTrialBinCount,
+    binCount: getRandomTrialBucketCount({ warp, picks }),
     targetKind,
     blackProbability
   };
+}
+
+function getRandomTrialBucketCount(settings = null) {
+  const bucketWarp = Number.parseInt(settings?.warp ?? warp, 10) || defaultWarp;
+  const bucketPicks = Number.parseInt(settings?.picks ?? picks, 10) || defaultPicks;
+  return Math.max(1, bucketWarp * bucketPicks) + 1;
 }
 
 function getRandomTrialCountFromInput(inputId) {
@@ -3540,22 +3760,26 @@ function getRandomTargetProbabilityFromInput() {
   return nextValue;
 }
 
-function createEmptyRandomTrialDistribution() {
+function createEmptyRandomTrialDistribution(settings = null) {
   return {
-    bins: Array(randomTrialBinCount).fill(0),
+    bins: Array(getRandomTrialBucketCount(settings)).fill(0),
     exactCount: 0,
     completed: 0
   };
 }
 
-function getRandomTrialBinIndex(matchRatio, binCount = randomTrialBinCount) {
-  const normalized = Math.max(0, Math.min(1, Number(matchRatio) || 0));
-  return Math.min(binCount - 1, Math.floor(normalized * binCount));
+function getRandomTrialOutcomeIndex(option, binCount = getRandomTrialBucketCount()) {
+  const totalCells = Math.max(1, binCount - 1);
+  if (Number.isFinite(option?.mismatchCount)) {
+    return Math.max(0, Math.min(totalCells, totalCells - Math.round(option.mismatchCount)));
+  }
+
+  const normalized = Math.max(0, Math.min(1, Number(option?.matchRatio) || 0));
+  return Math.max(0, Math.min(totalCells, Math.round(normalized * totalCells)));
 }
 
 function addRandomTrialSample(distribution, option) {
-  const matchRatio = Math.max(0, Math.min(1, option?.matchRatio ?? 0));
-  distribution.bins[getRandomTrialBinIndex(matchRatio, distribution.bins.length)]++;
+  distribution.bins[getRandomTrialOutcomeIndex(option, distribution.bins.length)]++;
   distribution.completed++;
   if (isTopGeneratedOptionExact(option)) {
     distribution.exactCount++;
@@ -3576,54 +3800,6 @@ function getRandomTrialChartContext() {
   return canvas ? { canvas, context: canvas.getContext("2d") } : null;
 }
 
-function smoothRandomTrialBins(bins) {
-  const sigma = 1.65;
-  const radius = 4;
-  const weights = Array.from({ length: radius * 2 + 1 }, (_, index) => {
-    const distance = index - radius;
-    return Math.exp(-(distance * distance) / (2 * sigma * sigma));
-  });
-
-  return bins.map((_, binIndex) => {
-    let weightedTotal = 0;
-    let weightTotal = 0;
-
-    weights.forEach((weight, weightIndex) => {
-      const sourceIndex = binIndex + weightIndex - radius;
-      if (sourceIndex < 0 || sourceIndex >= bins.length) {
-        return;
-      }
-      weightedTotal += bins[sourceIndex] * weight;
-      weightTotal += weight;
-    });
-
-    return weightTotal ? weightedTotal / weightTotal : 0;
-  });
-}
-
-function drawSmoothPdfPath(context, points) {
-  if (!points.length) {
-    return;
-  }
-
-  for (let index = 0; index < points.length - 1; index++) {
-    const current = points[index];
-    const next = points[index + 1];
-    const previous = points[index - 1] || current;
-    const following = points[index + 2] || next;
-    const controlOne = {
-      x: current.x + (next.x - previous.x) / 6,
-      y: current.y + (next.y - previous.y) / 6
-    };
-    const controlTwo = {
-      x: next.x - (following.x - current.x) / 6,
-      y: next.y - (following.y - current.y) / 6
-    };
-
-    context.bezierCurveTo(controlOne.x, controlOne.y, controlTwo.x, controlTwo.y, next.x, next.y);
-  }
-}
-
 function resizeRandomTrialChartCanvas(canvas) {
   const rect = canvas.getBoundingClientRect();
   const width = Math.max(240, Math.round(rect.width || canvas.width || 416));
@@ -3640,6 +3816,28 @@ function resizeRandomTrialChartCanvas(canvas) {
   return { width, height, scale };
 }
 
+function formatRandomTrialPercent(outcomeIndex, totalCells) {
+  const percent = totalCells ? (outcomeIndex / totalCells) * 100 : 0;
+  const fixed = percent === 0 || percent === 100 || totalCells <= 100 ? 0 : 1;
+  return `${percent.toFixed(fixed)}%`;
+}
+
+function getObservedRandomTrialRange(bins) {
+  const observedIndices = bins
+    .map((count, index) => ({ count, index }))
+    .filter(point => point.count > 0);
+
+  if (!observedIndices.length) {
+    return { observedIndices, startIndex: 0, endIndex: bins.length - 1 };
+  }
+
+  return {
+    observedIndices,
+    startIndex: Math.max(0, observedIndices[0].index - 1),
+    endIndex: Math.min(bins.length - 1, observedIndices[observedIndices.length - 1].index + 1)
+  };
+}
+
 function drawRandomTrialDistribution(distribution = lastRandomTrialDistribution, meta = lastRandomTrialMeta) {
   const chart = getRandomTrialChartContext();
   if (!chart?.context) {
@@ -3648,19 +3846,28 @@ function drawRandomTrialDistribution(distribution = lastRandomTrialDistribution,
 
   const { canvas, context } = chart;
   const { width, height, scale } = resizeRandomTrialChartCanvas(canvas);
-  const bins = distribution?.bins?.length ? distribution.bins : Array(randomTrialBinCount).fill(0);
+  const bins = distribution?.bins?.length ? distribution.bins : Array(getRandomTrialBucketCount()).fill(0);
   const completed = distribution?.completed || 0;
   const exactCount = distribution?.exactCount || 0;
-  const smoothedBins = smoothRandomTrialBins(bins);
-  const maximum = Math.max(1, ...smoothedBins);
+  const maximum = bins.reduce((currentMaximum, count) => Math.max(currentMaximum, count), 1);
   const padding = { left: 24, right: 12, top: 12, bottom: 24 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   const baselineY = padding.top + chartHeight;
-  const points = smoothedBins.map((count, index) => ({
-    x: padding.left + (index / Math.max(1, smoothedBins.length - 1)) * chartWidth,
-    y: baselineY - (count / maximum) * chartHeight
+  const totalCells = Math.max(1, bins.length - 1);
+  const { observedIndices, startIndex, endIndex } = getObservedRandomTrialRange(bins);
+  const rangeSpan = Math.max(1, endIndex - startIndex);
+  const visibleIndices = Array.from({ length: endIndex - startIndex + 1 }, (_, offset) => startIndex + offset);
+  const points = visibleIndices.map(index => ({
+    count: bins[index] || 0,
+    index,
+    matchedCells: index,
+    totalCells,
+    percent: formatRandomTrialPercent(index, totalCells),
+    x: padding.left + ((index - startIndex) / rangeSpan) * chartWidth,
+    y: baselineY - ((bins[index] || 0) / maximum) * chartHeight
   }));
+  lastRandomTrialChartPoints = points;
 
   context.setTransform(scale, 0, 0, scale, 0, 0);
   context.clearRect(0, 0, width, height);
@@ -3675,42 +3882,91 @@ function drawRandomTrialDistribution(distribution = lastRandomTrialDistribution,
   context.lineTo(padding.left + chartWidth, baselineY);
   context.stroke();
 
-  context.beginPath();
-  context.moveTo(points[0]?.x || padding.left, baselineY);
-  context.lineTo(points[0]?.x || padding.left, points[0]?.y || baselineY);
-  drawSmoothPdfPath(context, points);
-  context.lineTo(points[points.length - 1]?.x || padding.left + chartWidth, baselineY);
-  context.closePath();
-  const fillGradient = context.createLinearGradient(0, padding.top, 0, baselineY);
-  fillGradient.addColorStop(0, "rgba(170, 74, 43, 0.34)");
-  fillGradient.addColorStop(1, "rgba(195, 132, 63, 0.08)");
-  context.fillStyle = fillGradient;
-  context.fill();
-
-  context.beginPath();
-  context.moveTo(points[0]?.x || padding.left, points[0]?.y || baselineY);
-  drawSmoothPdfPath(context, points);
-  context.strokeStyle = "rgba(170, 74, 43, 0.88)";
-  context.lineWidth = 2.25;
-  context.lineJoin = "round";
-  context.lineCap = "round";
-  context.stroke();
+  if (points.length) {
+    const bucketWidth = chartWidth / Math.max(1, points.length);
+    const barWidth = Math.max(2, Math.min(14, bucketWidth * 0.72));
+    context.fillStyle = "rgba(170, 74, 43, 0.82)";
+    points.forEach(point => {
+      const barHeight = baselineY - point.y;
+      if (barHeight <= 0) {
+        return;
+      }
+      context.fillRect(point.x - barWidth / 2, point.y, barWidth, barHeight);
+    });
+  }
 
   context.fillStyle = "rgba(47, 36, 29, 0.56)";
   context.font = "700 10px sans-serif";
   context.textAlign = "left";
   context.textBaseline = "alphabetic";
-  context.fillText("0%", padding.left, height - 6);
+  const midpointIndex = Math.round((startIndex + endIndex) / 2);
+  context.fillText(formatRandomTrialPercent(startIndex, totalCells), padding.left, height - 6);
   context.textAlign = "center";
-  context.fillText("50%", padding.left + chartWidth / 2, height - 6);
+  context.fillText(formatRandomTrialPercent(midpointIndex, totalCells), padding.left + chartWidth / 2, height - 6);
   context.textAlign = "right";
-  context.fillText("100%", padding.left + chartWidth, height - 6);
+  context.fillText(formatRandomTrialPercent(endIndex, totalCells), padding.left + chartWidth, height - 6);
 
   if (meta?.isRunning) {
     const trialCount = Math.max(1, meta.trialCount || defaultRandomTrialCount);
     context.fillStyle = "rgba(170, 74, 43, 0.12)";
     context.fillRect(padding.left, padding.top, chartWidth * Math.min(1, completed / trialCount), 4);
   }
+}
+
+function getRandomTrialTooltipElement() {
+  return document.getElementById("random-trials-tooltip");
+}
+
+function hideRandomTrialChartTooltip() {
+  const tooltip = getRandomTrialTooltipElement();
+  const chart = document.getElementById("random-trials-chart");
+  if (tooltip) {
+    tooltip.hidden = true;
+  }
+  if (chart) {
+    chart.style.cursor = "";
+  }
+}
+
+function handleRandomTrialChartPointerMove(event) {
+  const canvas = event.currentTarget;
+  const tooltip = getRandomTrialTooltipElement();
+  if (!canvas || !tooltip || !lastRandomTrialChartPoints.length) {
+    hideRandomTrialChartTooltip();
+    return;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const pointerX = event.clientX - rect.left;
+  const pointerY = event.clientY - rect.top;
+  if (pointerX < 0 || pointerX > rect.width || pointerY < 0 || pointerY > rect.height) {
+    hideRandomTrialChartTooltip();
+    return;
+  }
+
+  const nearestPoint = lastRandomTrialChartPoints.reduce((nearest, point) => {
+    const distance = Math.abs(point.x - pointerX);
+    if (!nearest || distance < nearest.distance) {
+      return { point, distance };
+    }
+    return nearest;
+  }, null);
+
+  if (!nearestPoint) {
+    hideRandomTrialChartTooltip();
+    return;
+  }
+
+  const { point } = nearestPoint;
+  tooltip.textContent = [
+    `${point.percent} match`,
+    `${point.matchedCells}/${point.totalCells} cells`,
+    `${point.count} trial${point.count === 1 ? "" : "s"}`
+  ].join("\n");
+  tooltip.style.left = `${rect.left + point.x}px`;
+  tooltip.style.top = `${rect.top + point.y}px`;
+  tooltip.hidden = false;
+  canvas.style.cursor = "pointer";
 }
 
 function createRandomTrialController() {
@@ -3869,9 +4125,14 @@ function configure(settings) {
   maxGeneratedOptions = settings.maxGeneratedOptions;
 }
 
-function getBinIndex(matchRatio, binCount) {
-  const normalized = Math.max(0, Math.min(1, Number(matchRatio) || 0));
-  return Math.min(binCount - 1, Math.floor(normalized * binCount));
+function getOutcomeIndex(option, binCount) {
+  const totalCells = Math.max(1, binCount - 1);
+  if (Number.isFinite(option?.mismatchCount)) {
+    return Math.max(0, Math.min(totalCells, totalCells - Math.round(option.mismatchCount)));
+  }
+
+  const normalized = Math.max(0, Math.min(1, Number(option?.matchRatio) || 0));
+  return Math.max(0, Math.min(totalCells, Math.round(normalized * totalCells)));
 }
 
 self.onmessage = event => {
@@ -3885,8 +4146,7 @@ self.onmessage = event => {
     const trialDrawdown = createTrialTargetDrawdown(settings);
     const trialOptions = buildConstrainedDraftOptions(trialDrawdown, maxShafts, maxTreadles);
     const option = trialOptions[0] || null;
-    const matchRatio = Math.max(0, Math.min(1, option?.matchRatio ?? 0));
-    bins[getBinIndex(matchRatio, settings.binCount)]++;
+    bins[getOutcomeIndex(option, settings.binCount)]++;
     if (option && (option.exactMatch || option.mismatchCount === 0)) {
       exactCount++;
     }
@@ -3899,7 +4159,7 @@ self.onmessage = event => {
 
 function runRandomTrialWorkerBatch(settings, trialCount, controller) {
   if (!trialCount || !isRandomTrialControllerCurrent(controller)) {
-    return Promise.resolve(createEmptyRandomTrialDistribution());
+    return Promise.resolve(createEmptyRandomTrialDistribution(settings));
   }
 
   return new Promise((resolve, reject) => {
@@ -3924,7 +4184,7 @@ function runRandomTrialWorkerBatch(settings, trialCount, controller) {
 
       settled = true;
       cleanup();
-      resolve(createEmptyRandomTrialDistribution());
+      resolve(createEmptyRandomTrialDistribution(settings));
     };
 
     controller?.workers.add(worker);
@@ -3956,7 +4216,7 @@ function runRandomTrialWorkerBatch(settings, trialCount, controller) {
 }
 
 async function runRandomDraftTrialsSequentially(settings, trialCount, onProgress, controller) {
-  const distribution = createEmptyRandomTrialDistribution();
+  const distribution = createEmptyRandomTrialDistribution(settings);
   const savedExactRequirements = { ...exactRequirements };
 
   try {
@@ -4015,12 +4275,12 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
   const result = document.getElementById("random-trials-result");
   const settings = getRandomTrialSettings(targetKind, blackProbability);
   const savedExactRequirements = { ...exactRequirements };
-  const distribution = createEmptyRandomTrialDistribution();
+  const distribution = createEmptyRandomTrialDistribution(settings);
 
   disabledElements.forEach(element => {
     element.disabled = true;
   });
-  result.textContent = `Running ${trialCount} ${runningLabel} trials...`;
+  result.textContent = "";
   lastRandomTrialDistribution = distribution;
   lastRandomTrialMeta = { isRunning: true, trialCount };
   drawRandomTrialDistribution(distribution, lastRandomTrialMeta);
@@ -4046,7 +4306,6 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
         }
         lastRandomTrialDistribution = { ...progress, bins: progress.bins.slice() };
         drawRandomTrialDistribution(lastRandomTrialDistribution, lastRandomTrialMeta);
-        result.textContent = `${progress.completed}/${trialCount} trials`;
       }, controller).then(batch => mergeRandomTrialDistribution(distribution, batch));
       if (!isRandomTrialControllerCurrent(controller)) {
         return;
@@ -4056,7 +4315,7 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
     lastRandomTrialDistribution = distribution;
     lastRandomTrialMeta = { isRunning: false };
     drawRandomTrialDistribution(distribution, lastRandomTrialMeta);
-    result.textContent = `${distribution.exactCount} exact / ${distribution.completed} ${runningLabel} trials`;
+    result.textContent = "";
   } catch (error) {
     console.error(error);
     result.textContent = "Trial error";
@@ -5113,17 +5372,17 @@ function confirmInverseResetToDefault() {
 }
 
 async function saveInverseDraftToFile() {
-  const contents = JSON.stringify(buildSaveData(), null, 2);
+  const contents = buildInverseDraftSvgDocument();
   const suggestedName = getSuggestedFilename();
-  const blob = new Blob([contents], { type: "application/json" });
+  const blob = new Blob([contents], { type: "image/svg+xml" });
 
   if (typeof window.showSaveFilePicker === "function") {
     try {
       const handle = await window.showSaveFilePicker({
         suggestedName,
         types: [{
-          description: "Inverse weaving draft",
-          accept: { "application/json": [".wdi"] }
+          description: "Inverse Weaving Draft SVG",
+          accept: { "image/svg+xml": [".wdi.svg", ".svg"] }
         }]
       });
       const writable = await handle.createWritable();
@@ -5142,10 +5401,7 @@ async function saveInverseDraftToFile() {
   if (fallbackName === null) {
     return;
   }
-  const trimmed = fallbackName.trim();
-  const filename = trimmed
-    ? (trimmed.toLowerCase().endsWith(".wdi") ? trimmed : `${trimmed}.wdi`)
-    : fallbackSuggestedName;
+  const filename = normalizeInverseSvgFilename(fallbackName, fallbackSuggestedName);
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -5270,7 +5526,7 @@ async function handleInverseDraftFileOpen(event) {
 
   try {
     const text = await file.text();
-    const parsed = JSON.parse(text);
+    const parsed = parseInverseFileContents(text);
     if (isForwardDraftData(parsed)) {
       const converted = buildInverseDataFromForwardDraft(parsed, { filename: file.name });
       applyLoadedData(converted);
@@ -5896,6 +6152,8 @@ document.getElementById("random-test-button")?.addEventListener("click", createR
 document.getElementById("random-target-button").addEventListener("click", createRandomCellTarget);
 document.getElementById("random-trials-run-button")?.addEventListener("click", runRandomDraftTrials);
 document.getElementById("random-target-run-button").addEventListener("click", runRandomTargetTrials);
+document.getElementById("random-trials-chart").addEventListener("pointermove", handleRandomTrialChartPointerMove);
+document.getElementById("random-trials-chart").addEventListener("pointerleave", hideRandomTrialChartTooltip);
 document.getElementById("engine-test-collapse").addEventListener("click", toggleEngineTestDock);
 document.getElementById("clear-button").addEventListener("click", () => {
   clearTargetDrawdown();
