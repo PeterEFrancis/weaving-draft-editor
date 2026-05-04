@@ -10,3 +10,7 @@
 \contentsline {subsection}{\numberline {3.2}Alpha 2}{9}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Alpha 3}{11}{subsection.3.3}%
 \contentsline {subsection}{\numberline {3.4}Benchmarks}{12}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Beta Algorithms}{13}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Beta 1}{14}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Beta 2}{14}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Beta 3}{14}{subsection.4.3}%

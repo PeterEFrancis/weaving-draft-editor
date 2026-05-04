@@ -854,6 +854,14 @@ error.
 Alpha 3 can use redundancy in several places.
 
 \begin{enumerate}[label=\textbf{A3.\arabic*.}]
+  \item During the alternating update of \(\tau\), \(\chi\), and \(U\), use
+  \(S_{\lambda,\mu}\)-style search pressure rather than merely breaking exact
+  Hamming ties. In particular, early iterations may choose a row assignment,
+  column assignment, or tie-up entry with slightly worse immediate Hamming error
+  if it substantially lowers the impact residual or leads toward lower
+  redundancy after conversion. The annealing of \(\lambda\) and \(\mu\) returns
+  the search toward Hamming error before final selection.
+
   \item During conversion from reduced co-clusters to draft matrices, prefer
   treadle-generator decompositions that cover required \(1\)'s with less
   overlap.
@@ -880,42 +888,196 @@ on small instances where exact reduced brute force is available.
 
 \subsection{Benchmarks}
 
-The benchmark tables below are reserved for empirical comparisons of Alpha 1,
-Alpha 2, and Alpha 3 on random binary targets. Rows list the algorithm, and
-columns list the draft size \(p\times w\).
+Each table entry reports the average and standard deviation of the Hamming error over \(10{,}000\)
+independent trials. In each trial, every cell of the target drawdown is set to
+\(1\) independently with probability \(1/2\).
 
 \begin{table}[ht]
   \centering
-  \caption{Benchmark template for a standard 4-shaft loom with 4 shafts and 6
-  treadles.}
+    \begin{tabular}{lcccc}
+    \hline
+    \textbf{Algorithm} & \(\boldsymbol{10\times10}\) & \(\boldsymbol{20\times20}\) & \(\boldsymbol{30\times30}\) & \(\boldsymbol{40\times40}\) \\
+    \hline
+    Alpha 1 & $0.831 \pm 0.019$ & $0.733\pm 0.01$ & $0.69\pm 0.007$ &  $0.664\pm 0.005$ \\
+    Alpha 2 & $0.835\pm 0.018$ &  $0.738\pm 0.09$ & $0.694\pm 0.006$ & $0.667\pm0.005$\\
+    Alpha 3 &  $0.843\pm 0.018$ & $0.738\pm 0.09$ & $0.694\pm 0.006$ & \\
+    \hline
+  \end{tabular}
+  \caption{Benchmark for $s=4$, $t=6$, $p=2$.}
   \label{tab:benchmark-four-shaft}
-  \begin{tabular}{lcccc}
-    \hline
-    Algorithm & \(10\times10\) & \(20\times20\) & \(30\times30\) & \(40\times40\) \\
-    \hline
-    Alpha 1 & & & & \\
-    Alpha 2 & & & & \\
-    Alpha 3 & & & & \\
-    \hline
-  \end{tabular}
 \end{table}
+
 
 \begin{table}[ht]
   \centering
-  \caption{Benchmark template for a standard 8-shaft loom with 8 shafts and 10
-  treadles.}
-  \label{tab:benchmark-eight-shaft}
   \begin{tabular}{lcccc}
     \hline
-    Algorithm & \(10\times10\) & \(20\times20\) & \(30\times30\) & \(40\times40\) \\
+    \textbf{Algorithm} & \(\boldsymbol{10\times10}\) & \(\boldsymbol{20\times20}\) & \(\boldsymbol{30\times30}\) & \(\boldsymbol{40\times40}\) \\
     \hline
     Alpha 1 & & & & \\
     Alpha 2 & & & & \\
     Alpha 3 & & & & \\
     \hline
   \end{tabular}
+    \caption{Benchmark for a standard 8-shaft loom with 8 shafts and 10
+  treadles.}
+    \label{tab:benchmark-eight-shaft}
+
 \end{table}
 
+
+\newpage 
+\section{Beta Algorithms}
+
+The Beta algorithms use the same admissible draft space as the Alpha
+algorithms, but replace the final objective.  Instead of asking only how many
+cells are wrong, they ask how much the black cells in a candidate drawdown must
+move in order to recover the target.  This makes a one-cell displacement cheap:
+if a black cell appears next to where it should have appeared, the candidate is
+closer to the target than a candidate whose error is far away, even though both
+may have the same Hamming error.
+
+Let
+\[
+  X\in\{0,1\}^{p\times w}
+\]
+be the visible drawdown produced by a candidate draft, and let
+\[
+  S(X)=\{(i,j):X_{ij}=1\},
+  \qquad
+  S^\ast=S(D^\ast)
+\]
+be the sets of black cells in the candidate and target. For two grid cells
+\(u=(i,j)\) and \(v=(i',j')\), write
+\[
+  d_1(u,v)=|i-i'|+|j-j'|
+\]
+for their Manhattan distance. A unit of movement is one adjacent transposition
+on the grid: a black cell swaps with a horizontally or vertically adjacent
+white cell. The boundary is open: a black cell may also leave through an edge
+of the rectangle, and a new black cell may enter through an edge. For a cell
+\(u=(i,j)\), define its edge cost
+\[
+  b(u)
+  =
+  1+\min\{i-1,\ p-i,\ j-1,\ w-j\}.
+\]
+This is the number of moves needed for a black cell at \(u\) to leave the grid
+through the nearest edge, counting the boundary crossing as one move. The same
+quantity is used for a new black cell entering from the nearest edge and moving
+to \(u\).
+
+A partial matching
+\[
+  M\subseteq S(X)\times S^\ast
+\]
+is admissible if no source cell or target cell appears more than once. It may
+have any cardinality from \(0\) to \(\min\{|S(X)|,\ |S^\ast|\}\). A matched
+pair \((u,v)\in M\) means that the black cell at \(u\) is moved inside the grid
+to the target location \(v\). An unmatched source cell exits through the edge,
+and an unmatched target cell enters from the edge.
+
+The Beta objective is
+\[
+  \Phi_\beta(X,D^\ast)
+  =
+  \min_M
+  \left[
+    \sum_{(u,v)\in M}d_1(u,v)
+    +
+    \sum_{u\in S(X)\setminus \operatorname{dom}(M)} b(u)
+    +
+    \sum_{v\in S^\ast\setminus \operatorname{ran}(M)} b(v)
+  \right],
+\]
+where the minimum is over all admissible partial matchings. The optimization
+therefore decides, cell by cell, whether it is cheaper to move a black cell
+within the grid or to let it exit and replace it by an entering black cell
+elsewhere. Consequently, even when \(X\) and \(D^\ast\) have the same number of
+black cells, an optimal movement plan need not match all cells bijectively. The
+closed-boundary bijective matching is recovered only if unmatched source and
+target cells are forbidden.
+
+\subsection{Beta 1}
+
+Beta 1 is the direct analogue of Alpha 1 with final score
+\[
+  \Phi=\Phi_\beta.
+\]
+It may use the same co-clustering search to produce candidate reduced triples
+\((\tau,\chi,U)\), and the same conversion from reduced triples to admissible
+draft matrices \(A,B,C\). The difference is ranking and acceptance: candidate
+drafts are evaluated by the movement objective
+\[
+  \Phi_\beta(\widehat{D},D^\ast),
+  \qquad
+  \widehat{D}_{ij}=\mathbf{1}\{(AB^TC)_{ij}>0\}.
+\]
+Hamming error remains a useful diagnostic, but it is no longer the primary
+objective. In particular, a draft that shifts a motif slightly may beat a draft
+with fewer isolated cell disagreements if the latter requires more total black
+cell movement to repair.
+
+Computing \(\Phi_\beta\) is itself an optimization problem. It can be handled by
+a minimum-cost flow formulation, or by an assignment formulation with ordinary
+movement costs \(d_1(u,v)\) together with deletion and insertion choices with
+costs \(b(u)\) and \(b(v)\). Since the objective is evaluated on completed
+candidates rather than every individual cell update, Beta 1 can reuse much of
+the Alpha search machinery while changing the final notion of quality.
+
+\subsection{Beta 2}
+
+Beta 2 uses the optimal movement plan as search pressure. After a candidate
+drawdown \(X\) is scored, the minimizing matching \(M\) identifies three kinds
+of residual structure:
+\[
+  \text{matched moves } u\mapsto v,\qquad
+  \text{exiting surplus cells},\qquad
+  \text{entering missing cells}.
+\]
+Large displacements indicate regions where the draft has approximately the
+right amount of black mass but has placed it poorly. Exits and entries indicate
+density mismatch, especially near the boundary. Beta 2 can bias restarts,
+cluster splits, and local repairs toward these movement residuals rather than
+treating every disagreement as independent.
+
+For example, if many matched moves point in the same local direction, a repair
+step may try shifting the responsible row cluster, column cluster, or treadle
+combination before changing the density of the region. If many cells are
+scheduled to enter through the edge, the search may prefer modifications that
+add black cells near those boundary-to-target paths. If many cells are
+scheduled to exit, the search may prefer removing activations that are close to
+an edge and weakly supported by the surrounding motif.
+
+\subsection{Beta 3}
+
+Beta 3 combines the movement objective with draft-level structural pressures.
+The final objective remains \(\Phi_\beta\), but the search may be guided by an
+annealed score of the form
+\[
+  S_{\lambda,\mu}
+  =
+  \Phi_\beta(\widehat{D},D^\ast)
+  +
+  \lambda R(D,D^\ast)
+  +
+  \mu F(\widehat{D}),
+  \qquad
+  \lambda,\mu\ge 0,
+\]
+where \(R\) is the redundancy pressure from Alpha 3 and \(F\) is an optional
+float or clothlike penalty. As in the Alpha family, these additional terms are
+search pressures rather than replacements for the final objective. An annealed
+implementation reduces \(\lambda\) and \(\mu\) toward \(0\) before final
+selection, so reported Beta 3 candidates are still ordered primarily by minimum
+movement.
+
+The practical hypothesis is that \(\Phi_\beta\) rewards visual locality while
+the structural pressures discourage drafts that achieve low movement only by
+creating inefficient treadle overlap or poor cloth behavior. Benchmarks for the
+Beta family should therefore report both movement cost and Hamming error: the
+former is the objective being optimized, while the latter makes comparison with
+the Alpha family transparent.
 
 
 
