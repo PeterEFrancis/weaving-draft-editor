@@ -1509,6 +1509,9 @@
               <option value="heuristic">Alpha 1</option>
               <option value="alpha">Alpha 2</option>
               <option value="alpha3">Alpha 3</option>
+              <option value="beta1">Beta 1</option>
+              <option value="beta2">Beta 2</option>
+              <option value="beta3">Beta 3</option>
             </select>
           </div>
 
@@ -1774,6 +1777,7 @@ let lastRandomTrialDistribution = null;
 let lastRandomTrialMeta = null;
 let lastRandomTrialChartPoints = [];
 let activeRandomTrialController = null;
+let autosaveTimer = null;
 
 function createMatrix(rows, columns, fillValue = 0) {
   return Array.from({ length: rows }, () => Array(columns).fill(fillValue));
@@ -1818,7 +1822,7 @@ function normalizeOptimizerEngine(value) {
   if (value === "motif" || value === "linework") {
     return "alpha";
   }
-  return ["exact", "heuristic", "alpha", "alpha3"].includes(value) ? value : defaultOptimizerEngine;
+  return ["exact", "heuristic", "alpha", "alpha3", "beta1", "beta2", "beta3"].includes(value) ? value : defaultOptimizerEngine;
 }
 
 function syncOptimizerEngineSelect() {
@@ -2109,7 +2113,7 @@ function getSnapshotSignature(snapshot) {
   return JSON.stringify(snapshot);
 }
 
-function applyStateSnapshot(snapshot, { preserveSelection = false } = {}) {
+function applyStateSnapshot(snapshot, { preserveSelection = false, solveAsync = false } = {}) {
   warp = Math.max(1, Number.parseInt(snapshot.warp, 10) || defaultWarp);
   picks = Math.max(1, Number.parseInt(snapshot.picks, 10) || defaultPicks);
   maxShafts = Math.max(1, Math.min(Number.parseInt(snapshot.maxShafts, 10) || defaultMaxShafts, warp));
@@ -2125,7 +2129,11 @@ function applyStateSnapshot(snapshot, { preserveSelection = false } = {}) {
   updateDimensionInputs();
   setCellSize(snapshot.cellSize || defaultCellSize);
   renderTargetGrid();
-  renderGeneratedDraft();
+  if (solveAsync) {
+    scheduleGeneratedRender({ resetSelection: !preserveSelection, delay: 0 });
+  } else {
+    renderGeneratedDraft({ preserveSignature: preserveSelection });
+  }
 }
 
 function sliceHistoryAroundIndex(stack, currentIndex, maxEntries) {
@@ -2324,6 +2332,11 @@ function captureSnapshotDefaults(snapshot) {
 }
 
 function saveAutosave() {
+  if (autosaveTimer !== null) {
+    window.clearTimeout(autosaveTimer);
+    autosaveTimer = null;
+  }
+
   const historyLimits = [Infinity, 60, 30, 15, 6, 3, 1, 0];
 
   for (const historyLimit of historyLimits) {
@@ -2337,6 +2350,16 @@ function saveAutosave() {
       // Try again with less undo history before giving up on autosave entirely.
     }
   }
+}
+
+function scheduleAutosave(delay = 250) {
+  if (autosaveTimer !== null) {
+    window.clearTimeout(autosaveTimer);
+  }
+  autosaveTimer = window.setTimeout(() => {
+    autosaveTimer = null;
+    saveAutosave();
+  }, Math.max(0, Number(delay) || 0));
 }
 
 function restoreAutosave(name = restoreActiveDraftName()) {
@@ -2358,7 +2381,7 @@ function pushHistorySnapshot() {
 
   if (inverseHistoryIndex >= 0 && getSnapshotSignature(inverseHistory[inverseHistoryIndex]) === signature) {
     updateHistoryButtons();
-    saveAutosave();
+    scheduleAutosave();
     return;
   }
 
@@ -2369,7 +2392,7 @@ function pushHistorySnapshot() {
   }
   inverseHistoryIndex = inverseHistory.length - 1;
   updateHistoryButtons();
-  saveAutosave();
+  scheduleAutosave();
 }
 
 function updateHistoryButtons() {
@@ -2383,10 +2406,10 @@ function undoInverseChange() {
   }
   inverseHistoryIndex--;
   isApplyingHistory = true;
-  applyStateSnapshot(inverseHistory[inverseHistoryIndex]);
+  applyStateSnapshot(inverseHistory[inverseHistoryIndex], { solveAsync: true });
   isApplyingHistory = false;
   updateHistoryButtons();
-  saveAutosave();
+  scheduleAutosave();
 }
 
 function redoInverseChange() {
@@ -2395,10 +2418,10 @@ function redoInverseChange() {
   }
   inverseHistoryIndex++;
   isApplyingHistory = true;
-  applyStateSnapshot(inverseHistory[inverseHistoryIndex]);
+  applyStateSnapshot(inverseHistory[inverseHistoryIndex], { solveAsync: true });
   isApplyingHistory = false;
   updateHistoryButtons();
-  saveAutosave();
+  scheduleAutosave();
 }
 
 function getMaxFloatTolerance() {
@@ -2956,21 +2979,254 @@ function getRowWeightVectors(weightMatrix) {
   return weightMatrix?.map(row => row.slice()) || null;
 }
 
+function getBetaEdgeCost(row, column, rowCount, columnCount) {
+  return 1 + Math.min(row, rowCount - 1 - row, column, columnCount - 1 - column);
+}
+
+function solveMinimumAssignment(costMatrix) {
+  const size = costMatrix.length;
+  const potentialRows = Array(size + 1).fill(0);
+  const potentialColumns = Array(size + 1).fill(0);
+  const matchingColumnForRow = Array(size + 1).fill(0);
+  const previousColumn = Array(size + 1).fill(0);
+
+  for (let row = 1; row <= size; row++) {
+    matchingColumnForRow[0] = row;
+    let column0 = 0;
+    const minimumValues = Array(size + 1).fill(Number.POSITIVE_INFINITY);
+    const usedColumns = Array(size + 1).fill(false);
+
+    do {
+      usedColumns[column0] = true;
+      const row0 = matchingColumnForRow[column0];
+      let delta = Number.POSITIVE_INFINITY;
+      let column1 = 0;
+
+      for (let column = 1; column <= size; column++) {
+        if (usedColumns[column]) {
+          continue;
+        }
+
+        const current =
+          costMatrix[row0 - 1][column - 1] -
+          potentialRows[row0] -
+          potentialColumns[column];
+        if (current < minimumValues[column]) {
+          minimumValues[column] = current;
+          previousColumn[column] = column0;
+        }
+        if (minimumValues[column] < delta) {
+          delta = minimumValues[column];
+          column1 = column;
+        }
+      }
+
+      for (let column = 0; column <= size; column++) {
+        if (usedColumns[column]) {
+          potentialRows[matchingColumnForRow[column]] += delta;
+          potentialColumns[column] -= delta;
+        } else {
+          minimumValues[column] -= delta;
+        }
+      }
+      column0 = column1;
+    } while (matchingColumnForRow[column0] !== 0);
+
+    do {
+      const column1 = previousColumn[column0];
+      matchingColumnForRow[column0] = matchingColumnForRow[column1];
+      column0 = column1;
+    } while (column0 !== 0);
+  }
+
+  const assignment = Array(size).fill(-1);
+  for (let column = 1; column <= size; column++) {
+    if (matchingColumnForRow[column] > 0) {
+      assignment[matchingColumnForRow[column] - 1] = column - 1;
+    }
+  }
+  return assignment;
+}
+
+function computeApproximateBetaMovementAnalysis(candidateMatrix, targetMatrix, surplusCells, missingCells) {
+  const rowCount = targetMatrix.length;
+  const columnCount = targetMatrix[0]?.length || 0;
+  const rowResiduals = Array(rowCount).fill(0);
+  const columnResiduals = Array(columnCount).fill(0);
+  let cost = 0;
+
+  surplusCells.forEach(([row, column]) => {
+    const edgeCost = getBetaEdgeCost(row, column, rowCount, columnCount);
+    rowResiduals[row] += edgeCost;
+    columnResiduals[column] += edgeCost;
+    cost += edgeCost;
+  });
+
+  missingCells.forEach(([row, column]) => {
+    const edgeCost = getBetaEdgeCost(row, column, rowCount, columnCount);
+    rowResiduals[row] += edgeCost;
+    columnResiduals[column] += edgeCost;
+    cost += edgeCost;
+  });
+
+  return {
+    cost,
+    rowResiduals,
+    columnResiduals,
+    surplusCount: surplusCells.length,
+    missingCount: missingCells.length,
+    approximate: true
+  };
+}
+
+function computeBetaMovementAnalysis(candidateMatrix, targetMatrix) {
+  const rowCount = targetMatrix.length;
+  const columnCount = targetMatrix[0]?.length || 0;
+  const surplusCells = [];
+  const missingCells = [];
+
+  for (let row = 0; row < rowCount; row++) {
+    for (let column = 0; column < columnCount; column++) {
+      const candidate = Boolean(candidateMatrix[row]?.[column]);
+      const target = Boolean(targetMatrix[row]?.[column]);
+      if (candidate && !target) {
+        surplusCells.push([row, column]);
+      } else if (!candidate && target) {
+        missingCells.push([row, column]);
+      }
+    }
+  }
+
+  const rowResiduals = Array(rowCount).fill(0);
+  const columnResiduals = Array(columnCount).fill(0);
+  const surplusCount = surplusCells.length;
+  const missingCount = missingCells.length;
+  const assignmentSize = Math.max(surplusCount, missingCount);
+  const exactAssignmentLimit = 220;
+
+  if (assignmentSize === 0) {
+    return {
+      cost: 0,
+      rowResiduals,
+      columnResiduals,
+      surplusCount,
+      missingCount,
+      approximate: false
+    };
+  }
+
+  if (assignmentSize > exactAssignmentLimit) {
+    return computeApproximateBetaMovementAnalysis(candidateMatrix, targetMatrix, surplusCells, missingCells);
+  }
+
+  const costMatrix = Array.from({ length: assignmentSize }, (_, sourceIndex) =>
+    Array.from({ length: assignmentSize }, (_, targetIndex) => {
+      if (sourceIndex < surplusCount && targetIndex < missingCount) {
+        const [sourceRow, sourceColumn] = surplusCells[sourceIndex];
+        const [targetRow, targetColumn] = missingCells[targetIndex];
+        const internalCost = Math.abs(sourceRow - targetRow) + Math.abs(sourceColumn - targetColumn);
+        const openBoundaryCost =
+          getBetaEdgeCost(sourceRow, sourceColumn, rowCount, columnCount) +
+          getBetaEdgeCost(targetRow, targetColumn, rowCount, columnCount);
+        return Math.min(internalCost, openBoundaryCost);
+      }
+      if (sourceIndex < surplusCount) {
+        const [sourceRow, sourceColumn] = surplusCells[sourceIndex];
+        return getBetaEdgeCost(sourceRow, sourceColumn, rowCount, columnCount);
+      }
+      if (targetIndex < missingCount) {
+        const [targetRow, targetColumn] = missingCells[targetIndex];
+        return getBetaEdgeCost(targetRow, targetColumn, rowCount, columnCount);
+      }
+      return 0;
+    })
+  );
+  const assignment = solveMinimumAssignment(costMatrix);
+  let cost = 0;
+
+  assignment.forEach((targetIndex, sourceIndex) => {
+    if (targetIndex < 0) {
+      return;
+    }
+
+    if (sourceIndex < surplusCount && targetIndex < missingCount) {
+      const [sourceRow, sourceColumn] = surplusCells[sourceIndex];
+      const [targetRow, targetColumn] = missingCells[targetIndex];
+      const sourceEdgeCost = getBetaEdgeCost(sourceRow, sourceColumn, rowCount, columnCount);
+      const targetEdgeCost = getBetaEdgeCost(targetRow, targetColumn, rowCount, columnCount);
+      const internalCost = Math.abs(sourceRow - targetRow) + Math.abs(sourceColumn - targetColumn);
+      const openBoundaryCost = sourceEdgeCost + targetEdgeCost;
+      const pairCost = Math.min(internalCost, openBoundaryCost);
+      cost += pairCost;
+
+      if (internalCost <= openBoundaryCost) {
+        rowResiduals[sourceRow] += pairCost;
+        rowResiduals[targetRow] += pairCost;
+        columnResiduals[sourceColumn] += pairCost;
+        columnResiduals[targetColumn] += pairCost;
+      } else {
+        rowResiduals[sourceRow] += sourceEdgeCost;
+        rowResiduals[targetRow] += targetEdgeCost;
+        columnResiduals[sourceColumn] += sourceEdgeCost;
+        columnResiduals[targetColumn] += targetEdgeCost;
+      }
+      return;
+    }
+
+    if (sourceIndex < surplusCount) {
+      const [sourceRow, sourceColumn] = surplusCells[sourceIndex];
+      const edgeCost = getBetaEdgeCost(sourceRow, sourceColumn, rowCount, columnCount);
+      cost += edgeCost;
+      rowResiduals[sourceRow] += edgeCost;
+      columnResiduals[sourceColumn] += edgeCost;
+      return;
+    }
+
+    if (targetIndex < missingCount) {
+      const [targetRow, targetColumn] = missingCells[targetIndex];
+      const edgeCost = getBetaEdgeCost(targetRow, targetColumn, rowCount, columnCount);
+      cost += edgeCost;
+      rowResiduals[targetRow] += edgeCost;
+      columnResiduals[targetColumn] += edgeCost;
+    }
+  });
+
+  return {
+    cost,
+    rowResiduals,
+    columnResiduals,
+    surplusCount,
+    missingCount,
+    approximate: false
+  };
+}
+
+function isBetaEngine(engine = optimizerEngine) {
+  return engine === "beta1" || engine === "beta2" || engine === "beta3";
+}
+
 function isImpactGuidedEngine(engine = optimizerEngine) {
-  return engine === "alpha" || engine === "alpha3";
+  return engine === "alpha" || engine === "alpha3" || engine === "beta2" || engine === "beta3";
 }
 
 function isRedundancyGuidedEngine(engine = optimizerEngine) {
-  return engine === "alpha3";
+  return engine === "alpha3" || engine === "beta3";
 }
 
 function computeDraftEngineMetrics(targetMatrix, draftMatrix, localityWeights = null, draftOption = null) {
   const weights = localityWeights || (isImpactGuidedEngine() ? computeLocalityWeightMatrix(targetMatrix) : null);
+  const betaAnalysis = isBetaEngine() ? computeBetaMovementAnalysis(draftMatrix, targetMatrix) : null;
   const redundancyAnalysis = draftOption
     ? computeDraftRedundancyAnalysis(targetMatrix, draftOption)
     : { pressure: 0, maxPickPressure: 0 };
   return {
     weightedMismatch: computeWeightedMatrixMismatches(targetMatrix, draftMatrix, weights),
+    betaMovementCost: betaAnalysis?.cost ?? countMatrixMismatches(targetMatrix, draftMatrix),
+    betaMovementApproximate: Boolean(betaAnalysis?.approximate),
+    betaRowResiduals: betaAnalysis?.rowResiduals || [],
+    betaColumnResiduals: betaAnalysis?.columnResiduals || [],
+    betaSurplusCount: betaAnalysis?.surplusCount || 0,
+    betaMissingCount: betaAnalysis?.missingCount || 0,
     redundancyPressure: redundancyAnalysis.pressure,
     maxPickRedundancyPressure: redundancyAnalysis.maxPickPressure,
     blurMismatch: computeBlurMismatch(targetMatrix, draftMatrix, 1),
@@ -2980,6 +3236,49 @@ function computeDraftEngineMetrics(targetMatrix, draftMatrix, localityWeights = 
 }
 
 function compareDraftEngineMetrics(left, right) {
+  if (isBetaEngine()) {
+    const betaComparison = left.engineMetrics.betaMovementCost - right.engineMetrics.betaMovementCost;
+
+    if (optimizerEngine === "beta3") {
+      return (
+        betaComparison ||
+        left.mismatchCount - right.mismatchCount ||
+        left.engineMetrics.redundancyPressure - right.engineMetrics.redundancyPressure ||
+        left.engineMetrics.maxPickRedundancyPressure - right.engineMetrics.maxPickRedundancyPressure ||
+        left.engineMetrics.weightedMismatch - right.engineMetrics.weightedMismatch ||
+        (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+          (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
+        left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+        left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+        left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+      );
+    }
+
+    if (optimizerEngine === "beta2") {
+      return (
+        betaComparison ||
+        left.mismatchCount - right.mismatchCount ||
+        left.engineMetrics.weightedMismatch - right.engineMetrics.weightedMismatch ||
+        left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+        left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+        left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch ||
+        (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+          (right.shafts + right.treadles + (right.maxPressedUsed || 0))
+      );
+    }
+
+    return (
+      betaComparison ||
+      left.mismatchCount - right.mismatchCount ||
+      (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+        (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
+      left.engineMetrics.redundancyPressure - right.engineMetrics.redundancyPressure ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+    );
+  }
+
   if (optimizerEngine === "alpha") {
     return (
       left.mismatchCount - right.mismatchCount ||
@@ -4557,6 +4856,11 @@ function getRandomTrialWorkerFunctionSource() {
     computeLocalityWeightMatrix,
     getColumnWeightVectors,
     getRowWeightVectors,
+    getBetaEdgeCost,
+    solveMinimumAssignment,
+    computeApproximateBetaMovementAnalysis,
+    computeBetaMovementAnalysis,
+    isBetaEngine,
     isImpactGuidedEngine,
     isRedundancyGuidedEngine,
     computeRedundancyMatrix,
@@ -4611,6 +4915,11 @@ function getRandomTrialWorkerFunctionSource() {
     getAlphaInitializationStrategies,
     buildAlphaSearchConfigs,
     computeResidualSearchWeightMatrix,
+    computeBetaResidualSearchWeightMatrix,
+    scoreBeta3DraftState,
+    isBetterBeta3Score,
+    buildDraftOptionFromMatrices,
+    refineBeta3Candidate,
     generateExactDraftFromDrawdown,
     buildConstrainedDraftOptions,
     serializeDraftSignature,
@@ -5757,6 +6066,211 @@ function computeResidualSearchWeightMatrix(targetMatrix, draftMatrix, baseWeight
   );
 }
 
+function computeBetaResidualSearchWeightMatrix(targetMatrix, candidate, baseWeights = null) {
+  const rowResiduals = candidate?.engineMetrics?.betaRowResiduals || [];
+  const columnResiduals = candidate?.engineMetrics?.betaColumnResiduals || [];
+  const maxRowResidual = Math.max(1, ...rowResiduals);
+  const maxColumnResidual = Math.max(1, ...columnResiduals);
+
+  return targetMatrix.map((row, rowIndex) =>
+    row.map((value, columnIndex) => {
+      const base = baseWeights?.[rowIndex]?.[columnIndex] ?? 1;
+      const rowPressure = (rowResiduals[rowIndex] || 0) / maxRowResidual;
+      const columnPressure = (columnResiduals[columnIndex] || 0) / maxColumnResidual;
+      const isMismatch = Boolean(value) !== Boolean(candidate?.drawdown?.[rowIndex]?.[columnIndex]);
+      return base + rowPressure * 2.25 + columnPressure * 2.25 + (isMismatch ? 1.35 : 0);
+    })
+  );
+}
+
+function scoreBeta3DraftState(threading, tieup, treadling, targetMatrix, lambda = 0, mu = 0) {
+  const drawdown = rebuildDrawdown(threading, tieup, treadling);
+  const betaAnalysis = computeBetaMovementAnalysis(drawdown, targetMatrix);
+  const mismatchCount = countMatrixMismatches(targetMatrix, drawdown);
+  const redundancyAnalysis = computeDraftRedundancyAnalysis(targetMatrix, { threading, tieup, treadling, drawdown });
+  const clothlikeAnalysis = computeDrawdownClothlikeAnalysis(drawdown, floatTolerance);
+  const floatPenalty = Math.max(0, clothlikeAnalysis.worstFloatLength - floatTolerance);
+
+  return {
+    score: betaAnalysis.cost + lambda * redundancyAnalysis.pressure + mu * floatPenalty,
+    betaCost: betaAnalysis.cost,
+    mismatchCount,
+    redundancyPressure: redundancyAnalysis.pressure,
+    floatPenalty,
+    drawdown
+  };
+}
+
+function isBetterBeta3Score(left, right) {
+  const epsilon = 1e-9;
+  return (
+    left.score < right.score - epsilon ||
+    (
+      Math.abs(left.score - right.score) <= epsilon &&
+      (
+        left.betaCost < right.betaCost ||
+        (
+          left.betaCost === right.betaCost &&
+          (
+            left.mismatchCount < right.mismatchCount ||
+            (
+              left.mismatchCount === right.mismatchCount &&
+              left.redundancyPressure < right.redundancyPressure
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+function buildDraftOptionFromMatrices(baseOption, threading, tieup, treadling, targetMatrix, repairResult, localityWeights = null) {
+  const drawdown = rebuildDrawdown(threading, tieup, treadling);
+  const mismatchCount = countMatrixMismatches(targetMatrix, drawdown);
+  const shafts = Math.max(1, threading.length || 1);
+  const treadles = Math.max(1, tieup.length || 1);
+
+  return decorateDraftOptionForTarget(
+    {
+      ...baseOption,
+      shafts,
+      treadles,
+      threading,
+      tieup,
+      treadling,
+      ambiguousTieup: createMatrix(treadles, shafts, false),
+      drawdown,
+      mismatchCount,
+      exactMatch: mismatchCount === 0,
+      matchRatio: getMatchRatio(targetMatrix, mismatchCount),
+      clothlikeAnalysis: computeDrawdownClothlikeAnalysis(drawdown, floatTolerance),
+      signature: serializeDraftSignature({ threading, tieup, treadling }),
+      maxPressedUsed: treadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
+    },
+    targetMatrix,
+    repairResult,
+    localityWeights
+  );
+}
+
+function refineBeta3Candidate(option, targetMatrix, repairResult, localityWeights = null) {
+  const cellCount = (targetMatrix.length || 0) * (targetMatrix[0]?.length || 0);
+  if (!option || cellCount > 225) {
+    return option;
+  }
+
+  const shafts = option.shafts;
+  const treadles = option.treadles;
+  let threading = option.threading.map(row => row.slice());
+  let tieup = option.tieup.map(row => row.slice());
+  let treadling = option.treadling.map(row => row.slice());
+  let bestReported = buildDraftOptionFromMatrices(option, threading, tieup, treadling, targetMatrix, repairResult, localityWeights);
+  const passCount = 2;
+
+  for (let pass = 0; pass < passCount; pass++) {
+    const anneal = passCount <= 1 ? 0 : 1 - pass / (passCount - 1);
+    const lambda = 0.18 * anneal;
+    const mu = useFloatToleranceInOptimization ? 0.12 * anneal : 0;
+    let changed = false;
+
+    for (let row = 0; row < treadling.length; row++) {
+      let bestRow = treadling[row].slice();
+      let bestScore = scoreBeta3DraftState(threading, tieup, treadling, targetMatrix, lambda, mu);
+
+      enumerateTreadleSelections(treadles, maxPressedTreadles, selection => {
+        const nextRow = Array(treadles).fill(0);
+        selection.forEach(treadle => {
+          nextRow[treadle] = 1;
+        });
+        const nextTreadling = treadling.map((currentRow, rowIndex) =>
+          rowIndex === row ? nextRow : currentRow.slice()
+        );
+        const nextScore = scoreBeta3DraftState(threading, tieup, nextTreadling, targetMatrix, lambda, mu);
+        if (isBetterBeta3Score(nextScore, bestScore)) {
+          bestScore = nextScore;
+          bestRow = nextRow;
+        }
+      });
+
+      if (bestRow.join("") !== treadling[row].join("")) {
+        treadling[row] = bestRow;
+        changed = true;
+      }
+    }
+
+    for (let treadle = 0; treadle < treadles; treadle++) {
+      for (let shaft = 0; shaft < shafts; shaft++) {
+        let bestValue = tieup[treadle][shaft];
+        let bestScore = scoreBeta3DraftState(threading, tieup, treadling, targetMatrix, lambda, mu);
+
+        [0, 1].forEach(value => {
+          if (value === tieup[treadle][shaft]) {
+            return;
+          }
+          const nextTieup = tieup.map(row => row.slice());
+          nextTieup[treadle][shaft] = value;
+          const nextScore = scoreBeta3DraftState(threading, nextTieup, treadling, targetMatrix, lambda, mu);
+          if (isBetterBeta3Score(nextScore, bestScore)) {
+            bestScore = nextScore;
+            bestValue = value;
+          }
+        });
+
+        if (bestValue !== tieup[treadle][shaft]) {
+          tieup[treadle][shaft] = bestValue;
+          changed = true;
+        }
+      }
+    }
+
+    for (let column = 0; column < (threading[0]?.length || 0); column++) {
+      let currentShaft = 0;
+      for (let shaft = 0; shaft < shafts; shaft++) {
+        if (threading[shaft][column]) {
+          currentShaft = shaft;
+          break;
+        }
+      }
+
+      let bestShaft = currentShaft;
+      let bestScore = scoreBeta3DraftState(threading, tieup, treadling, targetMatrix, lambda, mu);
+
+      for (let shaft = 0; shaft < shafts; shaft++) {
+        if (shaft === currentShaft) {
+          continue;
+        }
+        const nextThreading = threading.map(row => row.slice());
+        for (let nextShaft = 0; nextShaft < shafts; nextShaft++) {
+          nextThreading[nextShaft][column] = nextShaft === shaft ? 1 : 0;
+        }
+        const nextScore = scoreBeta3DraftState(nextThreading, tieup, treadling, targetMatrix, lambda, mu);
+        if (isBetterBeta3Score(nextScore, bestScore)) {
+          bestScore = nextScore;
+          bestShaft = shaft;
+        }
+      }
+
+      if (bestShaft !== currentShaft) {
+        for (let shaft = 0; shaft < shafts; shaft++) {
+          threading[shaft][column] = shaft === bestShaft ? 1 : 0;
+        }
+        changed = true;
+      }
+    }
+
+    const reported = buildDraftOptionFromMatrices(option, threading, tieup, treadling, targetMatrix, repairResult, localityWeights);
+    if (reported && compareDraftEngineMetrics(reported, bestReported) < 0) {
+      bestReported = reported;
+    }
+
+    if (!changed) {
+      break;
+    }
+  }
+
+  return bestReported || option;
+}
+
 function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
   const requestedOptimizerEngine = normalizeOptimizerEngine(optimizerEngine);
   optimizerEngine = requestedOptimizerEngine;
@@ -5854,6 +6368,7 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
   uniqueConfigs.forEach(config => addCandidateForConfig(config));
 
   if (isImpactGuidedEngine() && candidateMap.size) {
+    const useBetaMovementResiduals = optimizerEngine === "beta2" || optimizerEngine === "beta3";
     const residualSeeds = Array.from(candidateMap.values())
       .sort((left, right) => compareDraftEngineMetrics(left, right))
       .slice(0, isRedundancyGuidedEngine() ? 3 : 2);
@@ -5862,11 +6377,13 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
     );
 
     residualSeeds.forEach((seedCandidate, seedIndex) => {
-      const residualWeights = computeResidualSearchWeightMatrix(
-        optimizationMatrix,
-        seedCandidate.drawdown,
-        localityWeights
-      );
+      const residualWeights = useBetaMovementResiduals
+        ? computeBetaResidualSearchWeightMatrix(optimizationMatrix, seedCandidate, localityWeights)
+        : computeResidualSearchWeightMatrix(
+            optimizationMatrix,
+            seedCandidate.drawdown,
+            localityWeights
+          );
       residualConfigs.forEach(config => {
         addCandidateForConfig(
           { ...config, seed: config.seed + 10000 + seedIndex * 1000 },
@@ -5875,6 +6392,23 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
         );
       });
     });
+  }
+
+  if (optimizerEngine === "beta3" && candidateMap.size) {
+    Array.from(candidateMap.values())
+      .sort((left, right) => compareDraftEngineMetrics(left, right))
+      .slice(0, 2)
+      .forEach(candidate => {
+        const refined = refineBeta3Candidate(candidate, matrix, repairResult, localityWeights);
+        if (!refined || refined.treadles > treadleLimit || refined.shafts > shaftLimit || refined.maxPressedUsed > maxPressedTreadles) {
+          return;
+        }
+
+        const existing = candidateMap.get(refined.signature);
+        if (!existing || compareDraftEngineMetrics(refined, existing) < 0) {
+          candidateMap.set(refined.signature, refined);
+        }
+      });
   }
 
   const allCandidates = Array.from(candidateMap.values()).sort((left, right) => {
@@ -6001,9 +6535,13 @@ function renderSelectedGeneratedOption() {
 
   const shaftLabel = `${option.shafts} shaft${option.shafts === 1 ? "" : "s"}`;
   const treadleLabel = `${option.treadles} treadle${option.treadles === 1 ? "" : "s"}`;
-  const matchLabel = option.exactMatch
+  const baseMatchLabel = option.exactMatch
     ? "Exact match"
     : `${(option.matchRatio * 100).toFixed(1)}% match (${option.mismatchCount} off)`;
+  const betaMovementCost = option.engineMetrics?.betaMovementCost;
+  const matchLabel = isBetaEngine() && Number.isFinite(betaMovementCost)
+    ? `Beta cost ${betaMovementCost} · ${baseMatchLabel}`
+    : baseMatchLabel;
   const clothlikeLabel = `${option.clothlikeAnalysis?.score ?? 100}% Cloth-like`;
   const worstWarpFloat = option.clothlikeAnalysis?.worstWarpFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;
   const worstWeftFloat = option.clothlikeAnalysis?.worstWeftFloatLength ?? option.clothlikeAnalysis?.worstFloatLength ?? 1;

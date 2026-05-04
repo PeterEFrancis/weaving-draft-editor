@@ -930,7 +930,7 @@ independent trials. In each trial, every cell of the target drawdown is set to
 \section{Beta Algorithms}
 
 The Beta algorithms use the same admissible draft space as the Alpha
-algorithms, but replace the final objective.  Instead of asking only how many
+algorithms, but replace the final objective. Instead of asking only how many
 cells are wrong, they ask how much the black cells in a candidate drawdown must
 move in order to recover the target.  This makes a one-cell displacement cheap:
 if a black cell appears next to where it should have appeared, the candidate is
@@ -998,38 +998,136 @@ black cells, an optimal movement plan need not match all cells bijectively. The
 closed-boundary bijective matching is recovered only if unmatched source and
 target cells are forbidden.
 
+\subsection*{Computing \(\Phi_\beta\)}
+
+For implementation, it is useful to remove the cells that are already correct.
+Let
+\[
+  P(X,D^\ast)=S(X)\setminus S^\ast,
+  \qquad
+  Q(X,D^\ast)=S^\ast\setminus S(X).
+\]
+The cells in \(P\) are surplus black cells, and the cells in \(Q\) are missing
+black cells. Cells in \(S(X)\cap S^\ast\) can be matched to themselves at cost
+\(0\), so they need not appear in the optimization.
+
+For \(u\in P\) and \(v\in Q\), define the open-boundary pair cost
+\[
+  c(u,v)=\min\{d_1(u,v),\ b(u)+b(v)\}.
+\]
+The first term means ``move the surplus black cell from \(u\) to \(v\) inside
+the grid.'' The second term means ``let the surplus black cell at \(u\) exit
+and let a new black cell enter at \(v\).'' Thus a same-cardinality problem can
+still choose entry and exit when that is cheaper than moving across the grid.
+
+The following procedure computes \(\Phi_\beta(X,D^\ast)\).
+
+\begin{enumerate}[label=\textbf{B0.\arabic*.}]
+  \item Form the surplus set \(P\) and missing set \(Q\). If both are empty,
+  return score \(0\).
+
+  \item Let \(n=|P|\), \(m=|Q|\), and \(N=\max(n,m)\). Build an
+  \(N\times N\) assignment-cost matrix. The first \(n\) rows correspond to
+  surplus cells, and the first \(m\) columns correspond to missing cells.
+
+  \item For a real surplus row \(u\in P\) and a real missing column \(v\in Q\),
+  set the cost to \(c(u,v)\).
+
+  \item For a real surplus row \(u\in P\) and a dummy column, set the cost to
+  \(b(u)\). Assigning \(u\) to a dummy column means that \(u\) exits through the
+  edge without filling a target cell.
+
+  \item For a dummy row and a real missing column \(v\in Q\), set the cost to
+  \(b(v)\). Assigning a dummy row to \(v\) means that a new black cell enters
+  from the edge and fills \(v\).
+
+  \item For a dummy row and a dummy column, set the cost to \(0\).
+
+  \item Solve the resulting minimum-cost assignment problem, for example with
+  the Hungarian algorithm in \(O(N^3)\), or equivalently with a min-cost-flow
+  solver.
+
+  \item Return the total assignment cost. To recover a movement plan, interpret
+  a real-real assignment \((u,v)\) as an internal move if
+  \(d_1(u,v)\le b(u)+b(v)\), and as an exit at \(u\) plus an entry at \(v\)
+  otherwise. Real-dummy assignments are exits, and dummy-real assignments are
+  entries.
+\end{enumerate}
+
+This scoring routine is the only new objective-level primitive needed for the
+Beta family. All Beta algorithms below can be implemented by generating draft
+candidates, computing their visible drawdowns, and ranking them with this
+routine.
+
 \subsection{Beta 1}
 
 Beta 1 is the direct analogue of Alpha 1 with final score
 \[
   \Phi=\Phi_\beta.
 \]
-It may use the same co-clustering search to produce candidate reduced triples
-\((\tau,\chi,U)\), and the same conversion from reduced triples to admissible
-draft matrices \(A,B,C\). The difference is ranking and acceptance: candidate
-drafts are evaluated by the movement objective
-\[
-  \Phi_\beta(\widehat{D},D^\ast),
-  \qquad
-  \widehat{D}_{ij}=\mathbf{1}\{(AB^TC)_{ij}>0\}.
-\]
-Hamming error remains a useful diagnostic, but it is no longer the primary
-objective. In particular, a draft that shifts a motif slightly may beat a draft
-with fewer isolated cell disagreements if the latter requires more total black
-cell movement to repair.
+It reuses the Alpha 1 co-clustering relaxation to generate candidates, but it
+does not rank those candidates by Hamming error.
 
-Computing \(\Phi_\beta\) is itself an optimization problem. It can be handled by
-a minimum-cost flow formulation, or by an assignment formulation with ordinary
-movement costs \(d_1(u,v)\) together with deletion and insertion choices with
-costs \(b(u)\) and \(b(v)\). Since the objective is evaluated on completed
-candidates rather than every individual cell update, Beta 1 can reuse much of
-the Alpha search machinery while changing the final notion of quality.
+\paragraph{Input.}
+A target drawdown \(D^\ast\in\{0,1\}^{p\times w}\), shaft bound \(s\), treadle
+bound \(t\), maximum number \(r\) of treadles pressed on a pick, an iteration
+limit, and a set of initializers.
+
+\paragraph{Procedure.}
+
+\begin{enumerate}[label=\textbf{B1.\arabic*.}]
+  \item For each \(s'\le s\), \(t'\le t\), and initializer, initialize row and
+  column assignments
+  \[
+    \tau:\{1,\dots,p\}\to\{1,\dots,t'\},
+    \qquad
+    \chi:\{1,\dots,w\}\to\{1,\dots,s'\}.
+  \]
+
+  \item Run the Alpha 1 alternating co-clustering updates: update the reduced
+  tie-up \(U\) by majority, then update \(\tau\), then update \(\chi\), and
+  repeat until stabilization or the iteration limit.
+
+  \item Convert the reduced triple \((\tau,\chi,U)\) into draft matrices
+  \(A,B,C\). In the simplest conversion, each row cluster becomes one treadle
+  and each column cluster becomes one shaft. More elaborate conversions may
+  replace a row cluster by a union of at most \(r\) treadle generators, as in
+  the Alpha algorithms.
+
+  \item Compute the redundancy matrix \(D=AB^TC\) and the visible drawdown
+  \[
+    \widehat{D}_{ij}=\mathbf{1}\{D_{ij}>0\}.
+  \]
+
+  \item Score the candidate by
+  \[
+    \phi=\Phi_\beta(\widehat{D},D^\ast)
+  \]
+  using the assignment routine above. Also record Hamming error, redundancy,
+  draft size, and any float diagnostics as secondary statistics.
+
+  \item After all runs finish, return the candidate with smallest lexicographic
+  key
+  \[
+    \bigl(\Phi_\beta,\ \operatorname{err},\ \text{draft size},\ R,\ \text{float
+    penalty}\bigr),
+  \]
+  omitting any secondary terms that are not being measured.
+\end{enumerate}
+
+The important distinction from Alpha 1 is Step B1.5: Hamming error is only a
+diagnostic and tie-breaker. A draft that shifts a motif slightly may beat a
+draft with fewer isolated cell disagreements if the shifted motif requires less
+total movement to repair.
 
 \subsection{Beta 2}
 
-Beta 2 uses the optimal movement plan as search pressure. After a candidate
-drawdown \(X\) is scored, the minimizing matching \(M\) identifies three kinds
-of residual structure:
+Beta 2 adds movement-residual search pressure. It still returns candidates
+ranked primarily by \(\Phi_\beta\), but it uses the optimal movement plan to
+decide where to restart or perturb the co-clustering search.
+
+After a candidate drawdown \(X\) is scored, the minimizing assignment in
+B0 identifies three kinds of residual structure:
 \[
   \text{matched moves } u\mapsto v,\qquad
   \text{exiting surplus cells},\qquad
@@ -1041,13 +1139,52 @@ density mismatch, especially near the boundary. Beta 2 can bias restarts,
 cluster splits, and local repairs toward these movement residuals rather than
 treating every disagreement as independent.
 
-For example, if many matched moves point in the same local direction, a repair
-step may try shifting the responsible row cluster, column cluster, or treadle
+\paragraph{Procedure.}
+
+\begin{enumerate}[label=\textbf{B2.\arabic*.}]
+  \item Run the Beta 1 candidate-generation procedure, optionally adding the
+  impact-weighted initializers from Alpha 2. Keep a beam of the best states
+  under the key
+  \[
+    \bigl(\Phi_\beta,\ \operatorname{err},\ R\bigr).
+  \]
+
+  \item For each retained candidate, compute an optimal movement plan using
+  B0. Initialize row residual weights \(a_i=0\) and column residual weights
+  \(g_j=0\).
+
+  \item For each internal move \(u=(i,j)\mapsto v=(i',j')\) with cost \(c\),
+  add \(c\) to \(a_i,a_{i'}\) and to \(g_j,g_{j'}\). A more detailed
+  implementation may also add weight along a chosen shortest path from \(u\) to
+  \(v\).
+
+  \item For each exit at \(u=(i,j)\) with cost \(b(u)\), add \(b(u)\) to
+  \(a_i\) and \(g_j\). For each entry at \(v=(i,j)\) with cost \(b(v)\), add
+  \(b(v)\) to \(a_i\) and \(g_j\).
+
+  \item Choose the largest residual rows and columns, for example the top
+  \(20\%\) or all rows and columns whose residual is above a fixed quantile.
+  Perturb their cluster assignments, split their clusters when spare clusters
+  are available, or seed new centers from their row and column patterns.
+
+  \item Rerun alternating co-clustering from these perturbed assignments. During
+  this rerun, exact Hamming ties may be broken by the movement residual weights,
+  and beam search may keep states with lower provisional movement cost even
+  when their immediate Hamming error is not best.
+
+  \item Convert every resulting state to draft matrices, score it by
+  \(\Phi_\beta\), and add it to the candidate pool.
+
+  \item Return the best completed candidate under the same Beta key as B1.
+\end{enumerate}
+
+For example, if many matched moves point in the same local direction, Step B2.5
+may shift or split the responsible row cluster, column cluster, or treadle
 combination before changing the density of the region. If many cells are
-scheduled to enter through the edge, the search may prefer modifications that
-add black cells near those boundary-to-target paths. If many cells are
-scheduled to exit, the search may prefer removing activations that are close to
-an edge and weakly supported by the surrounding motif.
+scheduled to enter through the edge, the search should prefer modifications
+that add black cells near those entry targets. If many cells are scheduled to
+exit, the search should prefer removing activations that are close to an edge
+and weakly supported by the surrounding motif.
 
 \subsection{Beta 3}
 
@@ -1072,8 +1209,55 @@ implementation reduces \(\lambda\) and \(\mu\) toward \(0\) before final
 selection, so reported Beta 3 candidates are still ordered primarily by minimum
 movement.
 
-The practical hypothesis is that \(\Phi_\beta\) rewards visual locality while
-the structural pressures discourage drafts that achieve low movement only by
+\paragraph{Procedure.}
+
+\begin{enumerate}[label=\textbf{B3.\arabic*.}]
+  \item Start from the best Beta 2 candidate, with matrices \(A,B,C\), redundancy
+  matrix \(D=AB^TC\), and visible drawdown \(\widehat{D}\).
+
+  \item Form the allowed treadle subsets
+  \[
+    \mathcal{T}_r=\{T\subseteq\{1,\dots,t\}: |T|\le r\}.
+  \]
+  These are the possible treadle combinations for a single pick.
+
+  \item Set initial search weights \(\lambda_0,\mu_0\). For iteration
+  \(q=0,\dots,Q-1\), use annealed weights such as
+  \[
+    \lambda_q=\lambda_0\left(1-\frac{q}{Q-1}\right),
+    \qquad
+    \mu_q=\mu_0\left(1-\frac{q}{Q-1}\right),
+  \]
+  with \(\lambda_q=\mu_q=0\) when \(Q=1\).
+
+  \item Update the treadling matrix \(A\) row by row. For each pick \(i\), try
+  every subset \(T\in\mathcal{T}_r\) as the pressed treadles on that pick,
+  recompute the affected candidate, and keep the row of \(A\) that minimizes
+  \(S_{\lambda_q,\mu_q}\).
+
+  \item Update the tie-up matrix \(B\) bit by bit. For each treadle-shaft entry,
+  try values \(0\) and \(1\), recompute the candidate, and keep the value that
+  minimizes \(S_{\lambda_q,\mu_q}\).
+
+  \item Update the threading matrix \(C\) column by column. For each warp end,
+  try assigning it to each shaft, recompute the candidate, and keep the shaft
+  assignment that minimizes \(S_{\lambda_q,\mu_q}\). Each column of \(C\) must
+  remain one-hot.
+
+  \item After each full pass through \(A\), \(B\), and \(C\), record the best
+  candidate seen under the final reporting key
+  \[
+    \bigl(\Phi_\beta,\ \operatorname{err},\ \text{draft size},\ R,\ F\bigr).
+  \]
+  Stop after the iteration limit or after a full pass makes no change.
+
+  \item Return the best recorded candidate, not necessarily the final coordinate
+  descent state.
+\end{enumerate}
+
+If no clothlike penalty is being implemented, set \(F(\widehat{D})=0\). The
+practical hypothesis is that \(\Phi_\beta\) rewards visual locality while the
+structural pressures discourage drafts that achieve low movement only by
 creating inefficient treadle overlap or poor cloth behavior. Benchmarks for the
 Beta family should therefore report both movement cost and Hamming error: the
 former is the objective being optimized, while the latter makes comparison with
