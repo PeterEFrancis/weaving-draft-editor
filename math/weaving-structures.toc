@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Exact Solvability}{5}{section.2}%
+\contentsline {paragraph}{Input.}{6}{section*.4}%
+\contentsline {paragraph}{Step 1: recover the threading.}{6}{section*.5}%
+\contentsline {paragraph}{Step 2: reduce to row types.}{6}{section*.6}%
+\contentsline {paragraph}{Step 3: solve the generator problem.}{6}{section*.7}%
+\contentsline {paragraph}{Step 4: recover the tie-up and treadling.}{7}{section*.8}%
+\contentsline {section}{\numberline {3}Alpha Algorithms (Hamming Error)}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Alpha 1}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Alpha 2}{9}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Alpha 3}{11}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Benchmarks}{12}{subsection.3.4}%

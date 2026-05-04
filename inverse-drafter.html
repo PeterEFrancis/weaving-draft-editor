@@ -1448,7 +1448,9 @@
             <label class="control-label" for="optimizer-engine-select">Engine</label>
             <select id="optimizer-engine-select" class="form-select" aria-label="Optimizer engine">
               <option value="exact">Exact</option>
-              <option value="alpha">Alpha</option>
+              <option value="heuristic">Alpha 1</option>
+              <option value="alpha">Alpha 2</option>
+              <option value="alpha3">Alpha 3</option>
             </select>
           </div>
 
@@ -1738,10 +1740,13 @@ function normalizeOptimizerEngine(value) {
   if (value === "mathematical" || value === "default") {
     return "exact";
   }
-  if (value === "balanced" || value === "heuristic" || value === "motif" || value === "linework") {
+  if (value === "balanced" || value === "heuristic") {
+    return "heuristic";
+  }
+  if (value === "motif" || value === "linework") {
     return "alpha";
   }
-  return ["exact", "alpha"].includes(value) ? value : defaultOptimizerEngine;
+  return ["exact", "alpha", "alpha3", "heuristic"].includes(value) ? value : defaultOptimizerEngine;
 }
 
 function syncOptimizerEngineSelect() {
@@ -2880,10 +2885,23 @@ function getRowWeightVectors(weightMatrix) {
   return weightMatrix?.map(row => row.slice()) || null;
 }
 
-function computeDraftEngineMetrics(targetMatrix, draftMatrix, localityWeights = null) {
-  const weights = localityWeights || (optimizerEngine === "alpha" ? computeLocalityWeightMatrix(targetMatrix) : null);
+function isImpactGuidedEngine(engine = optimizerEngine) {
+  return engine === "alpha" || engine === "alpha3";
+}
+
+function isRedundancyGuidedEngine(engine = optimizerEngine) {
+  return engine === "alpha3";
+}
+
+function computeDraftEngineMetrics(targetMatrix, draftMatrix, localityWeights = null, draftOption = null) {
+  const weights = localityWeights || (isImpactGuidedEngine() ? computeLocalityWeightMatrix(targetMatrix) : null);
+  const redundancyAnalysis = draftOption
+    ? computeDraftRedundancyAnalysis(targetMatrix, draftOption)
+    : { pressure: 0, maxPickPressure: 0 };
   return {
     weightedMismatch: computeWeightedMatrixMismatches(targetMatrix, draftMatrix, weights),
+    redundancyPressure: redundancyAnalysis.pressure,
+    maxPickRedundancyPressure: redundancyAnalysis.maxPickPressure,
     blurMismatch: computeBlurMismatch(targetMatrix, draftMatrix, 1),
     lineMismatch: computeLineMismatch(targetMatrix, draftMatrix),
     densityMismatch: Math.abs(countMatrixOnes(targetMatrix) - countMatrixOnes(draftMatrix))
@@ -2893,7 +2911,31 @@ function computeDraftEngineMetrics(targetMatrix, draftMatrix, localityWeights = 
 function compareDraftEngineMetrics(left, right) {
   if (optimizerEngine === "alpha") {
     return (
+      left.mismatchCount - right.mismatchCount ||
+      (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+        (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch ||
+      left.engineMetrics.weightedMismatch - right.engineMetrics.weightedMismatch
+    );
+  }
+
+  if (optimizerEngine === "alpha3") {
+    return (
+      left.mismatchCount - right.mismatchCount ||
+      left.engineMetrics.redundancyPressure - right.engineMetrics.redundancyPressure ||
       left.engineMetrics.weightedMismatch - right.engineMetrics.weightedMismatch ||
+      (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
+        (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
+      left.engineMetrics.lineMismatch - right.engineMetrics.lineMismatch ||
+      left.engineMetrics.blurMismatch - right.engineMetrics.blurMismatch ||
+      left.engineMetrics.densityMismatch - right.engineMetrics.densityMismatch
+    );
+  }
+
+  if (optimizerEngine === "heuristic") {
+    return (
       left.mismatchCount - right.mismatchCount ||
       (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
         (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
@@ -3432,6 +3474,7 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
 
 function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPressedTreadles) {
   const normalizedMaxPressed = Math.max(0, Number.parseInt(maxPressed, 10) || 0);
+  const optimizeForRedundancy = isRedundancyGuidedEngine();
 
   if (isZeroPattern(targetPattern)) {
     return [];
@@ -3458,11 +3501,22 @@ function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPr
   }
 
   let match = null;
+  let bestScore = Number.POSITIVE_INFINITY;
 
   function search(startIndex, remainingSlots, covered, coveredOnes, chosen) {
     if (coveredOnes === targetOnes) {
-      match = chosen.slice();
-      return true;
+      if (!optimizeForRedundancy) {
+        match = chosen.slice();
+        return true;
+      }
+
+      const overlap = chosen.reduce((total, basisIndex) => total + countPatternOnes(basisPatterns[basisIndex]), 0) - targetOnes;
+      const score = overlap * 100 + chosen.length;
+      if (score < bestScore) {
+        bestScore = score;
+        match = chosen.slice();
+      }
+      return false;
     }
     if (remainingSlots === 0) {
       return false;
@@ -3485,7 +3539,7 @@ function findPatternCombination(targetPattern, basisPatterns, maxPressed = maxPr
       }
 
       chosen.push(candidate.index);
-      if (search(candidateIndex + 1, remainingSlots - 1, nextCovered, coveredOnes + gain, chosen)) {
+      if (search(candidateIndex + 1, remainingSlots - 1, nextCovered, coveredOnes + gain, chosen) && !optimizeForRedundancy) {
         return true;
       }
       chosen.pop();
@@ -3689,6 +3743,58 @@ function rebuildDrawdown(threading, tieup, treadling) {
       return 0;
     })
   );
+}
+
+function computeRedundancyMatrix(threading, tieup, treadling) {
+  const shafts = threading.length;
+  const warpCount = threading[0]?.length || 0;
+  const pickCount = treadling.length;
+  const treadles = treadling[0]?.length || 0;
+  const warpToShaft = Array(warpCount).fill(0);
+
+  for (let column = 0; column < warpCount; column++) {
+    for (let shaft = 0; shaft < shafts; shaft++) {
+      if (threading[shaft]?.[column]) {
+        warpToShaft[column] = shaft;
+        break;
+      }
+    }
+  }
+
+  return Array.from({ length: pickCount }, (_, row) =>
+    Array.from({ length: warpCount }, (_, column) => {
+      const shaft = warpToShaft[column];
+      let activationCount = 0;
+      for (let treadle = 0; treadle < treadles; treadle++) {
+        if (treadling[row]?.[treadle] && tieup[treadle]?.[shaft]) {
+          activationCount++;
+        }
+      }
+      return activationCount;
+    })
+  );
+}
+
+function computeDraftRedundancyAnalysis(targetMatrix, draftOption) {
+  if (!draftOption?.threading || !draftOption?.tieup || !draftOption?.treadling) {
+    return { pressure: 0, maxPickPressure: 0, pickPressures: [] };
+  }
+
+  const redundancy = computeRedundancyMatrix(draftOption.threading, draftOption.tieup, draftOption.treadling);
+  const pickPressures = redundancy.map((row, rowIndex) =>
+    row.reduce((total, activationCount, columnIndex) => {
+      if (!targetMatrix[rowIndex]?.[columnIndex]) {
+        return total;
+      }
+      return total + Math.max(0, activationCount - 1);
+    }, 0)
+  );
+
+  return {
+    pressure: pickPressures.reduce((total, value) => total + value, 0),
+    maxPickPressure: pickPressures.reduce((maximum, value) => Math.max(maximum, value), 0),
+    pickPressures
+  };
 }
 
 function getRandomInteger(maximum) {
@@ -3986,6 +4092,20 @@ function formatRandomTrialPercent(outcomeIndex, totalCells) {
   return `${percent.toFixed(fixed)}%`;
 }
 
+function formatRandomTrialAverage(distribution) {
+  const bins = distribution?.bins || [];
+  const completed = distribution?.completed || 0;
+  const totalCells = Math.max(1, bins.length - 1);
+  if (!completed || !bins.length) {
+    return "";
+  }
+
+  const matchedCellTotal = bins.reduce((sum, count, index) => sum + count * index, 0);
+  const percent = (matchedCellTotal / completed / totalCells) * 100;
+  const fixed = Math.abs(percent - Math.round(percent)) < 0.05 ? 0 : 1;
+  return `Average ${percent.toFixed(fixed)}% match`;
+}
+
 function getObservedRandomTrialRange(bins) {
   const observedIndices = bins
     .map((count, index) => ({ count, index }))
@@ -4197,6 +4317,10 @@ function getRandomTrialWorkerFunctionSource() {
     computeLocalityWeightMatrix,
     getColumnWeightVectors,
     getRowWeightVectors,
+    isImpactGuidedEngine,
+    isRedundancyGuidedEngine,
+    computeRedundancyMatrix,
+    computeDraftRedundancyAnalysis,
     computeDraftEngineMetrics,
     compareDraftEngineMetrics,
     computeDrawdownClothlikeAnalysis,
@@ -4492,7 +4616,7 @@ async function runRandomEngineTrials({ targetKind, trialInputId, blackProbabilit
     lastRandomTrialDistribution = distribution;
     lastRandomTrialMeta = { isRunning: false };
     drawRandomTrialDistribution(distribution, lastRandomTrialMeta);
-    result.textContent = "";
+    result.textContent = formatRandomTrialAverage(distribution);
   } catch (error) {
     console.error(error);
     result.textContent = "Trial error";
@@ -4717,6 +4841,8 @@ function createInitialAssignments(vectors, groupCount, strategy = "farthest", se
 function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount, weights = null) {
   const ones = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
   const totals = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+  const weightedOnes = weights ? Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0)) : null;
+  const weightedTotals = weights ? Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0)) : null;
   const ambiguous = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(false));
   const tieup = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
 
@@ -4725,9 +4851,15 @@ function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignme
       const treadle = rowAssignments[row];
       const shaft = columnAssignments[column];
       const weight = weights?.[row]?.[column] ?? 1;
-      totals[treadle][shaft] += weight;
+      totals[treadle][shaft]++;
+      if (weights) {
+        weightedTotals[treadle][shaft] += weight;
+      }
       if (matrix[row][column]) {
-        ones[treadle][shaft] += weight;
+        ones[treadle][shaft]++;
+        if (weights) {
+          weightedOnes[treadle][shaft] += weight;
+        }
       }
     }
   }
@@ -4737,7 +4869,12 @@ function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignme
       const total = totals[treadle][shaft];
       const count = ones[treadle][shaft];
       tieup[treadle][shaft] = total && count * 2 >= total ? 1 : 0;
-      ambiguous[treadle][shaft] = total > 0 && Math.abs(count * 2 - total) < 1e-9;
+      ambiguous[treadle][shaft] = total > 0 && count * 2 === total;
+      if (ambiguous[treadle][shaft] && weights) {
+        const weightedTotal = weightedTotals[treadle][shaft];
+        const weightedCount = weightedOnes[treadle][shaft];
+        tieup[treadle][shaft] = weightedTotal && weightedCount * 2 >= weightedTotal ? 1 : 0;
+      }
     }
   }
 
@@ -4772,21 +4909,35 @@ function rebalanceAssignments(assignments, groupCount) {
 
 function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, currentAssignments, weights = null) {
   const nextAssignments = currentAssignments.slice();
+  const epsilon = 1e-9;
 
   for (let row = 0; row < matrix.length; row++) {
     let bestTreadle = currentAssignments[row] ?? 0;
     let bestMismatch = Number.POSITIVE_INFINITY;
+    let bestImpactMismatch = Number.POSITIVE_INFINITY;
 
     for (let treadleIndex = 0; treadleIndex < treadleCount; treadleIndex++) {
       let mismatch = 0;
+      let impactMismatch = 0;
       for (let column = 0; column < matrix[row].length; column++) {
-        mismatch += matrix[row][column] === tieup[treadleIndex][columnAssignments[column]]
-          ? 0
-          : weights?.[row]?.[column] ?? 1;
+        if (matrix[row][column] !== tieup[treadleIndex][columnAssignments[column]]) {
+          mismatch++;
+          impactMismatch += weights?.[row]?.[column] ?? 1;
+        }
       }
 
-      if (mismatch < bestMismatch || (mismatch === bestMismatch && treadleIndex === currentAssignments[row])) {
+      if (
+        mismatch < bestMismatch ||
+        (
+          mismatch === bestMismatch &&
+          (
+            impactMismatch < bestImpactMismatch - epsilon ||
+            (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && treadleIndex === currentAssignments[row])
+          )
+        )
+      ) {
         bestMismatch = mismatch;
+        bestImpactMismatch = impactMismatch;
         bestTreadle = treadleIndex;
       }
     }
@@ -4799,21 +4950,35 @@ function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, cu
 
 function updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, currentAssignments, weights = null) {
   const nextAssignments = currentAssignments.slice();
+  const epsilon = 1e-9;
 
   for (let column = 0; column < matrix[0].length; column++) {
     let bestShaft = currentAssignments[column] ?? 0;
     let bestMismatch = Number.POSITIVE_INFINITY;
+    let bestImpactMismatch = Number.POSITIVE_INFINITY;
 
     for (let shaftIndex = 0; shaftIndex < shaftCount; shaftIndex++) {
       let mismatch = 0;
+      let impactMismatch = 0;
       for (let row = 0; row < matrix.length; row++) {
-        mismatch += matrix[row][column] === tieup[rowAssignments[row]][shaftIndex]
-          ? 0
-          : weights?.[row]?.[column] ?? 1;
+        if (matrix[row][column] !== tieup[rowAssignments[row]][shaftIndex]) {
+          mismatch++;
+          impactMismatch += weights?.[row]?.[column] ?? 1;
+        }
       }
 
-      if (mismatch < bestMismatch || (mismatch === bestMismatch && shaftIndex === currentAssignments[column])) {
+      if (
+        mismatch < bestMismatch ||
+        (
+          mismatch === bestMismatch &&
+          (
+            impactMismatch < bestImpactMismatch - epsilon ||
+            (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && shaftIndex === currentAssignments[column])
+          )
+        )
+      ) {
         bestMismatch = mismatch;
+        bestImpactMismatch = impactMismatch;
         bestShaft = shaftIndex;
       }
     }
@@ -4984,13 +5149,24 @@ function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, ti
     shafts,
     weights
   );
-  const resolvedTieup = chooseAmbiguousTieupValuesForClothlike(
-    matrix,
-    normalized.rowAssignments,
-    normalized.columnAssignments,
-    finalTieupStats.tieup,
-    finalTieupStats.ambiguous
-  );
+  const resolvedTieup = weights
+    ? {
+        tieup: finalTieupStats.tieup,
+        ambiguous: finalTieupStats.ambiguous,
+        drawdown: buildApproximateDrawdownFromAssignments(
+          normalized.rowAssignments,
+          normalized.columnAssignments,
+          finalTieupStats.tieup
+        ),
+        clothlikeAnalysis: null
+      }
+    : chooseAmbiguousTieupValuesForClothlike(
+        matrix,
+        normalized.rowAssignments,
+        normalized.columnAssignments,
+        finalTieupStats.tieup,
+        finalTieupStats.ambiguous
+      );
   const rowPatterns = Array.from({ length: picks }, (_, row) =>
     resolvedTieup.tieup[normalized.rowAssignments[row]]?.slice() || Array(shafts).fill(0)
   );
@@ -5033,13 +5209,17 @@ function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, ti
 function optimizeApproximateDraft(matrix, shaftCount, treadleCount, columnStrategy, rowStrategy, seed = 1, localityWeightsOverride = null) {
   const columnVectors = getColumnVectors(matrix);
   const rowVectors = getRowVectors(matrix);
-  const localityWeights = optimizerEngine === "alpha"
+  const localityWeights = isImpactGuidedEngine()
     ? (localityWeightsOverride || computeLocalityWeightMatrix(matrix))
     : null;
-  const columnWeightVectors = getColumnWeightVectors(localityWeights);
-  const rowWeightVectors = getRowWeightVectors(localityWeights);
-  let columnAssignments = createInitialAssignments(columnVectors, shaftCount, columnStrategy, seed, columnWeightVectors);
-  let rowAssignments = createInitialAssignments(rowVectors, treadleCount, rowStrategy, seed + 17, rowWeightVectors);
+  const useColumnImpactInitialization = isImpactGuidedEngine() && columnStrategy.startsWith("impact-");
+  const useRowImpactInitialization = isImpactGuidedEngine() && rowStrategy.startsWith("impact-");
+  const normalizedColumnStrategy = columnStrategy.replace(/^impact-/, "");
+  const normalizedRowStrategy = rowStrategy.replace(/^impact-/, "");
+  const columnWeightVectors = useColumnImpactInitialization ? getColumnWeightVectors(localityWeights) : null;
+  const rowWeightVectors = useRowImpactInitialization ? getRowWeightVectors(localityWeights) : null;
+  let columnAssignments = createInitialAssignments(columnVectors, shaftCount, normalizedColumnStrategy, seed, columnWeightVectors);
+  let rowAssignments = createInitialAssignments(rowVectors, treadleCount, normalizedRowStrategy, seed + 17, rowWeightVectors);
   const iterationLimit = warp * picks > 9000 ? 6 : 10;
   let signature = "";
 
@@ -5071,7 +5251,7 @@ function decorateDraftOptionForTarget(option, originalMatrix, repairResult, loca
     exactMatch: mismatchCount === 0,
     mismatchCount,
     matchRatio: getMatchRatio(originalMatrix, mismatchCount),
-    engineMetrics: computeDraftEngineMetrics(originalMatrix, option.drawdown, localityWeights),
+    engineMetrics: computeDraftEngineMetrics(originalMatrix, option.drawdown, localityWeights, option),
     clothlikeAnalysis: computeDrawdownClothlikeAnalysis(option.drawdown, floatTolerance),
     repairedCellCount: repairResult.repairedCellCount,
     repairTolerance: floatTolerance
@@ -5116,7 +5296,7 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
     optimizerEngine = "alpha";
   }
 
-  const localityWeights = optimizerEngine === "alpha" ? computeLocalityWeightMatrix(optimizationMatrix) : null;
+  const localityWeights = isImpactGuidedEngine() ? computeLocalityWeightMatrix(optimizationMatrix) : null;
   const clampedShaftLimit = Math.max(1, Math.min(shaftLimit, optimizationMatrix[0]?.length || 1));
   const clampedTreadleLimit = Math.max(1, Math.min(treadleLimit, optimizationMatrix.length || 1));
   const configs = [
@@ -5131,7 +5311,19 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
     { shafts: Math.max(1, clampedShaftLimit - 1), treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "random", rowStrategy: "random", seed: 71 },
     { shafts: Math.max(1, clampedShaftLimit - 2), treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 79 },
     { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 2), columnStrategy: "random", rowStrategy: "density", seed: 83 }
-  ].filter(
+  ];
+
+  if (isImpactGuidedEngine()) {
+    configs.push(
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "impact-farthest", seed: 97 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "farthest", seed: 101 },
+      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "impact-farthest", seed: 103 },
+      { shafts: Math.max(1, clampedShaftLimit - 1), treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "farthest", seed: 107 },
+      { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "farthest", rowStrategy: "impact-farthest", seed: 109 }
+    );
+  }
+
+  const uniqueConfigs = configs.filter(
     (config, index, array) =>
       config.shafts >= 1 &&
       config.treadles >= 1 &&
@@ -5145,7 +5337,7 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
 
   const candidateMap = new Map();
 
-  configs.forEach(config => {
+  uniqueConfigs.forEach(config => {
     const candidate = decorateDraftOptionForTarget(
       optimizeApproximateDraft(optimizationMatrix, config.shafts, config.treadles, config.columnStrategy, config.rowStrategy, config.seed, localityWeights),
       matrix,
