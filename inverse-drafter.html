@@ -2039,19 +2039,56 @@ function applyStateSnapshot(snapshot, { preserveSelection = false } = {}) {
   renderGeneratedDraft();
 }
 
-function buildSaveData() {
+function sliceHistoryAroundIndex(stack, currentIndex, maxEntries) {
+  if (!Number.isFinite(maxEntries) || stack.length <= maxEntries) {
+    return {
+      stack,
+      index: currentIndex
+    };
+  }
+
+  if (maxEntries <= 0) {
+    return {
+      stack: [],
+      index: 0
+    };
+  }
+
+  const beforeCount = Math.floor((maxEntries - 1) / 2);
+  const start = Math.max(
+    0,
+    Math.min(currentIndex - beforeCount, stack.length - maxEntries)
+  );
+
   return {
+    stack: stack.slice(start, start + maxEntries),
+    index: currentIndex - start
+  };
+}
+
+function buildSaveData({ historyLimit = Infinity } = {}) {
+  const state = captureStateSnapshot();
+  const saveData = {
     meta: {
       kind: "weaving-inverse-draft",
       version: 1,
       draftName: getDraftName()
     },
-    state: captureStateSnapshot(),
-    history: {
-      stack: inverseHistory,
-      index: inverseHistoryIndex
-    }
+    state
   };
+
+  if (historyLimit !== 0) {
+    const sourceStack = inverseHistory.length ? inverseHistory.slice() : [state];
+    const sourceIndex = Math.max(0, Math.min(inverseHistoryIndex, sourceStack.length - 1));
+    sourceStack[sourceIndex] = state;
+    const history = sliceHistoryAroundIndex(sourceStack, sourceIndex, historyLimit);
+    saveData.history = {
+      stack: history.stack,
+      index: Math.max(0, Math.min(history.index, history.stack.length - 1))
+    };
+  }
+
+  return saveData;
 }
 
 function isForwardDraftData(data) {
@@ -2198,10 +2235,18 @@ function captureSnapshotDefaults(snapshot) {
 }
 
 function saveAutosave() {
-  try {
-    window.localStorage.setItem(getAutosaveStorageKey(), JSON.stringify(buildSaveData()));
-  } catch (error) {
-    // Ignore storage failures.
+  const historyLimits = [Infinity, 60, 30, 15, 6, 3, 1, 0];
+
+  for (const historyLimit of historyLimits) {
+    try {
+      window.localStorage.setItem(
+        getAutosaveStorageKey(),
+        JSON.stringify(buildSaveData({ historyLimit }))
+      );
+      return;
+    } catch (error) {
+      // Try again with less undo history before giving up on autosave entirely.
+    }
   }
 }
 
@@ -5424,7 +5469,34 @@ function getCrossEditorTransferStorageKey(token) {
   return `${crossEditorTransferStoragePrefix}${token}`;
 }
 
+function pruneCrossEditorTransferPayloads() {
+  const maxAgeMs = 60 * 60 * 1000;
+  const now = Date.now();
+
+  try {
+    for (let index = window.localStorage.length - 1; index >= 0; index--) {
+      const key = window.localStorage.key(index);
+
+      if (!key?.startsWith(crossEditorTransferStoragePrefix)) {
+        continue;
+      }
+
+      try {
+        const entry = JSON.parse(window.localStorage.getItem(key) || "{}");
+        if (!entry.createdAt || now - entry.createdAt > maxAgeMs) {
+          window.localStorage.removeItem(key);
+        }
+      } catch (error) {
+        window.localStorage.removeItem(key);
+      }
+    }
+  } catch (error) {
+    // Ignore storage failures; the actual transfer write will report failure if needed.
+  }
+}
+
 function storeCrossEditorTransferPayload(payload) {
+  pruneCrossEditorTransferPayloads();
   const token = createCrossEditorTransferToken();
   window.localStorage.setItem(
     getCrossEditorTransferStorageKey(token),
@@ -5434,6 +5506,75 @@ function storeCrossEditorTransferPayload(payload) {
     })
   );
   return token;
+}
+
+function getSelectedGeneratedOptionForTransfer() {
+  if (!generatedOptions.length || queuedGeneratedRender) {
+    const shouldResetSelection = queuedGeneratedRenderResetSelection;
+    queuedGeneratedRender = false;
+    queuedGeneratedRenderResetSelection = false;
+    renderGeneratedDraft({ preserveSignature: !shouldResetSelection });
+  }
+
+  return generatedOptions[selectedOptionIndex] || generatedOptions[0] || null;
+}
+
+function buildForwardDraftTransferData() {
+  const selectedOption = getSelectedGeneratedOptionForTransfer();
+
+  if (!selectedOption) {
+    throw new Error("No generated draft is available to send.");
+  }
+
+  const patternColors = [
+    { id: "pattern-color-1", value: "#2f241d", thickness: 1 },
+    { id: "pattern-color-2", value: "#d4d4d4", thickness: 1 }
+  ];
+  const warpColorId = patternColors[0].id;
+  const weftColorId = patternColors[1].id;
+
+  return {
+    format: "weaving-draft-data",
+    version: 3,
+    meta: {
+      draftName: getDraftName()
+    },
+    draft: {
+      shafts: selectedOption.shafts,
+      treadles: selectedOption.treadles,
+      warp,
+      picks,
+      threading: Array.from({ length: selectedOption.shafts }, (_, shaftIndex) =>
+        Array.from({ length: warp }, (_, warpIndex) =>
+          selectedOption.threading?.[shaftIndex]?.[warpIndex] ? warpColorId : 0
+        )
+      ),
+      treadling: Array.from({ length: picks }, (_, pickIndex) =>
+        Array.from({ length: selectedOption.treadles }, (_, treadleIndex) =>
+          selectedOption.treadling?.[pickIndex]?.[treadleIndex] ? weftColorId : 0
+        )
+      ),
+      tieup: Array.from({ length: selectedOption.treadles }, (_, treadleIndex) =>
+        Array.from({ length: selectedOption.shafts }, (_, shaftIndex) =>
+          selectedOption.tieup?.[treadleIndex]?.[shaftIndex] ? 1 : 0
+        )
+      ),
+      patternColors,
+      activePatternColorId: warpColorId,
+      nextPatternColorNumber: patternColors.length + 1
+    },
+    preview: {
+      repeatX: 4,
+      repeatY: 4,
+      renderMode: "plain",
+      sett: 60,
+      backgroundColor: "#ffffff"
+    },
+    ui: {
+      draftCellSize: getCellSize(),
+      draftRenderStyle: "structure"
+    }
+  };
 }
 
 function clearCrossEditorTransferQuery() {
@@ -5449,7 +5590,7 @@ function clearCrossEditorTransferQuery() {
 
 function openCurrentInverseDraftInDrafter() {
   try {
-    const token = storeCrossEditorTransferPayload(buildSaveData());
+    const token = storeCrossEditorTransferPayload(buildForwardDraftTransferData());
     const opened = window.open(
       `drafter.html?${crossEditorTransferQueryParam}=${encodeURIComponent(token)}`,
       "_blank"
@@ -5527,15 +5668,18 @@ async function handleInverseDraftFileOpen(event) {
   try {
     const text = await file.text();
     const parsed = parseInverseFileContents(text);
+    const openedDraftName = getDraftNameFromFilename(file.name);
     if (isForwardDraftData(parsed)) {
       const converted = buildInverseDataFromForwardDraft(parsed, { filename: file.name });
-      applyLoadedData(converted);
+      applyLoadedData(converted, {
+        draftNameOverride: openedDraftName
+      });
       if (converted.dimensionLimitChanged) {
         showLimitAlert();
       }
     } else {
       applyLoadedData(parsed, {
-        draftNameOverride: parsed?.meta?.draftName ? null : getDraftNameFromFilename(file.name)
+        draftNameOverride: openedDraftName
       });
     }
   } catch (error) {
@@ -6204,7 +6348,18 @@ document.getElementById("optimization-tolerance-toggle").addEventListener("click
 document.getElementById("inverse-zoom-out").addEventListener("click", () => changeInverseZoom(-1));
 document.getElementById("inverse-zoom-in").addEventListener("click", () => changeInverseZoom(1));
 document.getElementById("inverse-draft-name").addEventListener("input", event => {
-  setDraftName(event.target.value);
+  const nextDraftNameInput = String(event.target.value ?? "");
+  if (nextDraftNameInput.trim()) {
+    draftName = nextDraftNameInput;
+  }
+  try {
+    window.sessionStorage.setItem(
+      inverseActiveNameSessionKey,
+      normalizeDraftName(nextDraftNameInput, draftName)
+    );
+  } catch (error) {
+    // Ignore storage failures.
+  }
   saveAutosave();
 });
 document.getElementById("inverse-draft-name").addEventListener("change", event => {
