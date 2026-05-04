@@ -1378,6 +1378,133 @@
     max-width: min(760px, calc(100vw - 2rem));
   }
 
+  .fabric-preview-modal .modal-dialog {
+    width: min(1240px, calc(100vw - 2rem));
+    max-width: none;
+  }
+
+  .fabric-preview-modal .modal-content {
+    height: min(82vh, 860px);
+    min-height: 480px;
+    overflow: hidden;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1.35rem;
+    background: #ffffff;
+    box-shadow: 0 1.2rem 3rem rgba(47, 36, 29, 0.18);
+  }
+
+  .fabric-preview-surface {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #ffffff;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .fabric-preview-surface.is-panning {
+    cursor: grabbing;
+  }
+
+  .fabric-preview-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fabric-preview-controls {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    pointer-events: none;
+  }
+
+  .fabric-preview-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 999px;
+    background: rgba(255, 252, 245, 0.86);
+    box-shadow: 0 0.7rem 1.7rem rgba(47, 36, 29, 0.12);
+    backdrop-filter: blur(12px);
+    pointer-events: auto;
+  }
+
+  .fabric-preview-title {
+    padding: 0.45rem 0.8rem;
+    color: var(--accent-dark);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fabric-preview-button {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--ink);
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: inset 0 0 0 1px rgba(47, 36, 29, 0.09);
+  }
+
+  .fabric-preview-button:hover,
+  .fabric-preview-button:focus-visible {
+    background: rgba(195, 97, 45, 0.1);
+    color: var(--accent-dark);
+  }
+
+  .fabric-preview-zoom-value {
+    min-width: 4.35rem;
+    color: rgba(47, 36, 29, 0.62);
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .fabric-preview-select {
+    width: auto;
+    min-width: 8.5rem;
+    height: 2.25rem;
+    padding-block: 0;
+    border: 0;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--ink);
+    font-weight: 800;
+    box-shadow: inset 0 0 0 1px rgba(47, 36, 29, 0.09);
+  }
+
+  .fabric-preview-select:focus {
+    border-color: transparent;
+    box-shadow: inset 0 0 0 1px rgba(195, 97, 45, 0.32);
+  }
+
+  .fabric-preview-close {
+    margin-left: auto;
+    pointer-events: auto;
+  }
+
+  .fabric-preview-close:hover,
+  .fabric-preview-close:focus-visible {
+    background: var(--ink);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(47, 36, 29, 0.2);
+  }
+
   .sett-estimate-grid {
     display: grid;
     gap: 0.65rem;
@@ -1561,6 +1688,18 @@
                   </span>
                   <span class="toolbar-action-label">Print</span>
                 </button>
+                <button type="button" class="btn btn-soft toolbar-action" onclick="openCurrentDraftInInverseEditor()">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 19 19 5"></path>
+                      <path d="M10 5h9v9"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">To Inverse</span>
+                </button>
+              </div>
+
+              <div class="workspace-toolbar-actions">
                 <button type="button" class="btn btn-soft toolbar-action" onclick="openDraftInfoModal()">
                   <span class="toolbar-action-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -1571,14 +1710,17 @@
                   </span>
                   <span class="toolbar-action-label">Info</span>
                 </button>
-                <button type="button" class="btn btn-soft toolbar-action" onclick="openCurrentDraftInInverseEditor()">
+                <button type="button" class="btn btn-soft toolbar-action" onclick="openFabricPreviewModal()">
                   <span class="toolbar-action-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M5 19 19 5"></path>
-                      <path d="M10 5h9v9"></path>
+                      <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                      <path d="M4 9h16"></path>
+                      <path d="M4 15h16"></path>
+                      <path d="M9 4v16"></path>
+                      <path d="M15 4v16"></path>
                     </svg>
                   </span>
-                  <span class="toolbar-action-label">To Inverse</span>
+                  <span class="toolbar-action-label">Fabric</span>
                 </button>
               </div>
 
@@ -1865,6 +2007,22 @@
             <div class="form-text">Turn this off to print only the threading, tie-up, and treadling.</div>
           </div>
 
+          <div class="print-modal-card">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="draft-print-include-info">
+              <label class="form-check-label fw-semibold" for="draft-print-include-info">Include draft info</label>
+            </div>
+            <div class="form-text">Adds sett estimates and draft structure metrics on a separate page.</div>
+          </div>
+
+          <div class="print-modal-card">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="draft-print-include-yarns">
+              <label class="form-check-label fw-semibold" for="draft-print-include-yarns">Include yarns</label>
+            </div>
+            <div class="form-text">Adds yarn color swatches and yarn weights with the draft info page.</div>
+          </div>
+
           <div class="print-modal-card print-modal-render-group" id="draft-print-render-group">
             <label class="control-label" for="draft-print-render-style">Drawdown Render</label>
             <select id="draft-print-render-style" class="form-select" aria-label="Drawdown render for print">
@@ -1881,6 +2039,32 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-soft" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-drafter" id="draft-print-confirm">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade fabric-preview-modal" id="fabric-preview-modal" tabindex="-1" aria-labelledby="fabric-preview-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div id="fabric-preview-surface" class="fabric-preview-surface" aria-label="Infinite repeated fabric preview">
+        <canvas id="fabric-preview-canvas" class="fabric-preview-canvas"></canvas>
+        <div class="fabric-preview-controls">
+          <div class="fabric-preview-control-group">
+            <span id="fabric-preview-modal-label" class="fabric-preview-title">Fabric Preview</span>
+            <button type="button" id="fabric-preview-zoom-out" class="fabric-preview-button" aria-label="Zoom out" title="Zoom out">−</button>
+            <span id="fabric-preview-zoom-value" class="fabric-preview-zoom-value" aria-live="polite">100%</span>
+            <button type="button" id="fabric-preview-zoom-in" class="fabric-preview-button" aria-label="Zoom in" title="Zoom in">+</button>
+            <select id="fabric-preview-render-style" class="form-select fabric-preview-select" aria-label="Fabric preview render style">
+              <option value="structure">Structure</option>
+              <option value="color">Color</option>
+              <option value="warp-faced">Warp-Faced</option>
+              <option value="weft-faced">Weft-Faced</option>
+              <option value="realistic">Interlacement</option>
+            </select>
+          </div>
+          <button type="button" class="fabric-preview-button fabric-preview-close" data-bs-dismiss="modal" aria-label="Close fabric preview">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1994,6 +2178,13 @@ let draftHistoryCommitTimeoutId = null;
 let isDraftAutosaveSuspended = false;
 let isDraftHistorySuspended = false;
 let pendingDraftPrintOptions = null;
+let fabricPreviewZoom = 1;
+let fabricPreviewRenderStyle = defaultDraftRenderStyle;
+let fabricPreviewPanX = 0;
+let fabricPreviewPanY = 0;
+let fabricPreviewHasCustomView = false;
+let fabricPreviewTileCache = null;
+let fabricPreviewPointerState = null;
 
 function createDefaultPatternColors() {
   return defaultPatternColors.map(color => ({...color}));
@@ -2291,6 +2482,8 @@ function setPreviewRenderMode(mode, shouldRender = true) {
   previewRenderMode = normalizePreviewRenderMode(mode);
   updatePreviewRenderModeUI();
   updatePreviewBackgroundUI(getEffectivePreviewBackgroundColor());
+  invalidateFabricPreviewTile();
+  renderFabricPreviewModal();
   if (shouldRender) {
     renderRepeatPreview();
   }
@@ -4042,6 +4235,476 @@ function buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, renderMo
   return { tileCanvas, tileWidth, tileHeight };
 }
 
+function drawFabricFacedPreviewTile(ctx, states, cellSize, tileWidth, tileHeight, renderStyle) {
+  if (renderStyle === "warp-faced") {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const seeds = [];
+
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const state = states[pickIndex]?.[warpIndex];
+
+        if (!state?.hasWarp || !state.warpVisibleOnFront) {
+          continue;
+        }
+
+        seeds.push({
+          color: state.warpColor || state.frontColor || "#ffffff",
+          center: warpIndex * cellSize + cellSize / 2,
+          weight: getFacedExpansionWeight(state.warpWeight)
+        });
+      }
+
+      seeds.forEach((seed, seedIndex) => {
+        const previousSeed = seeds[seedIndex - 1];
+        const nextSeed = seeds[seedIndex + 1];
+        const leftEdge = previousSeed
+          ? previousSeed.center + (seed.center - previousSeed.center) * (previousSeed.weight / (previousSeed.weight + seed.weight))
+          : 0;
+        const rightEdge = nextSeed
+          ? seed.center + (nextSeed.center - seed.center) * (seed.weight / (seed.weight + nextSeed.weight))
+          : tileWidth;
+
+        ctx.fillStyle = seed.color;
+        ctx.fillRect(leftEdge, pickIndex * cellSize, Math.max(0, rightEdge - leftEdge), cellSize);
+      });
+    }
+    return;
+  }
+
+  if (renderStyle === "weft-faced") {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const seeds = [];
+
+      for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+        const state = states[pickIndex]?.[warpIndex];
+
+        if (!state?.hasWeft || state.warpVisibleOnFront) {
+          continue;
+        }
+
+        seeds.push({
+          color: state.weftColor || state.frontColor || "#ffffff",
+          center: pickIndex * cellSize + cellSize / 2,
+          weight: getFacedExpansionWeight(state.weftWeight)
+        });
+      }
+
+      seeds.forEach((seed, seedIndex) => {
+        const previousSeed = seeds[seedIndex - 1];
+        const nextSeed = seeds[seedIndex + 1];
+        const topEdge = previousSeed
+          ? previousSeed.center + (seed.center - previousSeed.center) * (previousSeed.weight / (previousSeed.weight + seed.weight))
+          : 0;
+        const bottomEdge = nextSeed
+          ? seed.center + (nextSeed.center - seed.center) * (seed.weight / (seed.weight + nextSeed.weight))
+          : tileHeight;
+
+        ctx.fillStyle = seed.color;
+        ctx.fillRect(warpIndex * cellSize, topEdge, cellSize, Math.max(0, bottomEdge - topEdge));
+      });
+    }
+  }
+}
+
+function buildFabricPreviewTile(cellSize, renderScale, backgroundColor, renderStyle) {
+  if (renderStyle === "realistic") {
+    return buildPreviewRepeatTile(cellSize, renderScale, backgroundColor, "realistic");
+  }
+
+  const tileWidth = Math.max(1, warp * cellSize);
+  const tileHeight = Math.max(1, picks * cellSize);
+  const tileCanvas = document.createElement("canvas");
+  const tileCtx = tileCanvas.getContext("2d");
+  const states = buildDrawdownStateGrid();
+
+  tileCanvas.width = Math.max(1, Math.round(tileWidth * renderScale));
+  tileCanvas.height = Math.max(1, Math.round(tileHeight * renderScale));
+
+  tileCtx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  tileCtx.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in tileCtx) {
+    tileCtx.imageSmoothingQuality = "high";
+  }
+
+  tileCtx.clearRect(0, 0, tileWidth, tileHeight);
+  tileCtx.fillStyle = backgroundColor;
+  tileCtx.fillRect(0, 0, tileWidth, tileHeight);
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = states[pickIndex][warpIndex];
+      tileCtx.fillStyle = getFabricPreviewFallbackColor(state, renderStyle);
+      tileCtx.fillRect(warpIndex * cellSize, pickIndex * cellSize, cellSize, cellSize);
+    }
+  }
+
+  if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
+    drawFabricFacedPreviewTile(tileCtx, states, cellSize, tileWidth, tileHeight, renderStyle);
+  }
+
+  return { tileCanvas, tileWidth, tileHeight };
+}
+
+function getResolvedInkColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#2f241d";
+}
+
+function positiveModulo(value, modulus) {
+  if (!modulus) {
+    return 0;
+  }
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function getFabricPreviewModalInstance() {
+  const modalElement = document.getElementById("fabric-preview-modal");
+
+  if (!modalElement || !window.bootstrap?.Modal) {
+    return null;
+  }
+
+  return window.bootstrap.Modal.getOrCreateInstance(modalElement);
+}
+
+function isFabricPreviewModalOpen() {
+  return document.getElementById("fabric-preview-modal")?.classList.contains("show");
+}
+
+function getFabricPreviewBaseCellSize() {
+  const rootStyles = getComputedStyle(document.documentElement);
+  return Math.max(
+    1,
+    Number.parseFloat(rootStyles.getPropertyValue("--preview-cell-size")) ||
+      Math.max(1, Math.floor((Number.parseFloat(rootStyles.getPropertyValue("--cell-size")) || 20) / 2))
+  );
+}
+
+function clampFabricPreviewZoom(value) {
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed)) {
+    return 1;
+  }
+  return Math.max(0.08, Math.min(8, parsed));
+}
+
+function getFabricPreviewCellSize() {
+  return Math.max(0.5, getFabricPreviewBaseCellSize() * clampFabricPreviewZoom(fabricPreviewZoom));
+}
+
+function invalidateFabricPreviewTile() {
+  fabricPreviewTileCache = null;
+}
+
+function getFabricPreviewRenderScale() {
+  const rootStyles = getComputedStyle(document.documentElement);
+  const previewRenderScale = Math.max(
+    1,
+    Number.parseFloat(rootStyles.getPropertyValue("--preview-render-scale")) || 1
+  );
+  return Math.max(1, (window.devicePixelRatio || 1) * previewRenderScale);
+}
+
+function getFabricPreviewRenderStyle() {
+  return normalizeDraftRenderStyle(fabricPreviewRenderStyle);
+}
+
+function updateFabricPreviewRenderStyleUI() {
+  const select = document.getElementById("fabric-preview-render-style");
+
+  if (select) {
+    select.value = getFabricPreviewRenderStyle();
+  }
+}
+
+function setFabricPreviewRenderStyle(style) {
+  fabricPreviewRenderStyle = normalizeDraftRenderStyle(style);
+  updateFabricPreviewRenderStyleUI();
+  invalidateFabricPreviewTile();
+  renderFabricPreviewModal();
+}
+
+function getFabricPreviewTile(cellSize, renderScale, backgroundColor, renderMode) {
+  const tileWidth = Math.max(1, warp * cellSize);
+  const tileHeight = Math.max(1, picks * cellSize);
+  const tilePixelWidth = tileWidth * renderScale;
+  const tilePixelHeight = tileHeight * renderScale;
+
+  if (tilePixelWidth > 8192 || tilePixelHeight > 8192 || tilePixelWidth * tilePixelHeight > 18000000) {
+    return null;
+  }
+
+  const key = [
+    warp,
+    picks,
+    cellSize.toFixed(3),
+    renderScale.toFixed(3),
+    backgroundColor,
+    renderMode
+  ].join("|");
+
+  if (fabricPreviewTileCache?.key === key) {
+    return fabricPreviewTileCache.tile;
+  }
+
+  const tile = buildFabricPreviewTile(cellSize, renderScale, backgroundColor, renderMode);
+  fabricPreviewTileCache = { key, tile };
+  return tile;
+}
+
+function updateFabricPreviewZoomUI() {
+  const percent = Math.round(clampFabricPreviewZoom(fabricPreviewZoom) * 100);
+  const zoomValue = document.getElementById("fabric-preview-zoom-value");
+  const zoomOut = document.getElementById("fabric-preview-zoom-out");
+  const zoomIn = document.getElementById("fabric-preview-zoom-in");
+
+  if (zoomValue) {
+    zoomValue.textContent = `${percent}%`;
+  }
+  if (zoomOut) {
+    zoomOut.disabled = fabricPreviewZoom <= 0.0801;
+  }
+  if (zoomIn) {
+    zoomIn.disabled = fabricPreviewZoom >= 7.999;
+  }
+}
+
+function resetFabricPreviewView({ force = false } = {}) {
+  if (fabricPreviewHasCustomView && !force) {
+    return;
+  }
+
+  const surface = document.getElementById("fabric-preview-surface");
+  const rect = surface?.getBoundingClientRect();
+  const viewportWidth = Math.max(1, rect?.width || 1);
+  const viewportHeight = Math.max(1, rect?.height || 1);
+  const baseCellSize = getFabricPreviewBaseCellSize();
+  const fitAcrossZoom = viewportWidth / Math.max(baseCellSize, warp * baseCellSize * 2);
+  const fitDownZoom = viewportHeight / Math.max(baseCellSize, picks * baseCellSize * 2);
+  fabricPreviewZoom = clampFabricPreviewZoom(Math.min(1, Math.max(0.08, fitAcrossZoom, fitDownZoom)));
+
+  const cellSize = getFabricPreviewCellSize();
+  fabricPreviewPanX = (viewportWidth - warp * cellSize) / 2;
+  fabricPreviewPanY = (viewportHeight - picks * cellSize) / 2;
+  fabricPreviewHasCustomView = false;
+  invalidateFabricPreviewTile();
+}
+
+function getFabricPreviewFallbackColor(cellState, renderStyle) {
+  if (renderStyle === "structure") {
+    return cellState.warpVisibleOnFront && cellState.hasWarp ? getResolvedInkColor() : "#ffffff";
+  }
+
+  if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
+    return getDrawdownFacedBaseColor(cellState, renderStyle);
+  }
+
+  if (renderStyle === "realistic") {
+    return cellState.frontColor || "#ffffff";
+  }
+
+  return cellState.frontColor || "#ffffff";
+}
+
+function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, backgroundColor, renderStyle) {
+  const states = buildDrawdownStateGrid();
+  const startColumn = Math.floor(-fabricPreviewPanX / cellSize) - 1;
+  const endColumn = Math.ceil((viewportWidth - fabricPreviewPanX) / cellSize) + 1;
+  const startRow = Math.floor(-fabricPreviewPanY / cellSize) - 1;
+  const endRow = Math.ceil((viewportHeight - fabricPreviewPanY) / cellSize) + 1;
+  const maxVisibleCells = 350000;
+  const visibleCells = Math.max(0, endColumn - startColumn) * Math.max(0, endRow - startRow);
+
+  if (visibleCells > maxVisibleCells) {
+    // Extremely zoomed-out views still get the right color impression without locking the browser.
+    const sampleStep = Math.ceil(Math.sqrt(visibleCells / maxVisibleCells));
+    for (let virtualRow = startRow; virtualRow < endRow; virtualRow += sampleStep) {
+      const sourceRow = positiveModulo(virtualRow, picks);
+      for (let virtualColumn = startColumn; virtualColumn < endColumn; virtualColumn += sampleStep) {
+        const sourceColumn = positiveModulo(virtualColumn, warp);
+        ctx.fillStyle = getFabricPreviewFallbackColor(states[sourceRow][sourceColumn], renderStyle);
+        ctx.fillRect(
+          fabricPreviewPanX + virtualColumn * cellSize,
+          fabricPreviewPanY + virtualRow * cellSize,
+          cellSize * sampleStep,
+          cellSize * sampleStep
+        );
+      }
+    }
+    return;
+  }
+
+  for (let virtualRow = startRow; virtualRow < endRow; virtualRow++) {
+    const sourceRow = positiveModulo(virtualRow, picks);
+    for (let virtualColumn = startColumn; virtualColumn < endColumn; virtualColumn++) {
+      const sourceColumn = positiveModulo(virtualColumn, warp);
+      const x = fabricPreviewPanX + virtualColumn * cellSize;
+      const y = fabricPreviewPanY + virtualRow * cellSize;
+      const state = states[sourceRow][sourceColumn];
+
+      if (renderStyle === "realistic") {
+        drawPreviewStructuredCell(
+          ctx,
+          x,
+          y,
+          cellSize,
+          state,
+          sourceColumn,
+          sourceRow,
+          states,
+          "realistic",
+          backgroundColor
+        );
+      } else {
+        ctx.fillStyle = getFabricPreviewFallbackColor(state, renderStyle);
+        ctx.fillRect(x, y, cellSize, cellSize);
+      }
+    }
+  }
+}
+
+function renderFabricPreviewModal() {
+  if (!isFabricPreviewModalOpen()) {
+    return;
+  }
+
+  const surface = document.getElementById("fabric-preview-surface");
+  const canvas = document.getElementById("fabric-preview-canvas");
+  const ctx = canvas?.getContext("2d");
+
+  if (!surface || !canvas || !ctx) {
+    return;
+  }
+
+  const rect = surface.getBoundingClientRect();
+  const viewportWidth = Math.max(1, rect.width);
+  const viewportHeight = Math.max(1, rect.height);
+  const renderStyle = getFabricPreviewRenderStyle();
+  const backgroundColor = "#ffffff";
+  const renderScale = getFabricPreviewRenderScale();
+  const cellSize = getFabricPreviewCellSize();
+  const canvasWidth = Math.max(1, Math.round(viewportWidth * renderScale));
+  const canvasHeight = Math.max(1, Math.round(viewportHeight * renderScale));
+
+  if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+  }
+  canvas.style.width = `${viewportWidth}px`;
+  canvas.style.height = `${viewportHeight}px`;
+
+  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in ctx) {
+    ctx.imageSmoothingQuality = "high";
+  }
+
+  surface.style.backgroundColor = backgroundColor;
+  ctx.clearRect(0, 0, viewportWidth, viewportHeight);
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(0, 0, viewportWidth, viewportHeight);
+
+  const tile = getFabricPreviewTile(cellSize, renderScale, backgroundColor, renderStyle);
+
+  if (tile) {
+    const startX = positiveModulo(fabricPreviewPanX, tile.tileWidth) - tile.tileWidth;
+    const startY = positiveModulo(fabricPreviewPanY, tile.tileHeight) - tile.tileHeight;
+
+    for (let y = startY; y < viewportHeight; y += tile.tileHeight) {
+      for (let x = startX; x < viewportWidth; x += tile.tileWidth) {
+        ctx.drawImage(tile.tileCanvas, x, y, tile.tileWidth, tile.tileHeight);
+      }
+    }
+  } else {
+    drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, backgroundColor, renderStyle);
+  }
+
+  updateFabricPreviewZoomUI();
+  updateFabricPreviewRenderStyleUI();
+}
+
+function changeFabricPreviewZoom(multiplier, centerX = null, centerY = null) {
+  const surface = document.getElementById("fabric-preview-surface");
+  const rect = surface?.getBoundingClientRect();
+  const viewportWidth = Math.max(1, rect?.width || 1);
+  const viewportHeight = Math.max(1, rect?.height || 1);
+  const focusX = centerX ?? viewportWidth / 2;
+  const focusY = centerY ?? viewportHeight / 2;
+  const oldCellSize = getFabricPreviewCellSize();
+  const worldX = (focusX - fabricPreviewPanX) / oldCellSize;
+  const worldY = (focusY - fabricPreviewPanY) / oldCellSize;
+
+  fabricPreviewZoom = clampFabricPreviewZoom(fabricPreviewZoom * multiplier);
+  const nextCellSize = getFabricPreviewCellSize();
+  fabricPreviewPanX = focusX - worldX * nextCellSize;
+  fabricPreviewPanY = focusY - worldY * nextCellSize;
+  fabricPreviewHasCustomView = true;
+  invalidateFabricPreviewTile();
+  renderFabricPreviewModal();
+}
+
+function openFabricPreviewModal() {
+  resetFabricPreviewView();
+  const modal = getFabricPreviewModalInstance();
+
+  if (!modal) {
+    renderFabricPreviewModal();
+    return;
+  }
+
+  modal.show();
+}
+
+function handleFabricPreviewPointerDown(event) {
+  if (event.button !== 0 || event.target.closest(".fabric-preview-controls")) {
+    return;
+  }
+
+  const surface = document.getElementById("fabric-preview-surface");
+  fabricPreviewPointerState = {
+    pointerId: event.pointerId,
+    lastX: event.clientX,
+    lastY: event.clientY
+  };
+  surface?.classList.add("is-panning");
+  surface?.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+}
+
+function handleFabricPreviewPointerMove(event) {
+  if (!fabricPreviewPointerState || fabricPreviewPointerState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  fabricPreviewPanX += event.clientX - fabricPreviewPointerState.lastX;
+  fabricPreviewPanY += event.clientY - fabricPreviewPointerState.lastY;
+  fabricPreviewPointerState.lastX = event.clientX;
+  fabricPreviewPointerState.lastY = event.clientY;
+  fabricPreviewHasCustomView = true;
+  renderFabricPreviewModal();
+}
+
+function stopFabricPreviewPan(event) {
+  if (event && fabricPreviewPointerState?.pointerId !== event.pointerId) {
+    return;
+  }
+
+  document.getElementById("fabric-preview-surface")?.classList.remove("is-panning");
+  fabricPreviewPointerState = null;
+}
+
+function handleFabricPreviewWheel(event) {
+  const surface = document.getElementById("fabric-preview-surface");
+  const rect = surface?.getBoundingClientRect();
+
+  if (!rect) {
+    return;
+  }
+
+  event.preventDefault();
+  const zoomFactor = event.deltaY > 0 ? 0.86 : 1.16;
+  changeFabricPreviewZoom(zoomFactor, event.clientX - rect.left, event.clientY - rect.top);
+}
+
 function getNextPatternColorValue() {
   const seedIndex = (nextPatternColorNumber - (defaultPatternColors.length + 1)) % patternColorSeedValues.length;
   return patternColorSeedValues[seedIndex];
@@ -4482,6 +5145,116 @@ function getDraftPrintStyles() {
       page-break-after: avoid;
     }
 
+    .draft-print-section + .draft-print-section {
+      margin-top: 0.28in;
+    }
+
+    .draft-print-info {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.16in;
+      width: min(7.5in, 100%);
+      max-width: 7.5in;
+      margin-top: 0.16in;
+      break-inside: avoid-page;
+      page-break-inside: avoid;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+    }
+
+    .draft-print-info-page {
+      break-before: page;
+      page-break-before: always;
+      width: 7.5in;
+      max-width: 100%;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+    }
+
+    .draft-print-info-page .draft-print-info {
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0;
+    }
+
+    .draft-print-info-card {
+      border: 1px solid var(--print-grid-color);
+      padding: 0.1in;
+      background: #ffffff;
+      break-inside: avoid-page;
+      page-break-inside: avoid;
+    }
+
+    .draft-print-info-card-wide {
+      grid-column: 1 / -1;
+    }
+
+    .draft-print-info-title {
+      margin-bottom: 0.08in;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .draft-print-info-row,
+    .draft-print-yarn-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.08in;
+      padding: 0.035in 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.16);
+      font-size: 0.78rem;
+      line-height: 1.18;
+    }
+
+    .draft-print-info-title + .draft-print-info-row,
+    .draft-print-info-title + .draft-print-yarn-row {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .draft-print-info-value {
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .draft-print-info-muted {
+      color: rgba(47, 36, 29, 0.66);
+      font-weight: 400;
+    }
+
+    .draft-print-yarn-row {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    .draft-print-yarn-swatch,
+    .draft-print-yarn-swatch-svg {
+      width: 0.22in;
+      height: 0.22in;
+      border: 1px solid var(--print-grid-color);
+      background: #ffffff;
+    }
+
+    .draft-print-yarn-swatch-svg {
+      display: block;
+    }
+
+    .draft-print-yarn-name {
+      display: flex;
+      flex-direction: column;
+      gap: 0.01in;
+      min-width: 0;
+    }
+
+    .draft-print-yarn-hex {
+      font-size: 0.68rem;
+      color: rgba(47, 36, 29, 0.62);
+      white-space: nowrap;
+    }
+
     .draft-print-threading-body,
     .draft-print-treadling-body {
       display: flex;
@@ -4756,6 +5529,8 @@ function getDraftPrintOptions() {
   return {
     scale: getDraftPrintScale(document.getElementById("draft-print-size")?.value),
     includeDrawdown: document.getElementById("draft-print-include-drawdown")?.checked !== false,
+    includeInfo: document.getElementById("draft-print-include-info")?.checked === true,
+    includeYarns: document.getElementById("draft-print-include-yarns")?.checked === true,
     drawdownRenderStyle: normalizeDraftRenderStyle(document.getElementById("draft-print-render-style")?.value)
   };
 }
@@ -4793,11 +5568,21 @@ function syncDraftPrintModalUI() {
 
 function openDraftPrintModal() {
   const includeDrawdownInput = document.getElementById("draft-print-include-drawdown");
+  const includeInfoInput = document.getElementById("draft-print-include-info");
+  const includeYarnsInput = document.getElementById("draft-print-include-yarns");
   const sizeSelect = document.getElementById("draft-print-size");
   const renderSelect = document.getElementById("draft-print-render-style");
 
   if (includeDrawdownInput) {
     includeDrawdownInput.checked = true;
+  }
+
+  if (includeInfoInput) {
+    includeInfoInput.checked = false;
+  }
+
+  if (includeYarnsInput) {
+    includeYarnsInput.checked = false;
   }
 
   if (sizeSelect) {
@@ -5033,6 +5818,171 @@ function createPrintSection(title, ...contentNodes) {
   });
 
   return section;
+}
+
+function createDraftPrintInfoCard(title, { wide = false } = {}) {
+  const card = document.createElement("div");
+  card.className = `draft-print-info-card${wide ? " draft-print-info-card-wide" : ""}`;
+  card.style.border = "1px solid #000000";
+  card.style.padding = "0.1in";
+  card.style.background = "#ffffff";
+
+  if (wide) {
+    card.style.gridColumn = "1 / -1";
+  }
+
+  const cardTitle = document.createElement("div");
+  cardTitle.className = "draft-print-info-title";
+  cardTitle.textContent = title;
+  cardTitle.style.marginBottom = "0.08in";
+  card.appendChild(cardTitle);
+
+  return card;
+}
+
+function appendDraftPrintInfoRow(card, label, value, { muted = "" } = {}) {
+  const isFirstRow = !card.querySelector(".draft-print-info-row, .draft-print-yarn-row");
+  const row = document.createElement("div");
+  row.className = "draft-print-info-row";
+  row.style.display = "grid";
+  row.style.gridTemplateColumns = "minmax(0, 1fr) auto";
+  row.style.alignItems = "center";
+  row.style.gap = "0.08in";
+  row.style.padding = "0.035in 0";
+  row.style.borderTop = isFirstRow ? "0" : "1px solid rgba(0, 0, 0, 0.16)";
+
+  const labelElement = document.createElement("span");
+  labelElement.textContent = label;
+
+  const valueElement = document.createElement("span");
+  valueElement.className = "draft-print-info-value";
+  valueElement.textContent = value;
+
+  if (muted) {
+    const mutedElement = document.createElement("span");
+    mutedElement.className = "draft-print-info-muted";
+    mutedElement.textContent = ` ${muted}`;
+    valueElement.appendChild(mutedElement);
+  }
+
+  row.appendChild(labelElement);
+  row.appendChild(valueElement);
+  card.appendChild(row);
+}
+
+function createPrintableDraftInfoSection() {
+  const analysis = analyzeDraftStructureForSett();
+  const wpi = getDraftInfoWpi();
+  const infoGrid = document.createElement("div");
+  infoGrid.className = "draft-print-info";
+  infoGrid.style.display = "grid";
+  infoGrid.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+  infoGrid.style.gap = "0.16in";
+  infoGrid.style.width = "7.5in";
+  infoGrid.style.maxWidth = "7.5in";
+  infoGrid.style.marginTop = "0.16in";
+
+  const settCard = createDraftPrintInfoCard("Sett Estimates");
+  appendDraftPrintInfoRow(settCard, "WPI ruler", wpi ? `${formatDraftInfoNumber(wpi, 1)} WPI` : "not set");
+
+  [
+    ["Balanced", analysis.balancedMultiplier],
+    ["Warp-faced", analysis.warpFacedMultiplier],
+    ["Weft-faced", analysis.weftFacedMultiplier]
+  ].forEach(([label, multiplier]) => {
+    const multiplierLabel = `WPI x ${formatDraftInfoNumber(multiplier, 3)}`;
+    const epi = wpi && Number.isFinite(multiplier)
+      ? `(${formatDraftInfoNumber(wpi * multiplier, 1)} epi)`
+      : "";
+    appendDraftPrintInfoRow(settCard, label, multiplierLabel, { muted: epi });
+  });
+
+  const metricsCard = createDraftPrintInfoCard("Structure Metrics");
+  appendDraftPrintInfoRow(metricsCard, "Active warp ends", formatDraftInfoNumber(analysis.activeWarpCount, 0));
+  appendDraftPrintInfoRow(metricsCard, "Picks with weft", formatDraftInfoNumber(analysis.rowsAnalyzed, 0));
+  appendDraftPrintInfoRow(metricsCard, "Avg. interactions", formatDraftInfoNumber(analysis.averageInteractions, 2));
+  appendDraftPrintInfoRow(metricsCard, "Avg. float span", formatDraftInfoNumber(analysis.averageFloatSpan, 2));
+  appendDraftPrintInfoRow(metricsCard, "Warp on top", formatDraftInfoPercent(analysis.warpOnTopRatio));
+  appendDraftPrintInfoRow(
+    metricsCard,
+    "Sett confidence",
+    analysis.averageInteractions > 0 ? "interlaced" : "low data"
+  );
+
+  infoGrid.appendChild(settCard);
+  infoGrid.appendChild(metricsCard);
+
+  return createPrintSection("Draft Info", infoGrid);
+}
+
+function createPrintableDraftYarnsSection() {
+  const infoGrid = document.createElement("div");
+  infoGrid.className = "draft-print-info";
+  infoGrid.style.display = "grid";
+  infoGrid.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+  infoGrid.style.gap = "0.16in";
+  infoGrid.style.width = "7.5in";
+  infoGrid.style.maxWidth = "7.5in";
+  infoGrid.style.marginTop = "0.16in";
+
+  const yarnCard = createDraftPrintInfoCard("Yarns", { wide: true });
+
+  patternColors.forEach((color, index) => {
+    const isFirstRow = !yarnCard.querySelector(".draft-print-yarn-row");
+    const row = document.createElement("div");
+    row.className = "draft-print-yarn-row";
+    row.style.display = "grid";
+    row.style.gridTemplateColumns = "auto minmax(0, 1fr) auto";
+    row.style.alignItems = "center";
+    row.style.gap = "0.08in";
+    row.style.padding = "0.035in 0";
+    row.style.borderTop = isFirstRow ? "0" : "1px solid rgba(0, 0, 0, 0.16)";
+
+    const swatchColor = color.value || "#ffffff";
+    const swatch = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    swatch.classList.add("draft-print-yarn-swatch-svg");
+    swatch.setAttribute("viewBox", "0 0 24 24");
+    swatch.setAttribute("width", "24");
+    swatch.setAttribute("height", "24");
+    swatch.setAttribute("aria-label", `Yarn ${index + 1} color ${swatchColor}`);
+    swatch.style.width = "0.22in";
+    swatch.style.height = "0.22in";
+    swatch.style.border = "1px solid #000000";
+
+    const swatchRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    swatchRect.setAttribute("x", "0");
+    swatchRect.setAttribute("y", "0");
+    swatchRect.setAttribute("width", "24");
+    swatchRect.setAttribute("height", "24");
+    swatchRect.setAttribute("fill", swatchColor);
+    swatch.appendChild(swatchRect);
+
+    const name = document.createElement("span");
+    name.className = "draft-print-yarn-name";
+
+    const yarnLabel = document.createElement("span");
+    yarnLabel.textContent = `Yarn ${index + 1}`;
+
+    const yarnHex = document.createElement("span");
+    yarnHex.className = "draft-print-yarn-hex";
+    yarnHex.textContent = String(swatchColor).toUpperCase();
+
+    name.appendChild(yarnLabel);
+    name.appendChild(yarnHex);
+
+    const weight = document.createElement("span");
+    weight.className = "draft-print-info-value";
+    weight.textContent = `weight ${formatPatternColorThickness(color.thickness)}`;
+
+    row.appendChild(swatch);
+    row.appendChild(name);
+    row.appendChild(weight);
+    yarnCard.appendChild(row);
+  });
+
+  infoGrid.appendChild(yarnCard);
+
+  return createPrintSection("Yarn Colors and Weights", infoGrid);
 }
 
 function createWarpRulerSegment(startIndex, endIndex, columnWidths) {
@@ -5274,6 +6224,10 @@ function buildPrintableDrawdownElement(renderStyle) {
 function buildPrintableDraftElement(options) {
   const area = document.createElement("div");
   area.className = "draft-print-area";
+  area.style.display = "block";
+  area.style.width = "max-content";
+  area.style.height = "auto";
+  area.style.overflow = "visible";
 
   if (!options.includeDrawdown) {
     const sections = document.createElement("div");
@@ -5391,6 +6345,32 @@ function createPrintableDraftMarkup(options) {
   };
 }
 
+function createPrintableSupplementPageMarkup(section) {
+  const page = document.createElement("div");
+  page.className = "draft-print-info-page";
+  page.appendChild(section);
+  return page.outerHTML;
+}
+
+function createPrintableDraftSupplementMarkup(options) {
+  if (!options.includeInfo && !options.includeYarns) {
+    return "";
+  }
+
+  const page = document.createElement("div");
+  page.className = "draft-print-info-page";
+
+  if (options.includeInfo) {
+    page.appendChild(createPrintableDraftInfoSection());
+  }
+
+  if (options.includeYarns) {
+    page.appendChild(createPrintableDraftYarnsSection());
+  }
+
+  return page.outerHTML;
+}
+
 function getDraftPrintHeaderMarkup() {
   const draftTitle = normalizeDraftName(getDraftName(), "Untitled Draft")
     .replace(/&/g, "&amp;")
@@ -5457,11 +6437,12 @@ function runDraftPrintWithOptions(options) {
   const printScale = options.scale;
   const scaledWidth = Math.max(1, Math.ceil(printable.width * printScale));
   const scaledHeight = Math.max(1, Math.ceil(printable.height * printScale));
+  const supplementMarkup = createPrintableDraftSupplementMarkup(options);
   const printTitle = normalizeDraftName(getDraftName(), "Draft Print")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
-  const printBodyMarkup = options.includeDrawdown
+  const draftBodyMarkup = options.includeDrawdown
     ? `
         <div class="draft-print-stage" style="width:${scaledWidth}px;height:${scaledHeight}px;">
           <div class="draft-print-scale" style="transform:scale(${printScale});">
@@ -5474,6 +6455,7 @@ function runDraftPrintWithOptions(options) {
           ${printable.markup}
         </div>
       `;
+  const printBodyMarkup = `${draftBodyMarkup}${supplementMarkup}`;
 
   const printFrame = document.createElement("iframe");
   printFrame.setAttribute("aria-hidden", "true");
@@ -5698,6 +6680,8 @@ previewControlIds.forEach(id => {
 
 document.getElementById("preview-background-color").addEventListener("input", () => {
   updatePreviewBackgroundUI();
+  invalidateFabricPreviewTile();
+  renderFabricPreviewModal();
   renderRepeatPreview();
   scheduleDraftAutosave();
   scheduleDraftHistoryCommit();
@@ -5705,6 +6689,8 @@ document.getElementById("preview-background-color").addEventListener("input", ()
 
 document.getElementById("preview-sett").addEventListener("input", event => {
   setPreviewSettValue(event.target.value);
+  invalidateFabricPreviewTile();
+  renderFabricPreviewModal();
   renderRepeatPreview();
   scheduleDraftAutosave();
   scheduleDraftHistoryCommit();
@@ -5725,6 +6711,23 @@ document.getElementById("draft-file-input").addEventListener("change", handleDra
 document.getElementById("draft-print-include-drawdown").addEventListener("change", syncDraftPrintModalUI);
 document.getElementById("draft-print-confirm").addEventListener("click", requestDraftPrintFromModal);
 document.getElementById("draft-info-wpi").addEventListener("input", renderDraftSettInfo);
+document.getElementById("fabric-preview-zoom-out").addEventListener("click", () => changeFabricPreviewZoom(0.8));
+document.getElementById("fabric-preview-zoom-in").addEventListener("click", () => changeFabricPreviewZoom(1.25));
+document.getElementById("fabric-preview-render-style").addEventListener("change", event => {
+  setFabricPreviewRenderStyle(event.target.value);
+});
+document.getElementById("fabric-preview-surface").addEventListener("pointerdown", handleFabricPreviewPointerDown);
+document.getElementById("fabric-preview-surface").addEventListener("pointermove", handleFabricPreviewPointerMove);
+document.getElementById("fabric-preview-surface").addEventListener("pointerup", stopFabricPreviewPan);
+document.getElementById("fabric-preview-surface").addEventListener("pointercancel", stopFabricPreviewPan);
+document.getElementById("fabric-preview-surface").addEventListener("wheel", handleFabricPreviewWheel, { passive: false });
+document.getElementById("fabric-preview-modal").addEventListener("shown.bs.modal", () => {
+  resetFabricPreviewView();
+  renderFabricPreviewModal();
+});
+document.getElementById("fabric-preview-modal").addEventListener("hidden.bs.modal", () => {
+  stopFabricPreviewPan();
+});
 document.getElementById("draft-print-modal").addEventListener("hidden.bs.modal", () => {
   if (!pendingDraftPrintOptions) {
     return;
@@ -6082,6 +7085,11 @@ if ("ResizeObserver" in window) {
   });
   repeatPreviewResizeObserver.observe(repeatPreviewScroll);
 
+  const fabricPreviewResizeObserver = new ResizeObserver(() => {
+    renderFabricPreviewModal();
+  });
+  fabricPreviewResizeObserver.observe(document.getElementById("fabric-preview-surface"));
+
   const draftStageResizeObserver = new ResizeObserver(() => {
     scheduleDraftStageHeightUpdate();
   });
@@ -6096,6 +7104,7 @@ if ("ResizeObserver" in window) {
 } else {
   window.addEventListener("resize", () => {
     renderRepeatPreview();
+    renderFabricPreviewModal();
     scheduleDraftStageHeightUpdate();
   });
 }
@@ -6126,8 +7135,10 @@ function renderDraftStage() {
 }
 
 function renderAll() {
+  invalidateFabricPreviewTile();
   renderDraftStage();
   renderRepeatPreview();
+  renderFabricPreviewModal();
   syncPatternColorUsageUI();
   scheduleDraftStageHeightUpdate();
   scheduleDraftAutosave();
