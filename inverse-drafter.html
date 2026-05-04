@@ -691,10 +691,68 @@
     min-width: 0;
   }
 
+  #generated-panel.is-solving .panel-scroll,
+  #generated-panel.is-solving .generated-panel-footer {
+    opacity: 0.42;
+  }
+
   #generated-panel .panel-scroll {
     flex: 1 1 auto;
     max-width: 100%;
     min-height: 0;
+  }
+
+  .generated-solving-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(252, 248, 239, 0.44);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+
+  .generated-solving-overlay[hidden] {
+    display: none;
+  }
+
+  #generated-panel.is-solving .generated-solving-overlay {
+    opacity: 1;
+  }
+
+  .generated-solving-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid rgba(126, 57, 33, 0.18);
+    border-radius: 999px;
+    padding: 0.62rem 1rem;
+    background: rgba(255, 252, 246, 0.92);
+    box-shadow: 0 1rem 2.5rem rgba(47, 36, 29, 0.16);
+    color: var(--accent);
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .generated-solving-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(126, 57, 33, 0.18);
+    border-top-color: var(--accent);
+    border-radius: 999px;
+    animation: generated-solving-spin 780ms linear infinite;
+  }
+
+  @keyframes generated-solving-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .optimizer-panel {
@@ -1520,6 +1578,13 @@
           </div>
         </div>
 
+        <div id="generated-solving-overlay" class="generated-solving-overlay" hidden>
+          <div class="generated-solving-card" role="status" aria-live="polite">
+            <span class="generated-solving-spinner" aria-hidden="true"></span>
+            <span id="generated-solving-message">Solving...</span>
+          </div>
+        </div>
+
         <div class="generated-panel-footer">
           <div class="generated-panel-footer-column">
             <div class="status-line" id="generated-info-2">Exact match</div>
@@ -1655,6 +1720,7 @@ const maxGeneratedOptions = 6;
 const defaultRandomTrialCount = 100;
 const randomTrialBatchSize = 20;
 const maxRandomTrialWorkers = 2;
+const generatedSolveDebounceMs = 160;
 const minInverseZoomPercent = 1;
 const maxInverseZoomPercent = 300;
 const minInverseCellSize = (defaultCellSize * minInverseZoomPercent) / 100;
@@ -1695,6 +1761,12 @@ let isPainting = false;
 let dragPaintValue = 1;
 let queuedGeneratedRender = false;
 let queuedGeneratedRenderResetSelection = false;
+let generatedSolveTimer = null;
+let generatedSolveRequestId = 0;
+let activeGeneratedSolveWorker = null;
+let activeGeneratedSolveWorkerUrl = null;
+let isGeneratedSolving = false;
+let generatedSolveWorkerSourceCache = null;
 let queuedFlowOverlayRender = false;
 let draftName = defaultDraftName;
 let pendingInversePrintOptions = null;
@@ -1740,13 +1812,13 @@ function normalizeOptimizerEngine(value) {
   if (value === "mathematical" || value === "default") {
     return "exact";
   }
-  if (value === "balanced" || value === "heuristic") {
+  if (value === "balanced") {
     return "heuristic";
   }
   if (value === "motif" || value === "linework") {
     return "alpha";
   }
-  return ["exact", "alpha", "alpha3", "heuristic"].includes(value) ? value : defaultOptimizerEngine;
+  return ["exact", "heuristic", "alpha", "alpha3"].includes(value) ? value : defaultOptimizerEngine;
 }
 
 function syncOptimizerEngineSelect() {
@@ -2010,7 +2082,8 @@ function changeInverseZoom(direction) {
 
   setCellSize(nextCellSize);
   renderTargetGrid();
-  renderGeneratedDraft();
+  renderGeneratedOptionButtons();
+  renderSelectedGeneratedOption();
   pushHistorySnapshot();
 }
 
@@ -2427,12 +2500,10 @@ function resizeFromControls(changedId = null) {
   maxPressedTreadles = Math.max(1, Math.min(requestedMaxPressedTreadles, maxTreadles));
   updateDimensionInputs();
   renderTargetGrid();
-  if (["max-shafts", "max-treadles", "max-pressed-treadles"].includes(changedId)) {
-    selectedOptionIndex = 0;
-    renderGeneratedDraft({ preserveSignature: false });
-  } else {
-    renderGeneratedDraft();
-  }
+  scheduleGeneratedRender({
+    resetSelection: true,
+    delay: ["max-shafts", "max-treadles", "max-pressed-treadles"].includes(changedId) ? 0 : generatedSolveDebounceMs
+  });
   pushHistorySnapshot();
 
   if (wasLimited) {
@@ -2484,7 +2555,7 @@ function stopPainting() {
     return;
   }
   isPainting = false;
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -2604,7 +2675,7 @@ function insertTargetWarpAt(insertIndex) {
   warp++;
   updateDimensionInputs();
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -2621,7 +2692,7 @@ function deleteTargetWarp(columnIndex) {
   warp--;
   updateDimensionInputs();
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -2637,7 +2708,7 @@ function insertTargetPickAt(insertIndex) {
   picks++;
   updateDimensionInputs();
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -2652,7 +2723,7 @@ function deleteTargetPick(rowIndex) {
   picks--;
   updateDimensionInputs();
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -2925,6 +2996,7 @@ function compareDraftEngineMetrics(left, right) {
     return (
       left.mismatchCount - right.mismatchCount ||
       left.engineMetrics.redundancyPressure - right.engineMetrics.redundancyPressure ||
+      left.engineMetrics.maxPickRedundancyPressure - right.engineMetrics.maxPickRedundancyPressure ||
       left.engineMetrics.weightedMismatch - right.engineMetrics.weightedMismatch ||
       (left.shafts + left.treadles + (left.maxPressedUsed || 0)) -
         (right.shafts + right.treadles + (right.maxPressedUsed || 0)) ||
@@ -3365,23 +3437,14 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
     countMaskOnes(right.mask) - countMaskOnes(left.mask)
   );
 
-  const nodeLimit = Number.isFinite(maxTreadleCount) ? 30000 : 8000;
   const stopAtFirstConstrainedSolution = Number.isFinite(maxTreadleCount);
-  let searchNodes = 0;
-  let aborted = false;
   let stopEarly = false;
   let bestChoices = null;
   let bestSelected = null;
   let bestCount = normalizedCap + 1;
 
   function branch(entryIndex, selectedIndices, choicesByTargetKey) {
-    if (aborted || stopEarly) {
-      return;
-    }
-
-    searchNodes++;
-    if (searchNodes > nodeLimit) {
-      aborted = true;
+    if (stopEarly) {
       return;
     }
 
@@ -3417,7 +3480,7 @@ function compressTreadleRepresentationDefault(rowPatterns, maxPressed = maxPress
       choicesByTargetKey.delete(entry.key);
       addedIndices.forEach(index => selectedIndices.delete(index));
 
-      if (aborted || stopEarly) {
+      if (stopEarly) {
         return;
       }
     }
@@ -3797,6 +3860,152 @@ function computeDraftRedundancyAnalysis(targetMatrix, draftOption) {
   };
 }
 
+function getWarpToShaftFromThreading(threading) {
+  const shafts = threading.length;
+  const warpCount = threading[0]?.length || 0;
+  const warpToShaft = Array(warpCount).fill(0);
+
+  for (let column = 0; column < warpCount; column++) {
+    for (let shaft = 0; shaft < shafts; shaft++) {
+      if (threading[shaft]?.[column]) {
+        warpToShaft[column] = shaft;
+        break;
+      }
+    }
+  }
+
+  return warpToShaft;
+}
+
+function buildActivationRowFromTreadleSelection(threading, tieup, selection) {
+  const warpToShaft = getWarpToShaftFromThreading(threading);
+  return warpToShaft.map(shaft =>
+    selection.reduce((count, treadle) => count + (tieup[treadle]?.[shaft] ? 1 : 0), 0)
+  );
+}
+
+function enumerateTreadleSelections(treadleCount, maxPressed, callback) {
+  const normalizedPressed = Math.max(0, Math.min(treadleCount, Number.parseInt(maxPressed, 10) || 0));
+
+  function choose(startIndex, targetSize, selection) {
+    if (selection.length === targetSize) {
+      callback(selection.slice());
+      return;
+    }
+
+    const remaining = targetSize - selection.length;
+    if (treadleCount - startIndex < remaining) {
+      return;
+    }
+
+    for (let treadle = startIndex; treadle < treadleCount; treadle++) {
+      selection.push(treadle);
+      choose(treadle + 1, targetSize, selection);
+      selection.pop();
+    }
+  }
+
+  callback([]);
+  for (let size = 1; size <= normalizedPressed; size++) {
+    choose(0, size, []);
+  }
+}
+
+function scoreActivationRowForTarget(targetRow, activationRow, weightsRow = null, impactWeight = 0, redundancyWeight = 0) {
+  let mismatch = 0;
+  let weightedMismatch = 0;
+  let redundancyPressure = 0;
+
+  for (let column = 0; column < targetRow.length; column++) {
+    const activated = activationRow[column] > 0;
+    const target = Boolean(targetRow[column]);
+    if (activated !== target) {
+      mismatch++;
+      weightedMismatch += weightsRow?.[column] ?? 1;
+    }
+    if (target) {
+      redundancyPressure += Math.max(0, activationRow[column] - 1);
+    }
+  }
+
+  return {
+    mismatch,
+    weightedMismatch,
+    redundancyPressure,
+    score: mismatch + impactWeight * weightedMismatch + redundancyWeight * redundancyPressure
+  };
+}
+
+function optimizeTreadlingWithSearchPressure(threading, tieup, treadling, targetMatrix, weights = null, options = {}) {
+  const treadleCount = tieup.length || 0;
+  const impactWeight = Number(options.impactWeight) || 0;
+  const redundancyWeight = Number(options.redundancyWeight) || 0;
+  const epsilon = 1e-9;
+
+  if (!treadleCount || !targetMatrix.length) {
+    return treadling.map(row => row.slice());
+  }
+
+  return targetMatrix.map((targetRow, rowIndex) => {
+    const currentSelection = (treadling[rowIndex] || [])
+      .map((value, treadle) => (value ? treadle : -1))
+      .filter(treadle => treadle >= 0);
+    const currentKey = currentSelection.join(",");
+    let bestSelection = currentSelection;
+    let bestMetrics = scoreActivationRowForTarget(
+      targetRow,
+      buildActivationRowFromTreadleSelection(threading, tieup, currentSelection),
+      weights?.[rowIndex],
+      impactWeight,
+      redundancyWeight
+    );
+
+    enumerateTreadleSelections(treadleCount, maxPressedTreadles, selection => {
+      const activationRow = buildActivationRowFromTreadleSelection(threading, tieup, selection);
+      const metrics = scoreActivationRowForTarget(
+        targetRow,
+        activationRow,
+        weights?.[rowIndex],
+        impactWeight,
+        redundancyWeight
+      );
+      const selectionKey = selection.join(",");
+
+      if (
+        metrics.score < bestMetrics.score - epsilon ||
+        (
+          Math.abs(metrics.score - bestMetrics.score) <= epsilon &&
+          (
+            metrics.mismatch < bestMetrics.mismatch ||
+            (
+              metrics.mismatch === bestMetrics.mismatch &&
+              (
+                metrics.redundancyPressure < bestMetrics.redundancyPressure ||
+                (
+                  metrics.redundancyPressure === bestMetrics.redundancyPressure &&
+                  (
+                    selection.length < bestSelection.length ||
+                    (selection.length === bestSelection.length && selectionKey === currentKey)
+                  )
+                )
+              )
+            )
+          )
+        )
+      ) {
+        bestSelection = selection.slice();
+        bestMetrics = metrics;
+      }
+    });
+
+    const nextRow = Array(treadleCount).fill(0);
+    bestSelection.forEach(treadle => {
+      nextRow[treadle] = 1;
+    });
+    return nextRow;
+  });
+}
+
 function getRandomInteger(maximum) {
   const normalizedMaximum = Math.max(1, Number.parseInt(maximum, 10) || 1);
   if (window.crypto?.getRandomValues) {
@@ -3955,7 +4164,7 @@ function createRandomDraftTarget() {
   selectedOptionIndex = 0;
   targetDrawdown = createRandomDraftDrawdownFromCurrentSettings();
   renderTargetGrid();
-  renderGeneratedDraft({ preserveSignature: false });
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -3965,7 +4174,7 @@ function createRandomCellTarget() {
   selectedOptionIndex = 0;
   targetDrawdown = createRandomCellDrawdownFromCurrentSettings(getRandomTargetProbabilityFromInput());
   renderTargetGrid();
-  renderGeneratedDraft({ preserveSignature: false });
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -4034,7 +4243,10 @@ function createEmptyRandomTrialDistribution(settings = null) {
   return {
     bins: Array(getRandomTrialBucketCount(settings)).fill(0),
     exactCount: 0,
-    completed: 0
+    completed: 0,
+    redundancyTotal: 0,
+    redundancySquareTotal: 0,
+    redundancySampleCount: 0
   };
 }
 
@@ -4054,6 +4266,12 @@ function addRandomTrialSample(distribution, option) {
   if (isTopGeneratedOptionExact(option)) {
     distribution.exactCount++;
   }
+  const redundancyPressure = Number(option?.engineMetrics?.redundancyPressure);
+  if (Number.isFinite(redundancyPressure)) {
+    distribution.redundancyTotal += redundancyPressure;
+    distribution.redundancySquareTotal += redundancyPressure * redundancyPressure;
+    distribution.redundancySampleCount++;
+  }
 }
 
 function mergeRandomTrialDistribution(target, source) {
@@ -4062,6 +4280,9 @@ function mergeRandomTrialDistribution(target, source) {
   });
   target.exactCount += source.exactCount || 0;
   target.completed += source.completed || 0;
+  target.redundancyTotal += source.redundancyTotal || 0;
+  target.redundancySquareTotal += source.redundancySquareTotal || 0;
+  target.redundancySampleCount += source.redundancySampleCount || 0;
   return target;
 }
 
@@ -4101,9 +4322,28 @@ function formatRandomTrialAverage(distribution) {
   }
 
   const matchedCellTotal = bins.reduce((sum, count, index) => sum + count * index, 0);
-  const percent = (matchedCellTotal / completed / totalCells) * 100;
-  const fixed = Math.abs(percent - Math.round(percent)) < 0.05 ? 0 : 1;
-  return `Average ${percent.toFixed(fixed)}% match`;
+  const meanMatchedCells = matchedCellTotal / completed;
+  const meanPercent = (meanMatchedCells / totalCells) * 100;
+  const variance = bins.reduce((sum, count, index) => {
+    const delta = index - meanMatchedCells;
+    return sum + count * delta * delta;
+  }, 0) / completed;
+  const standardDeviationPercent = (Math.sqrt(variance) / totalCells) * 100;
+  const fixed = value => (Math.abs(value - Math.round(value)) < 0.05 ? 0 : 1);
+  let summary = `Average ${meanPercent.toFixed(fixed(meanPercent))}% match, SD ${standardDeviationPercent.toFixed(fixed(standardDeviationPercent))}%`;
+
+  const redundancyCount = distribution.redundancySampleCount || 0;
+  if (redundancyCount) {
+    const redundancyMean = distribution.redundancyTotal / redundancyCount;
+    const redundancyVariance = Math.max(
+      0,
+      distribution.redundancySquareTotal / redundancyCount - redundancyMean * redundancyMean
+    );
+    const redundancySd = Math.sqrt(redundancyVariance);
+    summary += `; redundancy ${redundancyMean.toFixed(fixed(redundancyMean))}, SD ${redundancySd.toFixed(fixed(redundancySd))}`;
+  }
+
+  return summary;
 }
 
 function getObservedRandomTrialRange(bins) {
@@ -4321,6 +4561,11 @@ function getRandomTrialWorkerFunctionSource() {
     isRedundancyGuidedEngine,
     computeRedundancyMatrix,
     computeDraftRedundancyAnalysis,
+    getWarpToShaftFromThreading,
+    buildActivationRowFromTreadleSelection,
+    enumerateTreadleSelections,
+    scoreActivationRowForTarget,
+    optimizeTreadlingWithSearchPressure,
     computeDraftEngineMetrics,
     compareDraftEngineMetrics,
     computeDrawdownClothlikeAnalysis,
@@ -4363,6 +4608,9 @@ function getRandomTrialWorkerFunctionSource() {
     buildDraftFromAssignments,
     optimizeApproximateDraft,
     decorateDraftOptionForTarget,
+    getAlphaInitializationStrategies,
+    buildAlphaSearchConfigs,
+    computeResidualSearchWeightMatrix,
     generateExactDraftFromDrawdown,
     buildConstrainedDraftOptions,
     serializeDraftSignature,
@@ -4378,6 +4626,60 @@ function getRandomTrialWorkerFunctionSource() {
     createRandomCellDrawdownFromCurrentSettings,
     createTrialTargetDrawdown
   ].map(fn => fn.toString()).join("\n\n");
+}
+
+function createGeneratedSolveWorkerSource() {
+  if (generatedSolveWorkerSourceCache) {
+    return generatedSolveWorkerSourceCache;
+  }
+
+  generatedSolveWorkerSourceCache = `
+const defaultOptimizerEngine = "exact";
+let warp = 1;
+let picks = 1;
+let maxShafts = 1;
+let maxTreadles = 1;
+let maxPressedTreadles = 1;
+let optimizerEngine = "exact";
+let floatTolerance = 1;
+let useFloatToleranceInOptimization = false;
+let maxGeneratedOptions = 6;
+let exactRequirements = { shafts: 1, treadles: 1, pressed: 1 };
+
+${getRandomTrialWorkerFunctionSource()}
+
+self.onmessage = event => {
+  const settings = event.data || {};
+
+  try {
+    const matrix = Array.isArray(settings.targetDrawdown) ? settings.targetDrawdown : [[0]];
+    warp = Math.max(1, matrix[0]?.length || 1);
+    picks = Math.max(1, matrix.length || 1);
+    maxShafts = Math.max(1, Math.min(Number.parseInt(settings.maxShafts, 10) || 1, warp));
+    maxTreadles = Math.max(1, Math.min(Number.parseInt(settings.maxTreadles, 10) || 1, picks));
+    maxPressedTreadles = Math.max(1, Math.min(Number.parseInt(settings.maxPressedTreadles, 10) || 1, maxTreadles));
+    optimizerEngine = normalizeOptimizerEngine(settings.optimizerEngine);
+    floatTolerance = Math.max(1, Number.parseInt(settings.floatTolerance, 10) || 1);
+    useFloatToleranceInOptimization = Boolean(settings.useFloatToleranceInOptimization);
+    maxGeneratedOptions = Math.max(1, Number.parseInt(settings.maxGeneratedOptions, 10) || 6);
+    exactRequirements = { shafts: 1, treadles: 1, pressed: 1 };
+
+    const generatedOptions = buildConstrainedDraftOptions(matrix, maxShafts, maxTreadles);
+    self.postMessage({
+      requestId: settings.requestId,
+      generatedOptions,
+      optimizerEngine,
+      exactRequirements
+    });
+  } catch (error) {
+    self.postMessage({
+      requestId: settings.requestId,
+      error: error?.message || String(error)
+    });
+  }
+};
+`;
+  return generatedSolveWorkerSourceCache;
 }
 
 function createRandomTrialWorkerSource() {
@@ -4437,6 +4739,9 @@ self.onmessage = event => {
 
   const bins = Array(settings.binCount).fill(0);
   let exactCount = 0;
+  let redundancyTotal = 0;
+  let redundancySquareTotal = 0;
+  let redundancySampleCount = 0;
 
   for (let trial = 0; trial < trialCount; trial++) {
     optimizerEngine = settings.optimizerEngine;
@@ -4447,9 +4752,15 @@ self.onmessage = event => {
     if (option && (option.exactMatch || option.mismatchCount === 0)) {
       exactCount++;
     }
+    const redundancyPressure = Number(option?.engineMetrics?.redundancyPressure);
+    if (Number.isFinite(redundancyPressure)) {
+      redundancyTotal += redundancyPressure;
+      redundancySquareTotal += redundancyPressure * redundancyPressure;
+      redundancySampleCount++;
+    }
   }
 
-  self.postMessage({ bins, exactCount, completed: trialCount });
+  self.postMessage({ bins, exactCount, completed: trialCount, redundancyTotal, redundancySquareTotal, redundancySampleCount });
 };
 `;
 }
@@ -4838,13 +5149,22 @@ function createInitialAssignments(vectors, groupCount, strategy = "farthest", se
   return assignments;
 }
 
-function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount, weights = null) {
+function computeTieupStatsFromAssignments(
+  matrix,
+  rowAssignments,
+  columnAssignments,
+  treadleCount,
+  shaftCount,
+  weights = null,
+  impactPressure = 0
+) {
   const ones = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
   const totals = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
   const weightedOnes = weights ? Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0)) : null;
   const weightedTotals = weights ? Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0)) : null;
   const ambiguous = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(false));
   const tieup = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
+  const useImpactPressure = weights && impactPressure > 0;
 
   for (let row = 0; row < matrix.length; row++) {
     for (let column = 0; column < matrix[row].length; column++) {
@@ -4868,9 +5188,21 @@ function computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignme
     for (let shaft = 0; shaft < shaftCount; shaft++) {
       const total = totals[treadle][shaft];
       const count = ones[treadle][shaft];
-      tieup[treadle][shaft] = total && count * 2 >= total ? 1 : 0;
       ambiguous[treadle][shaft] = total > 0 && count * 2 === total;
-      if (ambiguous[treadle][shaft] && weights) {
+
+      if (useImpactPressure && total) {
+        const zeroCount = total - count;
+        const weightedTotal = weightedTotals[treadle][shaft];
+        const weightedCount = weightedOnes[treadle][shaft];
+        const weightedZeroCount = weightedTotal - weightedCount;
+        const zeroScore = count + impactPressure * weightedCount;
+        const oneScore = zeroCount + impactPressure * weightedZeroCount;
+        tieup[treadle][shaft] = oneScore <= zeroScore ? 1 : 0;
+      } else {
+        tieup[treadle][shaft] = total && count * 2 >= total ? 1 : 0;
+      }
+
+      if (!useImpactPressure && ambiguous[treadle][shaft] && weights) {
         const weightedTotal = weightedTotals[treadle][shaft];
         const weightedCount = weightedOnes[treadle][shaft];
         tieup[treadle][shaft] = weightedTotal && weightedCount * 2 >= weightedTotal ? 1 : 0;
@@ -4907,12 +5239,22 @@ function rebalanceAssignments(assignments, groupCount) {
   return assignments;
 }
 
-function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, currentAssignments, weights = null) {
+function updateRowAssignments(
+  matrix,
+  tieup,
+  columnAssignments,
+  treadleCount,
+  currentAssignments,
+  weights = null,
+  impactPressure = 0
+) {
   const nextAssignments = currentAssignments.slice();
   const epsilon = 1e-9;
+  const useImpactPressure = weights && impactPressure > 0;
 
   for (let row = 0; row < matrix.length; row++) {
     let bestTreadle = currentAssignments[row] ?? 0;
+    let bestScore = Number.POSITIVE_INFINITY;
     let bestMismatch = Number.POSITIVE_INFINITY;
     let bestImpactMismatch = Number.POSITIVE_INFINITY;
 
@@ -4926,16 +5268,27 @@ function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, cu
         }
       }
 
+      const score = useImpactPressure
+        ? mismatch + impactPressure * impactMismatch
+        : mismatch;
+
       if (
-        mismatch < bestMismatch ||
+        score < bestScore - epsilon ||
         (
-          mismatch === bestMismatch &&
+          Math.abs(score - bestScore) <= epsilon &&
           (
-            impactMismatch < bestImpactMismatch - epsilon ||
-            (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && treadleIndex === currentAssignments[row])
+            mismatch < bestMismatch ||
+            (
+              mismatch === bestMismatch &&
+              (
+                impactMismatch < bestImpactMismatch - epsilon ||
+                (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && treadleIndex === currentAssignments[row])
+              )
+            )
           )
         )
       ) {
+        bestScore = score;
         bestMismatch = mismatch;
         bestImpactMismatch = impactMismatch;
         bestTreadle = treadleIndex;
@@ -4948,12 +5301,22 @@ function updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, cu
   return rebalanceAssignments(nextAssignments, treadleCount);
 }
 
-function updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, currentAssignments, weights = null) {
+function updateColumnAssignments(
+  matrix,
+  tieup,
+  rowAssignments,
+  shaftCount,
+  currentAssignments,
+  weights = null,
+  impactPressure = 0
+) {
   const nextAssignments = currentAssignments.slice();
   const epsilon = 1e-9;
+  const useImpactPressure = weights && impactPressure > 0;
 
   for (let column = 0; column < matrix[0].length; column++) {
     let bestShaft = currentAssignments[column] ?? 0;
+    let bestScore = Number.POSITIVE_INFINITY;
     let bestMismatch = Number.POSITIVE_INFINITY;
     let bestImpactMismatch = Number.POSITIVE_INFINITY;
 
@@ -4967,16 +5330,27 @@ function updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, curr
         }
       }
 
+      const score = useImpactPressure
+        ? mismatch + impactPressure * impactMismatch
+        : mismatch;
+
       if (
-        mismatch < bestMismatch ||
+        score < bestScore - epsilon ||
         (
-          mismatch === bestMismatch &&
+          Math.abs(score - bestScore) <= epsilon &&
           (
-            impactMismatch < bestImpactMismatch - epsilon ||
-            (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && shaftIndex === currentAssignments[column])
+            mismatch < bestMismatch ||
+            (
+              mismatch === bestMismatch &&
+              (
+                impactMismatch < bestImpactMismatch - epsilon ||
+                (Math.abs(impactMismatch - bestImpactMismatch) <= epsilon && shaftIndex === currentAssignments[column])
+              )
+            )
           )
         )
       ) {
+        bestScore = score;
         bestMismatch = mismatch;
         bestImpactMismatch = impactMismatch;
         bestShaft = shaftIndex;
@@ -5181,7 +5555,16 @@ function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, ti
   }
 
   const compressedTieup = selected.tieup;
-  const treadling = selected.treadling;
+  const treadling = isImpactGuidedEngine()
+    ? optimizeTreadlingWithSearchPressure(
+        threading,
+        compressedTieup,
+        selected.treadling,
+        matrix,
+        weights,
+        { impactWeight: 0.045, redundancyWeight: isRedundancyGuidedEngine() ? 0.22 : 0 }
+      )
+    : selected.treadling;
   const treadles = Math.max(1, compressedTieup.length || 0);
   const drawdown = rebuildDrawdown(threading, compressedTieup, treadling);
   const mismatchCount = countMatrixMismatches(matrix, drawdown);
@@ -5202,7 +5585,7 @@ function buildDraftFromAssignments(matrix, rowAssignments, columnAssignments, ti
     matchRatio: getMatchRatio(matrix, mismatchCount),
     clothlikeAnalysis,
     signature: serializeDraftSignature({ threading, tieup: compressedTieup, treadling }),
-    maxPressedUsed: selected.maxPressedUsed || 0
+    maxPressedUsed: treadling.reduce((maximum, row) => Math.max(maximum, row.filter(Boolean).length), 0)
   };
 }
 
@@ -5224,11 +5607,55 @@ function optimizeApproximateDraft(matrix, shaftCount, treadleCount, columnStrate
   let signature = "";
 
   for (let iteration = 0; iteration < iterationLimit; iteration++) {
-    let tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount, localityWeights).tieup;
-    rowAssignments = updateRowAssignments(matrix, tieup, columnAssignments, treadleCount, rowAssignments, localityWeights);
-    tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount, localityWeights).tieup;
-    columnAssignments = updateColumnAssignments(matrix, tieup, rowAssignments, shaftCount, columnAssignments, localityWeights);
-    tieup = computeTieupStatsFromAssignments(matrix, rowAssignments, columnAssignments, treadleCount, shaftCount, localityWeights).tieup;
+    const anneal = 1 - (iteration / Math.max(1, iterationLimit - 1));
+    const impactPressure = localityWeights
+      ? (isRedundancyGuidedEngine() ? 0.18 : 0.045) * Math.max(0, anneal)
+      : 0;
+    let tieup = computeTieupStatsFromAssignments(
+      matrix,
+      rowAssignments,
+      columnAssignments,
+      treadleCount,
+      shaftCount,
+      localityWeights,
+      impactPressure
+    ).tieup;
+    rowAssignments = updateRowAssignments(
+      matrix,
+      tieup,
+      columnAssignments,
+      treadleCount,
+      rowAssignments,
+      localityWeights,
+      impactPressure
+    );
+    tieup = computeTieupStatsFromAssignments(
+      matrix,
+      rowAssignments,
+      columnAssignments,
+      treadleCount,
+      shaftCount,
+      localityWeights,
+      impactPressure
+    ).tieup;
+    columnAssignments = updateColumnAssignments(
+      matrix,
+      tieup,
+      rowAssignments,
+      shaftCount,
+      columnAssignments,
+      localityWeights,
+      impactPressure
+    );
+    tieup = computeTieupStatsFromAssignments(
+      matrix,
+      rowAssignments,
+      columnAssignments,
+      treadleCount,
+      shaftCount,
+      localityWeights,
+      impactPressure
+    ).tieup;
 
     const nextSignature = `${rowAssignments.join(",")}|${columnAssignments.join(",")}|${tieup.flat().join("")}`;
     if (nextSignature === signature) {
@@ -5256,6 +5683,78 @@ function decorateDraftOptionForTarget(option, originalMatrix, repairResult, loca
     repairedCellCount: repairResult.repairedCellCount,
     repairTolerance: floatTolerance
   };
+}
+
+function getAlphaInitializationStrategies() {
+  const strategies = [
+    { columnStrategy: "farthest", rowStrategy: "farthest" },
+    { columnStrategy: "density", rowStrategy: "density" },
+    { columnStrategy: "random", rowStrategy: "farthest" },
+    { columnStrategy: "farthest", rowStrategy: "random" },
+    { columnStrategy: "density", rowStrategy: "random" },
+    { columnStrategy: "random", rowStrategy: "density" },
+    { columnStrategy: "random", rowStrategy: "random" }
+  ];
+
+  if (isImpactGuidedEngine()) {
+    strategies.push(
+      { columnStrategy: "impact-farthest", rowStrategy: "impact-farthest" },
+      { columnStrategy: "impact-farthest", rowStrategy: "farthest" },
+      { columnStrategy: "farthest", rowStrategy: "impact-farthest" },
+      { columnStrategy: "impact-farthest", rowStrategy: "density" },
+      { columnStrategy: "density", rowStrategy: "impact-farthest" }
+    );
+  }
+
+  return strategies;
+}
+
+function buildAlphaSearchConfigs(shaftLimit, treadleLimit) {
+  const strategies = getAlphaInitializationStrategies();
+  const configs = [];
+  let seed = 11;
+
+  for (let shafts = 1; shafts <= shaftLimit; shafts++) {
+    for (let treadles = 1; treadles <= treadleLimit; treadles++) {
+      strategies.forEach(strategy => {
+        configs.push({
+          shafts,
+          treadles,
+          columnStrategy: strategy.columnStrategy,
+          rowStrategy: strategy.rowStrategy,
+          seed
+        });
+        seed += 12;
+      });
+    }
+  }
+
+  return configs;
+}
+
+function computeResidualSearchWeightMatrix(targetMatrix, draftMatrix, baseWeights = null) {
+  return targetMatrix.map((row, rowIndex) =>
+    row.map((value, columnIndex) => {
+      const base = baseWeights?.[rowIndex]?.[columnIndex] ?? 1;
+      const isMismatch = Boolean(value) !== Boolean(draftMatrix?.[rowIndex]?.[columnIndex]);
+      const neighborMismatchCount = [
+        [rowIndex - 1, columnIndex],
+        [rowIndex + 1, columnIndex],
+        [rowIndex, columnIndex - 1],
+        [rowIndex, columnIndex + 1]
+      ].reduce((total, [neighborRow, neighborColumn]) => {
+        if (targetMatrix[neighborRow]?.[neighborColumn] === undefined) {
+          return total;
+        }
+        return Boolean(targetMatrix[neighborRow][neighborColumn]) !==
+          Boolean(draftMatrix?.[neighborRow]?.[neighborColumn])
+          ? total + 1
+          : total;
+      }, 0);
+
+      return base + (isMismatch ? 5 : 0) + neighborMismatchCount * 0.35;
+    })
+  );
 }
 
 function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
@@ -5299,29 +5798,7 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
   const localityWeights = isImpactGuidedEngine() ? computeLocalityWeightMatrix(optimizationMatrix) : null;
   const clampedShaftLimit = Math.max(1, Math.min(shaftLimit, optimizationMatrix[0]?.length || 1));
   const clampedTreadleLimit = Math.max(1, Math.min(treadleLimit, optimizationMatrix.length || 1));
-  const configs = [
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "farthest", seed: 11 },
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "density", seed: 23 },
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "farthest", seed: 31 },
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 37 },
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "random", seed: 43 },
-    { shafts: Math.max(1, clampedShaftLimit - 1), treadles: clampedTreadleLimit, columnStrategy: "density", rowStrategy: "farthest", seed: 41 },
-    { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "farthest", rowStrategy: "density", seed: 53 },
-    { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "random", rowStrategy: "random", seed: 67 },
-    { shafts: Math.max(1, clampedShaftLimit - 1), treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "random", rowStrategy: "random", seed: 71 },
-    { shafts: Math.max(1, clampedShaftLimit - 2), treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "random", seed: 79 },
-    { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 2), columnStrategy: "random", rowStrategy: "density", seed: 83 }
-  ];
-
-  if (isImpactGuidedEngine()) {
-    configs.push(
-      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "impact-farthest", seed: 97 },
-      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "farthest", seed: 101 },
-      { shafts: clampedShaftLimit, treadles: clampedTreadleLimit, columnStrategy: "farthest", rowStrategy: "impact-farthest", seed: 103 },
-      { shafts: Math.max(1, clampedShaftLimit - 1), treadles: clampedTreadleLimit, columnStrategy: "impact-farthest", rowStrategy: "farthest", seed: 107 },
-      { shafts: clampedShaftLimit, treadles: Math.max(1, clampedTreadleLimit - 1), columnStrategy: "farthest", rowStrategy: "impact-farthest", seed: 109 }
-    );
-  }
+  const configs = buildAlphaSearchConfigs(clampedShaftLimit, clampedTreadleLimit);
 
   const uniqueConfigs = configs.filter(
     (config, index, array) =>
@@ -5337,12 +5814,20 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
 
   const candidateMap = new Map();
 
-  uniqueConfigs.forEach(config => {
+  const addCandidateForConfig = (config, searchWeights = localityWeights, metricWeights = localityWeights) => {
     const candidate = decorateDraftOptionForTarget(
-      optimizeApproximateDraft(optimizationMatrix, config.shafts, config.treadles, config.columnStrategy, config.rowStrategy, config.seed, localityWeights),
+      optimizeApproximateDraft(
+        optimizationMatrix,
+        config.shafts,
+        config.treadles,
+        config.columnStrategy,
+        config.rowStrategy,
+        config.seed,
+        searchWeights
+      ),
       matrix,
       repairResult,
-      localityWeights
+      metricWeights
     );
 
     if (!candidate) {
@@ -5364,7 +5849,33 @@ function buildConstrainedDraftOptions(matrix, shaftLimit, treadleLimit) {
     ) {
       candidateMap.set(candidate.signature, candidate);
     }
-  });
+  };
+
+  uniqueConfigs.forEach(config => addCandidateForConfig(config));
+
+  if (isImpactGuidedEngine() && candidateMap.size) {
+    const residualSeeds = Array.from(candidateMap.values())
+      .sort((left, right) => compareDraftEngineMetrics(left, right))
+      .slice(0, isRedundancyGuidedEngine() ? 3 : 2);
+    const residualConfigs = uniqueConfigs.filter(
+      config => config.columnStrategy.startsWith("impact-") || config.rowStrategy.startsWith("impact-")
+    );
+
+    residualSeeds.forEach((seedCandidate, seedIndex) => {
+      const residualWeights = computeResidualSearchWeightMatrix(
+        optimizationMatrix,
+        seedCandidate.drawdown,
+        localityWeights
+      );
+      residualConfigs.forEach(config => {
+        addCandidateForConfig(
+          { ...config, seed: config.seed + 10000 + seedIndex * 1000 },
+          residualWeights,
+          localityWeights
+        );
+      });
+    });
+  }
 
   const allCandidates = Array.from(candidateMap.values()).sort((left, right) => {
     if (useFloatToleranceInOptimization) {
@@ -5516,37 +6027,208 @@ function renderSelectedGeneratedOption() {
   scheduleFlowOverlayRender();
 }
 
-function renderGeneratedDraft({ preserveSignature = true } = {}) {
-  const previousSignature = preserveSignature
-    ? (generatedOptions[selectedOptionIndex]?.signature || null)
-    : null;
-  generatedOptions = buildConstrainedDraftOptions(targetDrawdown, maxShafts, maxTreadles);
+function setGeneratedSolvingState(isSolving, message = "Solving...") {
+  isGeneratedSolving = Boolean(isSolving);
+  const panel = document.getElementById("generated-panel");
+  const overlay = document.getElementById("generated-solving-overlay");
+  const messageElement = document.getElementById("generated-solving-message");
+
+  if (messageElement) {
+    messageElement.textContent = message;
+  }
+  if (overlay) {
+    overlay.hidden = !isGeneratedSolving;
+  }
+  if (panel) {
+    panel.classList.toggle("is-solving", isGeneratedSolving);
+    panel.setAttribute("aria-busy", isGeneratedSolving ? "true" : "false");
+  }
+}
+
+function clearGeneratedSolveTimer() {
+  if (generatedSolveTimer !== null) {
+    window.clearTimeout(generatedSolveTimer);
+    generatedSolveTimer = null;
+  }
+}
+
+function disposeGeneratedSolveWorker() {
+  if (activeGeneratedSolveWorker) {
+    activeGeneratedSolveWorker.terminate();
+    activeGeneratedSolveWorker = null;
+  }
+  if (activeGeneratedSolveWorkerUrl) {
+    URL.revokeObjectURL(activeGeneratedSolveWorkerUrl);
+    activeGeneratedSolveWorkerUrl = null;
+  }
+}
+
+function cancelActiveGeneratedSolveWork() {
+  generatedSolveRequestId++;
+  clearGeneratedSolveTimer();
+  disposeGeneratedSolveWorker();
+}
+
+function abortGeneratedSolve({ keepSolving = false } = {}) {
+  cancelActiveGeneratedSolveWork();
+  queuedGeneratedRender = false;
+  queuedGeneratedRenderResetSelection = false;
+  if (!keepSolving) {
+    setGeneratedSolvingState(false);
+  }
+}
+
+function applyGeneratedSolveResult(result, previousSignature = null) {
+  generatedOptions = Array.isArray(result.generatedOptions) ? result.generatedOptions : [];
+  optimizerEngine = normalizeOptimizerEngine(result.optimizerEngine || optimizerEngine);
+  exactRequirements = result.exactRequirements || exactRequirements;
   syncOptimizerEngineSelect();
+
   if (previousSignature) {
     const matchingIndex = generatedOptions.findIndex(option => option.signature === previousSignature);
     selectedOptionIndex = matchingIndex >= 0 ? matchingIndex : 0;
   } else {
     selectedOptionIndex = 0;
   }
+
   renderGeneratedOptionButtons();
   renderSelectedGeneratedOption();
 }
 
-function scheduleGeneratedRender() {
-  if (queuedGeneratedRender) {
+function solveGeneratedDraftSynchronously({ preserveSignature = true } = {}) {
+  const previousSignature = preserveSignature
+    ? (generatedOptions[selectedOptionIndex]?.signature || null)
+    : null;
+  generatedOptions = buildConstrainedDraftOptions(targetDrawdown, maxShafts, maxTreadles);
+  applyGeneratedSolveResult({ generatedOptions, optimizerEngine, exactRequirements }, previousSignature);
+}
+
+function solveGeneratedDraftInWorker({ preserveSignature = true } = {}) {
+  const previousSignature = preserveSignature
+    ? (generatedOptions[selectedOptionIndex]?.signature || null)
+    : null;
+  const requestId = ++generatedSolveRequestId;
+  const settings = {
+    requestId,
+    targetDrawdown: cloneMatrix(targetDrawdown),
+    maxShafts,
+    maxTreadles,
+    maxPressedTreadles,
+    optimizerEngine: normalizeOptimizerEngine(optimizerEngine),
+    floatTolerance,
+    useFloatToleranceInOptimization,
+    maxGeneratedOptions
+  };
+  const canUseWorker =
+    typeof Worker !== "undefined" &&
+    typeof Blob !== "undefined" &&
+    typeof URL !== "undefined" &&
+    typeof URL.createObjectURL === "function";
+
+  setGeneratedSolvingState(true);
+
+  if (!canUseWorker) {
+    window.setTimeout(() => {
+      if (requestId !== generatedSolveRequestId) {
+        return;
+      }
+      try {
+        solveGeneratedDraftSynchronously({ preserveSignature });
+      } finally {
+        setGeneratedSolvingState(false);
+      }
+    }, 0);
     return;
   }
+
+  disposeGeneratedSolveWorker();
+
+  try {
+    const source = createGeneratedSolveWorkerSource();
+    const blob = new Blob([source], { type: "application/javascript" });
+    const url = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+
+    activeGeneratedSolveWorker = worker;
+    activeGeneratedSolveWorkerUrl = url;
+
+    worker.onmessage = event => {
+      const result = event.data || {};
+      if (result.requestId !== requestId) {
+        return;
+      }
+
+      disposeGeneratedSolveWorker();
+
+      if (result.error) {
+        console.error("Generated draft solve failed:", result.error);
+        document.getElementById("generated-info-2").textContent = "Solver error";
+        setGeneratedSolvingState(false);
+        return;
+      }
+
+      applyGeneratedSolveResult(result, previousSignature);
+      setGeneratedSolvingState(false);
+    };
+
+    worker.onerror = error => {
+      if (requestId !== generatedSolveRequestId) {
+        return;
+      }
+      console.error("Generated draft worker failed:", error.message || error);
+      disposeGeneratedSolveWorker();
+      window.setTimeout(() => {
+        if (requestId !== generatedSolveRequestId) {
+          return;
+        }
+        try {
+          solveGeneratedDraftSynchronously({ preserveSignature });
+        } finally {
+          setGeneratedSolvingState(false);
+        }
+      }, 0);
+    };
+
+    worker.postMessage(settings);
+  } catch (error) {
+    console.error("Unable to start generated draft worker:", error);
+    disposeGeneratedSolveWorker();
+    window.setTimeout(() => {
+      if (requestId !== generatedSolveRequestId) {
+        return;
+      }
+      try {
+        solveGeneratedDraftSynchronously({ preserveSignature });
+      } finally {
+        setGeneratedSolvingState(false);
+      }
+    }, 0);
+  }
+}
+
+function renderGeneratedDraft({ preserveSignature = true } = {}) {
+  abortGeneratedSolve();
+  solveGeneratedDraftSynchronously({ preserveSignature });
+}
+
+function scheduleGeneratedRender({ resetSelection = false, delay = generatedSolveDebounceMs } = {}) {
+  const shouldResetSelection = queuedGeneratedRenderResetSelection || Boolean(resetSelection);
+  // A new target state makes every pending/in-flight solve obsolete, so kill it immediately.
+  cancelActiveGeneratedSolveWork();
   queuedGeneratedRender = true;
-  const shouldResetSelection = queuedGeneratedRenderResetSelection;
-  window.requestAnimationFrame(() => {
+  queuedGeneratedRenderResetSelection = shouldResetSelection;
+  setGeneratedSolvingState(true);
+
+  generatedSolveTimer = window.setTimeout(() => {
+    generatedSolveTimer = null;
     queuedGeneratedRender = false;
-    const resetSelection = queuedGeneratedRenderResetSelection || shouldResetSelection;
+    const shouldResetSelection = queuedGeneratedRenderResetSelection;
     queuedGeneratedRenderResetSelection = false;
-    if (resetSelection) {
+    if (shouldResetSelection) {
       selectedOptionIndex = 0;
     }
-    renderGeneratedDraft({ preserveSignature: !resetSelection });
-  });
+    solveGeneratedDraftInWorker({ preserveSignature: !shouldResetSelection });
+  }, Math.max(0, Number(delay) || 0));
 }
 
 function createSvgNode(tagName, attributes = {}) {
@@ -5738,14 +6420,14 @@ function updateTargetGridDecorations() {
 function clearTargetDrawdown() {
   targetDrawdown = createMatrix(picks, warp, 0);
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
 function invertTargetDrawdown() {
   targetDrawdown = targetDrawdown.map(row => row.map(value => (value ? 0 : 1)));
   renderTargetGrid();
-  renderGeneratedDraft();
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 }
 
@@ -5862,10 +6544,9 @@ function storeCrossEditorTransferPayload(payload) {
 }
 
 function getSelectedGeneratedOptionForTransfer() {
-  if (!generatedOptions.length || queuedGeneratedRender) {
+  if (!generatedOptions.length || queuedGeneratedRender || isGeneratedSolving) {
     const shouldResetSelection = queuedGeneratedRenderResetSelection;
-    queuedGeneratedRender = false;
-    queuedGeneratedRenderResetSelection = false;
+    abortGeneratedSolve();
     renderGeneratedDraft({ preserveSignature: !shouldResetSelection });
   }
 
@@ -6674,13 +7355,12 @@ document.getElementById("float-tolerance-input").addEventListener("input", event
   floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
   syncFloatToleranceControl();
   updateTargetGridDecorations();
-  queuedGeneratedRenderResetSelection = true;
-  scheduleGeneratedRender();
+  scheduleGeneratedRender({ resetSelection: true });
 });
 document.getElementById("float-tolerance-input").addEventListener("change", event => {
   floatTolerance = Math.max(1, Math.min(getMaxFloatTolerance(), Number.parseInt(event.target.value, 10) || defaultFloatTolerance));
   syncFloatToleranceControl();
-  renderGeneratedDraft({ preserveSignature: false });
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 });
 document.getElementById("float-tolerance-input").addEventListener("blur", event => {
@@ -6689,12 +7369,12 @@ document.getElementById("float-tolerance-input").addEventListener("blur", event 
 });
 document.getElementById("optimizer-engine-select").addEventListener("change", event => {
   optimizerEngine = normalizeOptimizerEngine(event.target.value);
-  renderGeneratedDraft({ preserveSignature: false });
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   pushHistorySnapshot();
 });
 document.getElementById("optimization-tolerance-toggle").addEventListener("click", () => {
   useFloatToleranceInOptimization = !useFloatToleranceInOptimization;
-  renderGeneratedDraft({ preserveSignature: false });
+  scheduleGeneratedRender({ resetSelection: true, delay: 0 });
   updateTargetGridDecorations();
   pushHistorySnapshot();
 });
@@ -6774,7 +7454,9 @@ window.addEventListener("pointerup", stopPainting);
 window.addEventListener("pointercancel", stopPainting);
 window.addEventListener("beforeunload", saveAutosave);
 window.addEventListener("beforeunload", abortActiveRandomTrials);
+window.addEventListener("beforeunload", () => abortGeneratedSolve());
 window.addEventListener("pagehide", abortActiveRandomTrials);
+window.addEventListener("pagehide", () => abortGeneratedSolve());
 window.addEventListener("resize", scheduleFlowOverlayRender);
 window.addEventListener("resize", () => drawRandomTrialDistribution());
 window.addEventListener("keydown", event => {
