@@ -1,10 +1,10 @@
 # Drafting Benchmarks
 
 This folder contains a plain-Python implementation of the Alpha and Beta
-algorithms from `math/weaving-structures.tex`. Alpha algorithms optimize raw
-Hamming error. Beta algorithms optimize the open-boundary minimum movement
-metric `phi_beta`, where black cells may move by adjacent transpositions or
-exit and enter through the grid edge.
+algorithms from `math/weaving-structures/weaving-structures.tex`. Alpha
+algorithms optimize raw Hamming error. Beta algorithms optimize the
+open-boundary minimum movement metric `phi_beta`, where black cells may move by
+adjacent transpositions or exit and enter through the grid edge.
 
 Run a small smoke benchmark:
 

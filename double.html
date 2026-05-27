@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Drafter</title>
+<title>Responsive Cloth Drafter</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -378,6 +378,10 @@
     width: 9.5rem;
   }
 
+  .toolbar-field-face {
+    width: 6.4rem;
+  }
+
   .toolbar-field-zoom {
     width: 8.6rem;
   }
@@ -396,6 +400,36 @@
   .control-actions .btn {
     flex: 1 1 auto;
     min-height: 2.65rem;
+  }
+
+  .draft-face-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.65rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 650;
+    line-height: 1;
+    box-shadow: none;
+  }
+
+  .draft-face-toggle:hover,
+  .draft-face-toggle:focus-visible {
+    border-color: rgba(170, 74, 43, 0.32);
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--accent-dark);
+  }
+
+  .draft-face-toggle.is-back {
+    border-color: rgba(170, 74, 43, 0.3);
+    background: rgba(170, 74, 43, 0.1);
+    color: var(--accent-dark);
   }
 
   .workspace-toolbar-side {
@@ -1204,6 +1238,80 @@
     pointer-events: none;
   }
 
+  .drawdown-double {
+    background: #ffffff;
+  }
+
+  .drawdown-double-cell {
+    border-color: rgba(47, 36, 29, 0.16);
+    isolation: isolate;
+  }
+
+  .drawdown-double-cell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  .drawdown-double-cell.double-cross-layer::after {
+    opacity: 1;
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(47, 36, 29, 0.16) 0,
+        rgba(47, 36, 29, 0.16) 1px,
+        transparent 1px,
+        transparent 6px
+      );
+    box-shadow: inset 0 0 0 2px rgba(170, 74, 43, 0.36);
+    mix-blend-mode: multiply;
+  }
+
+  .drawdown-double-cell.double-binder::before {
+    content: "";
+    position: absolute;
+    inset: 24%;
+    border: 1px solid rgba(122, 50, 28, 0.52);
+    background: rgba(255, 252, 245, 0.16);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .drawdown-responsive {
+    display: block;
+    position: relative;
+    width: fit-content;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .drawdown-responsive-base,
+  .drawdown-responsive-floats {
+    position: absolute;
+    inset: 0;
+  }
+
+  .drawdown-responsive-floats {
+    pointer-events: none;
+  }
+
+  .responsive-float {
+    position: absolute;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .responsive-float-warp {
+    transform: translateX(-50%);
+  }
+
+  .responsive-float-weft {
+    transform: translateY(-50%);
+  }
+
   .drawdown-realistic {
     display: block;
     width: fit-content;
@@ -1556,10 +1664,6 @@
     background: rgba(255, 252, 245, 0.78);
   }
 
-  .draft-info-metric-wide {
-    grid-column: 1 / -1;
-  }
-
   .draft-info-metric-value {
     display: block;
     color: var(--ink);
@@ -1802,11 +1906,25 @@
               <label class="control-label" for="drawdown-render-style">Render Style</label>
               <select id="drawdown-render-style" class="form-select" aria-label="Drawdown render style">
                 <option value="structure">Structure</option>
-                <option value="color" selected>Color</option>
+                <option value="color">Color</option>
+                <option value="responsive">Responsive</option>
+                <option value="simulation" selected>Simulation</option>
                 <option value="warp-faced">Warp-Faced</option>
                 <option value="weft-faced">Weft-Faced</option>
                 <option value="realistic">Interlacement</option>
               </select>
+                </div>
+
+                <div class="toolbar-field toolbar-field-face">
+              <label class="control-label" for="draft-face-toggle">Side</label>
+              <button
+                type="button"
+                id="draft-face-toggle"
+                class="draft-face-toggle"
+                onclick="flipDraftViewFace()"
+                aria-pressed="false"
+                title="Flip to the other side of the cloth"
+              >Flip Back</button>
                 </div>
 
                 <div class="toolbar-field toolbar-field-zoom">
@@ -1851,7 +1969,7 @@
               </div>
             </div>
           </div>
-          <input id="draft-file-input" type="file" accept=".wdd.svg,.svg,.wdd,.wif,application/json,image/svg+xml,text/plain" class="d-none">
+          <input id="draft-file-input" type="file" accept=".wdd.svg,.svg,.wdd,application/json,image/svg+xml" class="d-none">
         </div>
 
         <div class="draft-stage">
@@ -2032,6 +2150,8 @@
             <select id="draft-print-render-style" class="form-select" aria-label="Drawdown render for print">
               <option value="structure">Structure</option>
               <option value="color">Color</option>
+              <option value="responsive">Responsive</option>
+              <option value="simulation">Simulation</option>
               <option value="warp-faced">Warp-Faced</option>
               <option value="weft-faced">Weft-Faced</option>
               <option value="realistic">Interlacement</option>
@@ -2062,6 +2182,8 @@
             <select id="fabric-preview-render-style" class="form-select fabric-preview-select" aria-label="Fabric preview render style">
               <option value="structure">Structure</option>
               <option value="color">Color</option>
+              <option value="responsive">Responsive</option>
+              <option value="simulation">Simulation</option>
               <option value="warp-faced">Warp-Faced</option>
               <option value="weft-faced">Weft-Faced</option>
               <option value="realistic">Interlacement</option>
@@ -2126,7 +2248,8 @@ let patternColors = [
 let activePatternColorId = "pattern-color-1";
 let nextPatternColorNumber = 3;
 let draftName = "Untitled Draft";
-let draftRenderStyle = "color";
+let draftRenderStyle = "simulation";
+let draftViewFace = "front";
 let previewRenderMode = "plain";
 let previewSett = 60;
 let draftCellSize = 20;
@@ -2134,10 +2257,10 @@ const defaultDraftName = "Untitled Draft";
 const defaultPreviewBackgroundColor = "#ffffff";
 const defaultPreviewSett = 60;
 const defaultDraftCellSize = 20;
-const defaultDraftRenderStyle = "color";
+const defaultDraftRenderStyle = "simulation";
+const defaultDraftViewFace = "front";
 const minDraftZoomPercent = 1;
 const maxDraftZoomPercent = 300;
-const maxPlainWeaveCombinationStates = 20000;
 const minDraftCellSize = (defaultDraftCellSize * minDraftZoomPercent) / 100;
 const maxDraftCellSize = (defaultDraftCellSize * maxDraftZoomPercent) / 100;
 const draftZoomStops = [
@@ -2148,6 +2271,7 @@ const draftZoomStops = [
 const maxRealisticDrawdownCanvasDimension = 8192;
 const maxRealisticDrawdownCanvasPixels = 16000000;
 const maxWarpThreads = 1000;
+const doubleClothLayerTints = ["#fff7ea", "#2f241d", "#aa4a2b", "#426a5a", "#24577a", "#8e6a38"];
 const maxDrawdownCells = 60000;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
@@ -2379,13 +2503,57 @@ function clampDraftCellSize(value) {
 }
 
 function normalizeDraftRenderStyle(style) {
-  return ["structure", "color", "warp-faced", "weft-faced", "realistic"].includes(style)
+  if (style === "double-cloth") {
+    return "responsive";
+  }
+
+  return ["structure", "color", "responsive", "simulation", "warp-faced", "weft-faced", "realistic"].includes(style)
     ? style
     : defaultDraftRenderStyle;
 }
 
+function normalizeDraftViewFace(face) {
+  return face === "back" ? "back" : defaultDraftViewFace;
+}
+
 function getDraftRenderStyle() {
   return normalizeDraftRenderStyle(draftRenderStyle);
+}
+
+function getDraftViewFace() {
+  return normalizeDraftViewFace(draftViewFace);
+}
+
+function updateDraftViewFaceUI() {
+  const button = document.getElementById("draft-face-toggle");
+
+  if (!button) {
+    return;
+  }
+
+  const isBack = getDraftViewFace() === "back";
+  button.classList.toggle("is-back", isBack);
+  button.setAttribute("aria-pressed", String(isBack));
+  button.textContent = isBack ? "Flip Front" : "Flip Back";
+  button.title = isBack ? "Showing the back side. Click to flip to the front." : "Showing the front side. Click to flip to the back.";
+}
+
+function setDraftViewFace(face, shouldRender = true) {
+  draftViewFace = normalizeDraftViewFace(face);
+  updateDraftViewFaceUI();
+
+  if (shouldRender) {
+    invalidateFabricPreviewTile();
+    renderDraftStage();
+    renderRepeatPreview();
+    renderFabricPreviewModal();
+    scheduleDraftAutosave();
+    commitDraftHistoryState();
+  }
+}
+
+function flipDraftViewFace() {
+  setDraftViewFace(getDraftViewFace() === "back" ? "front" : "back");
 }
 
 function setDraftRenderStyle(style, shouldRender = true) {
@@ -2574,7 +2742,8 @@ function buildDraftHistoryEntryData() {
     },
     ui: {
       draftCellSize,
-      draftRenderStyle: getDraftRenderStyle()
+      draftRenderStyle: getDraftRenderStyle(),
+      draftViewFace: getDraftViewFace()
     }
   };
 }
@@ -2912,313 +3081,8 @@ function parseEmbeddedDraftSvgData(text) {
   return JSON.parse(decoded);
 }
 
-function isWifDraftText(text) {
-  return /^\s*\[WIF\]/i.test(text || "");
-}
-
-function parseWifSections(text) {
-  const sections = {};
-  let currentSection = null;
-
-  String(text || "")
-    .replace(/^\uFEFF/, "")
-    .split(/\r?\n/)
-    .forEach(rawLine => {
-      const trimmed = rawLine.trim();
-
-      if (!trimmed || trimmed.startsWith(";")) {
-        return;
-      }
-
-      const sectionMatch = trimmed.match(/^\[([^\]]+)\]$/);
-
-      if (sectionMatch) {
-        currentSection = sectionMatch[1].trim().toUpperCase();
-        sections[currentSection] ||= {};
-        return;
-      }
-
-      if (!currentSection) {
-        return;
-      }
-
-      const equalsIndex = trimmed.indexOf("=");
-
-      if (equalsIndex < 0) {
-        return;
-      }
-
-      const key = trimmed.slice(0, equalsIndex).trim();
-      const value = trimmed.slice(equalsIndex + 1).trim();
-      sections[currentSection][key] = value;
-    });
-
-  return sections;
-}
-
-function parseWifPositiveInteger(value, fallback = 0) {
-  const parsed = Number.parseInt(String(value || "").trim(), 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function parseWifNumberList(value) {
-  return String(value || "")
-    .split(",")
-    .map(part => Number.parseInt(part.trim(), 10))
-    .filter(number => Number.isFinite(number) && number > 0);
-}
-
-function parseWifBoolean(value, fallback = true) {
-  const normalized = String(value ?? "").trim().toLowerCase();
-
-  if (["true", "yes", "1"].includes(normalized)) {
-    return true;
-  }
-
-  if (["false", "no", "0"].includes(normalized)) {
-    return false;
-  }
-
-  return fallback;
-}
-
-function getWifNumericEntries(section) {
-  return Object.entries(section || {})
-    .map(([key, value]) => [Number.parseInt(key, 10), value])
-    .filter(([key]) => Number.isFinite(key) && key > 0)
-    .sort((left, right) => left[0] - right[0]);
-}
-
-function getWifMaxKey(section) {
-  return getWifNumericEntries(section).reduce((maximum, [key]) => Math.max(maximum, key), 0);
-}
-
-function getWifMaxValueInLists(section) {
-  return getWifNumericEntries(section).reduce((maximum, [, value]) => {
-    const localMaximum = parseWifNumberList(value).reduce((innerMaximum, number) => Math.max(innerMaximum, number), 0);
-    return Math.max(maximum, localMaximum);
-  }, 0);
-}
-
-function getWifColorRangeMax(sections, colorTable) {
-  const rangeValue = sections["COLOR PALETTE"]?.Range;
-  const rangeParts = String(rangeValue || "")
-    .split(",")
-    .map(part => Number.parseFloat(part.trim()))
-    .filter(Number.isFinite);
-
-  if (rangeParts.length >= 2 && rangeParts[1] > rangeParts[0]) {
-    return rangeParts[1];
-  }
-
-  const componentMaximum = Object.values(colorTable).reduce((maximum, rgb) => {
-    const localMaximum = rgb.reduce((innerMaximum, component) => Math.max(innerMaximum, component), 0);
-    return Math.max(maximum, localMaximum);
-  }, 0);
-
-  return componentMaximum > 255 ? componentMaximum : 255;
-}
-
-function componentToHex(component, rangeMax) {
-  const normalized = Math.max(0, Math.min(255, Math.round((Number(component) / Math.max(1, rangeMax)) * 255)));
-  return normalized.toString(16).padStart(2, "0");
-}
-
-function parseWifColorTable(sections) {
-  const colorTable = {};
-
-  getWifNumericEntries(sections["COLOR TABLE"]).forEach(([colorIndex, value]) => {
-    const components = String(value || "")
-      .split(",")
-      .map(part => Number.parseFloat(part.trim()))
-      .filter(Number.isFinite);
-
-    if (components.length >= 3) {
-      colorTable[colorIndex] = components.slice(0, 3);
-    }
-  });
-
-  return colorTable;
-}
-
-function getWifColorHex(colorIndex, colorTable, rangeMax) {
-  const components = colorTable[colorIndex];
-
-  if (!components) {
-    const fallback = defaultPatternColors[(Math.max(1, colorIndex) - 1) % defaultPatternColors.length]?.value;
-    return fallback || "#2f241d";
-  }
-
-  return `#${components.map(component => componentToHex(component, rangeMax)).join("")}`.toLowerCase();
-}
-
-function parseWifDraftData(text) {
-  const sections = parseWifSections(text);
-  const weaving = sections.WEAVING || {};
-  const threadingSection = sections.THREADING || {};
-  const treadlingSection = sections.TREADLING || {};
-  const tieupSection = sections.TIEUP || {};
-  const warpColorSection = sections["WARP COLORS"] || {};
-  const weftColorSection = sections["WEFT COLORS"] || {};
-  const colorTable = parseWifColorTable(sections);
-  const colorRangeMax = getWifColorRangeMax(sections, colorTable);
-  const defaultWarpColorIndex = parseWifPositiveInteger(sections.WARP?.Color, 1);
-  const defaultWeftColorIndex = parseWifPositiveInteger(sections.WEFT?.Color, defaultWarpColorIndex);
-  const threadingEntries = getWifNumericEntries(threadingSection);
-  const treadlingEntries = getWifNumericEntries(treadlingSection);
-  const warpCount = Math.max(
-    parseWifPositiveInteger(sections.WARP?.Threads, 0),
-    getWifMaxKey(threadingSection),
-    getWifMaxKey(warpColorSection),
-    1
-  );
-  const pickCount = Math.max(
-    parseWifPositiveInteger(sections.WEFT?.Threads, 0),
-    getWifMaxKey(treadlingSection),
-    getWifMaxKey(weftColorSection),
-    1
-  );
-  const shaftCount = Math.max(
-    parseWifPositiveInteger(weaving.Shafts, 0),
-    getWifMaxValueInLists(threadingSection),
-    getWifMaxValueInLists(tieupSection),
-    1
-  );
-  const treadleCount = Math.max(
-    parseWifPositiveInteger(weaving.Treadles, 0),
-    getWifMaxKey(tieupSection),
-    getWifMaxValueInLists(treadlingSection),
-    1
-  );
-  const usedColorIndexes = new Set([defaultWarpColorIndex, defaultWeftColorIndex]);
-
-  getWifNumericEntries(warpColorSection).forEach(([, value]) => {
-    usedColorIndexes.add(parseWifPositiveInteger(value, defaultWarpColorIndex));
-  });
-  getWifNumericEntries(weftColorSection).forEach(([, value]) => {
-    usedColorIndexes.add(parseWifPositiveInteger(value, defaultWeftColorIndex));
-  });
-
-  const wifColorIndexes = [...usedColorIndexes].filter(Boolean).sort((left, right) => left - right);
-  const colorIndexToPatternId = new Map();
-  const nextPatternColors = wifColorIndexes.map((colorIndex, index) => {
-    const id = `pattern-color-${index + 1}`;
-    colorIndexToPatternId.set(colorIndex, id);
-    return {
-      id,
-      value: getWifColorHex(colorIndex, colorTable, colorRangeMax),
-      thickness: 1
-    };
-  });
-  const ensureColorId = colorIndex => {
-    const normalizedColorIndex = parseWifPositiveInteger(colorIndex, defaultWarpColorIndex);
-
-    if (colorIndexToPatternId.has(normalizedColorIndex)) {
-      return colorIndexToPatternId.get(normalizedColorIndex);
-    }
-
-    const id = `pattern-color-${nextPatternColors.length + 1}`;
-    colorIndexToPatternId.set(normalizedColorIndex, id);
-    nextPatternColors.push({
-      id,
-      value: getWifColorHex(normalizedColorIndex, colorTable, colorRangeMax),
-      thickness: 1
-    });
-    return id;
-  };
-  const nextThreading = Array.from({ length: shaftCount }, () => Array(warpCount).fill(0));
-  const nextTreadling = Array.from({ length: pickCount }, () => Array(treadleCount).fill(0));
-  const nextTieup = Array.from({ length: treadleCount }, () => Array(shaftCount).fill(0));
-
-  threadingEntries.forEach(([threadNumber, shaftValue]) => {
-    const warpIndex = threadNumber - 1;
-    const shaftNumber = parseWifNumberList(shaftValue)[0];
-
-    if (!shaftNumber || warpIndex < 0 || warpIndex >= warpCount || shaftNumber > shaftCount) {
-      return;
-    }
-
-    const colorIndex = parseWifPositiveInteger(warpColorSection[threadNumber], defaultWarpColorIndex);
-    nextThreading[shaftNumber - 1][warpIndex] = ensureColorId(colorIndex);
-  });
-
-  getWifNumericEntries(tieupSection).forEach(([treadleNumber, shaftListValue]) => {
-    const treadleIndex = treadleNumber - 1;
-
-    if (treadleIndex < 0 || treadleIndex >= treadleCount) {
-      return;
-    }
-
-    parseWifNumberList(shaftListValue).forEach(shaftNumber => {
-      if (shaftNumber <= shaftCount) {
-        nextTieup[treadleIndex][shaftNumber - 1] = 1;
-      }
-    });
-  });
-
-  if (!parseWifBoolean(weaving["Rising Shed"], true)) {
-    for (let treadleIndex = 0; treadleIndex < treadleCount; treadleIndex++) {
-      for (let shaftIndex = 0; shaftIndex < shaftCount; shaftIndex++) {
-        nextTieup[treadleIndex][shaftIndex] = nextTieup[treadleIndex][shaftIndex] ? 0 : 1;
-      }
-    }
-  }
-
-  treadlingEntries.forEach(([pickNumber, treadleListValue]) => {
-    const pickIndex = pickNumber - 1;
-
-    if (pickIndex < 0 || pickIndex >= pickCount) {
-      return;
-    }
-
-    const colorIndex = parseWifPositiveInteger(weftColorSection[pickNumber], defaultWeftColorIndex);
-    const colorId = ensureColorId(colorIndex);
-
-    parseWifNumberList(treadleListValue).forEach(treadleNumber => {
-      if (treadleNumber <= treadleCount) {
-        nextTreadling[pickIndex][treadleNumber - 1] = colorId;
-      }
-    });
-  });
-
-  return {
-    format: "weaving-draft-data",
-    version: 3,
-    draft: {
-      shafts: shaftCount,
-      treadles: treadleCount,
-      warp: warpCount,
-      picks: pickCount,
-      threading: nextThreading,
-      treadling: nextTreadling,
-      tieup: nextTieup,
-      patternColors: nextPatternColors.length ? nextPatternColors : createDefaultPatternColors(),
-      activePatternColorId: nextPatternColors[0]?.id || "pattern-color-1",
-      nextPatternColorNumber: Math.max(1, nextPatternColors.length + 1)
-    },
-    preview: {
-      repeatX: 1,
-      repeatY: 1,
-      renderMode: "plain",
-      sett: defaultPreviewSett,
-      backgroundColor: defaultPreviewBackgroundColor
-    },
-    ui: {
-      draftCellSize: defaultDraftCellSize,
-      draftRenderStyle: "color"
-    },
-    meta: {
-      draftName: normalizeDraftName(sections.TEXT?.Title, defaultDraftName)
-    }
-  };
-}
-
 function parseDraftFileContents(contents) {
   const text = String(contents || "").trim();
-
-  if (isWifDraftText(text)) {
-    return parseWifDraftData(text);
-  }
 
   if (text.startsWith("<")) {
     return parseEmbeddedDraftSvgData(text);
@@ -3452,6 +3316,7 @@ function applyLoadedDraftData(data, options = {}) {
   };
   const nextDraftCellSize = clampDraftCellSize(Number.parseFloat(data.ui?.draftCellSize) || draftCellSize);
   const nextDraftRenderStyle = normalizeDraftRenderStyle(data.ui?.draftRenderStyle);
+  const nextDraftViewFace = normalizeDraftViewFace(data.ui?.draftViewFace);
   const nextDraftName = normalizeDraftName(
     preserveDraftName ? getDraftName() : (draftNameOverride ?? data.meta?.draftName ?? getDraftName())
   );
@@ -3470,6 +3335,7 @@ function applyLoadedDraftData(data, options = {}) {
   treadling = normalizeTreadlingData(data.draft.treadling, picks, treadles, patternColors);
   tieup = normalizeTieupData(data.draft.tieup, treadles, shafts);
   draftCellSize = nextDraftCellSize;
+  draftViewFace = nextDraftViewFace;
 
   setDraftName(nextDraftName);
   setControlValues({shafts, treadles, warp, picks});
@@ -3478,6 +3344,7 @@ function applyLoadedDraftData(data, options = {}) {
   setPreviewBackgroundColor(nextPreview.backgroundColor);
   setPreviewRenderMode(nextPreview.renderMode, false);
   setDraftRenderStyle(nextDraftRenderStyle, false);
+  updateDraftViewFaceUI();
   applyDraftZoom();
   renderPatternColors();
   if (scrollToDraftOrigin) {
@@ -3553,235 +3420,6 @@ function restorePersistedDraftData() {
   }
 }
 
-function flushScheduledDraftHistoryCommit() {
-  if (!draftHistoryCommitTimeoutId) {
-    return;
-  }
-
-  clearScheduledDraftHistoryCommit();
-  commitDraftHistoryState();
-}
-
-function arePatternColorListsEquivalent(leftColors, rightColors) {
-  const left = normalizePatternColors(leftColors);
-  const right = normalizePatternColors(rightColors);
-
-  if (left.length !== right.length) {
-    return false;
-  }
-
-  return left.every((color, index) =>
-    color.id === right[index].id &&
-    color.value === right[index].value &&
-    color.thickness === right[index].thickness
-  );
-}
-
-function arePreviewStatesEquivalent(nextPreview) {
-  if (!nextPreview) {
-    return false;
-  }
-
-  const currentPreview = {
-    repeatX: getPreviewRepeatValues().repeatX,
-    repeatY: getPreviewRepeatValues().repeatY,
-    renderMode: getPreviewRenderMode(),
-    sett: getPreviewSettValue(),
-    backgroundColor: getPreviewBackgroundColor()
-  };
-  const normalizedNextPreview = {
-    repeatX: Math.max(1, Number.parseInt(nextPreview.repeatX, 10) || 1),
-    repeatY: Math.max(1, Number.parseInt(nextPreview.repeatY, 10) || 1),
-    renderMode: normalizePreviewRenderMode(nextPreview.renderMode),
-    sett: normalizePreviewSett(nextPreview.sett ?? defaultPreviewSett),
-    backgroundColor: normalizePreviewBackgroundColor(nextPreview.backgroundColor)
-  };
-
-  return JSON.stringify(currentPreview) === JSON.stringify(normalizedNextPreview);
-}
-
-function getWarpAssignmentFromThreadingData(threadingData, warpIndex) {
-  for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
-    const colorId = threadingData?.[shaftIndex]?.[warpIndex];
-    if (colorId) {
-      return { shaft: shaftIndex, colorId };
-    }
-  }
-
-  return null;
-}
-
-function getPickColorIdFromTreadlingData(treadlingData, pickIndex) {
-  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-    const colorId = treadlingData?.[pickIndex]?.[treadleIndex];
-    if (colorId) {
-      return colorId;
-    }
-  }
-
-  return null;
-}
-
-function getColumnWidthsFromThreadingData(threadingData, renderStyle) {
-  if (renderStyle === "warp-faced") {
-    return Array.from({ length: warp }, () => draftCellSize);
-  }
-
-  return Array.from({ length: warp }, (_, warpIndex) =>
-    getDraftTrackSizeForColor(getWarpAssignmentFromThreadingData(threadingData, warpIndex)?.colorId || null)
-  );
-}
-
-function getRowHeightsFromTreadlingData(treadlingData, renderStyle) {
-  if (renderStyle === "weft-faced") {
-    return Array.from({ length: picks }, () => draftCellSize);
-  }
-
-  return Array.from({ length: picks }, (_, pickIndex) =>
-    getDraftTrackSizeForColor(getPickColorIdFromTreadlingData(treadlingData, pickIndex))
-  );
-}
-
-function getChangedThreadingColumns(nextThreading) {
-  const changedColumns = [];
-
-  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
-    let changed = false;
-
-    for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
-      if ((threading[shaftIndex]?.[warpIndex] || 0) !== (nextThreading?.[shaftIndex]?.[warpIndex] || 0)) {
-        changed = true;
-        break;
-      }
-    }
-
-    if (changed) {
-      changedColumns.push(warpIndex);
-    }
-  }
-
-  return changedColumns;
-}
-
-function getChangedTreadlingRows(nextTreadling) {
-  const changedRows = [];
-
-  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
-    let changed = false;
-
-    for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-      if ((treadling[pickIndex]?.[treadleIndex] || 0) !== (nextTreadling?.[pickIndex]?.[treadleIndex] || 0)) {
-        changed = true;
-        break;
-      }
-    }
-
-    if (changed) {
-      changedRows.push(pickIndex);
-    }
-  }
-
-  return changedRows;
-}
-
-function getChangedTieupCells(nextTieup) {
-  const changedCells = [];
-
-  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-    for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
-      if (Boolean(tieup[treadleIndex]?.[shaftIndex]) !== Boolean(nextTieup?.[treadleIndex]?.[shaftIndex])) {
-        changedCells.push({ treadleIndex, shaftIndex });
-      }
-    }
-  }
-
-  return changedCells;
-}
-
-function canFastApplyDraftHistoryData(data, renderStyle = getDraftRenderStyle()) {
-  return (
-    data?.format === "weaving-draft-data" &&
-    typeof data?.draft === "object" &&
-    Number.parseInt(data.draft.shafts, 10) === shafts &&
-    Number.parseInt(data.draft.treadles, 10) === treadles &&
-    Number.parseInt(data.draft.warp, 10) === warp &&
-    Number.parseInt(data.draft.picks, 10) === picks &&
-    normalizeDraftRenderStyle(data.ui?.draftRenderStyle) === renderStyle &&
-    clampDraftCellSize(Number.parseFloat(data.ui?.draftCellSize) || draftCellSize) === draftCellSize &&
-    canPatchDrawdownCells(renderStyle) &&
-    arePatternColorListsEquivalent(patternColors, data.draft.patternColors) &&
-    (data.draft.activePatternColorId || patternColors[0]?.id) === activePatternColorId &&
-    (Number.parseInt(data.draft.nextPatternColorNumber, 10) || nextPatternColorNumber) === nextPatternColorNumber &&
-    arePreviewStatesEquivalent(data.preview)
-  );
-}
-
-function cloneDraftMatrix(matrix) {
-  return matrix.map(row => row.slice());
-}
-
-function finishHistoryDraftPatch() {
-  invalidateFabricPreviewTile();
-  renderRepeatPreview();
-  renderFabricPreviewModal();
-  syncPatternColorUsageUI();
-  scheduleDraftAutosave();
-}
-
-function tryFastApplyDraftHistoryData(data) {
-  const renderStyle = getDraftRenderStyle();
-
-  if (!canFastApplyDraftHistoryData(data, renderStyle)) {
-    return false;
-  }
-
-  const nextThreading = normalizeThreadingData(data.draft.threading, shafts, warp, patternColors);
-  const nextTreadling = normalizeTreadlingData(data.draft.treadling, picks, treadles, patternColors);
-  const nextTieup = normalizeTieupData(data.draft.tieup, treadles, shafts);
-  const changedThreadingColumns = getChangedThreadingColumns(nextThreading);
-  const changedTreadlingRows = getChangedTreadlingRows(nextTreadling);
-  const changedTieupCells = getChangedTieupCells(nextTieup);
-  const previousColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
-  const previousRowHeights = getDrawdownRowHeightsForRender(renderStyle);
-  const nextColumnWidths = getColumnWidthsFromThreadingData(nextThreading, renderStyle);
-  const nextRowHeights = getRowHeightsFromTreadlingData(nextTreadling, renderStyle);
-  const changedUnitCount = changedThreadingColumns.length + changedTreadlingRows.length + changedTieupCells.length;
-
-  if (
-    changedUnitCount > 80 ||
-    haveTrackSizesChanged(previousColumnWidths, nextColumnWidths) ||
-    haveTrackSizesChanged(previousRowHeights, nextRowHeights)
-  ) {
-    return false;
-  }
-
-  threading = cloneDraftMatrix(nextThreading);
-  treadling = cloneDraftMatrix(nextTreadling);
-  tieup = cloneDraftMatrix(nextTieup);
-
-  changedThreadingColumns.forEach(warpIndex => {
-    patchThreadingColumn(warpIndex);
-    patchDrawdownColumn(warpIndex, renderStyle);
-  });
-
-  changedTreadlingRows.forEach(pickIndex => {
-    patchTreadlingRow(pickIndex);
-    patchDrawdownRow(pickIndex, renderStyle);
-  });
-
-  changedTieupCells.forEach(({ treadleIndex, shaftIndex }) => {
-    patchTieupCell(treadleIndex, shaftIndex);
-    patchDrawdownForTieupCell(treadleIndex, shaftIndex, renderStyle);
-  });
-
-  if (changedThreadingColumns.length) {
-    renderHeddleCount();
-  }
-
-  finishHistoryDraftPatch();
-  return true;
-}
-
 function applyDraftHistoryEntry(nextIndex) {
   const entry = draftHistoryEntries[nextIndex];
 
@@ -3793,15 +3431,11 @@ function applyDraftHistoryEntry(nextIndex) {
   try {
     isDraftAutosaveSuspended = true;
     isDraftHistorySuspended = true;
-    const parsedEntry = JSON.parse(entry);
-
-    if (!tryFastApplyDraftHistoryData(parsedEntry)) {
-      applyLoadedDraftData(parsedEntry, {
-        restoreHistory: false,
-        preserveDraftName: true,
-        scrollToDraftOrigin: false
-      });
-    }
+    applyLoadedDraftData(JSON.parse(entry), {
+      restoreHistory: false,
+      preserveDraftName: true,
+      scrollToDraftOrigin: false
+    });
     draftHistoryIndex = nextIndex;
   } catch (error) {
     window.alert("Unable to restore that draft state.");
@@ -3811,12 +3445,10 @@ function applyDraftHistoryEntry(nextIndex) {
   }
 
   updateDraftHistoryUI();
-  scheduleDraftAutosave();
+  saveDraftToLocalStorage();
 }
 
 function undoDraftChange() {
-  flushScheduledDraftHistoryCommit();
-
   if (draftHistoryIndex <= 0) {
     updateDraftHistoryUI();
     return;
@@ -3826,8 +3458,6 @@ function undoDraftChange() {
 }
 
 function redoDraftChange() {
-  flushScheduledDraftHistoryCommit();
-
   if (draftHistoryIndex >= draftHistoryEntries.length - 1) {
     updateDraftHistoryUI();
     return;
@@ -4624,7 +4254,7 @@ function drawPreviewStructuredCell(
 
 function buildPreviewStateGrid() {
   return Array.from({ length: picks }, (_, pickIndex) =>
-    Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellState(pickIndex, warpIndex))
+    Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellStateForView(pickIndex, warpIndex))
   );
 }
 
@@ -4877,6 +4507,31 @@ function buildFabricPreviewTile(cellSize, renderScale, backgroundColor, renderSt
   tileCtx.fillStyle = backgroundColor;
   tileCtx.fillRect(0, 0, tileWidth, tileHeight);
 
+  if (renderStyle === "simulation") {
+    drawSimulationCanvas(
+      tileCtx,
+      buildPhysicalDrawdownStateGrid(),
+      states,
+      Array.from({ length: warp }, () => cellSize),
+      Array.from({ length: picks }, () => cellSize),
+      tileWidth,
+      tileHeight
+    );
+    return { tileCanvas, tileWidth, tileHeight };
+  }
+
+  if (renderStyle === "responsive") {
+    drawResponsiveCanvas(
+      tileCtx,
+      states,
+      Array.from({ length: warp }, () => cellSize),
+      Array.from({ length: picks }, () => cellSize),
+      tileWidth,
+      tileHeight
+    );
+    return { tileCanvas, tileWidth, tileHeight };
+  }
+
   for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
     for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
       const state = states[pickIndex][warpIndex];
@@ -4983,6 +4638,7 @@ function getFabricPreviewTile(cellSize, renderScale, backgroundColor, renderMode
   const key = [
     warp,
     picks,
+    getDraftViewFace(),
     cellSize.toFixed(3),
     renderScale.toFixed(3),
     backgroundColor,
@@ -5054,6 +4710,7 @@ function getFabricPreviewFallbackColor(cellState, renderStyle) {
 
 function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, backgroundColor, renderStyle) {
   const states = buildDrawdownStateGrid();
+  const isResponsive = renderStyle === "responsive";
   const startColumn = Math.floor(-fabricPreviewPanX / cellSize) - 1;
   const endColumn = Math.ceil((viewportWidth - fabricPreviewPanX) / cellSize) + 1;
   const startRow = Math.floor(-fabricPreviewPanY / cellSize) - 1;
@@ -5068,13 +4725,24 @@ function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, b
       const sourceRow = positiveModulo(virtualRow, picks);
       for (let virtualColumn = startColumn; virtualColumn < endColumn; virtualColumn += sampleStep) {
         const sourceColumn = positiveModulo(virtualColumn, warp);
-        ctx.fillStyle = getFabricPreviewFallbackColor(states[sourceRow][sourceColumn], renderStyle);
-        ctx.fillRect(
-          fabricPreviewPanX + virtualColumn * cellSize,
-          fabricPreviewPanY + virtualRow * cellSize,
-          cellSize * sampleStep,
-          cellSize * sampleStep
-        );
+        const x = fabricPreviewPanX + virtualColumn * cellSize;
+        const y = fabricPreviewPanY + virtualRow * cellSize;
+        const state = states[sourceRow][sourceColumn];
+        const width = cellSize * sampleStep;
+        const height = cellSize * sampleStep;
+
+        if (isResponsive) {
+          ctx.fillStyle = state.frontColor || "#ffffff";
+          ctx.fillRect(x, y, width, height);
+        } else {
+          ctx.fillStyle = getFabricPreviewFallbackColor(state, renderStyle);
+          ctx.fillRect(
+            x,
+            y,
+            width,
+            height
+          );
+        }
       }
     }
     return;
@@ -5088,7 +4756,16 @@ function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, b
       const y = fabricPreviewPanY + virtualRow * cellSize;
       const state = states[sourceRow][sourceColumn];
 
-      if (renderStyle === "realistic") {
+      if (isResponsive) {
+        const gradient = state.warpVisibleOnFront
+          ? ctx.createLinearGradient(x, y, x + cellSize, y)
+          : ctx.createLinearGradient(x, y, x, y + cellSize);
+        gradient.addColorStop(0, darkenPreviewColor(state.frontColor || "#ffffff", 0.18));
+        gradient.addColorStop(0.5, lightenPreviewColor(state.frontColor || "#ffffff", 0.12));
+        gradient.addColorStop(1, darkenPreviewColor(state.frontColor || "#ffffff", 0.16));
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, cellSize, cellSize);
+      } else if (renderStyle === "realistic") {
         drawPreviewStructuredCell(
           ctx,
           x,
@@ -6040,6 +5717,41 @@ function getDraftPrintStyles() {
       box-sizing: border-box;
     }
 
+    .drawdown-double-cell {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drawdown-double-cell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .drawdown-double-cell.double-cross-layer::after {
+      opacity: 1;
+      background:
+        repeating-linear-gradient(
+          135deg,
+          rgba(47, 36, 29, 0.16) 0,
+          rgba(47, 36, 29, 0.16) 1px,
+          transparent 1px,
+          transparent 6px
+        );
+      box-shadow: inset 0 0 0 2px rgba(170, 74, 43, 0.36);
+    }
+
+    .drawdown-double-cell.double-binder::before {
+      content: "";
+      position: absolute;
+      inset: 24%;
+      border: 1px solid rgba(122, 50, 28, 0.52);
+      background: rgba(255, 252, 245, 0.16);
+      pointer-events: none;
+    }
+
     .drawdown-realistic {
       display: block;
       width: fit-content;
@@ -6260,199 +5972,8 @@ function analyzeDraftStructureForSett() {
   };
 }
 
-function getActiveShaftMaskForTreadle(treadleIndex, activeShaftMask) {
-  let mask = 0n;
-
-  for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
-    if (tieup[treadleIndex]?.[shaftIndex]) {
-      mask |= 1n << BigInt(shaftIndex);
-    }
-  }
-
-  return mask & activeShaftMask;
-}
-
-function formatPlainWeaveChoiceNumbers(indices, separator = " + ") {
-  return indices.map(index => String(index + 1)).join(separator);
-}
-
-function formatPlainWeaveChoice(choice) {
-  if (!choice) {
-    return "not found";
-  }
-
-  if (choice.singleTreadles?.length) {
-    return `${choice.singleTreadles.length === 1 ? "treadle" : "treadles"} ${formatPlainWeaveChoiceNumbers(choice.singleTreadles, " or ")}`;
-  }
-
-  if (!choice.treadles?.length) {
-    return "no treadle";
-  }
-
-  return `${choice.treadles.length === 1 ? "treadle" : "treadles"} ${formatPlainWeaveChoiceNumbers(choice.treadles)}`;
-}
-
-function formatPlainWeaveChoiceShort(choice) {
-  if (!choice) {
-    return "not found";
-  }
-
-  if (choice.singleTreadles?.length) {
-    return formatPlainWeaveChoiceNumbers(choice.singleTreadles, "/");
-  }
-
-  return choice.treadles?.length ? formatPlainWeaveChoiceNumbers(choice.treadles) : "none";
-}
-
-function findPlainWeaveTreadleCombination(targetMask, activeShaftMask) {
-  if (targetMask === 0n) {
-    return { treadles: [] };
-  }
-
-  const candidates = [];
-  let coveredMask = 0n;
-
-  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-    const mask = getActiveShaftMaskForTreadle(treadleIndex, activeShaftMask);
-
-    if (mask === 0n || (mask & ~targetMask) !== 0n) {
-      continue;
-    }
-
-    candidates.push({ treadleIndex, mask });
-    coveredMask |= mask;
-  }
-
-  if ((coveredMask & targetMask) !== targetMask) {
-    return null;
-  }
-
-  const states = new Map([[0n, []]]);
-
-  for (const candidate of candidates) {
-    const entries = Array.from(states.entries());
-
-    for (const [mask, treadleIndexes] of entries) {
-      const nextMask = mask | candidate.mask;
-
-      if (nextMask === mask) {
-        continue;
-      }
-
-      const nextTreadleIndexes = [...treadleIndexes, candidate.treadleIndex];
-      const existing = states.get(nextMask);
-
-      if (!existing || nextTreadleIndexes.length < existing.length) {
-        states.set(nextMask, nextTreadleIndexes);
-      }
-
-      if (states.size > maxPlainWeaveCombinationStates) {
-        return { tooComplex: true };
-      }
-    }
-  }
-
-  const treadleIndexes = states.get(targetMask);
-  return treadleIndexes ? { treadles: treadleIndexes } : null;
-}
-
-function findPlainWeaveShedChoice(targetMask, activeShaftMask) {
-  const singleTreadles = [];
-
-  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-    if (getActiveShaftMaskForTreadle(treadleIndex, activeShaftMask) === targetMask) {
-      singleTreadles.push(treadleIndex);
-    }
-  }
-
-  if (singleTreadles.length) {
-    return { singleTreadles };
-  }
-
-  return findPlainWeaveTreadleCombination(targetMask, activeShaftMask);
-}
-
-function analyzePlainWeaveAvailability() {
-  const shaftParity = new Map();
-  let activeWarpCount = 0;
-  let activeShaftMask = 0n;
-  let shedAMask = 0n;
-  let shedBMask = 0n;
-
-  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
-    const assignment = getWarpAssignment(warpIndex);
-
-    if (!assignment) {
-      continue;
-    }
-
-    const parity = activeWarpCount % 2;
-    const existingParity = shaftParity.get(assignment.shaft);
-
-    if (existingParity !== undefined && existingParity !== parity) {
-      const shaftNumber = assignment.shaft + 1;
-
-      return {
-        possible: false,
-        value: "No",
-        summary: `Shaft ${shaftNumber} appears on both plain-weave parities, so it would need to lift and sink in the same shed.`,
-        printSummary: `shaft ${shaftNumber} is on both parities`
-      };
-    }
-
-    shaftParity.set(assignment.shaft, parity);
-    activeShaftMask |= 1n << BigInt(assignment.shaft);
-
-    if (parity === 0) {
-      shedAMask |= 1n << BigInt(assignment.shaft);
-    } else {
-      shedBMask |= 1n << BigInt(assignment.shaft);
-    }
-
-    activeWarpCount++;
-  }
-
-  if (activeWarpCount < 2) {
-    return {
-      possible: false,
-      value: "No",
-      summary: "Thread at least two warp ends before checking plain weave.",
-      printSummary: "not enough threaded warp ends"
-    };
-  }
-
-  const shedAChoice = findPlainWeaveShedChoice(shedAMask, activeShaftMask);
-  const shedBChoice = findPlainWeaveShedChoice(shedBMask, activeShaftMask);
-
-  if (shedAChoice?.tooComplex || shedBChoice?.tooComplex) {
-    return {
-      possible: false,
-      value: "Unknown",
-      summary: "There are too many treadle combinations to check safely in the info modal.",
-      printSummary: "too many combinations to check"
-    };
-  }
-
-  if (!shedAChoice || !shedBChoice) {
-    return {
-      possible: false,
-      value: "No",
-      summary: "No available treadle choice lifts exactly one alternating set of threaded shafts and leaves the other set down.",
-      printSummary: "no matching treadle choices"
-    };
-  }
-
-  return {
-    possible: true,
-    value: "Yes",
-    summary: `Alternate ${formatPlainWeaveChoice(shedAChoice)} with ${formatPlainWeaveChoice(shedBChoice)}.`,
-    printSummary: `A ${formatPlainWeaveChoiceShort(shedAChoice)}; B ${formatPlainWeaveChoiceShort(shedBChoice)}`
-  };
-}
-
 function renderDraftSettInfo() {
   const analysis = analyzeDraftStructureForSett();
-  const plainWeave = analyzePlainWeaveAvailability();
   const wpi = getDraftInfoWpi();
   const settResults = document.getElementById("draft-info-sett-results");
   const structureResults = document.getElementById("draft-info-structure-results");
@@ -6512,10 +6033,6 @@ function renderDraftSettInfo() {
       <div class="draft-info-metric">
         <span class="draft-info-metric-value">${analysis.averageInteractions > 0 ? "interlaced" : "low data"}</span>
         <span class="draft-info-metric-label">sett confidence</span>
-      </div>
-      <div class="draft-info-metric draft-info-metric-wide">
-        <span class="draft-info-metric-value">${plainWeave.value}</span>
-        <span class="draft-info-metric-label">plain weave available — ${plainWeave.summary}</span>
       </div>
     `;
   }
@@ -6614,7 +6131,6 @@ function appendDraftPrintInfoRow(card, label, value, { muted = "" } = {}) {
 
 function createPrintableDraftInfoSection() {
   const analysis = analyzeDraftStructureForSett();
-  const plainWeave = analyzePlainWeaveAvailability();
   const wpi = getDraftInfoWpi();
   const infoGrid = document.createElement("div");
   infoGrid.className = "draft-print-info";
@@ -6651,7 +6167,6 @@ function createPrintableDraftInfoSection() {
     "Sett confidence",
     analysis.averageInteractions > 0 ? "interlaced" : "low data"
   );
-  appendDraftPrintInfoRow(metricsCard, "Plain weave", plainWeave.value, { muted: `(${plainWeave.printSummary})` });
 
   infoGrid.appendChild(settCard);
   infoGrid.appendChild(metricsCard);
@@ -6940,6 +6455,16 @@ function buildPrintableDrawdownElement(renderStyle) {
     return drawdown;
   }
 
+  if (renderStyle === "responsive") {
+    renderResponsiveDrawdown(drawdown, columnWidths, rowHeights);
+    return drawdown;
+  }
+
+  if (renderStyle === "simulation") {
+    renderSimulationDrawdown(drawdown, columnWidths, rowHeights);
+    return drawdown;
+  }
+
   if (renderStyle === "realistic") {
     renderRealisticDrawdown(drawdown, columnWidths, rowHeights);
     return drawdown;
@@ -6953,7 +6478,7 @@ function buildPrintableDrawdownElement(renderStyle) {
 
   for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
     for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
-      const state = getDrawdownCellState(pickIndex, warpIndex);
+      const state = getDrawdownCellStateForView(pickIndex, warpIndex);
       const cell = document.createElement("div");
       cell.className = "drawdown-cell";
       cell.style.backgroundColor = getDrawdownDisplayColor(state, renderStyle);
@@ -7889,162 +7414,6 @@ function renderAll() {
   commitDraftHistoryState();
 }
 
-function canPatchDrawdownCells(renderStyle = getDraftRenderStyle()) {
-  const div = document.getElementById("drawdown");
-  return (
-    ["structure", "color"].includes(renderStyle) &&
-    div?.classList.contains("grid") &&
-    div.children.length === warp * picks
-  );
-}
-
-function haveTrackSizesChanged(previousSizes, nextSizes) {
-  if (previousSizes.length !== nextSizes.length) {
-    return true;
-  }
-
-  return previousSizes.some((size, index) => size !== nextSizes[index]);
-}
-
-function finishLocalDraftPatch() {
-  invalidateFabricPreviewTile();
-  renderRepeatPreview();
-  renderFabricPreviewModal();
-  syncPatternColorUsageUI();
-  scheduleDraftAutosave();
-  scheduleDraftHistoryCommit();
-}
-
-function getDrawdownCellElement(pickIndex, warpIndex) {
-  const div = document.getElementById("drawdown");
-  return div?.children[pickIndex * warp + warpIndex] || null;
-}
-
-function patchDrawdownCell(pickIndex, warpIndex, renderStyle = getDraftRenderStyle()) {
-  const cell = getDrawdownCellElement(pickIndex, warpIndex);
-
-  if (!cell) {
-    return;
-  }
-
-  cell.style.backgroundColor = getDrawdownDisplayColor(getDrawdownCellState(pickIndex, warpIndex), renderStyle);
-}
-
-function patchDrawdownColumn(warpIndex, renderStyle = getDraftRenderStyle()) {
-  if (!canPatchDrawdownCells(renderStyle)) {
-    return false;
-  }
-
-  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
-    patchDrawdownCell(pickIndex, warpIndex, renderStyle);
-  }
-
-  return true;
-}
-
-function patchDrawdownRow(pickIndex, renderStyle = getDraftRenderStyle()) {
-  if (!canPatchDrawdownCells(renderStyle)) {
-    return false;
-  }
-
-  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
-    patchDrawdownCell(pickIndex, warpIndex, renderStyle);
-  }
-
-  return true;
-}
-
-function patchDrawdownForTieupCell(treadleIndex, shaftIndex, renderStyle = getDraftRenderStyle()) {
-  if (!canPatchDrawdownCells(renderStyle)) {
-    return false;
-  }
-
-  const affectedWarpIndices = [];
-
-  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
-    if (getWarpAssignment(warpIndex)?.shaft === shaftIndex) {
-      affectedWarpIndices.push(warpIndex);
-    }
-  }
-
-  if (!affectedWarpIndices.length) {
-    return true;
-  }
-
-  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
-    if (!treadling[pickIndex]?.[treadleIndex]) {
-      continue;
-    }
-
-    affectedWarpIndices.forEach(warpIndex => patchDrawdownCell(pickIndex, warpIndex, renderStyle));
-  }
-
-  return true;
-}
-
-function getThreadingCellElement(shaftIndex, warpIndex) {
-  const div = document.getElementById("threading");
-  const rowIndex = shafts - 1 - shaftIndex;
-  return div?.children[rowIndex * warp + warpIndex] || null;
-}
-
-function patchThreadingColumn(warpIndex) {
-  const columnWidths = getDrawdownColumnWidthsForRender(getDraftRenderStyle());
-
-  for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
-    const cell = getThreadingCellElement(shaftIndex, warpIndex);
-
-    if (!cell) {
-      return false;
-    }
-
-    styleCell(cell, threading[shaftIndex][warpIndex]);
-    setElementSize(cell, columnWidths[warpIndex], draftCellSize);
-  }
-
-  return true;
-}
-
-function getTieupCellElement(treadleIndex, shaftIndex) {
-  const div = document.getElementById("tieup");
-  const rowIndex = shafts - 1 - shaftIndex;
-  return div?.children[rowIndex * treadles + treadleIndex] || null;
-}
-
-function patchTieupCell(treadleIndex, shaftIndex) {
-  const cell = getTieupCellElement(treadleIndex, shaftIndex);
-
-  if (!cell) {
-    return false;
-  }
-
-  styleCell(cell, null);
-  cell.classList.toggle("cell-structural-on", Boolean(tieup[treadleIndex]?.[shaftIndex]));
-  return true;
-}
-
-function getTreadlingCellElement(pickIndex, treadleIndex) {
-  const div = document.getElementById("treadling");
-  return div?.children[pickIndex * treadles + treadleIndex] || null;
-}
-
-function patchTreadlingRow(pickIndex) {
-  const rowHeights = getDrawdownRowHeightsForRender(getDraftRenderStyle());
-
-  for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
-    const cell = getTreadlingCellElement(pickIndex, treadleIndex);
-
-    if (!cell) {
-      return false;
-    }
-
-    styleCell(cell, treadling[pickIndex][treadleIndex]);
-    setElementSize(cell, draftCellSize, rowHeights[pickIndex]);
-  }
-
-  return true;
-}
-
 function styleCell(button, colorId) {
   button.type = "button";
   button.className = "cell";
@@ -8154,6 +7523,23 @@ function getDrawdownCellState(pickIndex, warpIndex) {
   };
 }
 
+function getViewedDrawdownCellState(cellState, face = getDraftViewFace()) {
+  if (face !== "back" || !cellState?.hasWarp || !cellState.hasWeft) {
+    return cellState;
+  }
+
+  return {
+    ...cellState,
+    frontColor: cellState.backColor || cellState.warpColor || cellState.weftColor || "#ffffff",
+    backColor: cellState.frontColor || "#ffffff",
+    warpVisibleOnFront: !cellState.warpVisibleOnFront
+  };
+}
+
+function getDrawdownCellStateForView(pickIndex, warpIndex, face = getDraftViewFace()) {
+  return getViewedDrawdownCellState(getDrawdownCellState(pickIndex, warpIndex), face);
+}
+
 function getDrawdownDisplayColor(cellState, renderStyle) {
   if (renderStyle === "structure") {
     return cellState.warpVisibleOnFront && cellState.hasWarp ? "var(--ink)" : "#ffffff";
@@ -8164,8 +7550,1745 @@ function getDrawdownDisplayColor(cellState, renderStyle) {
 
 function buildDrawdownStateGrid() {
   return Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellStateForView(pickIndex, warpIndex))
+  );
+}
+
+function buildPhysicalDrawdownStateGrid() {
+  return Array.from({ length: picks }, (_, pickIndex) =>
     Array.from({ length: warp }, (_, warpIndex) => getDrawdownCellState(pickIndex, warpIndex))
   );
+}
+
+function createDoubleClothThreadKey(threadType, index) {
+  return `${threadType}:${index}`;
+}
+
+function createDoubleClothUnionFind(keys) {
+  const parent = new Map();
+  const size = new Map();
+
+  keys.forEach(key => {
+    parent.set(key, key);
+    size.set(key, 1);
+  });
+
+  const find = key => {
+    if (!parent.has(key)) {
+      parent.set(key, key);
+      size.set(key, 1);
+    }
+
+    let root = key;
+    while (parent.get(root) !== root) {
+      root = parent.get(root);
+    }
+
+    while (parent.get(key) !== key) {
+      const next = parent.get(key);
+      parent.set(key, root);
+      key = next;
+    }
+
+    return root;
+  };
+
+  const union = (leftKey, rightKey) => {
+    const leftRoot = find(leftKey);
+    const rightRoot = find(rightKey);
+
+    if (leftRoot === rightRoot) {
+      return;
+    }
+
+    const leftSize = size.get(leftRoot) || 1;
+    const rightSize = size.get(rightRoot) || 1;
+    const largerRoot = leftSize >= rightSize ? leftRoot : rightRoot;
+    const smallerRoot = largerRoot === leftRoot ? rightRoot : leftRoot;
+
+    parent.set(smallerRoot, largerRoot);
+    size.set(largerRoot, leftSize + rightSize);
+  };
+
+  return { find, union };
+}
+
+function getDoubleClothTransitionScore(binaryGrid, pickIndex, warpIndex) {
+  const value = binaryGrid[pickIndex]?.[warpIndex];
+  let vertical = 0;
+  let horizontal = 0;
+
+  if (value === undefined) {
+    return { vertical, horizontal, total: 0 };
+  }
+
+  if (pickIndex > 0 && binaryGrid[pickIndex - 1]?.[warpIndex] !== value) {
+    vertical++;
+  }
+
+  if (pickIndex < picks - 1 && binaryGrid[pickIndex + 1]?.[warpIndex] !== value) {
+    vertical++;
+  }
+
+  if (warpIndex > 0 && binaryGrid[pickIndex]?.[warpIndex - 1] !== value) {
+    horizontal++;
+  }
+
+  if (warpIndex < warp - 1 && binaryGrid[pickIndex]?.[warpIndex + 1] !== value) {
+    horizontal++;
+  }
+
+  return { vertical, horizontal, total: vertical + horizontal };
+}
+
+function inferDoubleClothLayers(states) {
+  const keys = [
+    ...Array.from({ length: warp }, (_, index) => createDoubleClothThreadKey("w", index)),
+    ...Array.from({ length: picks }, (_, index) => createDoubleClothThreadKey("p", index))
+  ];
+  const unionFind = createDoubleClothUnionFind(keys);
+  const binaryGrid = states.map(row =>
+    row.map(state => (state?.hasWarp && state.warpVisibleOnFront ? 1 : 0))
+  );
+  const transitionScores = Array.from({ length: picks }, (_, pickIndex) =>
+    Array.from({ length: warp }, (_, warpIndex) =>
+      getDoubleClothTransitionScore(binaryGrid, pickIndex, warpIndex)
+    )
+  );
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = states[pickIndex]?.[warpIndex];
+      const score = transitionScores[pickIndex]?.[warpIndex];
+
+      if (!state?.hasWarp || !state.hasWeft || !score?.vertical || !score.horizontal) {
+        continue;
+      }
+
+      unionFind.union(
+        createDoubleClothThreadKey("w", warpIndex),
+        createDoubleClothThreadKey("p", pickIndex)
+      );
+    }
+  }
+
+  const componentMembers = new Map();
+
+  keys.forEach(key => {
+    const root = unionFind.find(key);
+
+    if (!componentMembers.has(root)) {
+      componentMembers.set(root, []);
+    }
+
+    componentMembers.get(root).push(key);
+  });
+
+  const viableComponents = [...componentMembers.entries()]
+    .filter(([, members]) => members.some(key => key.startsWith("w:")) && members.some(key => key.startsWith("p:")))
+    .sort(([, leftMembers], [, rightMembers]) => rightMembers.length - leftMembers.length);
+  const layerByRoot = new Map();
+
+  viableComponents.forEach(([root], layerIndex) => {
+    layerByRoot.set(root, layerIndex);
+  });
+
+  const getLayer = key => {
+    const root = unionFind.find(key);
+    return layerByRoot.has(root) ? layerByRoot.get(root) : null;
+  };
+
+  return {
+    transitionScores,
+    warpLayers: Array.from({ length: warp }, (_, index) => getLayer(createDoubleClothThreadKey("w", index))),
+    pickLayers: Array.from({ length: picks }, (_, index) => getLayer(createDoubleClothThreadKey("p", index))),
+    layerCount: Math.max(1, viableComponents.length)
+  };
+}
+
+function getDoubleClothLayerTint(layerIndex) {
+  return doubleClothLayerTints[Math.abs(layerIndex) % doubleClothLayerTints.length];
+}
+
+function getDoubleClothCellInfo(analysis, state, pickIndex, warpIndex) {
+  const warpLayer = analysis.warpLayers[warpIndex];
+  const pickLayer = analysis.pickLayers[pickIndex];
+  const topLayer = state?.warpVisibleOnFront ? warpLayer : pickLayer;
+  const bottomLayer = state?.warpVisibleOnFront ? pickLayer : warpLayer;
+  const resolvedLayer = topLayer ?? bottomLayer ?? 0;
+  const isCrossLayer =
+    state?.hasWarp &&
+    state?.hasWeft &&
+    warpLayer !== null &&
+    pickLayer !== null &&
+    warpLayer !== pickLayer;
+  const transitionScore = analysis.transitionScores[pickIndex]?.[warpIndex]?.total || 0;
+
+  return {
+    layer: resolvedLayer,
+    isCrossLayer,
+    isBinder: isCrossLayer && transitionScore >= 2,
+    warpLayer,
+    pickLayer
+  };
+}
+
+function getDoubleClothFlatColor(cellState, cellInfo) {
+  const baseColor = cellState?.frontColor || "#ffffff";
+  const layerTint = getDoubleClothLayerTint(cellInfo.layer);
+  const layerAmount = cellInfo.layer === 0 ? 0 : Math.min(0.34, 0.18 + cellInfo.layer * 0.04);
+  return cellInfo.layer === 0 ? baseColor : mixPreviewColors(baseColor, layerTint, layerAmount);
+}
+
+function getDoubleClothCellBackground(cellState, cellInfo) {
+  const layerTint = getDoubleClothLayerTint(cellInfo.layer);
+  const layerColor = getDoubleClothFlatColor(cellState, cellInfo);
+  const strandAngle = cellState?.warpVisibleOnFront ? "90deg" : "0deg";
+  const dimensionalShade = `linear-gradient(${strandAngle}, rgba(47, 36, 29, 0.18), rgba(255, 255, 255, 0.2) 46%, rgba(47, 36, 29, 0.12))`;
+  const layerWash =
+    cellInfo.layer === 0
+      ? "linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(47, 36, 29, 0.03))"
+      : `linear-gradient(135deg, ${previewAlphaColor(layerTint, 0.28)}, rgba(255, 255, 255, 0.06))`;
+
+  return `${dimensionalShade}, ${layerWash}, ${layerColor}`;
+}
+
+function drawDoubleClothPreviewCell(ctx, x, y, width, height, cellState, cellInfo) {
+  ctx.fillStyle = getDoubleClothFlatColor(cellState, cellInfo);
+  ctx.fillRect(x, y, width, height);
+
+  const gradient = cellState?.warpVisibleOnFront
+    ? ctx.createLinearGradient(x, y, x + width, y)
+    : ctx.createLinearGradient(x, y, x, y + height);
+  gradient.addColorStop(0, "rgba(47, 36, 29, 0.18)");
+  gradient.addColorStop(0.48, "rgba(255, 255, 255, 0.2)");
+  gradient.addColorStop(1, "rgba(47, 36, 29, 0.12)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(x, y, width, height);
+
+  if (!cellInfo.isCrossLayer) {
+    return;
+  }
+
+  const stripeStep = Math.max(4, Math.min(width, height) * 0.38);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.clip();
+  ctx.strokeStyle = "rgba(47, 36, 29, 0.24)";
+  ctx.lineWidth = Math.max(0.75, Math.min(width, height) * 0.06);
+
+  for (let offset = -height; offset < width + height; offset += stripeStep) {
+    ctx.beginPath();
+    ctx.moveTo(x + offset, y);
+    ctx.lineTo(x + offset + height, y + height);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+  ctx.strokeStyle = "rgba(170, 74, 43, 0.5)";
+  ctx.lineWidth = Math.max(1, Math.min(width, height) * 0.08);
+  ctx.strokeRect(x + ctx.lineWidth / 2, y + ctx.lineWidth / 2, Math.max(0, width - ctx.lineWidth), Math.max(0, height - ctx.lineWidth));
+}
+
+function renderDoubleClothDrawdown(div, columnWidths, rowHeights) {
+  const states = buildDrawdownStateGrid();
+  const analysis = inferDoubleClothLayers(states);
+
+  div.className = "grid drawdown-double";
+  div.innerHTML = "";
+  div.style.display = "";
+  div.style.position = "";
+  div.style.width = "";
+  div.style.height = "";
+  div.style.background = "";
+  div.style.overflow = "";
+  div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+  div.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = states[pickIndex][warpIndex];
+      const cellInfo = getDoubleClothCellInfo(analysis, state, pickIndex, warpIndex);
+      const cell = document.createElement("div");
+
+      cell.className = [
+        "drawdown-cell",
+        "drawdown-double-cell",
+        `double-layer-${cellInfo.layer % doubleClothLayerTints.length}`,
+        cellInfo.isCrossLayer ? "double-cross-layer" : "",
+        cellInfo.isBinder ? "double-binder" : ""
+      ]
+        .filter(Boolean)
+        .join(" ");
+      cell.style.background = getDoubleClothCellBackground(state, cellInfo);
+      cell.title = `Layer ${cellInfo.layer + 1}${
+        cellInfo.isCrossLayer ? " · crossing inferred layers" : ""
+      } · warp layer ${cellInfo.warpLayer === null ? "?" : cellInfo.warpLayer + 1} · pick layer ${
+        cellInfo.pickLayer === null ? "?" : cellInfo.pickLayer + 1
+      }`;
+      setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
+      div.appendChild(cell);
+    }
+  }
+}
+
+function isResponsiveWarpInteracting(states, pickIndex, warpIndex) {
+  const state = states[pickIndex]?.[warpIndex];
+
+  if (!state?.hasWarp || !state.hasWeft) {
+    return false;
+  }
+
+  if (picks <= 1) {
+    return true;
+  }
+
+  const previousState = states[positiveModulo(pickIndex - 1, picks)]?.[warpIndex];
+
+  if (!previousState?.hasWarp || !previousState.hasWeft) {
+    return true;
+  }
+
+  return Boolean(previousState.warpVisibleOnFront) !== Boolean(state.warpVisibleOnFront);
+}
+
+function getResponsivePickInteractingWarps(states, pickIndex) {
+  const active = [];
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    if (isResponsiveWarpInteracting(states, pickIndex, warpIndex)) {
+      active.push(warpIndex);
+    }
+  }
+
+  return active;
+}
+
+function interpolateResponsiveWarpCenter(activeWarps, activeCenters, warpIndex, totalWidth, rowLeft, rowRight, fallbackWidth) {
+  if (!activeWarps.length) {
+    return (rowLeft + rowRight) / 2;
+  }
+
+  const exactIndex = activeWarps.indexOf(warpIndex);
+
+  if (exactIndex !== -1) {
+    return activeCenters[exactIndex];
+  }
+
+  const insertionIndex = activeWarps.findIndex(activeWarp => activeWarp > warpIndex);
+  const collapsedStep = Math.max(1, fallbackWidth * 0.14);
+
+  if (insertionIndex === -1) {
+    const lastWarp = activeWarps[activeWarps.length - 1];
+    const lastCenter = activeCenters[activeCenters.length - 1];
+    return Math.min(totalWidth - fallbackWidth * 0.5, rowRight + (warpIndex - lastWarp - 0.5) * collapsedStep);
+  }
+
+  if (insertionIndex === 0) {
+    const firstWarp = activeWarps[0];
+    const firstCenter = activeCenters[0];
+    return Math.max(fallbackWidth * 0.5, rowLeft - (firstWarp - warpIndex - 0.5) * collapsedStep);
+  }
+
+  const leftWarp = activeWarps[insertionIndex - 1];
+  const rightWarp = activeWarps[insertionIndex];
+  const leftCenter = activeCenters[insertionIndex - 1];
+  const rightCenter = activeCenters[insertionIndex];
+  const span = Math.max(1, rightWarp - leftWarp);
+  const ratio = (warpIndex - leftWarp) / span;
+
+  return leftCenter + (rightCenter - leftCenter) * ratio;
+}
+
+function buildResponsivePickMap(states, pickIndex, totalWidth) {
+  const fallbackWidth = totalWidth / Math.max(1, warp);
+  const activeWarps = getResponsivePickInteractingWarps(states, pickIndex);
+  const activeCount = activeWarps.length;
+  const activeSlotCount = Math.max(1, activeCount);
+  const rowWidth = Math.min(totalWidth, Math.max(fallbackWidth, activeSlotCount * fallbackWidth));
+  const rowLeft = (totalWidth - rowWidth) / 2;
+  const rowRight = rowLeft + rowWidth;
+  const activeCenters = activeWarps.map((_, index) =>
+    activeCount === 1 ? (rowLeft + rowRight) / 2 : rowLeft + ((index + 0.5) * rowWidth) / activeCount
+  );
+  const targetCenters = Array.from({ length: warp }, (_, warpIndex) =>
+    interpolateResponsiveWarpCenter(activeWarps, activeCenters, warpIndex, totalWidth, rowLeft, rowRight, fallbackWidth)
+  );
+  const edges = [0];
+
+  for (let warpIndex = 1; warpIndex < warp; warpIndex++) {
+    const midpoint = (targetCenters[warpIndex - 1] + targetCenters[warpIndex]) / 2;
+    edges.push(Math.max(edges[edges.length - 1], Math.min(totalWidth, midpoint)));
+  }
+
+  edges.push(totalWidth);
+
+  return { activeWarps, activeCount, activeCenters, targetCenters, centers: targetCenters, edges, rowLeft, rowRight, rowWidth };
+}
+
+function buildResponsivePickMaps(states, totalWidth) {
+  const maps = Array.from({ length: picks }, (_, pickIndex) => buildResponsivePickMap(states, pickIndex, totalWidth));
+  const relaxedCenters = maps.map(map => [...map.targetCenters]);
+
+  for (let iteration = 0; iteration < 18; iteration++) {
+    const nextCenters = relaxedCenters.map(row => [...row]);
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const map = maps[pickIndex];
+        const isActive = map.activeWarps.includes(warpIndex);
+        const targetWeight = isActive ? 1.9 : map.activeCount ? 0.22 : 0.04;
+        const previous = relaxedCenters[Math.max(0, pickIndex - 1)][warpIndex];
+        const next = relaxedCenters[Math.min(picks - 1, pickIndex + 1)][warpIndex];
+        nextCenters[pickIndex][warpIndex] =
+          (map.targetCenters[warpIndex] * targetWeight + previous + next) / (targetWeight + 2);
+      }
+    }
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      relaxedCenters[pickIndex] = nextCenters[pickIndex];
+    }
+  }
+
+  maps.forEach((map, pickIndex) => {
+    map.centers = relaxedCenters[pickIndex];
+    map.edges = [0];
+
+    for (let warpIndex = 1; warpIndex < warp; warpIndex++) {
+      map.edges.push(Math.max(map.edges[map.edges.length - 1], Math.min(totalWidth, (map.centers[warpIndex - 1] + map.centers[warpIndex]) / 2)));
+    }
+
+    map.edges.push(totalWidth);
+  });
+
+  return maps;
+}
+
+function getResponsiveFloatFactor(length) {
+  return 1 - Math.exp(-Math.max(1, length) / 4);
+}
+
+function getResponsiveYarnThickness(crossSize, floatLength, weight = 1) {
+  const normalizedWeight = Math.max(0.1, Number(weight) || 1);
+  const floatFactor = getResponsiveFloatFactor(floatLength);
+  const weightFactor = Math.min(1.55, Math.max(0.55, Math.sqrt(normalizedWeight)));
+  return Math.max(1, crossSize * (0.48 + 0.36 * floatFactor) * weightFactor);
+}
+
+function drawResponsiveHorizontalBand(ctx, x, y, width, height, colorValue, floatLength, weight = 1) {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  const thickness = Math.min(height * 0.96, getResponsiveYarnThickness(height, floatLength, weight));
+  const top = y + (height - thickness) / 2;
+  const gradient = ctx.createLinearGradient(x, top, x, top + thickness);
+
+  gradient.addColorStop(0, darkenPreviewColor(colorValue, 0.24));
+  gradient.addColorStop(0.22, darkenPreviewColor(colorValue, 0.08));
+  gradient.addColorStop(0.52, lightenPreviewColor(colorValue, 0.12));
+  gradient.addColorStop(0.82, darkenPreviewColor(colorValue, 0.08));
+  gradient.addColorStop(1, darkenPreviewColor(colorValue, 0.24));
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, top, width, thickness);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawResponsiveWarpPath(ctx, points, colorValue, thickness, floatLength) {
+  if (!points.length || thickness <= 0) {
+    return;
+  }
+
+  const floatFactor = getResponsiveFloatFactor(floatLength);
+  const outerThickness = thickness * (1 + 0.08 * floatFactor);
+
+  ctx.save();
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "round";
+
+  ctx.beginPath();
+  points.forEach((point, index) => {
+    if (index === 0) {
+      ctx.moveTo(point.x, point.y);
+    } else {
+      const previous = points[index - 1];
+      const controlX = (previous.x + point.x) / 2;
+      const controlY = (previous.y + point.y) / 2;
+      ctx.quadraticCurveTo(previous.x, previous.y, controlX, controlY);
+    }
+  });
+  const lastPoint = points[points.length - 1];
+  ctx.lineTo(lastPoint.x, lastPoint.y);
+  ctx.strokeStyle = darkenPreviewColor(colorValue, 0.22);
+  ctx.lineWidth = outerThickness;
+  ctx.stroke();
+
+  ctx.beginPath();
+  points.forEach((point, index) => {
+    if (index === 0) {
+      ctx.moveTo(point.x, point.y);
+    } else {
+      const previous = points[index - 1];
+      const controlX = (previous.x + point.x) / 2;
+      const controlY = (previous.y + point.y) / 2;
+      ctx.quadraticCurveTo(previous.x, previous.y, controlX, controlY);
+    }
+  });
+  ctx.lineTo(lastPoint.x, lastPoint.y);
+  ctx.strokeStyle = colorValue;
+  ctx.lineWidth = thickness;
+  ctx.stroke();
+
+  ctx.beginPath();
+  points.forEach((point, index) => {
+    const highlightX = point.x - thickness * 0.18;
+    if (index === 0) {
+      ctx.moveTo(highlightX, point.y);
+    } else {
+      const previous = points[index - 1];
+      ctx.quadraticCurveTo(previous.x - thickness * 0.18, previous.y, (previous.x + highlightX) / 2, (previous.y + point.y) / 2);
+    }
+  });
+  ctx.lineTo(lastPoint.x - thickness * 0.18, lastPoint.y);
+  ctx.strokeStyle = previewAlphaColor(lightenPreviewColor(colorValue, 0.24), 0.48);
+  ctx.lineWidth = Math.max(1, thickness * 0.18);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function getResponsivePickWeftState(states, pickIndex) {
+  return states[pickIndex]?.find(state => state?.hasWeft) || null;
+}
+
+function getResponsiveWarpState(states, warpIndex) {
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const state = states[pickIndex]?.[warpIndex];
+
+    if (state?.hasWarp) {
+      return state;
+    }
+  }
+
+  return null;
+}
+
+function isResponsiveWeftVisibleOnFace(states, pickIndex) {
+  return Boolean(
+    states[pickIndex]?.some(state => state?.hasWeft && (!state.hasWarp || !state.warpVisibleOnFront))
+  );
+}
+
+function isResponsiveWarpVisibleOnFace(states, warpIndex) {
+  return Boolean(
+    states.some(row => row?.[warpIndex]?.hasWarp && row[warpIndex].warpVisibleOnFront)
+  );
+}
+
+function drawResponsiveWeftBands(ctx, states, pickMaps, rowEdges, rowHeights) {
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const state = getResponsivePickWeftState(states, pickIndex);
+
+    if (!state?.hasWeft || !isResponsiveWeftVisibleOnFace(states, pickIndex)) {
+      continue;
+    }
+
+    const map = pickMaps[pickIndex];
+    drawResponsiveHorizontalBand(
+      ctx,
+      map.rowLeft,
+      rowEdges[pickIndex],
+      map.rowWidth,
+      rowHeights[pickIndex],
+      state.weftColor || state.frontColor || "#ffffff",
+      Math.max(1, map.activeCount),
+      state.weftWeight || 1
+    );
+  }
+}
+
+function drawResponsiveWarpBaseLayer(ctx, states, pickMaps, rowEdges, rowHeights, totalWidth) {
+  const fallbackWidth = totalWidth / Math.max(1, warp);
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    const state = getResponsiveWarpState(states, warpIndex);
+
+    if (!state?.hasWarp || !isResponsiveWarpVisibleOnFace(states, warpIndex)) {
+      continue;
+    }
+
+    const points = [
+      { x: pickMaps[0]?.centers[warpIndex] || fallbackWidth / 2, y: 0 },
+      ...pickMaps.map((map, pickIndex) => ({
+        x: map.centers[warpIndex],
+        y: rowEdges[pickIndex] + rowHeights[pickIndex] / 2
+      })),
+      {
+        x: pickMaps[pickMaps.length - 1]?.centers[warpIndex] || fallbackWidth / 2,
+        y: rowEdges[rowEdges.length - 1]
+      }
+    ];
+    const thickness = Math.min(
+      fallbackWidth * 1.45,
+      getResponsiveYarnThickness(fallbackWidth, Math.max(1, picks), state.warpWeight || 1) * 0.74
+    );
+
+    ctx.save();
+    ctx.globalAlpha = 0.26;
+    drawResponsiveWarpPath(ctx, points, state.warpColor || state.frontColor || "#ffffff", thickness, Math.max(1, picks));
+    ctx.restore();
+  }
+}
+
+function drawResponsiveWarpTopFloats(ctx, states, pickMaps, rowEdges, rowHeights, totalWidth) {
+  const fallbackWidth = totalWidth / Math.max(1, warp);
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    let runStart = null;
+    let runPoints = [];
+    let runColor = null;
+    let runWeight = 1;
+    let runSlotWidth = fallbackWidth;
+
+    const flushRun = endPick => {
+      if (runStart === null || !runPoints.length) {
+        runStart = null;
+        runPoints = [];
+        return;
+      }
+
+      const floatLength = endPick - runStart;
+      const thickness = Math.min(
+        fallbackWidth * 1.5,
+        getResponsiveYarnThickness(runSlotWidth, floatLength, runWeight)
+      );
+      const extendedPoints = [
+        { x: runPoints[0].x, y: rowEdges[runStart] },
+        ...runPoints,
+        { x: runPoints[runPoints.length - 1].x, y: rowEdges[endPick] }
+      ];
+
+      drawResponsiveWarpPath(ctx, extendedPoints, runColor || "#ffffff", thickness, floatLength);
+      runStart = null;
+      runPoints = [];
+      runColor = null;
+      runWeight = 1;
+      runSlotWidth = fallbackWidth;
+    };
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const state = states[pickIndex]?.[warpIndex];
+      const isWarpVisible = state?.hasWarp && state.warpVisibleOnFront;
+      const color = state?.warpColor || state?.frontColor || "#ffffff";
+
+      if (!isWarpVisible) {
+        flushRun(pickIndex);
+        continue;
+      }
+
+      if (runStart !== null && color !== runColor) {
+        flushRun(pickIndex);
+      }
+
+      if (runStart === null) {
+        runStart = pickIndex;
+        runColor = color;
+      }
+
+      const map = pickMaps[pickIndex];
+      const cellWidth = Math.max(1, map.edges[warpIndex + 1] - map.edges[warpIndex]);
+      runWeight = Math.max(runWeight, state?.warpWeight || 1);
+      runSlotWidth = Math.max(runSlotWidth, cellWidth);
+      runPoints.push({
+        x: map.centers[warpIndex],
+        y: rowEdges[pickIndex] + rowHeights[pickIndex] / 2
+      });
+    }
+
+    flushRun(picks);
+  }
+}
+
+function drawResponsiveGrid(ctx, pickMaps, rowEdges, rowHeights, totalWidth, totalHeight) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(47, 36, 29, 0.12)";
+  ctx.lineWidth = 1;
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const map = pickMaps[pickIndex];
+    const y = rowEdges[pickIndex];
+
+    ctx.beginPath();
+    ctx.rect(map.rowLeft, y, map.rowWidth, rowHeights[pickIndex]);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, totalHeight);
+  ctx.moveTo(totalWidth, 0);
+  ctx.lineTo(totalWidth, totalHeight);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawResponsiveCanvas(ctx, states, columnWidths, rowHeights, totalWidth, totalHeight) {
+  const rowEdges = getTrackEdges(rowHeights);
+  const pickMaps = buildResponsivePickMaps(states, totalWidth);
+
+  ctx.clearRect(0, 0, totalWidth, totalHeight);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, totalWidth, totalHeight);
+  drawResponsiveGrid(ctx, pickMaps, rowEdges, rowHeights, totalWidth, totalHeight);
+  drawResponsiveWarpBaseLayer(ctx, states, pickMaps, rowEdges, rowHeights, totalWidth);
+  drawResponsiveWeftBands(ctx, states, pickMaps, rowEdges, rowHeights);
+  drawResponsiveWarpTopFloats(ctx, states, pickMaps, rowEdges, rowHeights, totalWidth);
+}
+
+function renderResponsiveDrawdown(div, columnWidths, rowHeights) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const states = buildDrawdownStateGrid();
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+
+  if (!ctx) {
+    div.className = "grid";
+    div.innerHTML = "";
+    div.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+    div.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const state = states[pickIndex][warpIndex];
+        const cell = document.createElement("div");
+        cell.className = "drawdown-cell";
+        cell.style.backgroundColor = state.frontColor;
+        setElementSize(cell, columnWidths[warpIndex], rowHeights[pickIndex]);
+        div.appendChild(cell);
+      }
+    }
+
+    return;
+  }
+
+  div.className = "drawdown-responsive";
+  div.innerHTML = "";
+  div.style.width = `${totalWidth}px`;
+  div.style.height = `${totalHeight}px`;
+  div.style.gridTemplateColumns = "";
+  div.style.gridTemplateRows = "";
+
+  canvas.className = "drawdown-realistic-canvas";
+  canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+  canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+  canvas.style.width = `${totalWidth}px`;
+  canvas.style.height = `${totalHeight}px`;
+
+  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in ctx) {
+    ctx.imageSmoothingQuality = "high";
+  }
+
+  drawResponsiveCanvas(ctx, states, columnWidths, rowHeights, totalWidth, totalHeight);
+  div.appendChild(canvas);
+}
+
+class ClothSimulationParticle {
+  constructor(x, y, targetX = x, targetY = y, active = false) {
+    this.x = x;
+    this.y = y;
+    this.targetX = targetX;
+    this.targetY = targetY;
+    this.active = active;
+  }
+}
+
+class ClothSimulationEngine {
+  constructor({ states, components, surfaceComponent, columnWidths, rowHeights, totalWidth }) {
+    this.states = states;
+    this.components = components;
+    this.surfaceComponent = surfaceComponent;
+    this.columnWidths = columnWidths;
+    this.rowHeights = rowHeights;
+    this.totalWidth = totalWidth;
+    this.columnEdges = getTrackEdges(columnWidths);
+    this.rowEdges = getTrackEdges(rowHeights);
+    this.fallbackWidth = totalWidth / Math.max(1, warp);
+    this.surfaceWarps = this.getSurfaceWarps();
+    this.surfaceWarpSet = new Set(this.surfaceWarps);
+    this.rowMaps = this.createRowMaps();
+    this.particles = this.createParticles();
+  }
+
+  getSurfaceWarps() {
+    const component = this.surfaceComponent;
+    const warpsInComponent = Array.from({ length: warp }, (_, warpIndex) => warpIndex).filter(warpIndex => {
+      const warpComponent = this.components.warpComponents[warpIndex];
+      return component === null || warpComponent === component || warpComponent === null;
+    });
+
+    return warpsInComponent.length ? warpsInComponent : Array.from({ length: warp }, (_, warpIndex) => warpIndex);
+  }
+
+  isSurfacePick(pickIndex) {
+    const pickComponent = this.components.pickComponents[pickIndex];
+    return this.surfaceComponent === null || pickComponent === this.surfaceComponent || pickComponent === null;
+  }
+
+  getActiveWarpsForPick(pickIndex) {
+    if (!this.isSurfacePick(pickIndex)) {
+      return [];
+    }
+
+    return this.surfaceWarps.filter(warpIndex => isResponsiveWarpInteracting(this.states, pickIndex, warpIndex));
+  }
+
+  createRowMaps() {
+    return Array.from({ length: picks }, (_, pickIndex) => {
+      const activeWarps = this.getActiveWarpsForPick(pickIndex);
+      const activeCount = activeWarps.length;
+      const rowWidth = Math.min(this.totalWidth, Math.max(this.fallbackWidth, Math.max(1, activeCount) * this.fallbackWidth));
+      const rowLeft = (this.totalWidth - rowWidth) / 2;
+      const rowRight = rowLeft + rowWidth;
+      const activeCenters = activeWarps.map((_, index) =>
+        activeCount === 1 ? (rowLeft + rowRight) / 2 : rowLeft + ((index + 0.5) * rowWidth) / activeCount
+      );
+      const compressedCenters = Array.from({ length: warp }, (_, warpIndex) =>
+        interpolateResponsiveWarpCenter(activeWarps, activeCenters, warpIndex, this.totalWidth, rowLeft, rowRight, this.fallbackWidth)
+      );
+      const baseCenters = Array.from(
+        { length: warp },
+        (_, warpIndex) => this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2
+      );
+      const warpTargetCenters = baseCenters.map((baseCenter, warpIndex) => {
+        const compression = compressedCenters[warpIndex] - baseCenter;
+        const activity = activeWarps.includes(warpIndex) ? 0.34 : 0.18;
+        return baseCenter + compression * activity;
+      });
+      const weftTargetCenters = baseCenters.map((baseCenter, warpIndex) => {
+        const compression = compressedCenters[warpIndex] - baseCenter;
+        const activity = activeWarps.includes(warpIndex) ? 0.7 : 0.42;
+        return baseCenter + compression * activity;
+      });
+
+      return {
+        activeWarps,
+        activeCount,
+        activeCenters,
+        compressedCenters,
+        targetCenters: warpTargetCenters,
+        warpTargetCenters,
+        weftTargetCenters,
+        rowLeft,
+        rowRight,
+        rowWidth
+      };
+    });
+  }
+
+  createParticles() {
+    return Array.from({ length: picks }, (_, pickIndex) =>
+      Array.from({ length: warp }, (_, warpIndex) => {
+        const x = this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2;
+        const y = this.rowEdges[pickIndex] + this.rowHeights[pickIndex] / 2;
+        const rowMap = this.rowMaps[pickIndex];
+        return new ClothSimulationParticle(
+          x,
+          y,
+          rowMap.targetCenters[warpIndex],
+          y,
+          rowMap.activeWarps.includes(warpIndex)
+        );
+      })
+    );
+  }
+
+  step() {
+    this.solveTargetConstraints();
+    this.solveWarpSmoothness();
+    this.solveRowSeparation();
+    this.recenterRows();
+  }
+
+  solveTargetConstraints() {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      for (const warpIndex of this.surfaceWarps) {
+        const particle = this.particles[pickIndex][warpIndex];
+        const pull = particle.active ? 0.42 : 0.08;
+        particle.x += (particle.targetX - particle.x) * pull;
+      }
+    }
+  }
+
+  solveWarpSmoothness() {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      if (picks <= 1) {
+        continue;
+      }
+
+      for (const warpIndex of this.surfaceWarps) {
+        const particle = this.particles[pickIndex][warpIndex];
+        const previous = this.particles[Math.max(0, pickIndex - 1)][warpIndex];
+        const next = this.particles[Math.min(picks - 1, pickIndex + 1)][warpIndex];
+        const smoothed = (previous.x + next.x) / 2;
+        const stiffness = particle.active ? 0.12 : 0.28;
+        particle.x += (smoothed - particle.x) * stiffness;
+      }
+    }
+  }
+
+  solveRowSeparation() {
+    const minimumSeparation = Math.max(1, this.fallbackWidth * 0.18);
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const warps = this.surfaceWarps;
+
+      for (let pass = 0; pass < 3; pass++) {
+        for (let index = 1; index < warps.length; index++) {
+          const left = this.particles[pickIndex][warps[index - 1]];
+          const right = this.particles[pickIndex][warps[index]];
+          const distance = right.x - left.x;
+
+          if (distance >= minimumSeparation) {
+            continue;
+          }
+
+          const correction = (minimumSeparation - distance) / 2;
+          left.x -= correction;
+          right.x += correction;
+        }
+      }
+    }
+  }
+
+  recenterRows() {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const rowMap = this.rowMaps[pickIndex];
+      const activeWarps = rowMap.activeWarps.length ? rowMap.activeWarps : this.surfaceWarps;
+
+      if (!activeWarps.length) {
+        continue;
+      }
+
+      const currentCenter =
+        activeWarps.reduce((sum, warpIndex) => sum + this.particles[pickIndex][warpIndex].x, 0) / activeWarps.length;
+      const targetCenter = (rowMap.rowLeft + rowMap.rowRight) / 2;
+      const shift = (targetCenter - currentCenter) * 0.22;
+
+      this.surfaceWarps.forEach(warpIndex => {
+        this.particles[pickIndex][warpIndex].x += shift;
+      });
+    }
+  }
+
+  run(iterations = 84) {
+    for (let iteration = 0; iteration < iterations; iteration++) {
+      this.step();
+    }
+
+    this.rowMaps.forEach((rowMap, pickIndex) => {
+      const activeWarps = rowMap.activeWarps.length ? rowMap.activeWarps : this.surfaceWarps;
+      const xs = activeWarps.map(warpIndex => this.particles[pickIndex][warpIndex].x);
+      const minX = xs.length ? Math.min(...xs) : this.totalWidth / 2;
+      const maxX = xs.length ? Math.max(...xs) : this.totalWidth / 2;
+      const pad = this.fallbackWidth * 0.52;
+      rowMap.rowLeft = Math.max(0, minX - pad);
+      rowMap.rowRight = Math.min(this.totalWidth, maxX + pad);
+      rowMap.rowWidth = Math.max(1, rowMap.rowRight - rowMap.rowLeft);
+    });
+
+    return this;
+  }
+
+  getWarpPath(warpIndex) {
+    return [
+      {
+        x: this.particles[0]?.[warpIndex]?.x || this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2,
+        y: 0
+      },
+      ...Array.from({ length: picks }, (_, pickIndex) => ({
+        x: this.particles[pickIndex][warpIndex].x,
+        y: this.rowEdges[pickIndex] + this.rowHeights[pickIndex] / 2
+      })),
+      {
+        x: this.particles[picks - 1]?.[warpIndex]?.x || this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2,
+        y: this.rowEdges[this.rowEdges.length - 1]
+      }
+    ];
+  }
+}
+
+function inferSimulationComponents(physicalStates) {
+  const keys = [
+    ...Array.from({ length: warp }, (_, index) => createDoubleClothThreadKey("w", index)),
+    ...Array.from({ length: picks }, (_, index) => createDoubleClothThreadKey("p", index))
+  ];
+  const unionFind = createDoubleClothUnionFind(keys);
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = physicalStates[pickIndex]?.[warpIndex];
+
+      if (!state?.hasWarp || !state.hasWeft) {
+        continue;
+      }
+
+      if (isResponsiveWarpInteracting(physicalStates, pickIndex, warpIndex)) {
+        unionFind.union(
+          createDoubleClothThreadKey("w", warpIndex),
+          createDoubleClothThreadKey("p", pickIndex)
+        );
+      }
+    }
+  }
+
+  const componentMembers = new Map();
+  keys.forEach(key => {
+    const root = unionFind.find(key);
+
+    if (!componentMembers.has(root)) {
+      componentMembers.set(root, []);
+    }
+
+    componentMembers.get(root).push(key);
+  });
+
+  const componentByRoot = new Map();
+  [...componentMembers.entries()]
+    .filter(([, members]) => members.some(key => key.startsWith("w:")) || members.some(key => key.startsWith("p:")))
+    .sort(([, leftMembers], [, rightMembers]) => rightMembers.length - leftMembers.length)
+    .forEach(([root], index) => {
+      componentByRoot.set(root, index);
+    });
+
+  const getComponent = key => componentByRoot.get(unionFind.find(key)) ?? null;
+
+  return {
+    warpComponents: Array.from({ length: warp }, (_, index) => getComponent(createDoubleClothThreadKey("w", index))),
+    pickComponents: Array.from({ length: picks }, (_, index) => getComponent(createDoubleClothThreadKey("p", index))),
+    componentCount: componentByRoot.size
+  };
+}
+
+function pickSimulationSurfaceComponent(viewedStates, components) {
+  const scores = new Map();
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = viewedStates[pickIndex]?.[warpIndex];
+
+      if (!state?.hasWarp || !state.hasWeft) {
+        continue;
+      }
+
+      const component = state.warpVisibleOnFront
+        ? components.warpComponents[warpIndex]
+        : components.pickComponents[pickIndex];
+
+      if (component === null || component === undefined) {
+        continue;
+      }
+
+      scores.set(component, (scores.get(component) || 0) + 1);
+    }
+  }
+
+  let bestComponent = null;
+  let bestScore = -1;
+
+  scores.forEach((score, component) => {
+    if (score > bestScore) {
+      bestComponent = component;
+      bestScore = score;
+    }
+  });
+
+  return bestComponent;
+}
+
+function getSimulationWeftStateForPick(states, pickIndex, surfaceComponent, components) {
+  if (surfaceComponent !== null && components.pickComponents[pickIndex] !== surfaceComponent) {
+    return null;
+  }
+
+  return getResponsivePickWeftState(states, pickIndex);
+}
+
+function isSimulationWarpVisible(states, warpIndex, surfaceComponent, components) {
+  if (surfaceComponent !== null && components.warpComponents[warpIndex] !== surfaceComponent) {
+    return false;
+  }
+
+  return states.some(row => row?.[warpIndex]?.hasWarp && row[warpIndex].warpVisibleOnFront);
+}
+
+function isSimulationWeftVisible(states, pickIndex, surfaceComponent, components) {
+  if (surfaceComponent !== null && components.pickComponents[pickIndex] !== surfaceComponent) {
+    return false;
+  }
+
+  return isResponsiveWeftVisibleOnFace(states, pickIndex);
+}
+
+class YarnParticle {
+  constructor({ x, y, z, targetX, targetY, targetZ, radius, active = false }) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.targetX = targetX;
+    this.targetY = targetY;
+    this.targetZ = targetZ;
+    this.radius = radius;
+    this.active = active;
+  }
+}
+
+class YarnThread {
+  constructor({ type, index, component, color, radius, particles, visible }) {
+    this.type = type;
+    this.index = index;
+    this.component = component;
+    this.color = color;
+    this.radius = radius;
+    this.particles = particles;
+    this.visible = visible;
+  }
+}
+
+class ChainClothSimulation {
+  constructor({ physicalStates, viewedStates, components, surfaceComponent, columnWidths, rowHeights, totalWidth, totalHeight }) {
+    this.physicalStates = physicalStates;
+    this.viewedStates = viewedStates;
+    this.components = components;
+    this.surfaceComponent = surfaceComponent;
+    this.columnWidths = columnWidths;
+    this.rowHeights = rowHeights;
+    this.totalWidth = totalWidth;
+    this.totalHeight = totalHeight;
+    this.columnEdges = getTrackEdges(columnWidths);
+    this.rowEdges = getTrackEdges(rowHeights);
+    this.fallbackWidth = totalWidth / Math.max(1, warp);
+    this.fallbackHeight = totalHeight / Math.max(1, picks);
+    this.surfaceWarps = this.getSurfaceWarps();
+    this.surfacePicks = this.getSurfacePicks();
+    this.rowMaps = this.createRowMaps();
+    this.warpThreads = this.createWarpThreads();
+    this.weftThreads = this.createWeftThreads();
+    this.crossings = this.createCrossings();
+  }
+
+  isSurfaceComponent(component) {
+    return this.surfaceComponent === null || component === this.surfaceComponent || component === null || component === undefined;
+  }
+
+  getSurfaceWarps() {
+    const surfaceWarps = Array.from({ length: warp }, (_, warpIndex) => warpIndex).filter(warpIndex =>
+      this.isSurfaceComponent(this.components.warpComponents[warpIndex])
+    );
+
+    return surfaceWarps.length ? surfaceWarps : Array.from({ length: warp }, (_, warpIndex) => warpIndex);
+  }
+
+  getSurfacePicks() {
+    const surfacePicks = Array.from({ length: picks }, (_, pickIndex) => pickIndex).filter(pickIndex =>
+      this.isSurfaceComponent(this.components.pickComponents[pickIndex])
+    );
+
+    return surfacePicks.length ? surfacePicks : Array.from({ length: picks }, (_, pickIndex) => pickIndex);
+  }
+
+  isSurfacePick(pickIndex) {
+    return this.surfacePicks.includes(pickIndex);
+  }
+
+  getActiveWarpsForPick(pickIndex) {
+    if (!this.isSurfacePick(pickIndex)) {
+      return [];
+    }
+
+    return this.surfaceWarps.filter(warpIndex => isResponsiveWarpInteracting(this.viewedStates, pickIndex, warpIndex));
+  }
+
+  createRowMaps() {
+    return Array.from({ length: picks }, (_, pickIndex) => {
+      const activeWarps = this.getActiveWarpsForPick(pickIndex);
+      const activeCount = activeWarps.length;
+      const rowWidth = Math.min(this.totalWidth, Math.max(this.fallbackWidth, Math.max(1, activeCount) * this.fallbackWidth));
+      const rowLeft = (this.totalWidth - rowWidth) / 2;
+      const rowRight = rowLeft + rowWidth;
+      const activeCenters = activeWarps.map((_, index) =>
+        activeCount === 1 ? (rowLeft + rowRight) / 2 : rowLeft + ((index + 0.5) * rowWidth) / activeCount
+      );
+      const compressedCenters = Array.from({ length: warp }, (_, warpIndex) =>
+        interpolateResponsiveWarpCenter(activeWarps, activeCenters, warpIndex, this.totalWidth, rowLeft, rowRight, this.fallbackWidth)
+      );
+      const baseCenters = Array.from(
+        { length: warp },
+        (_, warpIndex) => this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2
+      );
+      const warpTargetCenters = baseCenters.map((baseCenter, warpIndex) => {
+        const compression = compressedCenters[warpIndex] - baseCenter;
+        const activity = activeWarps.includes(warpIndex) ? 0.34 : 0.18;
+        return baseCenter + compression * activity;
+      });
+      const weftTargetCenters = baseCenters.map((baseCenter, warpIndex) => {
+        const compression = compressedCenters[warpIndex] - baseCenter;
+        const activity = activeWarps.includes(warpIndex) ? 0.7 : 0.42;
+        return baseCenter + compression * activity;
+      });
+
+      return {
+        activeWarps,
+        activeCount,
+        activeCenters,
+        compressedCenters,
+        targetCenters: warpTargetCenters,
+        warpTargetCenters,
+        weftTargetCenters,
+        rowLeft,
+        rowRight,
+        rowWidth
+      };
+    });
+  }
+
+  getWarpRadius(warpIndex) {
+    const state = getResponsiveWarpState(this.viewedStates, warpIndex);
+    const weight = state?.warpWeight || 1;
+    return Math.max(1, Math.min(this.fallbackWidth * 0.58, getResponsiveYarnThickness(this.fallbackWidth, Math.max(1, picks), weight) * 0.46));
+  }
+
+  getWeftRadius(pickIndex) {
+    const state = getResponsivePickWeftState(this.viewedStates, pickIndex);
+    const weight = state?.weftWeight || 1;
+    return Math.max(1, Math.min(this.fallbackHeight * 0.58, getResponsiveYarnThickness(this.fallbackHeight, Math.max(1, warp), weight) * 0.46));
+  }
+
+  getCrossingTargetZ(pickIndex, warpIndex, type) {
+    const state = this.viewedStates[pickIndex]?.[warpIndex];
+    const warpRadius = this.getWarpRadius(warpIndex);
+    const weftRadius = this.getWeftRadius(pickIndex);
+    const separation = Math.max(1.5, warpRadius + weftRadius);
+    const warpIsTop = Boolean(state?.hasWarp && (!state.hasWeft || state.warpVisibleOnFront));
+    const topZ = separation / 2;
+    const bottomZ = -separation / 2;
+
+    if (type === "warp") {
+      return warpIsTop ? topZ : bottomZ;
+    }
+
+    return warpIsTop ? bottomZ : topZ;
+  }
+
+  createWarpThreads() {
+    return Array.from({ length: warp }, (_, warpIndex) => {
+      const state = getResponsiveWarpState(this.viewedStates, warpIndex);
+      const radius = this.getWarpRadius(warpIndex);
+      const component = this.components.warpComponents[warpIndex];
+      const visible =
+        this.isSurfaceComponent(component) &&
+        this.viewedStates.some(row => row?.[warpIndex]?.hasWarp && row[warpIndex].warpVisibleOnFront);
+      const particles = Array.from({ length: picks }, (_, pickIndex) => {
+        const targetX = this.rowMaps[pickIndex].warpTargetCenters[warpIndex];
+        const targetY = this.rowEdges[pickIndex] + this.rowHeights[pickIndex] / 2;
+        const targetZ = this.getCrossingTargetZ(pickIndex, warpIndex, "warp");
+
+        return new YarnParticle({
+          x: this.columnEdges[warpIndex] + this.columnWidths[warpIndex] / 2,
+          y: targetY,
+          z: targetZ,
+          targetX,
+          targetY,
+          targetZ,
+          radius,
+          active: this.rowMaps[pickIndex].activeWarps.includes(warpIndex)
+        });
+      });
+
+      return new YarnThread({
+        type: "warp",
+        index: warpIndex,
+        component,
+        color: state?.warpColor || state?.frontColor || "#ffffff",
+        radius,
+        particles,
+        visible
+      });
+    });
+  }
+
+  createWeftThreads() {
+    return Array.from({ length: picks }, (_, pickIndex) => {
+      const state = getResponsivePickWeftState(this.viewedStates, pickIndex);
+      const radius = this.getWeftRadius(pickIndex);
+      const component = this.components.pickComponents[pickIndex];
+      const visible = this.isSurfaceComponent(component) && isResponsiveWeftVisibleOnFace(this.viewedStates, pickIndex);
+      const particles = Array.from({ length: warp }, (_, warpIndex) => {
+        const targetX = this.rowMaps[pickIndex].weftTargetCenters[warpIndex];
+        const targetY = this.rowEdges[pickIndex] + this.rowHeights[pickIndex] / 2;
+        const targetZ = this.getCrossingTargetZ(pickIndex, warpIndex, "weft");
+
+        return new YarnParticle({
+          x: targetX,
+          y: targetY,
+          z: targetZ,
+          targetX,
+          targetY,
+          targetZ,
+          radius,
+          active: this.rowMaps[pickIndex].activeWarps.includes(warpIndex)
+        });
+      });
+
+      return new YarnThread({
+        type: "weft",
+        index: pickIndex,
+        component,
+        color: state?.weftColor || state?.frontColor || "#ffffff",
+        radius,
+        particles,
+        visible
+      });
+    });
+  }
+
+  createCrossings() {
+    const crossings = [];
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const state = this.viewedStates[pickIndex]?.[warpIndex];
+
+        if (!state?.hasWarp || !state.hasWeft) {
+          continue;
+        }
+
+        crossings.push({
+          pickIndex,
+          warpIndex,
+          warpParticle: this.warpThreads[warpIndex].particles[pickIndex],
+          weftParticle: this.weftThreads[pickIndex].particles[warpIndex],
+          warpIsTop: Boolean(state.warpVisibleOnFront)
+        });
+      }
+    }
+
+    return crossings;
+  }
+
+  get allThreads() {
+    return [...this.warpThreads, ...this.weftThreads];
+  }
+
+  step() {
+    this.solveTargets();
+    this.solveThreadStretch();
+    this.solveThreadBend();
+    this.solveContactDepth();
+    this.solvePlanarContact();
+    this.recenterRows();
+  }
+
+  solveTargets() {
+    this.allThreads.forEach(thread => {
+      thread.particles.forEach(particle => {
+        const xPull =
+          thread.type === "warp"
+            ? particle.active
+              ? 0.055
+              : 0.018
+            : particle.active
+              ? 0.15
+              : 0.065;
+        const yPull = thread.type === "warp" ? 0.12 : 0.19;
+
+        particle.x += (particle.targetX - particle.x) * xPull;
+        particle.y += (particle.targetY - particle.y) * yPull;
+        particle.z += (particle.targetZ - particle.z) * 0.3;
+      });
+    });
+  }
+
+  solveDistance(particleA, particleB, restDistance, stiffness) {
+    const dx = particleB.x - particleA.x;
+    const dy = particleB.y - particleA.y;
+    const distance = Math.max(0.0001, Math.hypot(dx, dy));
+    const correction = (distance - restDistance) * stiffness;
+    const correctionX = (dx / distance) * correction * 0.5;
+    const correctionY = (dy / distance) * correction * 0.5;
+
+    particleA.x += correctionX;
+    particleA.y += correctionY;
+    particleB.x -= correctionX;
+    particleB.y -= correctionY;
+  }
+
+  solveThreadStretch() {
+    this.warpThreads.forEach(thread => {
+      for (let index = 1; index < thread.particles.length; index++) {
+        const restDistance = Math.max(1, this.rowEdges[index] - this.rowEdges[index - 1]);
+        this.solveDistance(thread.particles[index - 1], thread.particles[index], restDistance, 0.09);
+      }
+    });
+
+    this.weftThreads.forEach(thread => {
+      for (let index = 1; index < thread.particles.length; index++) {
+        const rowMap = this.rowMaps[thread.index];
+        const restDistance = Math.max(1, Math.abs(rowMap.weftTargetCenters[index] - rowMap.weftTargetCenters[index - 1]));
+        this.solveDistance(thread.particles[index - 1], thread.particles[index], restDistance, 0.12);
+      }
+    });
+  }
+
+  solveThreadBend() {
+    this.allThreads.forEach(thread => {
+      for (let index = 1; index < thread.particles.length - 1; index++) {
+        const previous = thread.particles[index - 1];
+        const current = thread.particles[index];
+        const next = thread.particles[index + 1];
+        const stiffness =
+          thread.type === "warp"
+            ? current.active
+              ? 0.22
+              : 0.3
+            : current.active
+              ? 0.075
+              : 0.14;
+
+        current.x += ((previous.x + next.x) / 2 - current.x) * stiffness;
+        current.y += ((previous.y + next.y) / 2 - current.y) * stiffness;
+        current.z += ((previous.z + next.z) / 2 - current.z) * (thread.type === "warp" ? 0.07 : 0.045);
+      }
+    });
+  }
+
+  solveContactDepth() {
+    this.crossings.forEach(crossing => {
+      const top = crossing.warpIsTop ? crossing.warpParticle : crossing.weftParticle;
+      const bottom = crossing.warpIsTop ? crossing.weftParticle : crossing.warpParticle;
+      const minimumDepth = Math.max(1.2, top.radius + bottom.radius);
+      const currentDepth = top.z - bottom.z;
+
+      if (currentDepth >= minimumDepth) {
+        return;
+      }
+
+      const correction = (minimumDepth - currentDepth) / 2;
+      top.z += correction;
+      bottom.z -= correction;
+    });
+  }
+
+  solvePlanarContact() {
+    this.crossings.forEach(crossing => {
+      const warpParticle = crossing.warpParticle;
+      const weftParticle = crossing.weftParticle;
+      const sharedX = (warpParticle.x + weftParticle.x) / 2;
+      const sharedY = (warpParticle.y + weftParticle.y) / 2;
+
+      warpParticle.x += (sharedX - warpParticle.x) * 0.018;
+      weftParticle.x += (sharedX - weftParticle.x) * 0.038;
+      warpParticle.y += (sharedY - warpParticle.y) * 0.02;
+      weftParticle.y += (sharedY - weftParticle.y) * 0.035;
+    });
+  }
+
+  recenterRows() {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const rowMap = this.rowMaps[pickIndex];
+      const activeWarps = rowMap.activeWarps.length ? rowMap.activeWarps : this.surfaceWarps;
+
+      if (!activeWarps.length) {
+        continue;
+      }
+
+      const currentCenter =
+        activeWarps.reduce((sum, warpIndex) => sum + this.warpThreads[warpIndex].particles[pickIndex].x, 0) /
+        activeWarps.length;
+      const targetCenter = (rowMap.rowLeft + rowMap.rowRight) / 2;
+      const shift = (targetCenter - currentCenter) * 0.025;
+
+      this.surfaceWarps.forEach(warpIndex => {
+        this.warpThreads[warpIndex].particles[pickIndex].x += shift;
+      });
+
+      this.weftThreads[pickIndex].particles.forEach(particle => {
+        particle.x += shift;
+      });
+    }
+  }
+
+  run(iterations = 92) {
+    for (let iteration = 0; iteration < iterations; iteration++) {
+      this.step();
+    }
+
+    this.rowMaps.forEach((rowMap, pickIndex) => {
+      const activeWarps = rowMap.activeWarps.length ? rowMap.activeWarps : this.surfaceWarps;
+      const xs = activeWarps.map(warpIndex => this.warpThreads[warpIndex].particles[pickIndex].x);
+      const minX = xs.length ? Math.min(...xs) : this.totalWidth / 2;
+      const maxX = xs.length ? Math.max(...xs) : this.totalWidth / 2;
+      const pad = this.fallbackWidth * 0.54;
+      rowMap.rowLeft = Math.max(0, minX - pad);
+      rowMap.rowRight = Math.min(this.totalWidth, maxX + pad);
+      rowMap.rowWidth = Math.max(1, rowMap.rowRight - rowMap.rowLeft);
+    });
+
+    return this;
+  }
+}
+
+function getYarnSpanPoints(thread, index, beforeBoundary, afterBoundary) {
+  const previous = thread.particles[Math.max(0, index - 1)];
+  const current = thread.particles[index];
+  const next = thread.particles[Math.min(thread.particles.length - 1, index + 1)];
+  const start =
+    index === 0
+      ? { ...current, ...(thread.type === "warp" ? { y: beforeBoundary } : { x: beforeBoundary }) }
+      : {
+          x: (previous.x + current.x) / 2,
+          y: (previous.y + current.y) / 2,
+          z: (previous.z + current.z) / 2
+        };
+  const end =
+    index === thread.particles.length - 1
+      ? { ...current, ...(thread.type === "warp" ? { y: afterBoundary } : { x: afterBoundary }) }
+      : {
+          x: (current.x + next.x) / 2,
+          y: (current.y + next.y) / 2,
+          z: (current.z + next.z) / 2
+        };
+
+  return [start, current, end];
+}
+
+function drawSimulationYarnPath(ctx, points, colorValue, thickness, alpha = 1) {
+  if (!points.length || thickness <= 0) {
+    return;
+  }
+
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "round";
+
+  const strokePath = () => {
+    ctx.beginPath();
+    points.forEach((point, index) => {
+      if (index === 0) {
+        ctx.moveTo(point.x, point.y);
+      } else {
+        const previous = points[index - 1];
+        const controlX = (previous.x + point.x) / 2;
+        const controlY = (previous.y + point.y) / 2;
+        ctx.quadraticCurveTo(previous.x, previous.y, controlX, controlY);
+      }
+    });
+
+    const lastPoint = points[points.length - 1];
+    ctx.lineTo(lastPoint.x, lastPoint.y);
+  };
+
+  strokePath();
+  ctx.strokeStyle = darkenPreviewColor(colorValue, 0.2);
+  ctx.lineWidth = thickness * 1.08;
+  ctx.stroke();
+
+  strokePath();
+  ctx.strokeStyle = colorValue;
+  ctx.lineWidth = thickness;
+  ctx.stroke();
+
+  strokePath();
+  ctx.strokeStyle = previewAlphaColor(lightenPreviewColor(colorValue, 0.23), 0.46);
+  ctx.lineWidth = Math.max(1, thickness * 0.16);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawSimulationYarnAccentPath(ctx, points, colorValue, thickness, alpha = 1) {
+  if (!points.length || thickness <= 0) {
+    return;
+  }
+
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "round";
+
+  const strokePath = () => {
+    ctx.beginPath();
+    points.forEach((point, index) => {
+      if (index === 0) {
+        ctx.moveTo(point.x, point.y);
+      } else {
+        const previous = points[index - 1];
+        const controlX = (previous.x + point.x) / 2;
+        const controlY = (previous.y + point.y) / 2;
+        ctx.quadraticCurveTo(previous.x, previous.y, controlX, controlY);
+      }
+    });
+
+    const lastPoint = points[points.length - 1];
+    ctx.lineTo(lastPoint.x, lastPoint.y);
+  };
+
+  strokePath();
+  ctx.strokeStyle = colorValue;
+  ctx.lineWidth = thickness;
+  ctx.stroke();
+
+  strokePath();
+  ctx.strokeStyle = previewAlphaColor(lightenPreviewColor(colorValue, 0.22), 0.38);
+  ctx.lineWidth = Math.max(1, thickness * 0.14);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function getSimulationVisibleSegments(engine) {
+  const segments = [];
+
+  engine.warpThreads.forEach(thread => {
+    if (!thread.visible) {
+      return;
+    }
+
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const state = engine.viewedStates[pickIndex]?.[thread.index];
+
+      if (!state?.hasWarp || !state.warpVisibleOnFront) {
+        continue;
+      }
+
+      const points = getYarnSpanPoints(thread, pickIndex, engine.rowEdges[pickIndex], engine.rowEdges[pickIndex + 1]);
+      segments.push({
+        z: points.reduce((sum, point) => sum + point.z, 0) / points.length,
+        color: thread.color,
+        thickness: thread.radius * 2,
+        points
+      });
+    }
+  });
+
+  engine.weftThreads.forEach(thread => {
+    if (!thread.visible) {
+      return;
+    }
+
+    for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      const state = engine.viewedStates[thread.index]?.[warpIndex];
+
+      if (!state?.hasWeft || state.warpVisibleOnFront) {
+        continue;
+      }
+
+      const rowMap = engine.rowMaps[thread.index];
+      const points = getYarnSpanPoints(thread, warpIndex, rowMap.rowLeft, rowMap.rowRight);
+      segments.push({
+        z: points.reduce((sum, point) => sum + point.z, 0) / points.length,
+        color: thread.color,
+        thickness: thread.radius * 2,
+        points
+      });
+    }
+  });
+
+  return segments.sort((left, right) => left.z - right.z);
+}
+
+function drawSimulationCanvas(ctx, physicalStates, viewedStates, columnWidths, rowHeights, totalWidth, totalHeight) {
+  const components = inferSimulationComponents(physicalStates);
+  const surfaceComponent = pickSimulationSurfaceComponent(viewedStates, components);
+  const engine = new ChainClothSimulation({
+    physicalStates,
+    viewedStates,
+    components,
+    surfaceComponent,
+    columnWidths,
+    rowHeights,
+    totalWidth,
+    totalHeight
+  }).run();
+
+  ctx.clearRect(0, 0, totalWidth, totalHeight);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(47, 36, 29, 0.1)";
+  ctx.lineWidth = 1;
+  engine.rowMaps.forEach((rowMap, pickIndex) => {
+    if (!engine.isSurfacePick(pickIndex)) {
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.rect(rowMap.rowLeft, engine.rowEdges[pickIndex], rowMap.rowWidth, rowHeights[pickIndex]);
+    ctx.stroke();
+  });
+  ctx.restore();
+
+  engine.allThreads
+    .filter(thread => thread.visible)
+    .sort((left, right) => {
+      const leftDepth = left.particles.reduce((sum, particle) => sum + particle.z, 0) / Math.max(1, left.particles.length);
+      const rightDepth = right.particles.reduce((sum, particle) => sum + particle.z, 0) / Math.max(1, right.particles.length);
+      return leftDepth - rightDepth;
+    })
+    .forEach(thread => {
+      drawSimulationYarnPath(ctx, thread.particles, thread.color, thread.radius * 1.72, 0.92);
+  });
+
+  getSimulationVisibleSegments(engine).forEach(segment => {
+    drawSimulationYarnAccentPath(ctx, segment.points, segment.color, segment.thickness * 0.9, 0.42);
+  });
+}
+
+function renderSimulationDrawdown(div, columnWidths, rowHeights) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const physicalStates = buildPhysicalDrawdownStateGrid();
+  const viewedStates = buildDrawdownStateGrid();
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+
+  if (!ctx) {
+    renderResponsiveDrawdown(div, columnWidths, rowHeights);
+    return;
+  }
+
+  div.className = "drawdown-responsive";
+  div.innerHTML = "";
+  div.style.width = `${totalWidth}px`;
+  div.style.height = `${totalHeight}px`;
+  div.style.gridTemplateColumns = "";
+  div.style.gridTemplateRows = "";
+
+  canvas.className = "drawdown-realistic-canvas";
+  canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+  canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+  canvas.style.width = `${totalWidth}px`;
+  canvas.style.height = `${totalHeight}px`;
+
+  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  if ("imageSmoothingQuality" in ctx) {
+    ctx.imageSmoothingQuality = "high";
+  }
+
+  drawSimulationCanvas(ctx, physicalStates, viewedStates, columnWidths, rowHeights, totalWidth, totalHeight);
+  div.appendChild(canvas);
 }
 
 function getDrawdownFacedBaseColor(cellState, renderStyle) {
@@ -9078,8 +10201,6 @@ function renderThreading() {
       setElementSize(b, columnWidths[i], draftCellSize);
 
       b.onclick = () => {
-        const renderStyle = getDraftRenderStyle();
-        const previousColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
         const selectedColorId = getSelectedPatternColorId();
         if (threading[s][i] === selectedColorId) {
           threading[s][i] = 0;
@@ -9087,18 +10208,6 @@ function renderThreading() {
           for (let k = 0; k < shafts; k++) threading[k][i] = 0;
           threading[s][i] = selectedColorId;
         }
-        const nextColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
-
-        if (
-          !haveTrackSizesChanged(previousColumnWidths, nextColumnWidths) &&
-          patchThreadingColumn(i) &&
-          patchDrawdownColumn(i, renderStyle)
-        ) {
-          renderHeddleCount();
-          finishLocalDraftPatch();
-          return;
-        }
-
         renderAll();
       };
 
@@ -9122,14 +10231,7 @@ function renderTieup() {
       }
 
       b.onclick = () => {
-        const renderStyle = getDraftRenderStyle();
         tieup[t][s] = tieup[t][s] ? 0 : 1;
-
-        if (patchTieupCell(t, s) && patchDrawdownForTieupCell(t, s, renderStyle)) {
-          finishLocalDraftPatch();
-          return;
-        }
-
         renderAll();
       };
 
@@ -9152,8 +10254,6 @@ function renderTreadling() {
       setElementSize(b, draftCellSize, rowHeights[j]);
 
       b.onclick = () => {
-        const renderStyle = getDraftRenderStyle();
-        const previousRowHeights = getDrawdownRowHeightsForRender(renderStyle);
         const selectedColorId = getSelectedPatternColorId();
         if (treadling[j][t] === selectedColorId) {
           treadling[j][t] = 0;
@@ -9161,17 +10261,6 @@ function renderTreadling() {
           treadling[j][t] = selectedColorId;
           setPickColor(j, selectedColorId);
         }
-        const nextRowHeights = getDrawdownRowHeightsForRender(renderStyle);
-
-        if (
-          !haveTrackSizesChanged(previousRowHeights, nextRowHeights) &&
-          patchTreadlingRow(j) &&
-          patchDrawdownRow(j, renderStyle)
-        ) {
-          finishLocalDraftPatch();
-          return;
-        }
-
         renderAll();
       };
 
@@ -9188,6 +10277,16 @@ function renderDrawdown() {
 
   if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
     renderFacedDrawdown(div, columnWidths, rowHeights, renderStyle);
+    return;
+  }
+
+  if (renderStyle === "responsive") {
+    renderResponsiveDrawdown(div, columnWidths, rowHeights);
+    return;
+  }
+
+  if (renderStyle === "simulation") {
+    renderSimulationDrawdown(div, columnWidths, rowHeights);
     return;
   }
 
@@ -9209,7 +10308,7 @@ function renderDrawdown() {
 
   for (let j = 0; j < picks; j++) {
     for (let i = 0; i < warp; i++) {
-      const state = getDrawdownCellState(j, i);
+      const state = getDrawdownCellStateForView(j, i);
       const cell = document.createElement("div");
       cell.className = "drawdown-cell";
       cell.style.backgroundColor = getDrawdownDisplayColor(state, renderStyle);
@@ -9310,6 +10409,7 @@ function renderRepeatPreview() {
 
 applyDraftZoom();
 setDraftName(restoreActiveDraftName());
+updateDraftViewFaceUI();
 
 if (!consumeCrossEditorTransferIntoDraft() && !restorePersistedDraftData()) {
   loadDefaultHoundstoothDraft();

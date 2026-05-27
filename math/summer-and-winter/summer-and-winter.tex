@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+
+\begin{document}
+
+{\Large Summer and Winter\par}
+\vspace{0.45em}
+
+Summer and winter is a tied block weave. It uses tie-down shafts to make a
+stable ground cloth, and pattern shafts to bring selected block groups forward.
+The result is a fabric where blocks can alternate between a quiet ground state
+and a more visible pattern state.
+
+On an \(n\)-shaft loom, summer and winter gives \(n-2\) blocks: two shafts are used for tie-downs, and the remaining shafts are available for patterning. Each extra shaft allows for one extra group of blocks in a row that can be all be dark or all light.
+
+In the block view, dark means the block is in its default state. Light means
+that block group is lifted. Individual cells in the block draft correspond to blocks in the fabric.
+
+
+\begin{center}
+  \centering
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/summer-winter-block.png}
+    {\footnotesize Compact block draft}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.62\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/summer-winter-expanded-annotated.png}
+    {\footnotesize Expanded shaft draft}
+  \end{minipage}
+\end{center}
+
+
+\end{document}
