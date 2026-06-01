@@ -1267,6 +1267,20 @@
     transition: border-color 120ms ease, transform 120ms ease;
   }
 
+  #threading button.cell,
+  #treadling button.cell {
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  #threading button.cell.cell-line-preview,
+  #treadling button.cell.cell-line-preview {
+    border-color: rgba(170, 74, 43, 0.82);
+    box-shadow:
+      inset 0 0 0 2px rgba(170, 74, 43, 0.58),
+      0 0 0 2px rgba(170, 74, 43, 0.14);
+  }
+
   button.cell:hover {
     border-color: rgba(170, 74, 43, 0.42);
   }
@@ -8250,6 +8264,9 @@ let activeDraftInsertPreview = null;
 let draftInsertPreviewFrame = 0;
 let patternTextPanelCloseTimeoutId = 0;
 let patternTextPanelCloseToken = 0;
+let draftLineDragState = null;
+let draftLinePreviewCells = [];
+let shouldSuppressDraftCellClick = false;
 
 threadingTextElement?.addEventListener("input", applyThreadingTextPattern);
 treadlingTextElement?.addEventListener("input", applyTreadlingTextPattern);
@@ -9073,6 +9090,344 @@ function setPickColor(pickIndex, colorId) {
       treadling[pickIndex][treadle] = colorId;
     }
   }
+}
+
+function getDraftLineTargetFromCell(cell) {
+  const grid = cell?.dataset?.draftGrid;
+
+  if (grid === "threading") {
+    return {
+      grid,
+      shaftIndex: Number.parseInt(cell.dataset.shaftIndex, 10),
+      warpIndex: Number.parseInt(cell.dataset.warpIndex, 10)
+    };
+  }
+
+  if (grid === "treadling") {
+    return {
+      grid,
+      pickIndex: Number.parseInt(cell.dataset.pickIndex, 10),
+      treadleIndex: Number.parseInt(cell.dataset.treadleIndex, 10)
+    };
+  }
+
+  return null;
+}
+
+function getDraftLineCellFromPoint(clientX, clientY, grid) {
+  const element = document.elementFromPoint(clientX, clientY);
+  return element?.closest?.(`#${grid} button.cell`) || null;
+}
+
+function areDraftLineTargetsEqual(left, right) {
+  if (!left || !right || left.grid !== right.grid) {
+    return false;
+  }
+
+  if (left.grid === "threading") {
+    return left.shaftIndex === right.shaftIndex && left.warpIndex === right.warpIndex;
+  }
+
+  return left.pickIndex === right.pickIndex && left.treadleIndex === right.treadleIndex;
+}
+
+function getDraftLineTargetCoordinates(target) {
+  if (target.grid === "threading") {
+    return { x: target.warpIndex, y: target.shaftIndex };
+  }
+
+  return { x: target.treadleIndex, y: target.pickIndex };
+}
+
+function getDraftLineCells(startTarget, endTarget) {
+  const start = getDraftLineTargetCoordinates(startTarget);
+  const end = getDraftLineTargetCoordinates(endTarget);
+  const cells = [];
+  const seen = new Set();
+  let x = start.x;
+  let y = start.y;
+  const dx = Math.abs(end.x - start.x);
+  const sx = start.x < end.x ? 1 : -1;
+  const dy = -Math.abs(end.y - start.y);
+  const sy = start.y < end.y ? 1 : -1;
+  let error = dx + dy;
+
+  while (true) {
+    const key = `${x},${y}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      cells.push(startTarget.grid === "threading"
+        ? { shaftIndex: y, warpIndex: x }
+        : { pickIndex: y, treadleIndex: x });
+    }
+
+    if (x === end.x && y === end.y) {
+      break;
+    }
+
+    const doubleError = error * 2;
+
+    if (doubleError >= dy) {
+      error += dy;
+      x += sx;
+    }
+
+    if (doubleError <= dx) {
+      error += dx;
+      y += sy;
+    }
+  }
+
+  return cells;
+}
+
+function getDraftLinePreviewCellElement(grid, cell) {
+  if (grid === "threading") {
+    return getThreadingCellElement(cell.shaftIndex, cell.warpIndex);
+  }
+
+  if (grid === "treadling") {
+    return getTreadlingCellElement(cell.pickIndex, cell.treadleIndex);
+  }
+
+  return null;
+}
+
+function clearDraftLinePreview() {
+  draftLinePreviewCells.forEach(cell => {
+    cell?.classList.remove("cell-line-preview");
+  });
+  draftLinePreviewCells = [];
+}
+
+function updateDraftLinePreview(endTarget) {
+  clearDraftLinePreview();
+
+  if (!draftLineDragState?.startTarget || !endTarget || draftLineDragState.startTarget.grid !== endTarget.grid) {
+    return;
+  }
+
+  getDraftLineCells(draftLineDragState.startTarget, endTarget).forEach(lineCell => {
+    const element = getDraftLinePreviewCellElement(draftLineDragState.startTarget.grid, lineCell);
+
+    if (element) {
+      element.classList.add("cell-line-preview");
+      draftLinePreviewCells.push(element);
+    }
+  });
+}
+
+function suppressNextDraftCellClick() {
+  shouldSuppressDraftCellClick = true;
+  window.setTimeout(() => {
+    shouldSuppressDraftCellClick = false;
+  }, 0);
+}
+
+function consumeDraftLineCellClick(event) {
+  if (!shouldSuppressDraftCellClick) {
+    return false;
+  }
+
+  shouldSuppressDraftCellClick = false;
+  event.preventDefault();
+  event.stopPropagation();
+  return true;
+}
+
+function applyThreadingLine(startTarget, endTarget) {
+  const colorId = getSelectedPatternColorId();
+
+  if (!colorId) {
+    return false;
+  }
+
+  const renderStyle = getDraftRenderStyle();
+  const previousColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
+  const affectedColumns = new Set();
+  let changed = false;
+
+  getDraftLineCells(startTarget, endTarget).forEach(({ shaftIndex, warpIndex }) => {
+    if (shaftIndex < 0 || shaftIndex >= shafts || warpIndex < 0 || warpIndex >= warp) {
+      return;
+    }
+
+    for (let nextShaftIndex = 0; nextShaftIndex < shafts; nextShaftIndex++) {
+      const nextValue = nextShaftIndex === shaftIndex ? colorId : 0;
+
+      if (threading[nextShaftIndex][warpIndex] !== nextValue) {
+        threading[nextShaftIndex][warpIndex] = nextValue;
+        changed = true;
+      }
+    }
+
+    affectedColumns.add(warpIndex);
+  });
+
+  if (!changed) {
+    return false;
+  }
+
+  const nextColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
+  const canPatch = !haveTrackSizesChanged(previousColumnWidths, nextColumnWidths);
+
+  if (
+    canPatch &&
+    Array.from(affectedColumns).every(warpIndex =>
+      patchThreadingColumn(warpIndex) && patchDrawdownColumn(warpIndex, renderStyle)
+    )
+  ) {
+    renderHeddleCount();
+    finishLocalDraftPatch();
+    return true;
+  }
+
+  renderAll();
+  return true;
+}
+
+function applyTreadlingLine(startTarget, endTarget) {
+  const colorId = getSelectedPatternColorId();
+
+  if (!colorId) {
+    return false;
+  }
+
+  const renderStyle = getDraftRenderStyle();
+  const previousRowHeights = getDrawdownRowHeightsForRender(renderStyle);
+  const affectedRows = new Set();
+  let changed = false;
+
+  getDraftLineCells(startTarget, endTarget).forEach(({ pickIndex, treadleIndex }) => {
+    if (pickIndex < 0 || pickIndex >= picks || treadleIndex < 0 || treadleIndex >= treadles) {
+      return;
+    }
+
+    for (let nextTreadleIndex = 0; nextTreadleIndex < treadles; nextTreadleIndex++) {
+      if (treadling[pickIndex][nextTreadleIndex] && treadling[pickIndex][nextTreadleIndex] !== colorId) {
+        treadling[pickIndex][nextTreadleIndex] = colorId;
+        changed = true;
+      }
+    }
+
+    if (treadling[pickIndex][treadleIndex] !== colorId) {
+      treadling[pickIndex][treadleIndex] = colorId;
+      changed = true;
+    }
+
+    affectedRows.add(pickIndex);
+  });
+
+  if (!changed) {
+    return false;
+  }
+
+  const nextRowHeights = getDrawdownRowHeightsForRender(renderStyle);
+  const canPatch = !haveTrackSizesChanged(previousRowHeights, nextRowHeights);
+
+  if (
+    canPatch &&
+    Array.from(affectedRows).every(pickIndex =>
+      patchTreadlingRow(pickIndex) && patchDrawdownRow(pickIndex, renderStyle)
+    )
+  ) {
+    finishLocalDraftPatch();
+    return true;
+  }
+
+  renderAll();
+  return true;
+}
+
+function applyDraftLineDrag(startTarget, endTarget) {
+  if (!startTarget || !endTarget || startTarget.grid !== endTarget.grid) {
+    return false;
+  }
+
+  return startTarget.grid === "threading"
+    ? applyThreadingLine(startTarget, endTarget)
+    : applyTreadlingLine(startTarget, endTarget);
+}
+
+function beginDraftLineDrag(event, target) {
+  if (event.button !== 0 || !target) {
+    return;
+  }
+
+  draftLineDragState = {
+    pointerId: event.pointerId,
+    startTarget: target,
+    startX: event.clientX,
+    startY: event.clientY,
+    didMove: false
+  };
+  updateDraftLinePreview(target);
+  event.currentTarget.setPointerCapture?.(event.pointerId);
+}
+
+function updateDraftLineDrag(event) {
+  if (!draftLineDragState || draftLineDragState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  if (Math.hypot(event.clientX - draftLineDragState.startX, event.clientY - draftLineDragState.startY) > 3) {
+    draftLineDragState.didMove = true;
+  }
+
+  updateDraftLinePreview(getDraftLineTargetFromCell(
+    getDraftLineCellFromPoint(event.clientX, event.clientY, draftLineDragState.startTarget.grid)
+  ));
+}
+
+function endDraftLineDrag(event) {
+  if (!draftLineDragState || draftLineDragState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  const state = draftLineDragState;
+  draftLineDragState = null;
+  event.currentTarget.releasePointerCapture?.(event.pointerId);
+  clearDraftLinePreview();
+
+  const endCell = getDraftLineCellFromPoint(event.clientX, event.clientY, state.startTarget.grid);
+  const endTarget = getDraftLineTargetFromCell(endCell);
+  const wasDrag = state.didMove || !areDraftLineTargetsEqual(state.startTarget, endTarget);
+
+  if (!endTarget || !wasDrag) {
+    return;
+  }
+
+  event.preventDefault();
+  suppressNextDraftCellClick();
+  applyDraftLineDrag(state.startTarget, endTarget);
+}
+
+function cancelDraftLineDrag(event) {
+  if (!draftLineDragState || draftLineDragState.pointerId !== event.pointerId) {
+    return;
+  }
+
+  draftLineDragState = null;
+  clearDraftLinePreview();
+}
+
+function bindDraftLineCell(button, target) {
+  button.dataset.draftGrid = target.grid;
+
+  if (target.grid === "threading") {
+    button.dataset.shaftIndex = String(target.shaftIndex);
+    button.dataset.warpIndex = String(target.warpIndex);
+  } else {
+    button.dataset.pickIndex = String(target.pickIndex);
+    button.dataset.treadleIndex = String(target.treadleIndex);
+  }
+
+  button.addEventListener("pointerdown", event => beginDraftLineDrag(event, target));
+  button.addEventListener("pointermove", updateDraftLineDrag);
+  button.addEventListener("pointerup", endDraftLineDrag);
+  button.addEventListener("pointercancel", cancelDraftLineDrag);
+  button.addEventListener("lostpointercapture", cancelDraftLineDrag);
 }
 
 function getDrawdownCellState(pickIndex, warpIndex) {
@@ -10101,8 +10456,13 @@ function renderThreading() {
       const b = document.createElement("button");
       styleCell(b, threading[s][i]);
       setElementSize(b, columnWidths[i], draftCellSize);
+      bindDraftLineCell(b, { grid: "threading", shaftIndex: s, warpIndex: i });
 
-      b.onclick = () => {
+      b.onclick = event => {
+        if (consumeDraftLineCellClick(event)) {
+          return;
+        }
+
         const renderStyle = getDraftRenderStyle();
         const previousColumnWidths = getDrawdownColumnWidthsForRender(renderStyle);
         const selectedColorId = getSelectedPatternColorId();
@@ -10175,8 +10535,13 @@ function renderTreadling() {
       const b = document.createElement("button");
       styleCell(b, treadling[j][t]);
       setElementSize(b, draftCellSize, rowHeights[j]);
+      bindDraftLineCell(b, { grid: "treadling", pickIndex: j, treadleIndex: t });
 
-      b.onclick = () => {
+      b.onclick = event => {
+        if (consumeDraftLineCellClick(event)) {
+          return;
+        }
+
         const renderStyle = getDraftRenderStyle();
         const previousRowHeights = getDrawdownRowHeightsForRender(renderStyle);
         const selectedColorId = getSelectedPatternColorId();
