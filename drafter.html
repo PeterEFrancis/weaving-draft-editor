@@ -580,19 +580,20 @@
 
   .pattern-color-letter {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 0.34rem;
+    top: 0.34rem;
     z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    max-width: calc(100% - 1.2rem);
     min-width: 1rem;
     min-height: 1rem;
     color: #000000;
     font-size: 0.84rem;
     font-weight: 800;
     line-height: 1;
-    transform: translate(-50%, -50%);
+    transform: none;
     pointer-events: none;
   }
 
@@ -808,9 +809,59 @@
     flex-direction: column;
   }
 
-  .pattern-text-area {
+  .pattern-text-area-wrap {
+    position: relative;
     min-height: 7rem;
+    border: 1px solid rgba(47, 36, 29, 0.12);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.92);
+    overflow: hidden;
+  }
+
+  .pattern-text-area-wrap:focus-within {
+    border-color: rgba(170, 74, 43, 0.45);
+    box-shadow: 0 0 0 0.25rem rgba(170, 74, 43, 0.12);
+  }
+
+  .pattern-text-area-wrap.is-invalid {
+    border-color: rgba(220, 53, 69, 0.72);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.12);
+  }
+
+  .pattern-text-highlight {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    border: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    color: transparent;
+    pointer-events: none;
+  }
+
+  .pattern-text-highlight-error {
+    border-radius: 0.18rem;
+    background: rgba(220, 53, 69, 0.18);
+    box-shadow: inset 0 -2px 0 rgba(220, 53, 69, 0.78);
+    color: transparent;
+  }
+
+  .pattern-text-area {
+    position: relative;
+    z-index: 1;
+    min-height: 7rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 0;
+    background: transparent;
+    background-image: none !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 0.88rem;
     line-height: 1.4;
@@ -818,6 +869,17 @@
     resize: none;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+
+  .pattern-text-area:focus {
+    box-shadow: none;
+  }
+
+  .pattern-text-area.is-invalid {
+    padding-right: 0.7rem;
+    border: 0;
+    background-color: transparent;
+    background-image: none;
   }
 
   .draft-stage-actions {
@@ -1279,6 +1341,11 @@
     box-shadow:
       inset 0 0 0 2px rgba(170, 74, 43, 0.58),
       0 0 0 2px rgba(170, 74, 43, 0.14);
+  }
+
+  #threading button.cell.cell-line-suppressed {
+    opacity: 0.22;
+    box-shadow: none;
   }
 
   button.cell:hover {
@@ -2113,27 +2180,33 @@
         <div class="pattern-text-grid">
           <label class="pattern-text-field" for="threading-text">
             <span class="control-label">Threading</span>
-            <textarea
-              id="threading-text"
-              class="form-control pattern-text-area"
-              rows="5"
-              wrap="soft"
-              spellcheck="false"
-              autocomplete="off"
-              autocapitalize="characters"
-            ></textarea>
+            <div class="pattern-text-area-wrap">
+              <pre id="threading-text-highlight" class="pattern-text-highlight" aria-hidden="true"></pre>
+              <textarea
+                id="threading-text"
+                class="form-control pattern-text-area"
+                rows="5"
+                wrap="soft"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="characters"
+              ></textarea>
+            </div>
           </label>
           <label class="pattern-text-field" for="treadling-text">
             <span class="control-label">Treadling</span>
-            <textarea
-              id="treadling-text"
-              class="form-control pattern-text-area"
-              rows="5"
-              wrap="soft"
-              spellcheck="false"
-              autocomplete="off"
-              autocapitalize="characters"
-            ></textarea>
+            <div class="pattern-text-area-wrap">
+              <pre id="treadling-text-highlight" class="pattern-text-highlight" aria-hidden="true"></pre>
+              <textarea
+                id="treadling-text"
+                class="form-control pattern-text-area"
+                rows="5"
+                wrap="soft"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="characters"
+              ></textarea>
+            </div>
           </label>
         </div>
       </div>
@@ -4093,32 +4166,71 @@ function getPatternTextChunkParts(chunk, maximumValue, shouldPreferWholeNumbers)
   return [normalizedChunk];
 }
 
+function getPatternTextChunks(text) {
+  const chunks = [];
+  const source = String(text || "");
+  const chunkPattern = /[^\s,;|/]+/g;
+  let match;
+
+  while ((match = chunkPattern.exec(source))) {
+    chunks.push({
+      value: match[0],
+      start: match.index,
+      end: match.index + match[0].length
+    });
+  }
+
+  return chunks;
+}
+
+function getPatternTextPlusParts(chunk) {
+  const parts = [];
+  const partPattern = /[^+]+/g;
+  let match;
+
+  while ((match = partPattern.exec(chunk.value))) {
+    parts.push({
+      value: match[0],
+      start: chunk.start + match.index,
+      end: chunk.start + match.index + match[0].length
+    });
+  }
+
+  return parts;
+}
+
+function createPatternTextParseResult(assignments, errorRanges) {
+  return errorRanges.length
+    ? { ok: false, assignments: [], errorRanges }
+    : { ok: true, assignments, errorRanges: [] };
+}
+
 function parsePatternText(text, maximumValue, { allowMultiple = false } = {}) {
-  const chunks = String(text || "")
-    .trim()
-    .split(/[\s,;|/]+/)
-    .filter(Boolean);
+  const chunks = getPatternTextChunks(text);
   const shouldPreferWholeNumbers = chunks.length > 1;
   const assignments = [];
+  const errorRanges = [];
 
   if (!chunks.length) {
-    return { ok: true, assignments };
+    return { ok: true, assignments, errorRanges: [] };
   }
 
   for (const chunk of chunks) {
-    if (allowMultiple && chunk.includes("+")) {
+    if (allowMultiple && chunk.value.includes("+")) {
       const entries = [];
-      const parts = chunk.split("+").filter(Boolean);
+      const parts = getPatternTextPlusParts(chunk);
 
-      if (!parts.length) {
-        return { ok: false, assignments: [] };
+      if (!parts.length || chunk.value.startsWith("+") || chunk.value.endsWith("+") || chunk.value.includes("++")) {
+        errorRanges.push({ start: chunk.start, end: chunk.end });
+        continue;
       }
 
       for (const part of parts) {
-        const parsed = parsePatternTextValue(part, maximumValue);
+        const parsed = parsePatternTextValue(part.value, maximumValue);
 
         if (!parsed.ok) {
-          return { ok: false, assignments: [] };
+          errorRanges.push({ start: part.start, end: part.end });
+          continue;
         }
 
         if (parsed.value > 0 && !entries.some(entry => entry.value === parsed.value)) {
@@ -4138,23 +4250,30 @@ function parsePatternText(text, maximumValue, { allowMultiple = false } = {}) {
       continue;
     }
 
-    const parts = getPatternTextChunkParts(chunk, maximumValue, shouldPreferWholeNumbers);
+    const parts = getPatternTextChunkParts(chunk.value, maximumValue, shouldPreferWholeNumbers);
+    let partOffset = 0;
 
     for (const part of parts) {
       const parsed = parsePatternTextValue(part, maximumValue);
 
       if (!parsed.ok) {
-        return { ok: false, assignments: [] };
+        errorRanges.push({
+          start: chunk.start + partOffset,
+          end: chunk.start + partOffset + part.length
+        });
+        partOffset += part.length;
+        continue;
       }
 
       assignments.push(allowMultiple
         ? { entries: parsed.value > 0 ? [{ value: parsed.value, colorId: parsed.colorId }] : [] }
         : { value: parsed.value, colorId: parsed.colorId }
       );
+      partOffset += part.length;
     }
   }
 
-  return { ok: true, assignments };
+  return createPatternTextParseResult(assignments, errorRanges);
 }
 
 function getDraftPatternFallbackColorId(currentColorId) {
@@ -4206,13 +4325,92 @@ function getTreadlingTextPattern() {
   }).join(" ");
 }
 
-function setPatternTextValidity(element, isValid) {
+function escapePatternTextHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function mergePatternTextRanges(ranges, textLength) {
+  return (Array.isArray(ranges) ? ranges : [])
+    .map(range => ({
+      start: Math.max(0, Math.min(textLength, Number.parseInt(range?.start, 10) || 0)),
+      end: Math.max(0, Math.min(textLength, Number.parseInt(range?.end, 10) || 0))
+    }))
+    .filter(range => range.end > range.start)
+    .sort((left, right) => left.start - right.start || left.end - right.end)
+    .reduce((merged, range) => {
+      const previous = merged[merged.length - 1];
+
+      if (previous && range.start <= previous.end) {
+        previous.end = Math.max(previous.end, range.end);
+      } else {
+        merged.push(range);
+      }
+
+      return merged;
+    }, []);
+}
+
+function getPatternTextHighlightElement(element) {
+  if (element === threadingTextElement) {
+    return threadingTextHighlightElement;
+  }
+
+  if (element === treadlingTextElement) {
+    return treadlingTextHighlightElement;
+  }
+
+  return null;
+}
+
+function getPatternTextFallbackErrorRanges(element, ranges = []) {
+  if (ranges.length) {
+    return ranges;
+  }
+
+  const value = String(element?.value || "");
+  const tokenMatch = value.match(/\S+/);
+  return tokenMatch
+    ? [{ start: tokenMatch.index, end: tokenMatch.index + tokenMatch[0].length }]
+    : [];
+}
+
+function renderPatternTextHighlight(element, ranges = []) {
+  const highlight = getPatternTextHighlightElement(element);
+
+  if (!highlight) {
+    return;
+  }
+
+  const text = String(element?.value || "");
+  const mergedRanges = mergePatternTextRanges(ranges, text.length);
+  let cursor = 0;
+  let html = "";
+
+  mergedRanges.forEach(range => {
+    html += escapePatternTextHtml(text.slice(cursor, range.start));
+    html += `<mark class="pattern-text-highlight-error">${escapePatternTextHtml(text.slice(range.start, range.end))}</mark>`;
+    cursor = range.end;
+  });
+
+  html += escapePatternTextHtml(text.slice(cursor));
+  highlight.innerHTML = html || "";
+}
+
+function setPatternTextValidity(element, isValid, errorRanges = []) {
   if (!element) {
     return;
   }
 
+  const wrapper = element.closest(".pattern-text-area-wrap");
+  const activeErrorRanges = isValid ? [] : getPatternTextFallbackErrorRanges(element, errorRanges);
+
   element.classList.toggle("is-invalid", !isValid);
+  wrapper?.classList.toggle("is-invalid", !isValid);
   element.setCustomValidity(isValid ? "" : "Pattern contains a value or yarn letter outside the current draft limits.");
+  renderPatternTextHighlight(element, activeErrorRanges);
 }
 
 function isPatternTextPanelOpen() {
@@ -4433,8 +4631,9 @@ function applyThreadingTextPattern() {
   const parsed = parsePatternText(threadingTextElement.value, shafts);
   resizePatternTextArea(threadingTextElement);
   updatePatternTextPanelViewportSpace();
-  const canApplyPattern = parsed.ok && expandDraftForThreadingText(parsed.assignments);
-  setPatternTextValidity(threadingTextElement, canApplyPattern);
+  const canExpandPattern = parsed.ok && expandDraftForThreadingText(parsed.assignments);
+  const canApplyPattern = parsed.ok && canExpandPattern;
+  setPatternTextValidity(threadingTextElement, canApplyPattern, parsed.errorRanges);
 
   if (!canApplyPattern) {
     return;
@@ -4458,8 +4657,9 @@ function applyTreadlingTextPattern() {
   const parsed = parsePatternText(treadlingTextElement.value, treadles, { allowMultiple: true });
   resizePatternTextArea(treadlingTextElement);
   updatePatternTextPanelViewportSpace();
-  const canApplyPattern = parsed.ok && expandDraftForTreadlingText(parsed.assignments);
-  setPatternTextValidity(treadlingTextElement, canApplyPattern);
+  const canExpandPattern = parsed.ok && expandDraftForTreadlingText(parsed.assignments);
+  const canApplyPattern = parsed.ok && canExpandPattern;
+  setPatternTextValidity(treadlingTextElement, canApplyPattern, parsed.errorRanges);
 
   if (!canApplyPattern) {
     return;
@@ -8251,6 +8451,8 @@ const patternTextPanelElement = document.getElementById("pattern-text-panel");
 const patternTextToggleElement = document.getElementById("pattern-text-toggle");
 const threadingTextElement = document.getElementById("threading-text");
 const treadlingTextElement = document.getElementById("treadling-text");
+const threadingTextHighlightElement = document.getElementById("threading-text-highlight");
+const treadlingTextHighlightElement = document.getElementById("treadling-text-highlight");
 const pageShellElement = document.querySelector(".page-shell");
 const workspaceToolbarElement = document.querySelector(".workspace-toolbar");
 const draftStageElement = document.querySelector(".draft-stage");
@@ -8266,6 +8468,7 @@ let patternTextPanelCloseTimeoutId = 0;
 let patternTextPanelCloseToken = 0;
 let draftLineDragState = null;
 let draftLinePreviewCells = [];
+let draftLineSuppressedCells = [];
 let shouldSuppressDraftCellClick = false;
 
 threadingTextElement?.addEventListener("input", applyThreadingTextPattern);
@@ -9139,7 +9342,37 @@ function getDraftLineTargetCoordinates(target) {
   return { x: target.treadleIndex, y: target.pickIndex };
 }
 
+function getThreadingLineCells(startTarget, endTarget) {
+  const start = getDraftLineTargetCoordinates(startTarget);
+  const end = getDraftLineTargetCoordinates(endTarget);
+
+  if (start.x === end.x) {
+    return [{ shaftIndex: end.y, warpIndex: start.x }];
+  }
+
+  const cells = [];
+  const step = start.x < end.x ? 1 : -1;
+  const deltaX = end.x - start.x;
+  const deltaY = end.y - start.y;
+
+  for (let warpIndex = start.x; ; warpIndex += step) {
+    const progress = (warpIndex - start.x) / deltaX;
+    const shaftIndex = Math.max(0, Math.min(shafts - 1, Math.round(start.y + deltaY * progress)));
+    cells.push({ shaftIndex, warpIndex });
+
+    if (warpIndex === end.x) {
+      break;
+    }
+  }
+
+  return cells;
+}
+
 function getDraftLineCells(startTarget, endTarget) {
+  if (startTarget.grid === "threading") {
+    return getThreadingLineCells(startTarget, endTarget);
+  }
+
   const start = getDraftLineTargetCoordinates(startTarget);
   const end = getDraftLineTargetCoordinates(endTarget);
   const cells = [];
@@ -9198,7 +9431,31 @@ function clearDraftLinePreview() {
   draftLinePreviewCells.forEach(cell => {
     cell?.classList.remove("cell-line-preview");
   });
+  draftLineSuppressedCells.forEach(cell => {
+    cell?.classList.remove("cell-line-suppressed");
+  });
   draftLinePreviewCells = [];
+  draftLineSuppressedCells = [];
+}
+
+function suppressNonPreviewThreadingCells(lineCells) {
+  const previewKeys = new Set(lineCells.map(cell => `${cell.warpIndex}:${cell.shaftIndex}`));
+  const previewedWarpIndices = new Set(lineCells.map(cell => cell.warpIndex));
+
+  previewedWarpIndices.forEach(warpIndex => {
+    for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
+      if (previewKeys.has(`${warpIndex}:${shaftIndex}`)) {
+        continue;
+      }
+
+      const cell = getThreadingCellElement(shaftIndex, warpIndex);
+
+      if (cell) {
+        cell.classList.add("cell-line-suppressed");
+        draftLineSuppressedCells.push(cell);
+      }
+    }
+  });
 }
 
 function updateDraftLinePreview(endTarget) {
@@ -9208,7 +9465,13 @@ function updateDraftLinePreview(endTarget) {
     return;
   }
 
-  getDraftLineCells(draftLineDragState.startTarget, endTarget).forEach(lineCell => {
+  const lineCells = getDraftLineCells(draftLineDragState.startTarget, endTarget);
+
+  if (draftLineDragState.startTarget.grid === "threading") {
+    suppressNonPreviewThreadingCells(lineCells);
+  }
+
+  lineCells.forEach(lineCell => {
     const element = getDraftLinePreviewCellElement(draftLineDragState.startTarget.grid, lineCell);
 
     if (element) {
