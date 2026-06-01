@@ -32,6 +32,7 @@
     --insert-btn-nudge: calc(var(--cell-size) * 0.185);
     --toolbar-font-size: calc(var(--cell-size) / 2);
     --draft-stage-min-height: 430px;
+    --pattern-text-panel-space: 0px;
   }
 
   html {
@@ -60,6 +61,11 @@
     box-sizing: border-box;
     padding-inline: clamp(1rem, 2vw, 2rem);
     padding-block: clamp(0.75rem, 1.5vw, 1.25rem);
+    transition: padding-bottom 0.18s ease;
+  }
+
+  body.pattern-text-panel-open .page-shell {
+    padding-bottom: calc(clamp(0.75rem, 1.5vw, 1.25rem) + var(--pattern-text-panel-space));
   }
 
   .hero-card,
@@ -572,6 +578,24 @@
     pointer-events: none;
   }
 
+  .pattern-color-letter {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
+    min-height: 1rem;
+    color: #000000;
+    font-size: 0.84rem;
+    font-weight: 800;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
   .pattern-color-input {
     position: absolute;
     width: 0;
@@ -729,6 +753,71 @@
     overflow: hidden;
     box-sizing: border-box;
     padding: 1rem;
+  }
+
+  .pattern-text-panel {
+    position: fixed;
+    right: clamp(1rem, 2vw, 2rem);
+    bottom: max(clamp(0.75rem, 1.5vw, 1.25rem), env(safe-area-inset-bottom));
+    left: clamp(1rem, 2vw, 2rem);
+    z-index: 1040;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.95rem;
+    max-height: min(18rem, 42dvh);
+    overflow: auto;
+    border: 1px solid rgba(47, 36, 29, 0.08);
+    border-radius: 1rem;
+    background: rgba(255, 252, 245, 0.92);
+    box-shadow: 0 0.8rem 1.8rem rgba(47, 36, 29, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% + 1.25rem));
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      transform 260ms cubic-bezier(0.22, 0.78, 0.22, 1),
+      visibility 0s linear 260ms;
+    will-change: opacity, transform;
+  }
+
+  .pattern-text-panel.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    visibility: visible;
+    transition:
+      opacity 200ms ease,
+      transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+  }
+
+  .pattern-text-panel[hidden] {
+    display: none !important;
+  }
+
+  .pattern-text-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .pattern-text-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .pattern-text-area {
+    min-height: 7rem;
+    box-sizing: border-box;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    overflow: hidden;
+    resize: none;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   .draft-stage-actions {
@@ -1268,6 +1357,55 @@
     /*background: rgba(170, 74, 43, 0.08);*/
   }
 
+  .draft-insert-preview {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    z-index: 6;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  .draft-insert-preview.is-visible {
+    display: block;
+    opacity: 1;
+  }
+
+  .draft-insert-preview-insert {
+    background: rgba(170, 74, 43, 0.18);
+    box-shadow: 0 0 0 1px rgba(170, 74, 43, 0.32), 0 0.28rem 0.75rem rgba(170, 74, 43, 0.18);
+  }
+
+  .draft-insert-preview-insert::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+    background: rgba(170, 74, 43, 0.86);
+  }
+
+  .draft-insert-preview-vertical.draft-insert-preview-insert::after {
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .draft-insert-preview-horizontal.draft-insert-preview-insert::after {
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+
+  .draft-insert-preview-delete {
+    border-radius: 0;
+    background: rgba(154, 69, 52, 0.11);
+    box-shadow: inset 0 0 0 1px rgba(154, 69, 52, 0.22);
+  }
+
   .pick-wrap {
     display: flex;
     align-items: flex-start;
@@ -1586,6 +1724,19 @@
     }
   }
 
+  @media (max-width: 767.98px) {
+    .pattern-text-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-text-panel,
+    .pattern-text-panel.is-open {
+      transition: none;
+    }
+  }
+
   @media print {
     @page {
       margin: 0.5in;
@@ -1622,6 +1773,10 @@
 
     .page-shell {
       padding: 0 !important;
+    }
+
+    .pattern-text-panel {
+      display: none !important;
     }
   }
 </style>
@@ -1725,6 +1880,23 @@
                     </svg>
                   </span>
                   <span class="toolbar-action-label">Fabric</span>
+                </button>
+                <button
+                  type="button"
+                  id="pattern-text-toggle"
+                  class="btn btn-soft toolbar-action"
+                  onclick="togglePatternTextPanel()"
+                  aria-controls="pattern-text-panel"
+                  aria-expanded="false"
+                >
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 7h14"></path>
+                      <path d="M5 12h10"></path>
+                      <path d="M5 17h14"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">Text</span>
                 </button>
               </div>
 
@@ -1920,6 +2092,35 @@
               </tr>
             </table>
           </div>
+        </div>
+      </div>
+
+      <div id="pattern-text-panel" class="pattern-text-panel" hidden>
+        <div class="pattern-text-grid">
+          <label class="pattern-text-field" for="threading-text">
+            <span class="control-label">Threading</span>
+            <textarea
+              id="threading-text"
+              class="form-control pattern-text-area"
+              rows="5"
+              wrap="soft"
+              spellcheck="false"
+              autocomplete="off"
+              autocapitalize="characters"
+            ></textarea>
+          </label>
+          <label class="pattern-text-field" for="treadling-text">
+            <span class="control-label">Treadling</span>
+            <textarea
+              id="treadling-text"
+              class="form-control pattern-text-area"
+              rows="5"
+              wrap="soft"
+              spellcheck="false"
+              autocomplete="off"
+              autocapitalize="characters"
+            ></textarea>
+          </label>
         </div>
       </div>
 
@@ -3720,11 +3921,552 @@ function cloneDraftMatrix(matrix) {
   return matrix.map(row => row.slice());
 }
 
+function areDraftMatricesEqual(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
+    return false;
+  }
+
+  return left.every((row, rowIndex) =>
+    Array.isArray(row) &&
+    Array.isArray(right[rowIndex]) &&
+    row.length === right[rowIndex].length &&
+    row.every((value, columnIndex) => value === right[rowIndex][columnIndex])
+  );
+}
+
+function getPatternColorLetter(index) {
+  let normalizedIndex = Number.parseInt(index, 10);
+
+  if (!Number.isFinite(normalizedIndex) || normalizedIndex < 0) {
+    return "";
+  }
+
+  let label = "";
+  normalizedIndex += 1;
+
+  while (normalizedIndex > 0) {
+    normalizedIndex -= 1;
+    label = String.fromCharCode(65 + (normalizedIndex % 26)) + label;
+    normalizedIndex = Math.floor(normalizedIndex / 26);
+  }
+
+  return label;
+}
+
+function getPatternColorIndexFromLetter(letter) {
+  const normalizedLetter = String(letter || "").trim().toUpperCase();
+
+  if (!/^[A-Z]+$/.test(normalizedLetter)) {
+    return -1;
+  }
+
+  let index = 0;
+
+  for (const character of normalizedLetter) {
+    index = index * 26 + (character.charCodeAt(0) - 64);
+  }
+
+  return index - 1;
+}
+
+function getPatternColorIdForLetter(letter) {
+  const index = getPatternColorIndexFromLetter(letter);
+  return index >= 0 ? patternColors[index]?.id || null : null;
+}
+
+function getPatternColorLetterForId(colorId) {
+  const index = patternColors.findIndex(color => color.id === colorId);
+  return index >= 0 ? getPatternColorLetter(index) : "";
+}
+
+function getContrastingPatternColorText(colorValue) {
+  const { r, g, b } = getPreviewColorRgb(colorValue);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return luminance > 0.54 ? "#000000" : "#ffffff";
+}
+
+function applyPatternColorLetterContrast(element, colorValue) {
+  if (!element) {
+    return;
+  }
+
+  const textColor = getContrastingPatternColorText(colorValue);
+  element.style.color = textColor;
+  element.style.textShadow = textColor === "#ffffff"
+    ? "0 1px 2px rgba(0, 0, 0, 0.55)"
+    : "0 1px 2px rgba(255, 255, 255, 0.72)";
+}
+
+function formatPatternTextValue(value, colorId = null) {
+  const normalizedValue = Number(value) || 0;
+
+  if (normalizedValue <= 0) {
+    return "0";
+  }
+
+  return `${normalizedValue}${getPatternColorLetterForId(colorId)}`;
+}
+
+function parsePatternTextValue(value, maximumValue) {
+  const normalizedValue = String(value || "").trim();
+
+  if (!normalizedValue || normalizedValue === "0" || normalizedValue === "." || normalizedValue === "-" || normalizedValue === "_") {
+    return { ok: true, value: 0, colorId: null };
+  }
+
+  const valueMatch = normalizedValue.match(/^(\d+|[._-])([A-Za-z]+)?$/);
+
+  if (!valueMatch) {
+    return { ok: false, value: 0, colorId: null };
+  }
+
+  const colorId = valueMatch[2] ? getPatternColorIdForLetter(valueMatch[2]) : null;
+
+  if (valueMatch[2] && !colorId) {
+    return { ok: false, value: 0, colorId: null };
+  }
+
+  if (!/^\d+$/.test(valueMatch[1])) {
+    return { ok: true, value: 0, colorId: null };
+  }
+
+  const numericValue = Number.parseInt(valueMatch[1], 10);
+  return {
+    ok: numericValue >= 0 && numericValue <= maximumValue,
+    value: numericValue,
+    colorId: numericValue > 0 ? colorId : null
+  };
+}
+
+function getCompactPatternTextParts(chunk) {
+  const normalizedChunk = String(chunk || "").trim();
+  const parts = [];
+  let index = 0;
+
+  while (index < normalizedChunk.length) {
+    const valueCharacter = normalizedChunk[index];
+
+    if (!/[0-9._-]/.test(valueCharacter)) {
+      return null;
+    }
+
+    let part = valueCharacter;
+    index += 1;
+
+    while (index < normalizedChunk.length && /[A-Za-z]/.test(normalizedChunk[index])) {
+      part += normalizedChunk[index];
+      index += 1;
+    }
+
+    parts.push(part);
+  }
+
+  return parts.length ? parts : null;
+}
+
+function getPatternTextChunkParts(chunk, maximumValue, shouldPreferWholeNumbers) {
+  const normalizedChunk = String(chunk || "").trim();
+  const wholeValue = parsePatternTextValue(normalizedChunk, maximumValue);
+
+  if (wholeValue.ok && (shouldPreferWholeNumbers || maximumValue > 9 || normalizedChunk.length <= 1)) {
+    return [normalizedChunk];
+  }
+
+  if (maximumValue <= 9 && normalizedChunk.length > 1 && /^[0-9A-Za-z._-]+$/.test(normalizedChunk)) {
+    return getCompactPatternTextParts(normalizedChunk) || [normalizedChunk];
+  }
+
+  return [normalizedChunk];
+}
+
+function parsePatternText(text, maximumValue, { allowMultiple = false } = {}) {
+  const chunks = String(text || "")
+    .trim()
+    .split(/[\s,;|/]+/)
+    .filter(Boolean);
+  const shouldPreferWholeNumbers = chunks.length > 1;
+  const assignments = [];
+
+  if (!chunks.length) {
+    return { ok: true, assignments };
+  }
+
+  for (const chunk of chunks) {
+    if (allowMultiple && chunk.includes("+")) {
+      const entries = [];
+      const parts = chunk.split("+").filter(Boolean);
+
+      if (!parts.length) {
+        return { ok: false, assignments: [] };
+      }
+
+      for (const part of parts) {
+        const parsed = parsePatternTextValue(part, maximumValue);
+
+        if (!parsed.ok) {
+          return { ok: false, assignments: [] };
+        }
+
+        if (parsed.value > 0 && !entries.some(entry => entry.value === parsed.value)) {
+          entries.push({ value: parsed.value, colorId: parsed.colorId });
+        }
+      }
+
+      const explicitColorIds = Array.from(new Set(entries.map(entry => entry.colorId).filter(Boolean)));
+
+      if (explicitColorIds.length === 1) {
+        entries.forEach(entry => {
+          entry.colorId = entry.colorId || explicitColorIds[0];
+        });
+      }
+
+      assignments.push({ entries });
+      continue;
+    }
+
+    const parts = getPatternTextChunkParts(chunk, maximumValue, shouldPreferWholeNumbers);
+
+    for (const part of parts) {
+      const parsed = parsePatternTextValue(part, maximumValue);
+
+      if (!parsed.ok) {
+        return { ok: false, assignments: [] };
+      }
+
+      assignments.push(allowMultiple
+        ? { entries: parsed.value > 0 ? [{ value: parsed.value, colorId: parsed.colorId }] : [] }
+        : { value: parsed.value, colorId: parsed.colorId }
+      );
+    }
+  }
+
+  return { ok: true, assignments };
+}
+
+function getDraftPatternFallbackColorId(currentColorId) {
+  return currentColorId || getSelectedPatternColorId() || patternColors[0]?.id || null;
+}
+
+function getPatternTextThreadingValue(assignment) {
+  if (typeof assignment === "number") {
+    return assignment;
+  }
+
+  return Number.parseInt(assignment?.value, 10) || 0;
+}
+
+function getPatternTextThreadingColorId(assignment) {
+  return typeof assignment === "object" ? assignment?.colorId || null : null;
+}
+
+function getPatternTextTreadlingEntries(assignment) {
+  if (Array.isArray(assignment)) {
+    return assignment.map(value => ({ value, colorId: null }));
+  }
+
+  if (Array.isArray(assignment?.entries)) {
+    return assignment.entries;
+  }
+
+  return [];
+}
+
+function getThreadingTextPattern() {
+  return Array.from({ length: warp }, (_, warpIndex) => {
+    const assignment = getWarpAssignment(warpIndex);
+    return formatPatternTextValue(assignment ? assignment.shaft + 1 : 0, assignment?.colorId || null);
+  }).join(" ");
+}
+
+function getTreadlingTextPattern() {
+  return Array.from({ length: picks }, (_, pickIndex) => {
+    const treadlesForPick = [];
+
+    for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
+      if (treadling[pickIndex]?.[treadleIndex]) {
+        treadlesForPick.push(formatPatternTextValue(treadleIndex + 1, treadling[pickIndex][treadleIndex]));
+      }
+    }
+
+    return treadlesForPick.length ? treadlesForPick.join("+") : "0";
+  }).join(" ");
+}
+
+function setPatternTextValidity(element, isValid) {
+  if (!element) {
+    return;
+  }
+
+  element.classList.toggle("is-invalid", !isValid);
+  element.setCustomValidity(isValid ? "" : "Pattern contains a value or yarn letter outside the current draft limits.");
+}
+
+function isPatternTextPanelOpen() {
+  return Boolean(patternTextPanelElement && !patternTextPanelElement.hidden && !patternTextPanelElement.classList.contains("is-closing"));
+}
+
+function updatePatternTextPanelViewportSpace() {
+  const isOpen = isPatternTextPanelOpen();
+  document.body.classList.toggle("pattern-text-panel-open", isOpen);
+
+  if (!isOpen) {
+    document.documentElement.style.setProperty("--pattern-text-panel-space", "0px");
+    return;
+  }
+
+  const styles = getComputedStyle(patternTextPanelElement);
+  const bottom = Number.parseFloat(styles.bottom || "0") || 0;
+  const panelHeight = patternTextPanelElement.getBoundingClientRect().height;
+  document.documentElement.style.setProperty(
+    "--pattern-text-panel-space",
+    `${Math.ceil(panelHeight + bottom)}px`
+  );
+}
+
+function resizePatternTextArea(element) {
+  if (!element || element.closest("[hidden]")) {
+    return;
+  }
+
+  element.style.height = "auto";
+  element.style.height = `${element.scrollHeight}px`;
+}
+
+function resizePatternTextAreas() {
+  resizePatternTextArea(threadingTextElement);
+  resizePatternTextArea(treadlingTextElement);
+  updatePatternTextPanelViewportSpace();
+}
+
+function syncPatternTextPanel({ force = false } = {}) {
+  if (!patternTextPanelElement || patternTextPanelElement.hidden) {
+    return;
+  }
+
+  if (threadingTextElement && (force || document.activeElement !== threadingTextElement)) {
+    threadingTextElement.value = getThreadingTextPattern();
+    setPatternTextValidity(threadingTextElement, true);
+  }
+
+  if (treadlingTextElement && (force || document.activeElement !== treadlingTextElement)) {
+    treadlingTextElement.value = getTreadlingTextPattern();
+    setPatternTextValidity(treadlingTextElement, true);
+  }
+
+  resizePatternTextAreas();
+}
+
+function togglePatternTextPanel() {
+  if (!patternTextPanelElement) {
+    return;
+  }
+
+  const shouldOpen = patternTextPanelElement.hidden || patternTextPanelElement.classList.contains("is-closing");
+
+  if (patternTextPanelCloseTimeoutId) {
+    clearTimeout(patternTextPanelCloseTimeoutId);
+    patternTextPanelCloseTimeoutId = 0;
+  }
+
+  if (patternTextToggleElement) {
+    patternTextToggleElement.setAttribute("aria-expanded", String(shouldOpen));
+    patternTextToggleElement.classList.toggle("active", shouldOpen);
+  }
+
+  if (shouldOpen) {
+    patternTextPanelCloseToken += 1;
+    patternTextPanelElement.hidden = false;
+    patternTextPanelElement.classList.remove("is-closing");
+    syncPatternTextPanel({ force: true });
+    requestAnimationFrame(() => {
+      patternTextPanelElement.classList.add("is-open");
+      updatePatternTextPanelViewportSpace();
+      scheduleDraftLayoutUpdate();
+      scheduleDraftStageHeightUpdate();
+    });
+    return;
+  }
+
+  patternTextPanelElement.classList.remove("is-open");
+  patternTextPanelElement.classList.add("is-closing");
+  updatePatternTextPanelViewportSpace();
+  const closeToken = ++patternTextPanelCloseToken;
+
+  const finishClosing = event => {
+    if (event && event.target !== patternTextPanelElement) {
+      return;
+    }
+
+    if (event && event.propertyName !== "transform") {
+      return;
+    }
+
+    patternTextPanelElement.removeEventListener("transitionend", finishClosing);
+
+    if (closeToken !== patternTextPanelCloseToken) {
+      return;
+    }
+
+    if (patternTextPanelCloseTimeoutId) {
+      clearTimeout(patternTextPanelCloseTimeoutId);
+    }
+
+    patternTextPanelElement.classList.remove("is-closing");
+    patternTextPanelElement.hidden = true;
+    patternTextPanelCloseTimeoutId = 0;
+    updatePatternTextPanelViewportSpace();
+    scheduleDraftLayoutUpdate();
+    scheduleDraftStageHeightUpdate();
+  };
+
+  patternTextPanelElement.addEventListener("transitionend", finishClosing);
+  patternTextPanelCloseTimeoutId = window.setTimeout(finishClosing, 360);
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    finishClosing();
+  }
+
+  scheduleDraftLayoutUpdate();
+  scheduleDraftStageHeightUpdate();
+}
+
+function buildThreadingFromTextAssignments(assignments) {
+  const nextThreading = Array.from({ length: shafts }, () => Array(warp).fill(0));
+
+  if (!assignments.length) {
+    return nextThreading;
+  }
+
+  for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+    const assignment = assignments[warpIndex % assignments.length];
+    const shaftValue = getPatternTextThreadingValue(assignment);
+
+    if (shaftValue > 0) {
+      nextThreading[shaftValue - 1][warpIndex] = getDraftPatternFallbackColorId(
+        getPatternTextThreadingColorId(assignment) ||
+        getWarpAssignment(warpIndex)?.colorId
+      );
+    }
+  }
+
+  return nextThreading;
+}
+
+function buildTreadlingFromTextAssignments(assignments) {
+  const nextTreadling = Array.from({ length: picks }, () => Array(treadles).fill(0));
+
+  if (!assignments.length) {
+    return nextTreadling;
+  }
+
+  for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    const activeTreadles = getPatternTextTreadlingEntries(assignments[pickIndex % assignments.length]);
+    const fallbackColorId = getDraftPatternFallbackColorId(getPickColorId(pickIndex));
+
+    activeTreadles.forEach(entry => {
+      const treadleValue = Number.parseInt(entry?.value, 10) || 0;
+
+      if (treadleValue > 0) {
+        nextTreadling[pickIndex][treadleValue - 1] = entry?.colorId || fallbackColorId;
+      }
+    });
+  }
+
+  return nextTreadling;
+}
+
+function expandDraftForThreadingText(assignments) {
+  if (assignments.length <= warp) {
+    return true;
+  }
+
+  const nextDimensions = applyDraftDimensionLimits(assignments.length, picks, "warp");
+
+  if (nextDimensions.warp < assignments.length) {
+    return false;
+  }
+
+  warp = nextDimensions.warp;
+  document.getElementById("warp").value = warp;
+  updateDraftDimensionLimitsUI(warp, picks);
+
+  return true;
+}
+
+function expandDraftForTreadlingText(assignments) {
+  if (assignments.length <= picks) {
+    return true;
+  }
+
+  const nextDimensions = applyDraftDimensionLimits(warp, assignments.length, "picks");
+
+  if (nextDimensions.picks < assignments.length) {
+    return false;
+  }
+
+  picks = nextDimensions.picks;
+  document.getElementById("picks").value = picks;
+  updateDraftDimensionLimitsUI(warp, picks);
+
+  return true;
+}
+
+function applyThreadingTextPattern() {
+  if (!threadingTextElement) {
+    return;
+  }
+
+  const parsed = parsePatternText(threadingTextElement.value, shafts);
+  resizePatternTextArea(threadingTextElement);
+  updatePatternTextPanelViewportSpace();
+  const canApplyPattern = parsed.ok && expandDraftForThreadingText(parsed.assignments);
+  setPatternTextValidity(threadingTextElement, canApplyPattern);
+
+  if (!canApplyPattern) {
+    return;
+  }
+
+  const nextThreading = buildThreadingFromTextAssignments(parsed.assignments);
+
+  if (areDraftMatricesEqual(threading, nextThreading)) {
+    return;
+  }
+
+  threading = nextThreading;
+  renderAll();
+}
+
+function applyTreadlingTextPattern() {
+  if (!treadlingTextElement) {
+    return;
+  }
+
+  const parsed = parsePatternText(treadlingTextElement.value, treadles, { allowMultiple: true });
+  resizePatternTextArea(treadlingTextElement);
+  updatePatternTextPanelViewportSpace();
+  const canApplyPattern = parsed.ok && expandDraftForTreadlingText(parsed.assignments);
+  setPatternTextValidity(treadlingTextElement, canApplyPattern);
+
+  if (!canApplyPattern) {
+    return;
+  }
+
+  const nextTreadling = buildTreadlingFromTextAssignments(parsed.assignments);
+
+  if (areDraftMatricesEqual(treadling, nextTreadling)) {
+    return;
+  }
+
+  treadling = nextTreadling;
+  renderAll();
+}
+
 function finishHistoryDraftPatch() {
   invalidateFabricPreviewTile();
   renderRepeatPreview();
   renderFabricPreviewModal();
   syncPatternColorUsageUI();
+  syncPatternTextPanel();
   scheduleDraftAutosave();
 }
 
@@ -5344,6 +6086,7 @@ function renderPatternColors() {
   container.innerHTML = "";
 
   patternColors.forEach((color, index) => {
+    const colorLetter = getPatternColorLetter(index);
     const stack = document.createElement("div");
     stack.className = "pattern-color-stack";
     stack.dataset.colorId = color.id;
@@ -5351,7 +6094,7 @@ function renderPatternColors() {
     const item = document.createElement("div");
     item.className = "pattern-color-item";
     item.dataset.colorId = color.id;
-    item.title = `Select pattern color ${index + 1}`;
+    item.title = `Select yarn ${colorLetter}`;
     item.style.backgroundColor = color.value;
     item.onclick = () => {
       activePatternColorId = color.id;
@@ -5362,11 +6105,16 @@ function renderPatternColors() {
     surface.className = "pattern-color-surface";
     surface.style.backgroundColor = color.value;
 
+    const letter = document.createElement("span");
+    letter.className = "pattern-color-letter";
+    letter.textContent = colorLetter;
+    applyPatternColorLetterContrast(letter, color.value);
+
     const input = document.createElement("input");
     input.type = "color";
     input.className = "pattern-color-input";
     input.value = color.value;
-    input.setAttribute("aria-label", `Edit pattern color ${index + 1}`);
+    input.setAttribute("aria-label", `Edit yarn ${colorLetter} color`);
     input.addEventListener("focus", () => {
       activePatternColorId = color.id;
       updatePatternColorSelectionUI();
@@ -5375,6 +6123,7 @@ function renderPatternColors() {
       color.value = input.value.toLowerCase();
       item.style.backgroundColor = color.value;
       surface.style.backgroundColor = color.value;
+      applyPatternColorLetterContrast(letter, color.value);
       activePatternColorId = color.id;
       updatePatternColorSelectionUI();
       renderAll();
@@ -5383,7 +6132,7 @@ function renderPatternColors() {
     const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.className = "pattern-color-edit";
-    editButton.setAttribute("aria-label", `Edit pattern color ${index + 1}`);
+    editButton.setAttribute("aria-label", `Edit yarn ${colorLetter} color`);
     editButton.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 20h9"></path>
@@ -5404,7 +6153,7 @@ function renderPatternColors() {
     thicknessInput.min = "0.1";
     thicknessInput.step = "0.1";
     thicknessInput.value = formatPatternColorThickness(color.thickness);
-    thicknessInput.setAttribute("aria-label", `Yarn thickness for pattern color ${index + 1}`);
+    thicknessInput.setAttribute("aria-label", `Yarn ${colorLetter} thickness`);
     thicknessInput.addEventListener("focus", () => {
       activePatternColorId = color.id;
       updatePatternColorSelectionUI();
@@ -5434,6 +6183,7 @@ function renderPatternColors() {
     });
 
     item.appendChild(surface);
+    item.appendChild(letter);
     item.appendChild(input);
     item.appendChild(editButton);
     stack.appendChild(item);
@@ -7483,6 +8233,10 @@ document.getElementById("draft-print-modal").addEventListener("hidden.bs.modal",
 });
 
 const repeatPreviewScroll = document.getElementById("repeat-preview-scroll");
+const patternTextPanelElement = document.getElementById("pattern-text-panel");
+const patternTextToggleElement = document.getElementById("pattern-text-toggle");
+const threadingTextElement = document.getElementById("threading-text");
+const treadlingTextElement = document.getElementById("treadling-text");
 const pageShellElement = document.querySelector(".page-shell");
 const workspaceToolbarElement = document.querySelector(".workspace-toolbar");
 const draftStageElement = document.querySelector(".draft-stage");
@@ -7492,6 +8246,20 @@ let draftStageHeightFrame = 0;
 let draftLayoutFrame = 0;
 let draftScrollState = { left: 0, top: 0 };
 let pendingDraftOriginScroll = false;
+let activeDraftInsertPreview = null;
+let draftInsertPreviewFrame = 0;
+let patternTextPanelCloseTimeoutId = 0;
+let patternTextPanelCloseToken = 0;
+
+threadingTextElement?.addEventListener("input", applyThreadingTextPattern);
+treadlingTextElement?.addEventListener("input", applyTreadlingTextPattern);
+[threadingTextElement, treadlingTextElement].forEach(element => {
+  element?.addEventListener("blur", () => {
+    if (!element.classList.contains("is-invalid")) {
+      syncPatternTextPanel({ force: true });
+    }
+  });
+});
 
 function sumTrackSizes(sizes) {
   return sizes.reduce((total, size) => total + (Number(size) || 0), 0);
@@ -7563,17 +8331,6 @@ function getElementPaddingSize(element, axis) {
     : (Number.parseFloat(styles.paddingTop) || 0) + (Number.parseFloat(styles.paddingBottom) || 0);
 }
 
-function getElementPaddingStart(element, axis) {
-  if (!element) {
-    return 0;
-  }
-
-  const styles = getComputedStyle(element);
-  return axis === "x"
-    ? Number.parseFloat(styles.paddingLeft) || 0
-    : Number.parseFloat(styles.paddingTop) || 0;
-}
-
 function setDraftMirrorViewportSize(width, height) {
   const xMirrorIds = ["warp-ruler-viewport", "warp-inserts-viewport", "threading-viewport"];
   const yMirrorIds = ["treadling-viewport", "pick-inserts-viewport", "pick-ruler-viewport"];
@@ -7611,6 +8368,224 @@ function setDraftMirrorViewportSize(width, height) {
   });
 }
 
+function getDraftInsertPreviewElement() {
+  let preview = document.getElementById("draft-insert-preview");
+
+  if (!preview && draftStageElement) {
+    preview = document.createElement("div");
+    preview.id = "draft-insert-preview";
+    preview.className = "draft-insert-preview";
+    draftStageElement.appendChild(preview);
+  }
+
+  return preview;
+}
+
+function getDraftPreviewRectUnion(ids) {
+  const rects = ids
+    .map(id => document.getElementById(id)?.getBoundingClientRect())
+    .filter(Boolean)
+    .filter(rect => rect.width > 0 && rect.height > 0);
+
+  if (!rects.length) {
+    return null;
+  }
+
+  return rects.reduce((union, rect) => ({
+    left: Math.min(union.left, rect.left),
+    top: Math.min(union.top, rect.top),
+    right: Math.max(union.right, rect.right),
+    bottom: Math.max(union.bottom, rect.bottom)
+  }), {
+    left: rects[0].left,
+    top: rects[0].top,
+    right: rects[0].right,
+    bottom: rects[0].bottom
+  });
+}
+
+function getDraftGridColumnCount(gridId) {
+  if (gridId === "threading" || gridId === "drawdown") {
+    return warp;
+  }
+
+  if (gridId === "tieup" || gridId === "treadling") {
+    return treadles;
+  }
+
+  return 0;
+}
+
+function getDraftGridExpectedCellCount(gridId) {
+  if (gridId === "threading") {
+    return shafts * warp;
+  }
+
+  if (gridId === "drawdown") {
+    return picks * warp;
+  }
+
+  if (gridId === "tieup") {
+    return shafts * treadles;
+  }
+
+  if (gridId === "treadling") {
+    return picks * treadles;
+  }
+
+  return 0;
+}
+
+function getDraftTrackCellRect(gridId, orientation, trackIndex) {
+  const grid = document.getElementById(gridId);
+  const columnCount = getDraftGridColumnCount(gridId);
+  const expectedCellCount = getDraftGridExpectedCellCount(gridId);
+
+  if (!grid || columnCount <= 0 || expectedCellCount <= 0 || grid.children.length < expectedCellCount || trackIndex < 0) {
+    return null;
+  }
+
+  const childIndex = orientation === "vertical" ? trackIndex : trackIndex * columnCount;
+  return grid.children[childIndex]?.getBoundingClientRect() || null;
+}
+
+function getDraftPreviewTrackRect(options) {
+  const { orientation, trackGridIds = [], trackIndex } = options;
+
+  if (!Number.isInteger(trackIndex)) {
+    return null;
+  }
+
+  const rects = trackGridIds
+    .map(id => getDraftTrackCellRect(id, orientation, trackIndex))
+    .filter(Boolean)
+    .filter(rect => rect.width > 0 && rect.height > 0);
+
+  if (!rects.length) {
+    return null;
+  }
+
+  if (orientation === "vertical") {
+    return {
+      left: Math.min(...rects.map(rect => rect.left)),
+      right: Math.max(...rects.map(rect => rect.right))
+    };
+  }
+
+  return {
+    top: Math.min(...rects.map(rect => rect.top)),
+    bottom: Math.max(...rects.map(rect => rect.bottom))
+  };
+}
+
+function positionDraftInsertPreview() {
+  const preview = getDraftInsertPreviewElement();
+
+  if (!preview || !draftStageElement || !activeDraftInsertPreview?.button?.isConnected) {
+    hideDraftInsertPreview();
+    return;
+  }
+
+  const { button, orientation, mode, spanIds } = activeDraftInsertPreview;
+  const spanRect = getDraftPreviewRectUnion(spanIds);
+  const buttonRect = button.getBoundingClientRect();
+  const stageRect = draftStageElement.getBoundingClientRect();
+
+  if (!spanRect || !buttonRect.width || !buttonRect.height) {
+    hideDraftInsertPreview();
+    return;
+  }
+
+  const targetCellRect = button.closest(".warp-insert-cell, .pick-insert-cell")?.getBoundingClientRect();
+  const trackRect = getDraftPreviewTrackRect(activeDraftInsertPreview);
+  const insertThickness = Math.max(3, Math.min(8, (orientation === "vertical" ? buttonRect.width : buttonRect.height) * 0.35));
+  let left;
+  let top;
+  let width;
+  let height;
+
+  if (mode === "delete" && (trackRect || targetCellRect)) {
+    if (orientation === "vertical") {
+      left = trackRect?.left ?? targetCellRect.left;
+      top = spanRect.top;
+      width = trackRect ? trackRect.right - trackRect.left : targetCellRect.width;
+      height = spanRect.bottom - spanRect.top;
+    } else {
+      left = spanRect.left;
+      top = trackRect?.top ?? targetCellRect.top;
+      width = spanRect.right - spanRect.left;
+      height = trackRect ? trackRect.bottom - trackRect.top : targetCellRect.height;
+    }
+  } else if (orientation === "vertical") {
+    left = buttonRect.left + buttonRect.width / 2 - insertThickness / 2;
+    top = spanRect.top;
+    width = insertThickness;
+    height = spanRect.bottom - spanRect.top;
+  } else {
+    left = spanRect.left;
+    top = buttonRect.top + buttonRect.height / 2 - insertThickness / 2;
+    width = spanRect.right - spanRect.left;
+    height = insertThickness;
+  }
+
+  preview.className = [
+    "draft-insert-preview",
+    `draft-insert-preview-${orientation}`,
+    `draft-insert-preview-${mode}`,
+    "is-visible"
+  ].join(" ");
+  preview.style.left = `${left - stageRect.left}px`;
+  preview.style.top = `${top - stageRect.top}px`;
+  preview.style.width = `${Math.max(1, width)}px`;
+  preview.style.height = `${Math.max(1, height)}px`;
+}
+
+function scheduleDraftInsertPreviewUpdate() {
+  if (!activeDraftInsertPreview) {
+    return;
+  }
+
+  if (draftInsertPreviewFrame) {
+    cancelAnimationFrame(draftInsertPreviewFrame);
+  }
+
+  draftInsertPreviewFrame = requestAnimationFrame(() => {
+    draftInsertPreviewFrame = 0;
+    positionDraftInsertPreview();
+  });
+}
+
+function showDraftInsertPreview(button, options) {
+  activeDraftInsertPreview = { button, ...options };
+  positionDraftInsertPreview();
+}
+
+function hideDraftInsertPreview() {
+  activeDraftInsertPreview = null;
+
+  if (draftInsertPreviewFrame) {
+    cancelAnimationFrame(draftInsertPreviewFrame);
+    draftInsertPreviewFrame = 0;
+  }
+
+  const preview = document.getElementById("draft-insert-preview");
+
+  if (preview) {
+    preview.className = "draft-insert-preview";
+    preview.removeAttribute("style");
+  }
+}
+
+function bindDraftInsertPreview(button, options) {
+  button.addEventListener("pointerenter", () => showDraftInsertPreview(button, options));
+  button.addEventListener("mouseenter", () => showDraftInsertPreview(button, options));
+  button.addEventListener("mouseover", () => showDraftInsertPreview(button, options));
+  button.addEventListener("focus", () => showDraftInsertPreview(button, options));
+  button.addEventListener("pointerleave", hideDraftInsertPreview);
+  button.addEventListener("mouseleave", hideDraftInsertPreview);
+  button.addEventListener("blur", hideDraftInsertPreview);
+}
+
 function getDraftScrollMax(axis) {
   if (!drawdownScrollElement) {
     return 0;
@@ -7630,6 +8605,7 @@ function syncDraftScrollMirrors() {
 
   const scrollLeft = drawdownScrollElement.scrollLeft;
   const scrollTop = drawdownScrollElement.scrollTop;
+  const scrollTolerance = 0.5;
   const xMirrorIds = ["warp-ruler-viewport", "warp-inserts-viewport", "threading-viewport"];
   const yMirrorIds = ["treadling-viewport", "pick-inserts-viewport", "pick-ruler-viewport"];
 
@@ -7637,19 +8613,19 @@ function syncDraftScrollMirrors() {
 
   xMirrorIds.forEach(id => {
     const element = document.getElementById(id);
-    const offset = id === "warp-inserts-viewport" ? getElementPaddingStart(element, "x") : 0;
-    if (element && element.scrollLeft !== scrollLeft) {
-      element.scrollLeft = scrollLeft + offset;
+    if (element && Math.abs(element.scrollLeft - scrollLeft) > scrollTolerance) {
+      element.scrollLeft = scrollLeft;
     }
   });
 
   yMirrorIds.forEach(id => {
     const element = document.getElementById(id);
-    const offset = id === "pick-inserts-viewport" ? getElementPaddingStart(element, "y") : 0;
-    if (element && element.scrollTop !== scrollTop) {
-      element.scrollTop = scrollTop + offset;
+    if (element && Math.abs(element.scrollTop - scrollTop) > scrollTolerance) {
+      element.scrollTop = scrollTop;
     }
   });
+
+  scheduleDraftInsertPreviewUpdate();
 }
 
 function queueDraftOriginScroll() {
@@ -7845,10 +8821,15 @@ if ("ResizeObserver" in window) {
   if (workspaceToolbarElement) {
     draftStageResizeObserver.observe(workspaceToolbarElement);
   }
+
+  if (patternTextPanelElement) {
+    draftStageResizeObserver.observe(patternTextPanelElement);
+  }
 } else {
   window.addEventListener("resize", () => {
     renderRepeatPreview();
     renderFabricPreviewModal();
+    updatePatternTextPanelViewportSpace();
     scheduleDraftStageHeightUpdate();
   });
 }
@@ -7860,8 +8841,14 @@ if (drawdownScrollElement) {
 attachDraftMirrorWheelForwarding();
 
 window.addEventListener("load", scheduleDraftStageHeightUpdate);
+window.addEventListener("resize", () => {
+  updatePatternTextPanelViewportSpace();
+  scheduleDraftStageHeightUpdate();
+  scheduleDraftInsertPreviewUpdate();
+});
 
 function renderDraftStage() {
+  hideDraftInsertPreview();
   updateDraftDimensionLimitsUI();
   renderWarpRuler();
   renderPickRuler();
@@ -7874,6 +8861,7 @@ function renderDraftStage() {
   renderTieup();
   renderTreadling();
   renderDrawdown();
+  syncPatternTextPanel();
   scheduleDraftLayoutUpdate();
   scheduleDraftStageHeightUpdate();
 }
@@ -7911,6 +8899,7 @@ function finishLocalDraftPatch() {
   renderRepeatPreview();
   renderFabricPreviewModal();
   syncPatternColorUsageUI();
+  syncPatternTextPanel();
   scheduleDraftAutosave();
   scheduleDraftHistoryCommit();
 }
@@ -8788,6 +9777,15 @@ function renderWarpToolbar() {
     minus.textContent = "−";
     minus.title = "Delete this warp end";
     sizeWarpToolbarButtons(plusBefore, plusAfter, minus);
+    const warpPreviewOptions = {
+      orientation: "vertical",
+      spanIds: ["threading-viewport", "drawdown-scroll"],
+      trackGridIds: ["threading", "drawdown"],
+      trackIndex: i
+    };
+    bindDraftInsertPreview(plusBefore, { ...warpPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(plusAfter, { ...warpPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(minus, { ...warpPreviewOptions, mode: "delete" });
 
     const insertWarpAt = insertIndex => {
       const nextDimensions = applyDraftDimensionLimits(warp + 1, picks, "warp");
@@ -8849,6 +9847,15 @@ function renderTreadleToolbar() {
     minus.textContent = "−";
     minus.title = "Delete this treadle";
     sizeWarpToolbarButtons(plusBefore, plusAfter, minus);
+    const treadlePreviewOptions = {
+      orientation: "vertical",
+      spanIds: ["tieup", "treadling-viewport"],
+      trackGridIds: ["tieup", "treadling"],
+      trackIndex: treadleIndex
+    };
+    bindDraftInsertPreview(plusBefore, { ...treadlePreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(plusAfter, { ...treadlePreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(minus, { ...treadlePreviewOptions, mode: "delete" });
 
     const insertTreadleAt = insertIndex => {
       tieup.splice(insertIndex, 0, Array(shafts).fill(0));
@@ -8955,6 +9962,15 @@ function renderPickToolbar() {
     minus.textContent = "−";
     minus.title = "Delete this pick";
     sizePickToolbarButtons(plusBefore, plusAfter, minus);
+    const pickPreviewOptions = {
+      orientation: "horizontal",
+      spanIds: ["drawdown-scroll", "treadling-viewport"],
+      trackGridIds: ["drawdown", "treadling"],
+      trackIndex: j
+    };
+    bindDraftInsertPreview(plusBefore, { ...pickPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(plusAfter, { ...pickPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(minus, { ...pickPreviewOptions, mode: "delete" });
 
     const insertPickAt = insertIndex => {
       const nextDimensions = applyDraftDimensionLimits(warp, picks + 1, "picks");
@@ -9014,6 +10030,15 @@ function renderShaftToolbar() {
     minus.textContent = "−";
     minus.title = "Delete this shaft";
     sizePickToolbarButtons(plusBefore, plusAfter, minus);
+    const shaftPreviewOptions = {
+      orientation: "horizontal",
+      spanIds: ["threading-viewport", "tieup"],
+      trackGridIds: ["threading", "tieup"],
+      trackIndex: displayRow
+    };
+    bindDraftInsertPreview(plusBefore, { ...shaftPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(plusAfter, { ...shaftPreviewOptions, mode: "insert" });
+    bindDraftInsertPreview(minus, { ...shaftPreviewOptions, mode: "delete" });
 
     const insertShaftAt = insertIndex => {
       threading.splice(insertIndex, 0, Array(warp).fill(0));
