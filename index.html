@@ -294,6 +294,42 @@
       color: rgba(47, 36, 29, 0.82);
     }
 
+    .updates-log {
+      display: flex;
+      flex-direction: column;
+      max-height: 28rem;
+      overflow-y: auto;
+      padding-right: 0.85rem;
+      border-top: 1px solid rgba(47, 36, 29, 0.1);
+      scrollbar-color: rgba(170, 74, 43, 0.34) transparent;
+    }
+
+    .updates-log-entry {
+      padding: 0.72rem 0;
+      border-bottom: 1px solid rgba(47, 36, 29, 0.1);
+    }
+
+    .updates-log-date {
+      display: block;
+      margin-bottom: 0.18rem;
+      color: var(--accent-dark);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .updates-log-summary {
+      margin-bottom: 0;
+      color: rgba(47, 36, 29, 0.76);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .updates-log-summary + .updates-log-summary {
+      margin-top: 0.28rem;
+    }
+
     @media (max-width: 991.98px) {
       .hero-card {
         padding: 2rem !important;
@@ -309,6 +345,15 @@
         --bs-gutter-x: 1rem;
         --bs-gutter-y: 1rem;
       }
+
+      .updates-log-entry {
+        padding: 0.8rem 0;
+      }
+
+      .updates-log {
+        max-height: 24rem;
+        padding-right: 0.55rem;
+      }
     }
   </style>
 </head>
@@ -321,7 +366,7 @@
             <div class="eyebrow mb-3">Weaving Tool</div>
             <h1 class="display-title fw-semibold mb-3">Draft cloth structures forward or backward.</h1>
             <p class="lead-copy text-secondary mb-4">
-              Open the main drafter to build threading, tie-up, treadling, color, and drawdown directly, or use the inverse drafter to sketch a target drawdown first and generate draft options from it.
+              Open the main drafter to build threading, tie-up, treadling, yarn color, and drawdown directly, including pasted numeric patterns, or use the inverse drafter to sketch a target drawdown first and generate draft options from it.
             </p>
             <div class="d-flex flex-wrap gap-3 align-items-center">
               <a class="btn btn-drafter" href="drafter.html">Open Drafter</a>
@@ -400,7 +445,7 @@
                     <div class="step-number mb-3">2</div>
                     <h3 class="h5">Build the structure</h3>
                     <p class="text-secondary mb-0">
-                      Click the threading to assign each warp end to a shaft, fill the tie-up to decide which shafts lift together, and click treadling cells to place treadles on each pick.
+                      Click or drag across threading and treadling cells to sketch draft lines. Threading keeps each warp end on a single shaft, while treadling can place multiple treadles on a pick when the structure needs it.
                     </p>
                   </div>
                 </div>
@@ -409,13 +454,22 @@
                     <div class="step-number mb-3">3</div>
                     <h3 class="h5">Add yarns, color, and weight</h3>
                     <p class="text-secondary mb-0">
-                      Use the yarn controls to add colors, edit their hex values, and set yarn thickness. Select a yarn, then paint threading and treadling cells to assign warp and weft colors.
+                      Use the yarn controls to add colors, edit their values, and set yarn thickness. Each yarn has a letter label, so text patterns can pair a draft number with a yarn, such as <code>1A</code> or <code>2B</code>.
                     </p>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="step-card">
                     <div class="step-number mb-3">4</div>
+                    <h3 class="h5">Paste and revise patterns</h3>
+                    <p class="text-secondary mb-0">
+                      Open <code>Text</code> to edit threading and treadling in monospace boxes from the bottom panel. Extra numbers extend warp ends or picks automatically, and invalid entries are highlighted in place.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="step-card">
+                    <div class="step-number mb-3">5</div>
                     <h3 class="h5">Edit without rebuilding</h3>
                     <p class="text-secondary mb-0">
                       Use the small <code>+</code> and <code>-</code> controls around the grid to insert or remove warp ends and picks while keeping surrounding data in place. Zoom changes the draft cell size without changing the page layout.
@@ -424,19 +478,10 @@
                 </div>
                 <div class="col-md-6">
                   <div class="step-card">
-                    <div class="step-number mb-3">5</div>
-                    <h3 class="h5">Switch the drawdown view</h3>
-                    <p class="text-secondary mb-0">
-                      Use <strong>Structure</strong> for black-and-white interlacement, <strong>Color</strong> for the colored drawdown, and <strong>Interlacement</strong> for the shaded thread-style preview directly in the draft panel.
-                    </p>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="step-card">
                     <div class="step-number mb-3">6</div>
-                    <h3 class="h5">Save, reopen, and recover</h3>
+                    <h3 class="h5">Save, view, and recover</h3>
                     <p class="text-secondary mb-0">
-                      <code>Save</code> writes a <code>.wdd.svg</code> (Weaving Draft Document SVG) file with a drawdown image and embedded draft data. <code>Open</code> can reopen either <code>.wdd.svg</code> drafts or generated <code>.wdi.svg</code> (Weaving Draft Inverse SVG) drafts, and <code>To Inverse</code> sends the current draft straight into a new inverse-drafter tab. The page also keeps local autosave plus undo and redo history while you work.
+                      Switch between <strong>Structure</strong>, <strong>Color</strong>, and <strong>Interlacement</strong> drawdown views, or open the fabric preview for a larger repeat. <code>Save</code> writes an SVG preview with embedded draft data, usually named <code>.wdd.svg</code>, and the main drafter can also import WIF files.
                     </p>
                   </div>
                 </div>
@@ -465,7 +510,7 @@
                     <div class="step-number mb-3">1</div>
                     <h3 class="h5">Start from a target</h3>
                     <p class="text-secondary mb-0">
-                      Paint the target drawdown directly, or open a saved <code>.wdi.svg</code> inverse draft. You can also open a <code>.wdd.svg</code> forward draft and the inverse tool will use that draft’s drawdown as the new target.
+                      Paint the target drawdown directly, or open a saved inverse draft SVG, usually named <code>.wdi.svg</code>. You can also open a forward draft SVG and the inverse tool will use that draft’s drawdown as the new target.
                     </p>
                   </div>
                 </div>
@@ -510,7 +555,7 @@
                     <div class="step-number mb-3">6</div>
                     <h3 class="h5">Continue into the main drafter</h3>
                     <p class="text-secondary mb-0">
-                      Save the inverse draft as <code>.wdi.svg</code> to keep the target and optimizer state inside an image-preview file, or use <code>To Drafter</code> to open the currently selected generated draft immediately in a new main-drafter tab. Opening that same file in the main drafter also loads the selected generated draft so you can continue coloring and refining it there.
+                      Save the inverse draft as an SVG preview with embedded target and optimizer state, or use <code>To Drafter</code> to open the currently selected generated draft immediately in a new main-drafter tab. Opening that same inverse SVG in the main drafter also loads the selected generated draft so you can continue coloring and refining it there.
                     </p>
                   </div>
                 </div>
@@ -554,7 +599,7 @@
                 </h3>
                 <div id="faqTwo" class="accordion-collapse collapse" aria-labelledby="faqTwoHeading" data-bs-parent="#faqAccordion">
                   <div class="accordion-body">
-                    Use <code>.wdd.svg</code> (Weaving Draft Document SVG) for the main drafter and <code>.wdi.svg</code> (Weaving Draft Inverse SVG) for the inverse drafter. These files are SVG images with the full draft JSON embedded as metadata, so they can preview like images while still reopening as editable drafts. The tools can also hand work across directly with <code>To Inverse</code> and <code>To Drafter</code>, or cross-open those formats: opening a <code>.wdi.svg</code> in the main drafter loads the currently selected generated draft, and opening a <code>.wdd.svg</code> in the inverse drafter uses its drawdown as a target.
+                    Saving creates an SVG image preview with the editable draft data embedded inside it. Main drafter saves are usually named <code>.wdd.svg</code>, inverse drafter saves are usually named <code>.wdi.svg</code>, and some browsers may show them simply as SVG files. The main drafter can also import WIF files. The tools can hand work across directly with <code>To Inverse</code> and <code>To Drafter</code>, or cross-open saved SVG drafts: opening an inverse SVG in the main drafter loads the selected generated draft, and opening a forward SVG in the inverse drafter uses its drawdown as a target.
                   </div>
                 </div>
               </div>
@@ -610,6 +655,104 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-shell mx-auto mt-4">
+      <div class="info-card p-4 p-lg-5">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-4">
+            <p class="eyebrow mb-3">Updates</p>
+            <h2 class="section-title mb-3">Development log.</h2>
+            <p class="text-secondary mb-0">
+              A dated record of major editor changes, summarized from the project history.
+            </p>
+          </div>
+          <div class="col-lg-8">
+            <div class="updates-log" aria-label="Weaving Draft Editor update log">
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-06-01">Jun 1, 2026</time>
+                <p class="updates-log-summary">Added the bottom text panel for editing threading and treadling as copyable numeric patterns.</p>
+                <p class="updates-log-summary">Expanded text entry with yarn-letter syntax, automatic warp/pick growth, invalid-entry highlighting, and smoother panel animation.</p>
+                <p class="updates-log-summary">Added drag-line editing for threading and treadling, plus clearer yarn labels that stay out of the edit controls.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-05-05">May 5, 2026</time>
+                <p class="updates-log-summary">Implemented beta drafting algorithms for generating and evaluating draft structures.</p>
+                <p class="updates-log-summary">Added benchmark coverage to compare algorithm behavior across repeatable runs.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-05-04">May 4, 2026</time>
+                <p class="updates-log-summary">Fixed save and draft-name handling issues.</p>
+                <p class="updates-log-summary">Improved fabric behavior, solver engine choices, locality handling, and the general editing workflow.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-30">Apr 30, 2026</time>
+                <p class="updates-log-summary">Refined inverse-drafter behavior so generated structures and target editing were easier to work with.</p>
+                <p class="updates-log-summary">Improved scrolling around the draft panels.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-29">Apr 29, 2026</time>
+                <p class="updates-log-summary">Sped up random-trial engine tests used to validate draft recovery behavior.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-27">Apr 27, 2026</time>
+                <p class="updates-log-summary">Added an engine test dock for checking generated drafts against random examples.</p>
+                <p class="updates-log-summary">Added an exact recovery algorithm for reconstructing weaving drafts from drawdown behavior.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-26">Apr 26, 2026</time>
+                <p class="updates-log-summary">Refined loom animation geometry, sizing, and shading so the woven motion reads more clearly.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-25">Apr 25, 2026</time>
+                <p class="updates-log-summary">Wrapped drafter controls more cleanly for narrower screens.</p>
+                <p class="updates-log-summary">Fixed loom animation sizing issues.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-24">Apr 24, 2026</time>
+                <p class="updates-log-summary">Added warp-faced and weft-faced drawdown rendering modes.</p>
+                <p class="updates-log-summary">Added shaft and treadle insertion controls, viewport-aware draft sizing, and more reliable refreshes when render styles change.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-23">Apr 23, 2026</time>
+                <p class="updates-log-summary">Added inverse-drafter entry points and cross-format draft loading.</p>
+                <p class="updates-log-summary">Improved reset flows, print flows, file naming, favicon support, and cross-editor handoff between the drafter and inverse drafter.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-20">Apr 20, 2026</time>
+                <p class="updates-log-summary">Refined the drafter layout, rendering behavior, and visual details.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-14">Apr 14, 2026</time>
+                <p class="updates-log-summary">Updated rendering and zoom behavior.</p>
+                <p class="updates-log-summary">Added heddle counts to summarize shaft usage.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-13">Apr 13, 2026</time>
+                <p class="updates-log-summary">Added early drafter variants while exploring the editing model.</p>
+                <p class="updates-log-summary">Added realistic rendering and refined the fabric preview.</p>
+              </article>
+
+              <article class="updates-log-entry">
+                <time class="updates-log-date" datetime="2026-04-12">Apr 12, 2026</time>
+                <p class="updates-log-summary">Started the editor project.</p>
+              </article>
             </div>
           </div>
         </div>
