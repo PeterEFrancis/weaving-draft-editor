@@ -1576,6 +1576,7 @@
   }
 
   .print-modal-card {
+    min-width: 0;
     padding: 0.95rem 1rem;
     border: 1px solid rgba(47, 36, 29, 0.08);
     border-radius: 1rem;
@@ -1595,7 +1596,12 @@
   }
 
   .draft-info-modal .modal-dialog {
-    max-width: min(880px, calc(100vw - 2rem));
+    max-width: min(960px, calc(100vw - 2rem));
+  }
+
+  .draft-info-modal .modal-content,
+  .draft-info-modal .modal-body {
+    min-width: 0;
   }
 
   .fabric-preview-modal .modal-dialog {
@@ -1728,6 +1734,10 @@
   .sett-estimate-grid {
     display: grid;
     gap: 0.65rem;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
   .draft-info-sett-inputs {
@@ -1740,10 +1750,16 @@
   .sett-estimate-heading,
   .sett-estimate-row {
     display: grid;
-    grid-template-columns: minmax(7rem, 1fr) minmax(5.4rem, max-content) minmax(5.6rem, max-content) minmax(14rem, 2fr) minmax(5.4rem, max-content);
+    grid-template-columns: minmax(5.8rem, 0.9fr) minmax(4.6rem, 0.6fr) minmax(4.9rem, 0.65fr) minmax(0, 1.65fr) minmax(5.4rem, 0.75fr) minmax(4rem, 0.45fr);
     align-items: center;
-    column-gap: 1.25rem;
+    min-width: 0;
+    column-gap: clamp(0.45rem, 1.6vw, 0.9rem);
     row-gap: 0.35rem;
+  }
+
+  .sett-estimate-heading > span,
+  .sett-estimate-row > span {
+    min-width: 0;
   }
 
   .sett-estimate-heading {
@@ -1877,6 +1893,14 @@
     color: rgba(47, 36, 29, 0.58);
     font-size: 0.9rem;
     font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sett-estimate-sleyed-epi {
+    color: rgba(47, 36, 29, 0.58);
+    font-size: 0.88rem;
+    font-weight: 800;
     text-align: left;
     white-space: nowrap;
   }
@@ -2024,6 +2048,7 @@
 
     .sett-estimate-epi,
     .sett-estimate-sleying,
+    .sett-estimate-sleyed-epi,
     .sett-estimate-error {
       text-align: left;
     }
@@ -2880,6 +2905,46 @@ function normalizePreviewSett(value) {
   return Math.max(0, Math.min(100, Number.parseInt(value, 10) || 0));
 }
 
+function normalizeDraftInfoWpiValue(value, fallback = 20) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function normalizeDraftInfoReedDpiValue(value, fallback = 12) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getDraftInfoSettings() {
+  return {
+    wpi: normalizeDraftInfoWpiValue(document.getElementById("draft-info-wpi")?.value),
+    reedDpi: normalizeDraftInfoReedDpiValue(document.getElementById("draft-info-reed-dpi")?.value)
+  };
+}
+
+function normalizeDraftInfoSettings(settings = {}) {
+  return {
+    wpi: normalizeDraftInfoWpiValue(settings?.wpi),
+    reedDpi: normalizeDraftInfoReedDpiValue(settings?.reedDpi)
+  };
+}
+
+function setDraftInfoSettings(settings = {}) {
+  const normalized = normalizeDraftInfoSettings(settings);
+  const wpiInput = document.getElementById("draft-info-wpi");
+  const reedDpiInput = document.getElementById("draft-info-reed-dpi");
+
+  if (wpiInput) {
+    wpiInput.value = String(normalized.wpi);
+  }
+
+  if (reedDpiInput) {
+    reedDpiInput.value = String(normalized.reedDpi);
+  }
+
+  renderDraftSettInfo();
+}
+
 function getPreviewSettValue() {
   return normalizePreviewSett(previewSett);
 }
@@ -3153,6 +3218,7 @@ function buildDraftHistoryEntryData() {
       sett: getPreviewSettValue(),
       backgroundColor: getPreviewBackgroundColor()
     },
+    sett: getDraftInfoSettings(),
     ui: {
       draftCellSize,
       draftRenderStyle: getDraftRenderStyle()
@@ -4031,6 +4097,7 @@ function applyLoadedDraftData(data, options = {}) {
     sett: normalizePreviewSett(data.preview?.sett ?? defaultPreviewSett),
     backgroundColor: normalizePreviewBackgroundColor(data.preview?.backgroundColor)
   };
+  const nextSett = normalizeDraftInfoSettings(data.sett);
   const nextDraftCellSize = clampDraftCellSize(Number.parseFloat(data.ui?.draftCellSize) || draftCellSize);
   const nextDraftRenderStyle = normalizeDraftRenderStyle(data.ui?.draftRenderStyle);
   const nextDraftName = normalizeDraftName(
@@ -4058,6 +4125,7 @@ function applyLoadedDraftData(data, options = {}) {
   setPreviewSettValue(nextPreview.sett);
   setPreviewBackgroundColor(nextPreview.backgroundColor);
   setPreviewRenderMode(nextPreview.renderMode, false);
+  setDraftInfoSettings(nextSett);
   setDraftRenderStyle(nextDraftRenderStyle, false);
   applyDraftZoom();
   renderPatternColors();
@@ -5007,6 +5075,7 @@ function tryFastApplyDraftHistoryData(data) {
   threading = cloneDraftMatrix(nextThreading);
   treadling = cloneDraftMatrix(nextTreadling);
   tieup = cloneDraftMatrix(nextTieup);
+  setDraftInfoSettings(data.sett);
 
   changedThreadingColumns.forEach(warpIndex => {
     patchThreadingColumn(warpIndex);
@@ -7472,14 +7541,12 @@ function formatDraftInfoSleyingError(value) {
 }
 
 function getDraftInfoWpi() {
-  const input = document.getElementById("draft-info-wpi");
-  const value = Number.parseFloat(input?.value);
+  const value = Number.parseFloat(document.getElementById("draft-info-wpi")?.value);
   return Number.isFinite(value) && value > 0 ? value : null;
 }
 
 function getDraftInfoReedDpi() {
-  const input = document.getElementById("draft-info-reed-dpi");
-  const rawValue = String(input?.value || "").trim();
+  const rawValue = String(document.getElementById("draft-info-reed-dpi")?.value || "").trim();
 
   if (!/^[1-9]\d*$/.test(rawValue)) {
     return null;
@@ -7575,6 +7642,7 @@ function getDraftInfoSleyingRecommendation(epi, reedDpi) {
 
   return {
     display: formatDraftInfoSleyingPattern(pattern),
+    actualEpi,
     errorRatio,
     title: `${fraction.ends} ends over ${fraction.dents} dents on a ${reedDpi} DPI reed gives about ${formatDraftInfoNumber(actualEpi, 2, 2)} EPI.${skippedDentNote}`
   };
@@ -8137,19 +8205,12 @@ function updateFloatingSelvageHighlightButton(analysis = null) {
     return;
   }
 
-  const hasProblemCells = getFloatingSelvageProblemCellKeys(analysis || analyzeFloatingSelvageNeed()).length > 0;
-
-  button.disabled = !hasProblemCells;
   button.textContent = isFloatingSelvageHighlightVisible ? "Hide floating edge" : "Show floating edge";
   button.setAttribute("aria-pressed", String(isFloatingSelvageHighlightVisible));
 }
 
 function refreshFloatingSelvageHighlights(analysis = analyzeFloatingSelvageNeed()) {
   const problemCellKeys = getFloatingSelvageProblemCellKeys(analysis);
-
-  if (!problemCellKeys.length) {
-    isFloatingSelvageHighlightVisible = false;
-  }
 
   floatingSelvageHighlightCells = isFloatingSelvageHighlightVisible
     ? new Set(problemCellKeys)
@@ -8160,9 +8221,8 @@ function refreshFloatingSelvageHighlights(analysis = analyzeFloatingSelvageNeed(
 
 function toggleFloatingSelvageHighlight() {
   const analysis = analyzeFloatingSelvageNeed();
-  const hasProblemCells = getFloatingSelvageProblemCellKeys(analysis).length > 0;
 
-  isFloatingSelvageHighlightVisible = hasProblemCells && !isFloatingSelvageHighlightVisible;
+  isFloatingSelvageHighlightVisible = !isFloatingSelvageHighlightVisible;
   refreshFloatingSelvageHighlights(analysis);
 }
 
@@ -8222,19 +8282,20 @@ function renderDraftSettInfo() {
         </span>
         <span>EPI</span>
         <span>Reed sleying</span>
+        <span>Sleyed EPI</span>
         <span class="sett-estimate-heading-label">
-          Sleying error
+          Error
           <button
             type="button"
             id="sett-sleying-error-info"
             class="sett-estimate-info"
-            aria-label="How sleying error is calculated"
+            aria-label="How error is calculated"
             data-draft-info-popover
             data-bs-toggle="popover"
             data-bs-trigger="focus"
             data-bs-placement="top"
             data-bs-container="body"
-            data-bs-title="Sleying error"
+            data-bs-title="Error"
           >i</button>
         </span>
       </div>
@@ -8248,6 +8309,7 @@ function renderDraftSettInfo() {
       const sleyingHtml = sleying
         ? `<span class="sett-estimate-sleying" title="${escapeSvgAttribute(sleying.title)}">${sleying.display}</span>`
         : `<span class="sett-estimate-sleying sett-estimate-sleying-muted">${getDraftInfoSleyingFallbackLabel(epiValue, wpi, reedDpi)}</span>`;
+      const sleyedEpi = sleying ? `${formatDraftInfoNumber(sleying.actualEpi, 2, 2)} epi` : "n/a";
       const sleyingError = sleying ? formatDraftInfoSleyingError(sleying.errorRatio) : "n/a";
 
       return `
@@ -8256,6 +8318,7 @@ function renderDraftSettInfo() {
           <span class="sett-estimate-multiplier">${formatDraftInfoNumber(multiplier, 3)}</span>
           <span class="sett-estimate-epi">${epi}</span>
           ${sleyingHtml}
+          <span class="sett-estimate-sleyed-epi">${sleyedEpi}</span>
           <span class="sett-estimate-error">${sleyingError}</span>
         </div>
       `;
@@ -8299,7 +8362,6 @@ function renderDraftSettInfo() {
             id="floating-selvage-highlight-toggle"
             class="draft-info-metric-action"
             aria-pressed="${String(isFloatingSelvageHighlightVisible)}"
-            ${getFloatingSelvageProblemCellKeys(floatingSelvage).length ? "" : "disabled"}
           >${isFloatingSelvageHighlightVisible ? "Hide floating edge" : "Show floating edge"}</button>
         </div>
         <span class="draft-info-metric-label">${floatingSelvage.summary}</span>
@@ -9249,11 +9311,16 @@ document.addEventListener("keyup", handleDraftLineSkipKeyUp);
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
 document.getElementById("draft-print-include-drawdown").addEventListener("change", syncDraftPrintModalUI);
 document.getElementById("draft-print-confirm").addEventListener("click", requestDraftPrintFromModal);
-document.getElementById("draft-info-wpi").addEventListener("input", renderDraftSettInfo);
-bindPositiveIntegerInput(document.getElementById("draft-info-reed-dpi"), renderDraftSettInfo);
+function handleDraftInfoSettInputChange() {
+  renderDraftSettInfo();
+  scheduleDraftAutosave();
+  scheduleDraftHistoryCommit();
+}
+document.getElementById("draft-info-wpi").addEventListener("input", handleDraftInfoSettInputChange);
+bindPositiveIntegerInput(document.getElementById("draft-info-reed-dpi"), handleDraftInfoSettInputChange);
 document.getElementById("draft-info-reed-dpi").addEventListener("input", event => {
   sanitizePositiveIntegerInput(event.target);
-  renderDraftSettInfo();
+  handleDraftInfoSettInputChange();
 });
 document.getElementById("fabric-preview-zoom-out").addEventListener("click", () => changeFabricPreviewZoom(0.8));
 document.getElementById("fabric-preview-zoom-in").addEventListener("click", () => changeFabricPreviewZoom(1.25));

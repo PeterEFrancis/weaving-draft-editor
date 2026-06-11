@@ -6,6 +6,8 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.35em}
 
+\pagenumbering{gobble}
+
 \begin{document}
 
 {\Large Summer and Winter\par}
@@ -16,7 +18,7 @@ stable ground cloth, and pattern shafts to bring selected block groups forward. 
 
 On an \(n\)-shaft loom, summer and winter gives \(n-2\) blocks: two shafts are used for tie-downs, and the remaining shafts are available for patterning. Each extra shaft allows for one extra group of blocks in a row that can be all be dark or all light.
 
-So, with $n$ shafts, you can use $n-2$ block types to decide the order and width of the blocks in the threading (all blocks of one type form a group). Then there are $2^{n-2}-1$ choices for each row: each of the block groups can be either light (lifted) or dark (no lifted), and at least one group must be lifted. This is the same as an unconstrained draft on $n-2$ shafts, where block groups correspond to shafts.
+So, with $n$ shafts, you can use $n-2$ block types to decide the order and width of the blocks in the threading (all blocks of one type form a group). Then there are $2^{n-2}-1$ choices for each row: each of the block groups can be either light (lifted) or dark (not lifted), and at least one group must be lifted. This is the same as an unconstrained draft on $n-2$ shafts, where block groups correspond to shafts.
 
 \begin{center}
   \centering
@@ -34,7 +36,7 @@ So, with $n$ shafts, you can use $n-2$ block types to decide the order and width
 \end{center}
 
 In the block view, dark means the block is in its default state. Light means
-that block group is lifted. Individual cells in the block draft correspond to blocks in the fabric.
+that block group is lifted. Individual cells in the block draft correspond to blocks in the fabric. Removing all background picks and warp threads (shafts 1 and 2, and every other pick) will result in the block pattern draft with duplicate rows and columns. 
 
 
 \end{document}
