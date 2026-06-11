@@ -754,6 +754,7 @@
     overflow: hidden;
     box-sizing: border-box;
     padding: 1rem;
+    touch-action: none;
   }
 
   .pattern-text-panel {
@@ -1252,8 +1253,8 @@
     position: relative;
     display: grid;
     gap: var(--grid-gap);
-    width: 2.8rem;
-    min-width: 2.8rem;
+    width: max(2.8rem, calc(var(--cell-size) * 1.5 + 1rem));
+    min-width: max(2.8rem, calc(var(--cell-size) * 1.5 + 1rem));
     margin-left: calc(var(--cell-gap) * 2);
     border-left: 1px solid rgba(47, 36, 29, 0.22);
     overflow: visible;
@@ -1594,7 +1595,7 @@
   }
 
   .draft-info-modal .modal-dialog {
-    max-width: min(760px, calc(100vw - 2rem));
+    max-width: min(880px, calc(100vw - 2rem));
   }
 
   .fabric-preview-modal .modal-dialog {
@@ -1729,11 +1730,129 @@
     gap: 0.65rem;
   }
 
+  .draft-info-sett-inputs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(7.25rem, 1fr));
+    gap: 0.75rem;
+    min-width: min(18rem, 100%);
+  }
+
+  .sett-estimate-heading,
   .sett-estimate-row {
     display: grid;
-    grid-template-columns: minmax(8rem, 1fr) auto auto;
+    grid-template-columns: minmax(7rem, 1fr) minmax(5.4rem, max-content) minmax(5.6rem, max-content) minmax(14rem, 2fr) minmax(5.4rem, max-content);
     align-items: center;
-    gap: 0.75rem;
+    column-gap: 1.25rem;
+    row-gap: 0.35rem;
+  }
+
+  .sett-estimate-heading {
+    padding: 0.15rem 0 0.35rem;
+    border-bottom: 1px solid rgba(47, 36, 29, 0.12);
+    color: rgba(47, 36, 29, 0.48);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .sett-estimate-heading-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    justify-self: start;
+    white-space: nowrap;
+  }
+
+  .sett-estimate-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: 1px solid rgba(122, 50, 28, 0.28);
+    border-radius: 999px;
+    background: rgba(170, 74, 43, 0.08);
+    color: var(--accent-dark);
+    font-size: 0.68rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .sett-estimate-info:hover,
+  .sett-estimate-info:focus-visible {
+    background: rgba(170, 74, 43, 0.16);
+    outline: none;
+  }
+
+  .draft-info-popover {
+    display: grid;
+    gap: 0.55rem;
+    max-width: 20rem;
+    color: rgba(47, 36, 29, 0.76);
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .draft-info-popover-equation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .draft-info-popover-fraction {
+    display: inline-grid;
+    gap: 0.16rem;
+    text-align: center;
+    line-height: 1.05;
+  }
+
+  .draft-info-popover-numerator {
+    padding: 0 0.22rem 0.16rem;
+    border-bottom: 1px solid rgba(47, 36, 29, 0.7);
+  }
+
+  .draft-info-popover-denominator {
+    padding: 0 0.22rem;
+  }
+
+  .draft-info-popover-note {
+    margin: 0;
+  }
+
+  .draft-info-popover-terms {
+    display: grid;
+    gap: 0.36rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid rgba(47, 36, 29, 0.1);
+  }
+
+  .draft-info-popover-terms p {
+    margin: 0;
+  }
+
+  .draft-info-popover-terms strong {
+    color: var(--ink);
+  }
+
+  .draft-info-popover-formula {
+    display: grid;
+    grid-template-columns: 5.7rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .draft-info-popover-formula .draft-info-popover-equation {
+    justify-content: flex-start;
+    font-size: 0.92rem;
+  }
+
+  .sett-estimate-row {
     padding: 0.75rem 0;
     border-bottom: 1px solid rgba(47, 36, 29, 0.08);
   }
@@ -1750,6 +1869,7 @@
   .sett-estimate-multiplier {
     color: var(--accent-dark);
     font-weight: 800;
+    text-align: left;
     white-space: nowrap;
   }
 
@@ -1757,7 +1877,34 @@
     color: rgba(47, 36, 29, 0.58);
     font-size: 0.9rem;
     font-weight: 700;
-    text-align: right;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sett-estimate-sleying {
+    min-width: 0;
+    color: rgba(47, 36, 29, 0.72);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.45;
+    overflow: visible;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .sett-estimate-sleying-muted {
+    color: rgba(47, 36, 29, 0.42);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .sett-estimate-error {
+    color: rgba(47, 36, 29, 0.58);
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-align: left;
     white-space: nowrap;
   }
 
@@ -1779,6 +1926,17 @@
     grid-column: 1 / -1;
   }
 
+  .draft-info-metric-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .draft-info-metric-title-row .draft-info-metric-value {
+    min-width: 0;
+  }
+
   .draft-info-metric-value {
     display: block;
     color: var(--ink);
@@ -1794,6 +1952,55 @@
     font-size: 0.78rem;
   }
 
+  .draft-info-metric-action {
+    flex: 0 0 auto;
+    padding: 0.32rem 0.55rem;
+    border: 1px solid rgba(122, 50, 28, 0.22);
+    border-radius: 999px;
+    background: rgba(170, 74, 43, 0.08);
+    color: var(--accent-dark);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .draft-info-metric-action:hover,
+  .draft-info-metric-action:focus-visible,
+  .draft-info-metric-action[aria-pressed="true"] {
+    background: rgba(170, 74, 43, 0.16);
+    outline: none;
+  }
+
+  .draft-info-metric-action:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
+
+  .floating-selvage-highlight-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 8;
+    pointer-events: none;
+  }
+
+  .floating-selvage-highlight-cell {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid rgba(210, 67, 36, 0.92);
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 185, 78, 0.34) 0,
+        rgba(255, 185, 78, 0.34) 4px,
+        rgba(210, 67, 36, 0.12) 4px,
+        rgba(210, 67, 36, 0.12) 8px
+      );
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.88),
+      0 0 0 1px rgba(210, 67, 36, 0.45);
+  }
+
   @media (max-width: 991.98px) {
     .hero-card,
     .editor-card {
@@ -1802,6 +2009,23 @@
 
     .draft-stage {
       padding: 0;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .draft-info-sett-inputs,
+    .sett-estimate-row {
+      grid-template-columns: 1fr;
+    }
+
+    .sett-estimate-heading {
+      display: none;
+    }
+
+    .sett-estimate-epi,
+    .sett-estimate-sleying,
+    .sett-estimate-error {
+      text-align: left;
     }
   }
 
@@ -2377,14 +2601,18 @@
             <div class="d-flex flex-wrap justify-content-between gap-3 align-items-start mb-3">
               <div>
                 <div class="control-label mb-1">Recommended Sett</div>
-                <div class="form-text mt-0">Multipliers are based on the average over-under interactions across the drawdown.</div>
               </div>
-              <div style="min-width: 9rem;">
-                <label class="control-label" for="draft-info-wpi">Yarn WPI</label>
-                <input id="draft-info-wpi" class="form-control" type="number" min="0.1" step="0.1" value="20" inputmode="decimal">
+              <div class="draft-info-sett-inputs">
+                <div>
+                  <label class="control-label" for="draft-info-wpi">Yarn WPI</label>
+                  <input id="draft-info-wpi" class="form-control" type="number" min="0.1" step="0.1" value="20" inputmode="decimal">
+                </div>
+                <div>
+                  <label class="control-label" for="draft-info-reed-dpi">Reed DPI</label>
+                  <input id="draft-info-reed-dpi" class="form-control" type="number" min="1" step="1" value="12" inputmode="numeric" pattern="[0-9]*">
+                </div>
               </div>
             </div>
-            <div class="small text-secondary mb-2">S = R x WPI / (R + I), where I is the average number of over-under interactions per pick.</div>
             <div id="draft-info-sett-results" class="sett-estimate-grid"></div>
           </div>
 
@@ -2726,6 +2954,75 @@ function applyDraftZoom() {
   updateDraftZoomUI();
 }
 
+function getDraftZoomAnchoredScrollState(nextCellSize, anchorClientX, anchorClientY) {
+  if (
+    !drawdownScrollElement ||
+    !Number.isFinite(anchorClientX) ||
+    !Number.isFinite(anchorClientY) ||
+    !Number.isFinite(nextCellSize) ||
+    nextCellSize <= 0
+  ) {
+    return null;
+  }
+
+  const rect = drawdownScrollElement.getBoundingClientRect();
+  const focusX = anchorClientX - rect.left;
+  const focusY = anchorClientY - rect.top;
+  const previousCellSize = Math.max(0.001, draftCellSize || defaultDraftCellSize);
+  const worldX = (drawdownScrollElement.scrollLeft + focusX) / previousCellSize;
+  const worldY = (drawdownScrollElement.scrollTop + focusY) / previousCellSize;
+
+  return {
+    left: worldX * nextCellSize - focusX,
+    top: worldY * nextCellSize - focusY
+  };
+}
+
+function setDraftZoomCellSize(nextCellSize, {
+  anchorClientX = null,
+  anchorClientY = null,
+  shouldRecord = true
+} = {}) {
+  if (!Number.isFinite(nextCellSize)) {
+    updateDraftZoomUI();
+    return false;
+  }
+
+  const clampedCellSize = clampDraftCellSize(nextCellSize);
+
+  if (Math.abs(clampedCellSize - draftCellSize) < 0.001) {
+    updateDraftZoomUI();
+    return false;
+  }
+
+  const anchoredScrollState = getDraftZoomAnchoredScrollState(
+    clampedCellSize,
+    anchorClientX,
+    anchorClientY
+  );
+
+  draftCellSize = clampedCellSize;
+  applyDraftZoom();
+
+  if (anchoredScrollState) {
+    pendingDraftOriginScroll = false;
+    draftScrollState = anchoredScrollState;
+  }
+
+  renderDraftStage();
+
+  if (anchoredScrollState) {
+    layoutDraftScrollContainers();
+  }
+
+  if (shouldRecord) {
+    scheduleDraftAutosave();
+    commitDraftHistoryState();
+  }
+
+  return true;
+}
+
 function changeDraftZoom(direction) {
   const currentPercent = getDraftZoomPercent();
   const nextPercent = getNextDraftZoomPercent(direction);
@@ -2736,11 +3033,7 @@ function changeDraftZoom(direction) {
     return;
   }
 
-  draftCellSize = nextCellSize;
-  applyDraftZoom();
-  renderDraftStage();
-  scheduleDraftAutosave();
-  commitDraftHistoryState();
+  setDraftZoomCellSize(nextCellSize);
 }
 
 function getEffectivePreviewBackgroundColor(mode = getPreviewRenderMode()) {
@@ -6928,8 +7221,8 @@ function getDraftPrintStyles() {
       position: relative;
       display: grid;
       gap: var(--grid-gap);
-      width: 2.8rem;
-      min-width: 2.8rem;
+      width: max(2.8rem, calc(var(--cell-size) * 1.5 + 1rem));
+      min-width: max(2.8rem, calc(var(--cell-size) * 1.5 + 1rem));
       margin-left: calc(var(--cell-gap) * 2);
       border-left: 1px solid rgba(47, 36, 29, 0.22);
       overflow: visible;
@@ -7141,13 +7434,13 @@ function getDraftInfoModalInstance() {
   return window.bootstrap.Modal.getOrCreateInstance(modalElement);
 }
 
-function formatDraftInfoNumber(value, maximumFractionDigits = 2) {
+function formatDraftInfoNumber(value, maximumFractionDigits = 2, minimumFractionDigits = 0) {
   if (!Number.isFinite(value)) {
     return "n/a";
   }
 
   return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 0,
+    minimumFractionDigits,
     maximumFractionDigits
   }).format(value);
 }
@@ -7160,10 +7453,215 @@ function formatDraftInfoPercent(value) {
   return `${formatDraftInfoNumber(value * 100, 1)}%`;
 }
 
+function formatDraftInfoSleyingError(value) {
+  if (!Number.isFinite(value)) {
+    return "n/a";
+  }
+
+  if (value === 0) {
+    return "0.00%";
+  }
+
+  const percent = value * 100;
+
+  if (Math.abs(percent) < 0.01) {
+    return "<0.01%";
+  }
+
+  return `${formatDraftInfoNumber(percent, 2, 2)}%`;
+}
+
 function getDraftInfoWpi() {
   const input = document.getElementById("draft-info-wpi");
   const value = Number.parseFloat(input?.value);
   return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+function getDraftInfoReedDpi() {
+  const input = document.getElementById("draft-info-reed-dpi");
+  const rawValue = String(input?.value || "").trim();
+
+  if (!/^[1-9]\d*$/.test(rawValue)) {
+    return null;
+  }
+
+  const value = Number.parseInt(rawValue, 10);
+  return Number.isSafeInteger(value) && value > 0 ? value : null;
+}
+
+function getDraftInfoSleyingFraction(endsPerDent) {
+  if (!Number.isFinite(endsPerDent) || endsPerDent <= 0) {
+    return null;
+  }
+
+  const isSparseSett = endsPerDent < 1;
+  const maxDentsInRepeat = isSparseSett
+    ? Math.min(240, Math.max(12, Math.ceil(1 / endsPerDent) * 2))
+    : 12;
+  const dentCountPenalty = isSparseSett ? 0.0001 : 0.005;
+  let best = null;
+
+  for (let dents = 1; dents <= maxDentsInRepeat; dents++) {
+    const ends = Math.round(endsPerDent * dents);
+
+    if (ends < 1) {
+      continue;
+    }
+
+    const actualEndsPerDent = ends / dents;
+    const error = Math.abs(actualEndsPerDent - endsPerDent);
+    const score = error + dents * dentCountPenalty;
+
+    if (
+      !best ||
+      score < best.score - 0.000001 ||
+      (Math.abs(score - best.score) <= 0.000001 && dents < best.dents)
+    ) {
+      best = { ends, dents, actualEndsPerDent, error, score };
+    }
+  }
+
+  return best || {
+    ends: 1,
+    dents: maxDentsInRepeat,
+    actualEndsPerDent: 1 / maxDentsInRepeat,
+    error: Math.abs((1 / maxDentsInRepeat) - endsPerDent),
+    score: Infinity
+  };
+}
+
+function getDraftInfoSleyingPattern(totalEnds, totalDents) {
+  const baseEnds = Math.floor(totalEnds / totalDents);
+  const extraEnds = totalEnds - baseEnds * totalDents;
+
+  return Array.from({ length: totalDents }, (_, dentIndex) => {
+    const previousExtras = Math.floor((dentIndex * extraEnds) / totalDents);
+    const nextExtras = Math.floor(((dentIndex + 1) * extraEnds) / totalDents);
+    return baseEnds + nextExtras - previousExtras;
+  });
+}
+
+function formatDraftInfoSleyingPattern(pattern) {
+  if (!pattern.length) {
+    return "";
+  }
+
+  if (pattern.length === 1) {
+    return String(pattern[0]);
+  }
+
+  const firstFilledDentIndex = pattern.findIndex(endsInDent => endsInDent > 0);
+  const displayPattern = firstFilledDentIndex > 0
+    ? pattern.slice(firstFilledDentIndex).concat(pattern.slice(0, firstFilledDentIndex))
+    : pattern;
+  return displayPattern.join(" ");
+}
+
+function getDraftInfoSleyingRecommendation(epi, reedDpi) {
+  if (!Number.isFinite(epi) || epi <= 0 || !Number.isInteger(reedDpi) || reedDpi <= 0) {
+    return null;
+  }
+
+  const fraction = getDraftInfoSleyingFraction(epi / reedDpi);
+
+  if (!fraction) {
+    return null;
+  }
+
+  const pattern = getDraftInfoSleyingPattern(fraction.ends, fraction.dents);
+  const actualEpi = fraction.actualEndsPerDent * reedDpi;
+  const errorRatio = Math.abs(actualEpi - epi) / epi;
+  const skippedDentNote = pattern.includes(0) ? " 0 means an empty dent." : "";
+
+  return {
+    display: formatDraftInfoSleyingPattern(pattern),
+    errorRatio,
+    title: `${fraction.ends} ends over ${fraction.dents} dents on a ${reedDpi} DPI reed gives about ${formatDraftInfoNumber(actualEpi, 2, 2)} EPI.${skippedDentNote}`
+  };
+}
+
+function getDraftInfoSleyingFallbackLabel(epi, wpi, reedDpi) {
+  if (!wpi || !reedDpi) {
+    return "set WPI and reed";
+  }
+
+  if (!Number.isFinite(epi) || epi <= 0) {
+    return "not enough draft data";
+  }
+
+  return "best effort unavailable";
+}
+
+function getDraftInfoPopoverContent(popoverId) {
+  if (popoverId === "sett-multiplier-info") {
+    return `
+      <div class="draft-info-popover">
+        <div class="draft-info-popover-equation">
+          <span>B</span>
+          <span>=</span>
+          <span class="draft-info-popover-fraction">
+            <span class="draft-info-popover-numerator">R</span>
+            <span class="draft-info-popover-denominator">R + I</span>
+          </span>
+        </div>
+        <p class="draft-info-popover-note">B is the balanced multiplier. R is active warp ends. I is average over-under interactions per pick.</p>
+        <div class="draft-info-popover-equation">
+          <span>EPI</span>
+          <span>=</span>
+          <span>WPI x Multiplier</span>
+        </div>
+        <div class="draft-info-popover-terms">
+          <div class="draft-info-popover-formula">
+            <strong>Balanced</strong>
+            <span class="draft-info-popover-equation">
+              <span>B</span>
+            </span>
+          </div>
+          <div class="draft-info-popover-formula">
+            <strong>Warp-faced</strong>
+            <span class="draft-info-popover-equation">
+              <span class="draft-info-popover-fraction">
+                <span class="draft-info-popover-numerator">1</span>
+                <span class="draft-info-popover-denominator">B</span>
+              </span>
+            </span>
+          </div>
+          <div class="draft-info-popover-formula">
+            <strong>Weft-faced</strong>
+            <span class="draft-info-popover-equation">
+              <span class="draft-info-popover-fraction">
+                <span class="draft-info-popover-numerator">B</span>
+                <span class="draft-info-popover-denominator">1 + B</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (popoverId === "sett-sleying-error-info") {
+    return `
+      <div class="draft-info-popover">
+        <p class="draft-info-popover-note">The error between the EPI resulting from the sleying as shown and the calculated EPI.</p>
+      </div>
+    `;
+  }
+
+  return "";
+}
+
+function syncDraftInfoSettPopover() {
+  if (!window.bootstrap?.Popover) {
+    return;
+  }
+
+  document.querySelectorAll("[data-draft-info-popover]").forEach(button => {
+    window.bootstrap.Popover.getOrCreateInstance(button, {
+      html: true,
+      content: getDraftInfoPopoverContent(button.id)
+    });
+  });
 }
 
 function countCyclicTransitions(values) {
@@ -7414,10 +7912,277 @@ function analyzePlainWeaveAvailability() {
   };
 }
 
+function getFloatingSelvageCellKey(pickIndex, warpIndex) {
+  return `${pickIndex}:${warpIndex}`;
+}
+
+function parseFloatingSelvageCellKey(cellKey) {
+  const [pickIndex, warpIndex] = String(cellKey).split(":").map(Number);
+  return { pickIndex, warpIndex };
+}
+
+function analyzeFloatingSelvageEdge(warpIndex, activePickIndices) {
+  const problemTransitions = [];
+  const problemCellKeys = new Set();
+  let checkedTransitionCount = 0;
+  let ignoredTransitionCount = 0;
+
+  for (let index = 1; index < activePickIndices.length; index++) {
+    const previousPickIndex = activePickIndices[index - 1];
+    const pickIndex = activePickIndices[index];
+
+    if (getPickColorId(previousPickIndex) !== getPickColorId(pickIndex)) {
+      ignoredTransitionCount++;
+      continue;
+    }
+
+    checkedTransitionCount++;
+
+    const previousWarpOnTop = Boolean(
+      getDrawdownCellState(previousPickIndex, warpIndex).warpVisibleOnFront
+    );
+    const currentWarpOnTop = Boolean(
+      getDrawdownCellState(pickIndex, warpIndex).warpVisibleOnFront
+    );
+
+    if (previousWarpOnTop === currentWarpOnTop) {
+      problemTransitions.push({ previousPickIndex, pickIndex, warpIndex });
+      problemCellKeys.add(getFloatingSelvageCellKey(previousPickIndex, warpIndex));
+      problemCellKeys.add(getFloatingSelvageCellKey(pickIndex, warpIndex));
+    }
+  }
+
+  return {
+    checkedTransitionCount,
+    ignoredTransitionCount,
+    problemTransitions,
+    problemCellKeys
+  };
+}
+
+function formatFloatingSelvageIgnoredSummary(ignoredTransitionCount) {
+  if (!ignoredTransitionCount) {
+    return "";
+  }
+
+  return `; ${ignoredTransitionCount} yarn-change ${ignoredTransitionCount === 1 ? "transition was" : "transitions were"} ignored`;
+}
+
+function countFloatingSelvageYarnChangeTransitions(activePickIndices) {
+  let ignoredTransitionCount = 0;
+
+  for (let index = 1; index < activePickIndices.length; index++) {
+    if (getPickColorId(activePickIndices[index - 1]) !== getPickColorId(activePickIndices[index])) {
+      ignoredTransitionCount++;
+    }
+  }
+
+  return ignoredTransitionCount;
+}
+
+function analyzeFloatingSelvageNeed() {
+  const activeWarpIndices = Array.from({ length: warp }, (_, warpIndex) => warpIndex)
+    .filter(warpIndex => Boolean(getWarpAssignment(warpIndex)));
+  const activePickIndices = Array.from({ length: picks }, (_, pickIndex) => pickIndex)
+    .filter(pickIndex => Boolean(getPickColorId(pickIndex)));
+
+  if (!activeWarpIndices.length || activePickIndices.length < 2) {
+    return {
+      value: "Unknown",
+      summary: "thread warp ends and add at least two picks before checking",
+      problemCellKeys: []
+    };
+  }
+
+  const leftWarpIndex = activeWarpIndices[0];
+  const rightWarpIndex = activeWarpIndices[activeWarpIndices.length - 1];
+  const edgeAnalyses = [
+    {
+      label: rightWarpIndex === leftWarpIndex ? "edge" : "left",
+      ...analyzeFloatingSelvageEdge(leftWarpIndex, activePickIndices)
+    }
+  ];
+
+  if (rightWarpIndex !== leftWarpIndex) {
+    edgeAnalyses.push({
+      label: "right",
+      ...analyzeFloatingSelvageEdge(rightWarpIndex, activePickIndices)
+    });
+  }
+
+  const problemEdges = edgeAnalyses.filter(edge => edge.problemTransitions.length);
+  const problemCellKeys = new Set();
+  const checkedTransitionCount = edgeAnalyses.reduce(
+    (total, edge) => total + edge.checkedTransitionCount,
+    0
+  );
+  const ignoredTransitionCount = countFloatingSelvageYarnChangeTransitions(activePickIndices);
+
+  edgeAnalyses.forEach(edge => {
+    edge.problemCellKeys.forEach(cellKey => problemCellKeys.add(cellKey));
+  });
+
+  if (!problemEdges.length) {
+    return {
+      value: "No",
+      summary: checkedTransitionCount
+        ? `all same-yarn edge transitions alternate${formatFloatingSelvageIgnoredSummary(ignoredTransitionCount)}`
+        : `no same-yarn edge transitions to check${formatFloatingSelvageIgnoredSummary(ignoredTransitionCount)}`,
+      problemCellKeys: Array.from(problemCellKeys)
+    };
+  }
+
+  const problemEdgeText = problemEdges.map(edge => edge.label).join(" and ");
+  const problemEdgeLabel = problemEdgeText === "edge"
+    ? "the edge"
+    : `the ${problemEdgeText} ${problemEdges.length === 1 ? "edge" : "edges"}`;
+  const problemTransitionCount = problemEdges.reduce(
+    (total, edge) => total + edge.problemTransitions.length,
+    0
+  );
+
+  return {
+    value: "Yes",
+    summary: `${problemTransitionCount} same-yarn edge ${problemTransitionCount === 1 ? "transition repeats" : "transitions repeat"} on ${problemEdgeLabel}${formatFloatingSelvageIgnoredSummary(ignoredTransitionCount)}`,
+    problemCellKeys: Array.from(problemCellKeys)
+  };
+}
+
+function getDraftInfoOutcomeTitle(prefix, value) {
+  if (value === "Yes") {
+    return `${prefix} available`;
+  }
+
+  if (value === "No") {
+    return `${prefix} not available`;
+  }
+
+  return `${prefix} unknown`;
+}
+
+function getFloatingSelvageOutcomeTitle(value) {
+  if (value === "Yes") {
+    return "Floating selvage needed";
+  }
+
+  if (value === "No") {
+    return "Floating selvage not needed";
+  }
+
+  return "Floating selvage unknown";
+}
+
+function getFloatingSelvageProblemCellKeys(analysis) {
+  return Array.isArray(analysis?.problemCellKeys) ? analysis.problemCellKeys : [];
+}
+
+function clearFloatingSelvageHighlightLayer() {
+  document.getElementById("floating-selvage-highlight-layer")?.remove();
+}
+
+function applyFloatingSelvageHighlights() {
+  clearFloatingSelvageHighlightLayer();
+
+  if (!isFloatingSelvageHighlightVisible || !floatingSelvageHighlightCells.size) {
+    return;
+  }
+
+  const drawdown = document.getElementById("drawdown");
+
+  if (!drawdown) {
+    return;
+  }
+
+  const renderStyle = getDraftRenderStyle();
+  const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
+  const rowHeights = getDrawdownRowHeightsForRender(renderStyle);
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const layer = document.createElement("div");
+
+  layer.id = "floating-selvage-highlight-layer";
+  layer.className = "floating-selvage-highlight-layer";
+  layer.style.width = `${columnEdges[columnEdges.length - 1]}px`;
+  layer.style.height = `${rowEdges[rowEdges.length - 1]}px`;
+  drawdown.style.position = "relative";
+
+  floatingSelvageHighlightCells.forEach(cellKey => {
+    const { pickIndex, warpIndex } = parseFloatingSelvageCellKey(cellKey);
+
+    if (
+      pickIndex < 0 ||
+      pickIndex >= rowHeights.length ||
+      warpIndex < 0 ||
+      warpIndex >= columnWidths.length
+    ) {
+      return;
+    }
+
+    const highlight = document.createElement("div");
+    highlight.className = "floating-selvage-highlight-cell";
+    highlight.style.left = `${columnEdges[warpIndex]}px`;
+    highlight.style.top = `${rowEdges[pickIndex]}px`;
+    highlight.style.width = `${columnWidths[warpIndex]}px`;
+    highlight.style.height = `${rowHeights[pickIndex]}px`;
+    layer.appendChild(highlight);
+  });
+
+  drawdown.appendChild(layer);
+}
+
+function updateFloatingSelvageHighlightButton(analysis = null) {
+  const button = document.getElementById("floating-selvage-highlight-toggle");
+
+  if (!button) {
+    return;
+  }
+
+  const hasProblemCells = getFloatingSelvageProblemCellKeys(analysis || analyzeFloatingSelvageNeed()).length > 0;
+
+  button.disabled = !hasProblemCells;
+  button.textContent = isFloatingSelvageHighlightVisible ? "Hide floating edge" : "Show floating edge";
+  button.setAttribute("aria-pressed", String(isFloatingSelvageHighlightVisible));
+}
+
+function refreshFloatingSelvageHighlights(analysis = analyzeFloatingSelvageNeed()) {
+  const problemCellKeys = getFloatingSelvageProblemCellKeys(analysis);
+
+  if (!problemCellKeys.length) {
+    isFloatingSelvageHighlightVisible = false;
+  }
+
+  floatingSelvageHighlightCells = isFloatingSelvageHighlightVisible
+    ? new Set(problemCellKeys)
+    : new Set();
+  applyFloatingSelvageHighlights();
+  updateFloatingSelvageHighlightButton(analysis);
+}
+
+function toggleFloatingSelvageHighlight() {
+  const analysis = analyzeFloatingSelvageNeed();
+  const hasProblemCells = getFloatingSelvageProblemCellKeys(analysis).length > 0;
+
+  isFloatingSelvageHighlightVisible = hasProblemCells && !isFloatingSelvageHighlightVisible;
+  refreshFloatingSelvageHighlights(analysis);
+}
+
+function bindDraftInfoStructureActions(floatingSelvage) {
+  const button = document.getElementById("floating-selvage-highlight-toggle");
+
+  if (!button) {
+    return;
+  }
+
+  button.addEventListener("click", toggleFloatingSelvageHighlight);
+  updateFloatingSelvageHighlightButton(floatingSelvage);
+}
+
 function renderDraftSettInfo() {
   const analysis = analyzeDraftStructureForSett();
   const plainWeave = analyzePlainWeaveAvailability();
+  const floatingSelvage = analyzeFloatingSelvageNeed();
   const wpi = getDraftInfoWpi();
+  const reedDpi = getDraftInfoReedDpi();
   const settResults = document.getElementById("draft-info-sett-results");
   const structureResults = document.getElementById("draft-info-structure-results");
 
@@ -7437,18 +8202,67 @@ function renderDraftSettInfo() {
       }
     ];
 
-    settResults.innerHTML = estimates.map(estimate => {
+    const headingHtml = `
+      <div class="sett-estimate-heading">
+        <span>Use</span>
+        <span class="sett-estimate-heading-label">
+          Multiplier
+          <button
+            type="button"
+            id="sett-multiplier-info"
+            class="sett-estimate-info"
+            aria-label="How multiplier is calculated"
+            data-draft-info-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus"
+            data-bs-placement="top"
+            data-bs-container="body"
+            data-bs-title="Multiplier"
+          >i</button>
+        </span>
+        <span>EPI</span>
+        <span>Reed sleying</span>
+        <span class="sett-estimate-heading-label">
+          Sleying error
+          <button
+            type="button"
+            id="sett-sleying-error-info"
+            class="sett-estimate-info"
+            aria-label="How sleying error is calculated"
+            data-draft-info-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus"
+            data-bs-placement="top"
+            data-bs-container="body"
+            data-bs-title="Sleying error"
+          >i</button>
+        </span>
+      </div>
+    `;
+
+    const estimateRowsHtml = estimates.map(estimate => {
       const multiplier = estimate.multiplier;
-      const epi = wpi && Number.isFinite(multiplier) ? `${formatDraftInfoNumber(wpi * multiplier, 1)} epi` : "";
+      const epiValue = wpi && Number.isFinite(multiplier) ? wpi * multiplier : null;
+      const epi = epiValue ? `${formatDraftInfoNumber(epiValue, 2, 2)} epi` : "";
+      const sleying = getDraftInfoSleyingRecommendation(epiValue, reedDpi);
+      const sleyingHtml = sleying
+        ? `<span class="sett-estimate-sleying" title="${escapeSvgAttribute(sleying.title)}">${sleying.display}</span>`
+        : `<span class="sett-estimate-sleying sett-estimate-sleying-muted">${getDraftInfoSleyingFallbackLabel(epiValue, wpi, reedDpi)}</span>`;
+      const sleyingError = sleying ? formatDraftInfoSleyingError(sleying.errorRatio) : "n/a";
 
       return `
         <div class="sett-estimate-row">
           <span class="sett-estimate-label">${estimate.label}</span>
-          <span class="sett-estimate-multiplier">WPI x ${formatDraftInfoNumber(multiplier, 3)}</span>
+          <span class="sett-estimate-multiplier">${formatDraftInfoNumber(multiplier, 3)}</span>
           <span class="sett-estimate-epi">${epi}</span>
+          ${sleyingHtml}
+          <span class="sett-estimate-error">${sleyingError}</span>
         </div>
       `;
     }).join("");
+
+    settResults.innerHTML = headingHtml + estimateRowsHtml;
+    syncDraftInfoSettPopover();
   }
 
   if (structureResults) {
@@ -7478,10 +8292,25 @@ function renderDraftSettInfo() {
         <span class="draft-info-metric-label">sett confidence</span>
       </div>
       <div class="draft-info-metric draft-info-metric-wide">
-        <span class="draft-info-metric-value">${plainWeave.value}</span>
-        <span class="draft-info-metric-label">plain weave available — ${plainWeave.summary}</span>
+        <div class="draft-info-metric-title-row">
+          <span class="draft-info-metric-value">${getFloatingSelvageOutcomeTitle(floatingSelvage.value)}</span>
+          <button
+            type="button"
+            id="floating-selvage-highlight-toggle"
+            class="draft-info-metric-action"
+            aria-pressed="${String(isFloatingSelvageHighlightVisible)}"
+            ${getFloatingSelvageProblemCellKeys(floatingSelvage).length ? "" : "disabled"}
+          >${isFloatingSelvageHighlightVisible ? "Hide floating edge" : "Show floating edge"}</button>
+        </div>
+        <span class="draft-info-metric-label">${floatingSelvage.summary}</span>
+      </div>
+      <div class="draft-info-metric draft-info-metric-wide">
+        <span class="draft-info-metric-value">${getDraftInfoOutcomeTitle("Plain weave", plainWeave.value)}</span>
+        <span class="draft-info-metric-label">${plainWeave.summary}</span>
       </div>
     `;
+    bindDraftInfoStructureActions(floatingSelvage);
+    refreshFloatingSelvageHighlights(floatingSelvage);
   }
 }
 
@@ -7599,7 +8428,7 @@ function createPrintableDraftInfoSection() {
   ].forEach(([label, multiplier]) => {
     const multiplierLabel = `WPI x ${formatDraftInfoNumber(multiplier, 3)}`;
     const epi = wpi && Number.isFinite(multiplier)
-      ? `(${formatDraftInfoNumber(wpi * multiplier, 1)} epi)`
+      ? `(${formatDraftInfoNumber(wpi * multiplier, 2, 2)} epi)`
       : "";
     appendDraftPrintInfoRow(settCard, label, multiplierLabel, { muted: epi });
   });
@@ -8414,11 +9243,18 @@ document.getElementById("draft-name").addEventListener("change", event => {
 });
 
 document.addEventListener("keydown", handleDraftHistoryShortcut);
+document.addEventListener("keydown", handleDraftLineSkipKeyDown);
+document.addEventListener("keyup", handleDraftLineSkipKeyUp);
 
 document.getElementById("draft-file-input").addEventListener("change", handleDraftFileChange);
 document.getElementById("draft-print-include-drawdown").addEventListener("change", syncDraftPrintModalUI);
 document.getElementById("draft-print-confirm").addEventListener("click", requestDraftPrintFromModal);
 document.getElementById("draft-info-wpi").addEventListener("input", renderDraftSettInfo);
+bindPositiveIntegerInput(document.getElementById("draft-info-reed-dpi"), renderDraftSettInfo);
+document.getElementById("draft-info-reed-dpi").addEventListener("input", event => {
+  sanitizePositiveIntegerInput(event.target);
+  renderDraftSettInfo();
+});
 document.getElementById("fabric-preview-zoom-out").addEventListener("click", () => changeFabricPreviewZoom(0.8));
 document.getElementById("fabric-preview-zoom-in").addEventListener("click", () => changeFabricPreviewZoom(1.25));
 document.getElementById("fabric-preview-render-style").addEventListener("change", event => {
@@ -8470,6 +9306,13 @@ let draftLineDragState = null;
 let draftLinePreviewCells = [];
 let draftLineSuppressedCells = [];
 let shouldSuppressDraftCellClick = false;
+let activeDraftLineSkipKey = null;
+let activeDraftLineSkipKeys = new Set();
+let draftPinchPointers = new Map();
+let draftPinchState = null;
+let draftGestureZoomStartCellSize = null;
+let isFloatingSelvageHighlightVisible = false;
+let floatingSelvageHighlightCells = new Set();
 
 threadingTextElement?.addEventListener("input", applyThreadingTextPattern);
 treadlingTextElement?.addEventListener("input", applyTreadlingTextPattern);
@@ -8908,7 +9751,12 @@ function normalizeDraftWheelDelta(event) {
 }
 
 function forwardDraftWheel(event) {
+  if (event.defaultPrevented) {
+    return;
+  }
+
   if (event.ctrlKey || event.metaKey) {
+    handleDraftWheelZoom(event);
     return;
   }
 
@@ -8917,6 +9765,216 @@ function forwardDraftWheel(event) {
   if (scrollDraftBy(deltaX, deltaY)) {
     event.preventDefault();
   }
+}
+
+function getDraftGestureDistance(pointA, pointB) {
+  return Math.hypot(pointB.clientX - pointA.clientX, pointB.clientY - pointA.clientY);
+}
+
+function getDraftGestureCenter(pointA, pointB) {
+  return {
+    clientX: (pointA.clientX + pointB.clientX) / 2,
+    clientY: (pointA.clientY + pointB.clientY) / 2
+  };
+}
+
+function getDraftPinchGesturePoints() {
+  return Array.from(draftPinchPointers.values()).slice(0, 2);
+}
+
+function isDraftPinchTarget(target) {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  if (!target.closest(".draft-stage")) {
+    return false;
+  }
+
+  return !target.closest("input, textarea, select, button:not(.cell):not(.insert-btn)");
+}
+
+function cancelDraftLineDragForPinch() {
+  if (!draftLineDragState) {
+    return;
+  }
+
+  draftLineDragState = null;
+  clearDraftLinePreview();
+  suppressNextDraftCellClick();
+}
+
+function captureDraftPinchPointers() {
+  draftPinchPointers.forEach((point, pointerId) => {
+    try {
+      draftGridScrollElement?.setPointerCapture?.(pointerId);
+    } catch (error) {
+      // The pointer may already have ended; the next pointer event will clean it up.
+    }
+  });
+}
+
+function beginDraftPinchGesture() {
+  const [firstPoint, secondPoint] = getDraftPinchGesturePoints();
+
+  if (!firstPoint || !secondPoint) {
+    return;
+  }
+
+  const startDistance = getDraftGestureDistance(firstPoint, secondPoint);
+
+  if (startDistance < 8) {
+    return;
+  }
+
+  draftPinchState = {
+    startDistance,
+    startCellSize: draftCellSize,
+    didZoom: false
+  };
+  cancelDraftLineDragForPinch();
+  captureDraftPinchPointers();
+}
+
+function updateDraftPinchGesture(event = null) {
+  const [firstPoint, secondPoint] = getDraftPinchGesturePoints();
+
+  if (!firstPoint || !secondPoint) {
+    return;
+  }
+
+  if (!draftPinchState) {
+    beginDraftPinchGesture();
+  }
+
+  if (!draftPinchState) {
+    return;
+  }
+
+  event?.preventDefault();
+  const distance = getDraftGestureDistance(firstPoint, secondPoint);
+  const scale = distance / draftPinchState.startDistance;
+  const center = getDraftGestureCenter(firstPoint, secondPoint);
+  const didZoom = setDraftZoomCellSize(draftPinchState.startCellSize * scale, {
+    anchorClientX: center.clientX,
+    anchorClientY: center.clientY,
+    shouldRecord: false
+  });
+
+  if (didZoom) {
+    draftPinchState.didZoom = true;
+  }
+}
+
+function finishDraftPinchGesture() {
+  const didZoom = draftPinchState?.didZoom;
+
+  draftPinchState = null;
+
+  if (didZoom) {
+    suppressNextDraftCellClick();
+    scheduleDraftAutosave();
+    scheduleDraftHistoryCommit();
+  }
+}
+
+function handleDraftPinchPointerDown(event) {
+  if (event.pointerType === "mouse" || !isDraftPinchTarget(event.target)) {
+    return;
+  }
+
+  draftPinchPointers.set(event.pointerId, {
+    clientX: event.clientX,
+    clientY: event.clientY
+  });
+
+  if (draftPinchPointers.size >= 2) {
+    event.preventDefault();
+    updateDraftPinchGesture(event);
+  }
+}
+
+function handleDraftPinchPointerMove(event) {
+  if (!draftPinchPointers.has(event.pointerId)) {
+    return;
+  }
+
+  draftPinchPointers.set(event.pointerId, {
+    clientX: event.clientX,
+    clientY: event.clientY
+  });
+
+  if (draftPinchPointers.size >= 2) {
+    updateDraftPinchGesture(event);
+  }
+}
+
+function handleDraftPinchPointerEnd(event) {
+  if (!draftPinchPointers.has(event.pointerId)) {
+    return;
+  }
+
+  draftPinchPointers.delete(event.pointerId);
+
+  if (draftPinchPointers.size < 2) {
+    finishDraftPinchGesture();
+  }
+}
+
+function handleDraftWheelZoom(event) {
+  if (!drawdownScrollElement || !isDraftPinchTarget(event.target)) {
+    return;
+  }
+
+  event.preventDefault();
+  const { deltaY } = normalizeDraftWheelDelta(event);
+  const clampedDeltaY = Math.max(-120, Math.min(120, deltaY));
+  const zoomFactor = Math.exp(-clampedDeltaY * 0.006);
+  const didZoom = setDraftZoomCellSize(draftCellSize * zoomFactor, {
+    anchorClientX: event.clientX,
+    anchorClientY: event.clientY,
+    shouldRecord: false
+  });
+
+  if (didZoom) {
+    scheduleDraftAutosave();
+    scheduleDraftHistoryCommit();
+  }
+}
+
+function handleDraftGestureStart(event) {
+  if (!isDraftPinchTarget(event.target)) {
+    return;
+  }
+
+  event.preventDefault();
+  draftGestureZoomStartCellSize = draftCellSize;
+}
+
+function handleDraftGestureChange(event) {
+  if (
+    !draftGestureZoomStartCellSize ||
+    !Number.isFinite(event.scale) ||
+    !isDraftPinchTarget(event.target)
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  const didZoom = setDraftZoomCellSize(draftGestureZoomStartCellSize * event.scale, {
+    anchorClientX: event.clientX,
+    anchorClientY: event.clientY,
+    shouldRecord: false
+  });
+
+  if (didZoom) {
+    scheduleDraftAutosave();
+    scheduleDraftHistoryCommit();
+  }
+}
+
+function handleDraftGestureEnd() {
+  draftGestureZoomStartCellSize = null;
 }
 
 function attachDraftMirrorWheelForwarding() {
@@ -9058,6 +10116,30 @@ if (drawdownScrollElement) {
   drawdownScrollElement.addEventListener("scroll", syncDraftScrollMirrors, { passive: true });
 }
 
+if (draftGridScrollElement) {
+  draftGridScrollElement.addEventListener("pointerdown", handleDraftPinchPointerDown, { passive: false });
+  draftGridScrollElement.addEventListener("wheel", forwardDraftWheel, { passive: false });
+  draftGridScrollElement.addEventListener("gesturestart", handleDraftGestureStart, { passive: false });
+  draftGridScrollElement.addEventListener("gesturechange", handleDraftGestureChange, { passive: false });
+  draftGridScrollElement.addEventListener("gestureend", handleDraftGestureEnd);
+}
+
+if (draftStageElement) {
+  draftStageElement.addEventListener("wheel", forwardDraftWheel, { passive: false });
+}
+
+window.addEventListener("pointermove", handleDraftPinchPointerMove, { passive: false });
+window.addEventListener("pointerup", handleDraftPinchPointerEnd);
+window.addEventListener("pointercancel", handleDraftPinchPointerEnd);
+window.addEventListener("blur", () => {
+  activeDraftLineSkipKeys.clear();
+  activeDraftLineSkipKey = null;
+  updateDraftLinePreviewFromState();
+  draftPinchPointers.clear();
+  finishDraftPinchGesture();
+  handleDraftGestureEnd();
+});
+
 attachDraftMirrorWheelForwarding();
 
 window.addEventListener("load", scheduleDraftStageHeightUpdate);
@@ -9082,6 +10164,7 @@ function renderDraftStage() {
   renderTreadling();
   renderDrawdown();
   syncPatternTextPanel();
+  refreshFloatingSelvageHighlights();
   scheduleDraftLayoutUpdate();
   scheduleDraftStageHeightUpdate();
 }
@@ -9099,10 +10182,14 @@ function renderAll() {
 
 function canPatchDrawdownCells(renderStyle = getDraftRenderStyle()) {
   const div = document.getElementById("drawdown");
+  const directCellCount = div
+    ? Array.from(div.children).filter(child => child.classList.contains("drawdown-cell")).length
+    : 0;
+
   return (
     ["structure", "color"].includes(renderStyle) &&
     div?.classList.contains("grid") &&
-    div.children.length === warp * picks
+    directCellCount === warp * picks
   );
 }
 
@@ -9120,6 +10207,7 @@ function finishLocalDraftPatch() {
   renderFabricPreviewModal();
   syncPatternColorUsageUI();
   syncPatternTextPanel();
+  refreshFloatingSelvageHighlights();
   scheduleDraftAutosave();
   scheduleDraftHistoryCommit();
 }
@@ -9322,6 +10410,58 @@ function getDraftLineCellFromPoint(clientX, clientY, grid) {
   return element?.closest?.(`#${grid} button.cell`) || null;
 }
 
+function normalizeDraftLineSkipKey(event) {
+  const codeMatch = String(event.code || "").match(/^(?:Digit|Numpad)([0-9])$/);
+
+  if (codeMatch) {
+    return codeMatch[1];
+  }
+
+  return /^[0-9]$/.test(event.key) ? event.key : null;
+}
+
+function updateDraftLinePreviewFromState() {
+  if (draftLineDragState?.lastEndTarget) {
+    updateDraftLinePreview(draftLineDragState.lastEndTarget);
+  }
+}
+
+function handleDraftLineSkipKeyDown(event) {
+  const skipKey = normalizeDraftLineSkipKey(event);
+
+  if (skipKey === null || isTextEditingShortcutTarget(event.target)) {
+    return;
+  }
+
+  activeDraftLineSkipKeys.add(skipKey);
+
+  if (activeDraftLineSkipKey !== skipKey) {
+    activeDraftLineSkipKey = skipKey;
+    updateDraftLinePreviewFromState();
+  }
+
+  if (draftLineDragState) {
+    event.preventDefault();
+  }
+}
+
+function handleDraftLineSkipKeyUp(event) {
+  const skipKey = normalizeDraftLineSkipKey(event);
+
+  if (skipKey === null) {
+    return;
+  }
+
+  activeDraftLineSkipKeys.delete(skipKey);
+
+  if (activeDraftLineSkipKey !== skipKey) {
+    return;
+  }
+
+  activeDraftLineSkipKey = Array.from(activeDraftLineSkipKeys).pop() || null;
+  updateDraftLinePreviewFromState();
+}
+
 function areDraftLineTargetsEqual(left, right) {
   if (!left || !right || left.grid !== right.grid) {
     return false;
@@ -9368,14 +10508,40 @@ function getThreadingLineCells(startTarget, endTarget) {
   return cells;
 }
 
-function getDraftLineCells(startTarget, endTarget) {
+function getActiveDraftLineSkipCount() {
+  return activeDraftLineSkipKey === null ? 0 : Number.parseInt(activeDraftLineSkipKey, 10) || 0;
+}
+
+function getDraftLineCellSkipAxisValue(grid, cell) {
+  return grid === "threading" ? cell.warpIndex : cell.pickIndex;
+}
+
+function filterDraftLineCellsForSkip(startTarget, cells, skipCount = getActiveDraftLineSkipCount()) {
+  const normalizedSkipCount = Math.max(0, Math.min(9, Number.parseInt(skipCount, 10) || 0));
+
+  if (!normalizedSkipCount || !cells.length) {
+    return cells;
+  }
+
+  const stepSize = normalizedSkipCount + 1;
+  const startAxisValue = startTarget.grid === "threading" ? startTarget.warpIndex : startTarget.pickIndex;
+
+  return cells.filter(cell => (
+    Math.abs(getDraftLineCellSkipAxisValue(startTarget.grid, cell) - startAxisValue) % stepSize === 0
+  ));
+}
+
+function getDraftLineCells(startTarget, endTarget, skipCount = getActiveDraftLineSkipCount()) {
+  let cells;
+
   if (startTarget.grid === "threading") {
-    return getThreadingLineCells(startTarget, endTarget);
+    cells = getThreadingLineCells(startTarget, endTarget);
+    return filterDraftLineCellsForSkip(startTarget, cells, skipCount);
   }
 
   const start = getDraftLineTargetCoordinates(startTarget);
   const end = getDraftLineTargetCoordinates(endTarget);
-  const cells = [];
+  cells = [];
   const seen = new Set();
   let x = start.x;
   let y = start.y;
@@ -9412,7 +10578,7 @@ function getDraftLineCells(startTarget, endTarget) {
     }
   }
 
-  return cells;
+  return filterDraftLineCellsForSkip(startTarget, cells, skipCount);
 }
 
 function getDraftLinePreviewCellElement(grid, cell) {
@@ -9621,6 +10787,7 @@ function beginDraftLineDrag(event, target) {
   draftLineDragState = {
     pointerId: event.pointerId,
     startTarget: target,
+    lastEndTarget: target,
     startX: event.clientX,
     startY: event.clientY,
     didMove: false
@@ -9638,9 +10805,11 @@ function updateDraftLineDrag(event) {
     draftLineDragState.didMove = true;
   }
 
-  updateDraftLinePreview(getDraftLineTargetFromCell(
+  const endTarget = getDraftLineTargetFromCell(
     getDraftLineCellFromPoint(event.clientX, event.clientY, draftLineDragState.startTarget.grid)
-  ));
+  );
+  draftLineDragState.lastEndTarget = endTarget;
+  updateDraftLinePreview(endTarget);
 }
 
 function endDraftLineDrag(event) {
@@ -10532,10 +11701,27 @@ function renderWarpRuler() {
   }
 }
 
+function fitPickRulerToLabels(div, labels) {
+  const defaultWidth = parseCssLength("2.8rem", div);
+  const rightPadding = Math.max(8, draftCellSize * 0.22);
+  const requiredWidth = labels.reduce((maxWidth, label) => {
+    const mark = label.parentElement;
+    const labelRight = (mark?.offsetLeft || 0) + label.offsetLeft + label.offsetWidth + rightPadding;
+    return Math.max(maxWidth, labelRight);
+  }, defaultWidth);
+  const nextWidth = Math.ceil(Math.max(defaultWidth, requiredWidth));
+
+  div.style.width = `${nextWidth}px`;
+  div.style.minWidth = `${nextWidth}px`;
+}
+
 function renderPickRuler() {
   const div = document.getElementById("pick-ruler");
   const rowHeights = getDrawdownRowHeightsForRender(getDraftRenderStyle());
+  const labels = [];
   div.innerHTML = "";
+  div.style.width = "";
+  div.style.minWidth = "";
   div.style.gridTemplateRows = formatGridTrackList(rowHeights);
 
   for (let j = 0; j < picks; j++) {
@@ -10548,10 +11734,13 @@ function renderPickRuler() {
       label.className = "pick-ruler-label";
       label.textContent = String(j + 1);
       mark.appendChild(label);
+      labels.push(label);
     }
 
     div.appendChild(mark);
   }
+
+  fitPickRulerToLabels(div, labels);
 }
 
 function renderPickToolbar() {
