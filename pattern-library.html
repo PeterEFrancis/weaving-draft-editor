@@ -1,0 +1,3483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pattern Library · Weaving Draft Editor</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #f7f1e3;
+      --bg-warm: #ead8bf;
+      --ink: #2f241d;
+      --accent: #aa4a2b;
+      --accent-dark: #7a321c;
+      --sage: #546f4c;
+      --card: rgba(255, 252, 245, 0.9);
+      --line: rgba(47, 36, 29, 0.14);
+      --draft-cell-size: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(170, 74, 43, 0.12), transparent 34%),
+        radial-gradient(circle at right 18%, rgba(84, 111, 76, 0.12), transparent 30%),
+        linear-gradient(180deg, var(--bg-cream) 0%, #fdfaf4 48%, var(--bg-warm) 100%);
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: clamp(1rem, 2.2vw, 2rem);
+    }
+
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
+    }
+
+    .header-control-group {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 0 0 auto;
+      padding: 0.4rem;
+      border: 1px solid rgba(47, 36, 29, 0.08);
+      border-radius: 1.1rem;
+      background: rgba(255, 255, 255, 0.45);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .header-render-group {
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .home-link {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 2.65rem;
+      height: 2.65rem;
+      padding: 0.62rem 0.88rem;
+      border: 1px solid rgba(47, 36, 29, 0.1);
+      border-radius: 0.9rem;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--ink);
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+      border-color: rgba(170, 74, 43, 0.38);
+      background: #ffffff;
+      color: var(--accent-dark);
+    }
+
+    .toolbar-action-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1rem;
+      height: 1rem;
+      flex: 0 0 auto;
+    }
+
+    .toolbar-action-icon svg {
+      display: block;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .control-label,
+    .pattern-category-title,
+    .pattern-kicker {
+      color: var(--accent-dark);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .library-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .sidebar-card,
+    .draft-variant {
+      border: 1px solid var(--line);
+      border-radius: 1.4rem;
+      background: var(--card);
+      box-shadow: 0 1rem 2.5rem rgba(47, 36, 29, 0.07);
+      backdrop-filter: blur(10px);
+    }
+
+    .sidebar-card {
+      position: sticky;
+      top: 1rem;
+      max-height: calc(100vh - 2rem);
+      overflow: hidden;
+    }
+
+    .pattern-list {
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      padding: 0.3rem;
+      scrollbar-color: rgba(170, 74, 43, 0.34) transparent;
+    }
+
+    .pattern-category + .pattern-category {
+      margin-top: 0.28rem;
+    }
+
+    .pattern-category-title {
+      margin: 0;
+      padding: 0.4rem 0.48rem 0.18rem;
+      line-height: 1.15;
+    }
+
+    .pattern-button {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      align-items: center;
+      padding: 0.3rem 0.48rem;
+      border: 1px solid transparent;
+      border-radius: 0.65rem;
+      background: transparent;
+      color: var(--ink);
+      font-size: 0.92rem;
+      line-height: 1.15;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .pattern-button:hover,
+    .pattern-button:focus-visible {
+      border-color: rgba(170, 74, 43, 0.2);
+      background: rgba(170, 74, 43, 0.07);
+      outline: none;
+    }
+
+    .pattern-button[aria-current="true"] {
+      border-color: rgba(170, 74, 43, 0.28);
+      background: linear-gradient(135deg, rgba(170, 74, 43, 0.16), rgba(200, 113, 55, 0.08));
+      color: var(--accent-dark);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .pattern-button-name {
+      overflow: hidden;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .detail-column {
+      min-width: 0;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 1.1rem;
+      padding: 0.25rem 0.25rem 0.4rem;
+    }
+
+    .pattern-title {
+      margin: 0.2rem 0 0;
+      font-size: clamp(1.8rem, 3.3vw, 3rem);
+      line-height: 1;
+      letter-spacing: -0.035em;
+    }
+
+    .render-field {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 16rem;
+    }
+
+    .render-field .control-label {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .render-field .form-select {
+      flex: 1 1 9.5rem;
+      min-width: 9.5rem;
+      min-height: 2.7rem;
+      border-color: rgba(47, 36, 29, 0.2);
+      border-radius: 0.8rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .render-field .form-select:focus {
+      border-color: rgba(170, 74, 43, 0.5);
+      box-shadow: 0 0 0 0.22rem rgba(170, 74, 43, 0.12);
+    }
+
+    .open-button {
+      min-height: 2.7rem;
+      padding: 0.68rem 1rem;
+      border: 0;
+      border-radius: 0.8rem;
+      background: linear-gradient(135deg, var(--accent), #c87137);
+      color: #ffffff;
+      font-weight: 800;
+      box-shadow: 0 0.65rem 1.4rem rgba(170, 74, 43, 0.2);
+    }
+
+    .open-button:hover,
+    .open-button:focus-visible {
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      outline: none;
+    }
+
+    .family-drafts {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .draft-variant {
+      min-width: 0;
+      padding: clamp(1rem, 2.4vw, 1.75rem);
+      scroll-margin-top: 1rem;
+    }
+
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 0.85rem;
+    }
+
+    .variant-title {
+      margin: 0 0 0.32rem;
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    .variant-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .draft-frame {
+      width: max-content;
+      min-width: 0;
+      overflow: visible;
+      border: 1px solid rgba(47, 36, 29, 0.16);
+      border-radius: 1.15rem;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)),
+        repeating-linear-gradient(45deg, rgba(47, 36, 29, 0.03) 0 1px, transparent 1px 7px);
+    }
+
+    .draft-scroll {
+      width: max-content;
+      min-height: 0;
+      max-height: none;
+      overflow: visible;
+      padding: clamp(1rem, 2vw, 1.7rem);
+    }
+
+    .draft-sheet {
+      display: grid;
+      width: max-content;
+      min-width: 0;
+      grid-template-columns: max-content max-content;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: start;
+    }
+
+    .draft-pane {
+      min-width: 0;
+    }
+
+    .draft-grid {
+      display: grid;
+      width: max-content;
+      overflow: hidden;
+      border-top: 1px solid #000000;
+      border-left: 1px solid #000000;
+      background: #ffffff;
+    }
+
+    .draft-cell {
+      position: relative;
+      width: var(--draft-cell-size);
+      height: var(--draft-cell-size);
+      overflow: hidden;
+      border-right: 1px solid rgba(0, 0, 0, 0.54);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.54);
+      background: #ffffff;
+    }
+
+    .matrix-cell.is-active {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    }
+
+    .tieup-cell.is-active {
+      background: var(--ink);
+    }
+
+    .drawdown-cell.structure-on {
+      background: var(--ink);
+    }
+
+    .drawdown-cell.faced-warp::after,
+    .drawdown-cell.faced-weft::after {
+      content: "";
+      position: absolute;
+      opacity: 0.36;
+      background: var(--crossing-color, #ffffff);
+    }
+
+    .drawdown-cell.faced-warp::after {
+      left: 0;
+      right: 0;
+      top: 38%;
+      height: 24%;
+    }
+
+    .drawdown-cell.faced-weft::after {
+      top: 0;
+      bottom: 0;
+      left: 38%;
+      width: 24%;
+    }
+
+    .drawdown-realistic {
+      display: block;
+      width: fit-content;
+      line-height: 0;
+      background: #ffffff;
+    }
+
+    .drawdown-realistic-canvas {
+      display: block;
+    }
+
+    .description-card {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .pattern-description {
+      max-width: 60rem;
+      margin: 0;
+      color: rgba(47, 36, 29, 0.76);
+      line-height: 1.58;
+    }
+
+    .pattern-dimensions {
+      flex: 0 0 auto;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(84, 111, 76, 0.11);
+      color: #3c5236;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .visually-hidden-live {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 960px) {
+      .library-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar-card {
+        position: static;
+        max-height: none;
+      }
+
+      .pattern-list {
+        display: grid;
+        max-height: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.25rem 0.55rem;
+      }
+
+      .pattern-category + .pattern-category {
+        margin-top: 0;
+      }
+
+      .detail-header {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page-shell {
+        padding: 0.75rem;
+      }
+
+      .page-header {
+        align-items: stretch;
+      }
+
+      .pattern-list {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-header,
+      .variant-header,
+      .description-card {
+        flex-direction: column;
+      }
+
+      .variant-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .render-field,
+      .open-button {
+        flex: 1 1 12rem;
+      }
+
+      .header-render-group {
+        flex: 1 1 12rem;
+      }
+
+      .header-render-group .render-field {
+        width: 100%;
+      }
+
+      .draft-scroll {
+        padding: 0.9rem;
+      }
+
+      .pattern-dimensions {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header" aria-label="Pattern library controls">
+      <div class="header-control-group">
+        <a class="home-link" href="index.html" aria-label="Back to home" title="Back to home">
+          <span class="toolbar-action-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10.5 12 3l9 7.5"></path>
+              <path d="M5.5 9.5V21h13V9.5"></path>
+              <path d="M9.5 21v-6h5v6"></path>
+            </svg>
+          </span>
+          <span>Home</span>
+        </a>
+      </div>
+
+      <div class="header-control-group header-render-group">
+        <label class="render-field" for="render-style">
+          <span class="control-label">Render Style</span>
+          <select id="render-style" class="form-select" aria-label="Drawdown render style">
+            <option value="structure">Structure</option>
+            <option value="color" selected>Color</option>
+            <option value="realistic">Interlacement</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <div class="library-layout">
+      <aside class="sidebar-card">
+        <nav id="pattern-list" class="pattern-list" aria-label="Common weaving patterns"></nav>
+      </aside>
+
+      <section class="detail-column" aria-labelledby="pattern-title">
+        <div class="detail-header">
+          <div>
+            <div id="pattern-kicker" class="pattern-kicker"></div>
+            <h2 id="pattern-title" class="pattern-title"></h2>
+          </div>
+        </div>
+        <div id="family-drafts" class="family-drafts"></div>
+      </section>
+    </div>
+    <div id="selection-announcer" class="visually-hidden-live" aria-live="polite"></div>
+  </main>
+
+  <script>
+    const yarnId = index => `pattern-color-${index + 1}`;
+    const transferStoragePrefix = "weaving-cross-editor-transfer.v1.";
+    const transferQueryParam = "transfer";
+    const defaultPreviewSett = 60;
+    const maxRealisticDrawdownCanvasDimension = 8192;
+    const maxRealisticDrawdownCanvasPixels = 16000000;
+    const previewColorCache = new Map();
+    let selectedFamily = null;
+    let renderStyle = "color";
+
+    function makePalette(...colors) {
+      return colors.map((color, index) => ({
+        id: yarnId(index),
+        value: color.value,
+        thickness: color.thickness || 1
+      }));
+    }
+
+    function makeCircularTieup(shaftCount, liftCount) {
+      return Array.from({ length: shaftCount }, (_, treadleIndex) =>
+        Array.from({ length: shaftCount }, (_, shaftIndex) =>
+          ((shaftIndex - treadleIndex + shaftCount) % shaftCount) < liftCount ? 1 : 0
+        )
+      );
+    }
+
+    function makeTieupFromLiftedShafts(shaftCount, liftedShaftsByTreadle) {
+      return liftedShaftsByTreadle.map(liftedShafts =>
+        Array.from({ length: shaftCount }, (_, shaftIndex) =>
+          liftedShafts.includes(shaftIndex) ? 1 : 0
+        )
+      );
+    }
+
+    function buildDraftFromTieup({
+      shafts,
+      tieup,
+      threadingSequence,
+      treadlingSequence,
+      patternColors,
+      warp,
+      picks,
+      warpColorAt = () => patternColors[0].id,
+      weftColorAt = () => patternColors[1]?.id || patternColors[0].id
+    }) {
+      const treadles = tieup.length;
+      const threading = Array.from({ length: shafts }, () => Array(warp).fill(0));
+      const treadling = Array.from({ length: picks }, () => Array(treadles).fill(0));
+
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const shaftIndex = threadingSequence[warpIndex % threadingSequence.length];
+        threading[shaftIndex][warpIndex] = warpColorAt(warpIndex);
+      }
+
+      for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+        const entry = treadlingSequence[pickIndex % treadlingSequence.length];
+        const activeTreadles = Array.isArray(entry) ? entry : [entry];
+        const colorId = weftColorAt(pickIndex);
+
+        activeTreadles.forEach(treadleIndex => {
+          treadling[pickIndex][treadleIndex] = colorId;
+        });
+      }
+
+      return {
+        shafts,
+        treadles,
+        warp,
+        picks,
+        threading,
+        treadling,
+        tieup: tieup.map(row => row.slice()),
+        patternColors,
+        activePatternColorId: patternColors[0].id,
+        nextPatternColorNumber: patternColors.length + 1
+      };
+    }
+
+    function buildLiftPlanDraft({
+      shafts,
+      threadingSequence,
+      pickLifts,
+      patternColors,
+      warp = threadingSequence.length,
+      picks = pickLifts.length,
+      warpColorAt,
+      weftColorAt
+    }) {
+      const needsEmptyShed = pickLifts.some(lift => lift.length === 0);
+      const treadles = shafts + (needsEmptyShed ? 1 : 0);
+      const emptyShedTreadle = needsEmptyShed ? treadles - 1 : null;
+      const tieup = Array.from({ length: treadles }, (_, treadleIndex) =>
+        Array.from({ length: shafts }, (_, shaftIndex) =>
+          treadleIndex < shafts && treadleIndex === shaftIndex ? 1 : 0
+        )
+      );
+      const treadlingSequence = pickLifts.map(lift => lift.length ? lift : [emptyShedTreadle]);
+
+      return buildDraftFromTieup({
+        shafts,
+        tieup,
+        threadingSequence,
+        treadlingSequence,
+        patternColors,
+        warp,
+        picks,
+        warpColorAt,
+        weftColorAt
+      });
+    }
+
+    function buildPlainWeave() {
+      const colors = makePalette(
+        { value: "#415a6b" },
+        { value: "#dfcda9" }
+      );
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: [[1, 0], [0, 1]],
+        threadingSequence: [0, 1],
+        treadlingSequence: [0, 1],
+        patternColors: colors,
+        warp: 18,
+        picks: 18
+      });
+    }
+
+    function buildLogCabin() {
+      const colors = makePalette(
+        { value: "#324f5a" },
+        { value: "#e0b35a" }
+      );
+      const blockSize = 8;
+      const colorAt = index => {
+        const blockIndex = Math.floor(index / blockSize) % 2;
+        return colors[(index % 2) ^ blockIndex].id;
+      };
+
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: makeTieupFromLiftedShafts(2, [[0], [1]]),
+        threadingSequence: [0, 1],
+        treadlingSequence: [0, 1],
+        patternColors: colors,
+        warp: 32,
+        picks: 32,
+        warpColorAt: colorAt,
+        weftColorAt: colorAt
+      });
+    }
+
+    function buildShadowWeave() {
+      const colors = makePalette(
+        { value: "#3f4f6c" },
+        { value: "#d7af69" }
+      );
+      const shadowSequence = [0, 2, 1, 3, 2, 0, 3, 0, 2, 3, 1, 2];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: shadowSequence,
+        treadlingSequence: shadowSequence,
+        patternColors: colors,
+        warp: shadowSequence.length * 2,
+        picks: shadowSequence.length * 2,
+        warpColorAt: warpIndex => colors[warpIndex % 2].id,
+        weftColorAt: pickIndex => colors[pickIndex % 2].id
+      });
+    }
+
+    function buildHoundstooth() {
+      const colors = makePalette(
+        { value: "#263f4b" },
+        { value: "#eadfc7" }
+      );
+      const colorAt = index => colors[Math.floor(index / 4) % 2].id;
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: [0, 1, 2, 3],
+        treadlingSequence: [0, 1, 2, 3],
+        patternColors: colors,
+        warp: 32,
+        picks: 32,
+        warpColorAt: colorAt,
+        weftColorAt: colorAt
+      });
+    }
+
+    function buildTwill(liftCount, colors) {
+      const shafts = liftCount === 1 ? 3 : 4;
+      return buildDraftFromTieup({
+        shafts,
+        tieup: makeCircularTieup(shafts, liftCount),
+        threadingSequence: Array.from({ length: shafts }, (_, index) => index),
+        treadlingSequence: Array.from({ length: shafts }, (_, index) => index),
+        patternColors: colors,
+        warp: shafts * 6,
+        picks: shafts * 6
+      });
+    }
+
+    function buildSatin(endCount, move, colors) {
+      const bindingOrder = Array.from(
+        { length: endCount },
+        (_, index) => (index * move) % endCount
+      );
+      const tieup = bindingOrder.map(bindingShaft =>
+        Array.from({ length: endCount }, (_, shaftIndex) =>
+          shaftIndex !== bindingShaft ? 1 : 0
+        )
+      );
+      const repeatCount = endCount <= 5 ? 4 : 3;
+
+      return buildDraftFromTieup({
+        shafts: endCount,
+        tieup,
+        threadingSequence: Array.from({ length: endCount }, (_, index) => index),
+        treadlingSequence: Array.from({ length: endCount }, (_, index) => index),
+        patternColors: colors,
+        warp: endCount * repeatCount,
+        picks: endCount * repeatCount
+      });
+    }
+
+    function buildBlockDamask() {
+      const colors = makePalette(
+        { value: "#b58e4d" },
+        { value: "#eadcbf" }
+      );
+      const bindingOrder = [0, 2, 4, 1, 3];
+      const firstBlock = [0, 1, 2, 3, 4];
+      const secondBlock = [5, 6, 7, 8, 9];
+      const threadingSequence = [
+        0, 1, 2, 3, 4,
+        0, 1, 2, 3, 4,
+        5, 6, 7, 8, 9,
+        5, 6, 7, 8, 9
+      ];
+      const tieup = Array.from({ length: 10 }, (_, treadleIndex) => {
+        const binding = bindingOrder[treadleIndex % bindingOrder.length];
+        const firstIsWarpFaced = treadleIndex < 5;
+        const warpFacedBlock = firstIsWarpFaced ? firstBlock : secondBlock;
+        const weftFacedBlock = firstIsWarpFaced ? secondBlock : firstBlock;
+        const warpBinding = firstIsWarpFaced ? binding : binding + 5;
+        const weftBinding = firstIsWarpFaced ? binding + 5 : binding;
+        const liftedShafts = warpFacedBlock
+          .filter(shaftIndex => shaftIndex !== warpBinding)
+          .concat(weftFacedBlock.filter(shaftIndex => shaftIndex === weftBinding));
+
+        return Array.from({ length: 10 }, (_, shaftIndex) =>
+          liftedShafts.includes(shaftIndex) ? 1 : 0
+        );
+      });
+
+      return buildDraftFromTieup({
+        shafts: 10,
+        tieup,
+        threadingSequence,
+        treadlingSequence: Array.from({ length: 10 }, (_, index) => index),
+        patternColors: colors,
+        warp: 20,
+        picks: 20
+      });
+    }
+
+    function buildTwillDamask() {
+      const colors = makePalette(
+        { value: "#6b596f" },
+        { value: "#d9c9ad" }
+      );
+      const firstBlock = [0, 1, 2, 3];
+      const secondBlock = [4, 5, 6, 7];
+      const tieup = Array.from({ length: 8 }, (_, treadleIndex) => {
+        const step = treadleIndex % 4;
+        const firstIsWarpFaced = treadleIndex < 4;
+        const liftedShafts = firstIsWarpFaced
+          ? firstBlock.filter(shaftIndex => shaftIndex !== step).concat(7 - step)
+          : [step].concat(secondBlock.filter(shaftIndex => shaftIndex !== 7 - step));
+
+        return Array.from({ length: 8 }, (_, shaftIndex) =>
+          liftedShafts.includes(shaftIndex) ? 1 : 0
+        );
+      });
+      const threadingSequence = [
+        ...firstBlock, ...firstBlock, ...firstBlock,
+        ...secondBlock, ...secondBlock, ...secondBlock
+      ];
+      const treadlingSequence = [
+        ...firstBlock, ...firstBlock, ...firstBlock,
+        ...secondBlock, ...secondBlock, ...secondBlock
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 8,
+        tieup,
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length
+      });
+    }
+
+    function buildHoneycomb() {
+      const colors = makePalette(
+        { value: "#684333" },
+        { value: "#e2c996" },
+        { value: "#b9683e", thickness: 1.6 }
+      );
+      const tieup = [
+        [1, 0, 1, 1],
+        [0, 1, 1, 1],
+        [1, 1, 1, 0],
+        [1, 1, 0, 1],
+        [1, 0, 1, 0],
+        [0, 1, 0, 1]
+      ];
+      const treadlingSequence = [0, 1, 0, 1, 4, 5, 2, 3, 2, 3, 4, 5];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup,
+        threadingSequence: [0, 1, 0, 1, 2, 3, 2, 3],
+        treadlingSequence,
+        patternColors: colors,
+        warp: 16,
+        picks: 24,
+        weftColorAt: pickIndex => [4, 5].includes(treadlingSequence[pickIndex % treadlingSequence.length])
+          ? colors[2].id
+          : colors[1].id
+      });
+    }
+
+    function buildSummerAndWinter(shaftCount) {
+      const colors = makePalette(
+        { value: "#405f67" },
+        { value: "#eadcbf" },
+        { value: "#b84d33", thickness: 1.55 }
+      );
+
+      if (shaftCount === 4) {
+        const blockA = [0, 2, 1, 2];
+        const blockB = [0, 3, 1, 3];
+        const tieup = [
+          [1, 1, 0, 0],
+          [0, 0, 1, 1],
+          [1, 0, 0, 1],
+          [0, 1, 0, 1],
+          [1, 0, 1, 0],
+          [0, 1, 1, 0]
+        ];
+        const treadlingSequence = [
+          0, 2, 1, 3,
+          0, 2, 1, 3,
+          0, 4, 1, 5,
+          0, 4, 1, 5
+        ];
+
+        return buildDraftFromTieup({
+          shafts: 4,
+          tieup,
+          threadingSequence: blockA.concat(blockA, blockB, blockB),
+          treadlingSequence,
+          patternColors: colors,
+          warp: 16,
+          picks: 16,
+          warpColorAt: () => colors[0].id,
+          weftColorAt: pickIndex => [0, 1].includes(treadlingSequence[pickIndex])
+            ? colors[0].id
+            : colors[2].id
+        });
+      }
+
+      const patternShafts = Array.from({ length: shaftCount - 2 }, (_, index) => index + 2);
+      const profile = patternShafts;
+      const threadingSequence = profile.flatMap(patternShaft => [0, patternShaft, 1, patternShaft]);
+      const tieup = [
+        Array.from({ length: shaftCount }, (_, shaftIndex) => shaftIndex === 0 ? 1 : 0),
+        Array.from({ length: shaftCount }, (_, shaftIndex) => shaftIndex === 1 ? 1 : 0),
+        ...patternShafts.map(omittedShaft =>
+          Array.from({ length: shaftCount }, (_, shaftIndex) =>
+            patternShafts.includes(shaftIndex) && shaftIndex !== omittedShaft ? 1 : 0
+          )
+        )
+      ];
+      const treadlingSequence = [];
+      const pickColors = [];
+
+      profile.forEach(patternShaft => {
+        for (let repeatIndex = 0; repeatIndex < 2; repeatIndex++) {
+          treadlingSequence.push(
+            [0, 1],
+            [0, patternShaft],
+            [2, 3],
+            [1, patternShaft]
+          );
+          pickColors.push(colors[0].id, colors[2].id, colors[0].id, colors[2].id);
+        }
+      });
+
+      return buildDraftFromTieup({
+        shafts: shaftCount,
+        tieup,
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => pickColors[pickIndex]
+      });
+    }
+
+    function expandAdvancedSummerWinterTreadling(profile, tieOrder) {
+      return profile.flatMap(blockIndex => {
+        const patternTreadle = blockIndex + 2;
+
+        return tieOrder.flatMap((tieTreadle, patternPickIndex) => [
+          patternPickIndex % 2 === 0 ? [2, 5] : [0, 1],
+          [tieTreadle, patternTreadle]
+        ]);
+      });
+    }
+
+    function buildAdvancedSummerAndWinter({ treadlingProfile, tieOrder }) {
+      const colors = makePalette(
+        { value: "#355d64" },
+        { value: "#eadfc8" },
+        { value: "#b94e36", thickness: 1.65 }
+      );
+      const threadingProfile = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0];
+      const threadingSequence = threadingProfile.flatMap(blockIndex => [
+        0,
+        blockIndex + 2,
+        1,
+        blockIndex + 2
+      ]);
+      const tieup = [
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 1, 0, 0, 0, 1, 1],
+        [0, 0, 1, 1, 0, 0, 0, 1],
+        [0, 0, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 1, 1, 1, 0]
+      ];
+      const treadlingSequence = expandAdvancedSummerWinterTreadling(
+        treadlingProfile,
+        tieOrder
+      );
+
+      return buildDraftFromTieup({
+        shafts: 8,
+        tieup,
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => pickIndex % 2 === 0 ? colors[1].id : colors[2].id
+      });
+    }
+
+    function buildSpotBronson() {
+      const colors = makePalette(
+        { value: "#6b6550" },
+        { value: "#e3d6b9" }
+      );
+      const blockProfile = [1, 2, 3, 2, 1, 2, 3, 2];
+      const threadingSequence = blockProfile.flatMap(patternShaft =>
+        [0, patternShaft, 0, patternShaft]
+      );
+      const treadlingSequence = [
+        0, 1, 0, 1,
+        ...blockProfile.flatMap(patternShaft =>
+          [patternShaft + 1, 0, patternShaft + 1, 0]
+        )
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [1, 2, 3],
+          [0],
+          [0, 1],
+          [0, 2],
+          [0, 3]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length
+      });
+    }
+
+    function buildBronsonLace() {
+      const colors = makePalette(
+        { value: "#73807a" },
+        { value: "#e6dcc4" }
+      );
+      const blockAThreading = [0, 2, 0, 2, 0, 1];
+      const blockBThreading = [0, 3, 0, 3, 0, 1];
+      const blockATreadling = [0, 2, 0, 2, 0, 1];
+      const blockBTreadling = [0, 3, 0, 3, 0, 1];
+      const threadingSequence = [
+        ...blockAThreading, ...blockAThreading,
+        ...blockBThreading, ...blockBThreading
+      ];
+      const treadlingSequence = [
+        ...blockATreadling, ...blockATreadling,
+        ...blockBTreadling, ...blockBTreadling
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0],
+          [1, 2, 3],
+          [1, 3],
+          [1, 2]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length
+      });
+    }
+
+    function buildHuckTexture() {
+      const colors = makePalette(
+        { value: "#426a63" },
+        { value: "#dbcbae" }
+      );
+      const blockAThreading = [1, 2, 1, 2, 1];
+      const blockBThreading = [0, 3, 0, 3, 0];
+      const threadingSequence = [
+        ...blockAThreading, ...blockBThreading,
+        ...blockAThreading, ...blockBThreading
+      ];
+      const treadlingSequence = [
+        2, 0, 2, 0, 2,
+        3, 1, 3, 1, 3,
+        4, 1, 4, 1, 4,
+        5, 0, 5, 0, 5
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0, 2],
+          [1, 3],
+          [1, 2, 3],
+          [0, 2, 3],
+          [0],
+          [1]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: 20,
+        picks: 20
+      });
+    }
+
+    function buildHuckLace() {
+      const colors = makePalette(
+        { value: "#426a63" },
+        { value: "#dbcbae" }
+      );
+      const blockAThreading = [0, 2, 0, 2, 0];
+      const blockBThreading = [1, 3, 1, 3, 1];
+      const blockATreadling = [0, 1, 0, 1, 0];
+      const blockBTreadling = [3, 2, 3, 2, 3];
+      const threadingSequence = [
+        ...blockAThreading, ...blockAThreading,
+        ...blockBThreading, ...blockBThreading
+      ];
+      const treadlingSequence = [
+        ...blockATreadling, ...blockATreadling,
+        ...blockBTreadling, ...blockBTreadling
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0, 2],
+          [1, 2],
+          [0, 3],
+          [1, 3]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length
+      });
+    }
+
+    function buildDiversifiedPlainWeave() {
+      const colors = makePalette(
+        { value: "#435f61" },
+        { value: "#e4d8bb" },
+        { value: "#bd6048", thickness: 2.1 }
+      );
+      const patternShafts = [2, 3, 4, 5, 6, 7];
+      const blockProfile = [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0];
+      const threadingSequence = blockProfile.flatMap(blockIndex => {
+        const tieDownShaft = blockIndex % 2 === 0 ? 1 : 0;
+        return [tieDownShaft, patternShafts[blockIndex], tieDownShaft];
+      });
+      const treadlingSequence = blockProfile.flatMap(blockIndex => {
+        const tieDownTreadle = blockIndex % 2 === 0 ? 1 : 0;
+        return [tieDownTreadle, blockIndex + 2, tieDownTreadle];
+      });
+
+      return buildDraftFromTieup({
+        shafts: 8,
+        tieup: makeTieupFromLiftedShafts(8, [
+          [0, 2, 4, 6],
+          [1, 3, 5, 7],
+          [0, 1, 2],
+          [1, 3, 4],
+          [0, 3, 4, 5],
+          [1, 4, 5, 6],
+          [0, 5, 6],
+          [1, 7]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length,
+        warpColorAt: warpIndex => warpIndex % 3 === 1 ? colors[2].id : colors[0].id,
+        weftColorAt: pickIndex => pickIndex % 3 === 1 ? colors[2].id : colors[1].id
+      });
+    }
+
+    function buildBasketWeave() {
+      const colors = makePalette(
+        { value: "#526b62" },
+        { value: "#e2d1b0" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: makeTieupFromLiftedShafts(2, [[0], [1]]),
+        threadingSequence: [0, 0, 1, 1],
+        treadlingSequence: [0, 0, 1, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildThreeByThreeBasketWeave() {
+      const colors = makePalette(
+        { value: "#526b62" },
+        { value: "#e2d1b0" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: makeTieupFromLiftedShafts(2, [[0], [1]]),
+        threadingSequence: [0, 0, 0, 1, 1, 1],
+        treadlingSequence: [0, 0, 0, 1, 1, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildWarpRib() {
+      const colors = makePalette(
+        { value: "#48616a" },
+        { value: "#d29b65", thickness: 1.6 }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: makeTieupFromLiftedShafts(2, [[0], [1]]),
+        threadingSequence: [0, 1],
+        treadlingSequence: [0, 0, 1, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildWeftRib() {
+      const colors = makePalette(
+        { value: "#48616a", thickness: 1.5 },
+        { value: "#d29b65" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 2,
+        tieup: makeTieupFromLiftedShafts(2, [[0], [1]]),
+        threadingSequence: [0, 0, 1, 1],
+        treadlingSequence: [0, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildWarpRep() {
+      const colors = makePalette(
+        { value: "#294d5a" },
+        { value: "#d7b267" },
+        { value: "#e3d8bf", thickness: 0.55 },
+        { value: "#a84f3f", thickness: 2.4 }
+      );
+      const blockA = [0, 2, 0, 2, 0, 2, 0, 2];
+      const blockB = [1, 3, 1, 3, 1, 3, 1, 3];
+      const threadingSequence = [...blockA, ...blockB, ...blockA, ...blockB];
+      const treadlingSequence = [
+        0, 1, 0, 1, 0, 1, 0, 1,
+        1, 0, 1, 0, 1, 0, 1, 0
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [[0, 3], [1, 2]]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length * 2,
+        warpColorAt: warpIndex => colors[warpIndex % 2].id,
+        weftColorAt: pickIndex => colors[pickIndex % 2 === 0 ? 3 : 2].id
+      });
+    }
+
+    function buildPointTwill() {
+      const colors = makePalette(
+        { value: "#3f6b70" },
+        { value: "#ddb980" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: [0, 1, 2, 3, 2, 1],
+        treadlingSequence: [0, 1, 2, 3, 2, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildPointTwillChevron() {
+      const colors = makePalette(
+        { value: "#3f6b70" },
+        { value: "#ddb980" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: [0, 1, 2, 3, 2, 1],
+        treadlingSequence: [0, 1, 2, 3],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildBrokenTwill() {
+      const colors = makePalette(
+        { value: "#7d4b3b" },
+        { value: "#d7c5a4" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: [3, 2, 1, 0, 3, 2, 0, 1, 2, 3, 0, 1],
+        treadlingSequence: [0, 1, 2, 3],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildHerringbone() {
+      const colors = makePalette(
+        { value: "#475968" },
+        { value: "#c99d73" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: [0, 1, 2, 3, 0, 3, 2, 1],
+        treadlingSequence: [0, 1, 2, 3],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildRosepath() {
+      const colors = makePalette(
+        { value: "#61527a" },
+        { value: "#e1c79c" }
+      );
+      const rosepathSequence = [0, 1, 2, 3, 0, 3, 2, 1];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: rosepathSequence,
+        treadlingSequence: rosepathSequence,
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildAdvancingTwill() {
+      const colors = makePalette(
+        { value: "#365f66" },
+        { value: "#d7b46e" }
+      );
+      const advancingSequence = Array.from({ length: 8 }, (_, start) =>
+        Array.from({ length: 5 }, (_, offset) => (start + offset) % 8)
+      ).flat();
+      const tieup = Array.from({ length: 8 }, (_, treadleIndex) =>
+        Array.from({ length: 8 }, (_, shaftIndex) => {
+          const relativeShaft = (shaftIndex - treadleIndex + 8) % 8;
+          return [0, 1, 2, 4].includes(relativeShaft) ? 1 : 0;
+        })
+      );
+
+      return buildDraftFromTieup({
+        shafts: 8,
+        tieup,
+        threadingSequence: advancingSequence,
+        treadlingSequence: advancingSequence,
+        patternColors: colors,
+        warp: advancingSequence.length,
+        picks: advancingSequence.length
+      });
+    }
+
+    function buildDoubleWeave(mode = "double-width") {
+      const colors = makePalette(
+        { value: "#355d70" },
+        { value: "#d29d50" }
+      );
+      const tieup = makeTieupFromLiftedShafts(4, [
+        [0],
+        [0, 1, 2],
+        [0, 2, 3],
+        [2]
+      ]);
+      const treadlingSequence = mode === "tube"
+        ? [0, 1, 3, 2]
+        : [0, 1, 2, 3];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup,
+        threadingSequence: [0, 1, 2, 3],
+        treadlingSequence,
+        patternColors: colors,
+        warp: 24,
+        picks: 24,
+        warpColorAt: warpIndex => colors[warpIndex % 2].id,
+        weftColorAt: pickIndex => colors[pickIndex % 2].id
+      });
+    }
+
+    function buildTurnedTaquete() {
+      const colors = makePalette(
+        { value: "#3c5668" },
+        { value: "#d2a85d" },
+        { value: "#e0d6c1", thickness: 0.75 }
+      );
+      const blockA = [0, 2, 1, 2];
+      const blockB = [0, 3, 1, 3];
+      const treadlingSequence = [
+        ...blockA, ...blockA, ...blockA,
+        ...blockB, ...blockB, ...blockB
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [1, 2],
+          [0, 3],
+          [0, 2],
+          [1, 3]
+        ]),
+        threadingSequence: [0, 1, 2, 3],
+        treadlingSequence,
+        patternColors: colors,
+        warp: 32,
+        picks: treadlingSequence.length,
+        warpColorAt: warpIndex => colors[warpIndex % 2].id,
+        weftColorAt: () => colors[2].id
+      });
+    }
+
+    function buildMonksBelt() {
+      const colors = makePalette(
+        { value: "#344f57" },
+        { value: "#ded2b7" },
+        { value: "#b5573f", thickness: 1.9 }
+      );
+      const blockA = [0, 1, 0, 1];
+      const blockB = [2, 3, 2, 3];
+      const threadingSequence = [
+        ...blockA, ...blockA,
+        ...blockB, ...blockB,
+        ...blockA, ...blockB
+      ];
+      const treadlingSequence = [
+        2, 0, 2, 1, 2, 0, 2, 1,
+        3, 0, 3, 1, 3, 0, 3, 1
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0, 2],
+          [1, 3],
+          [2, 3],
+          [0, 1]
+        ]),
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length,
+        picks: treadlingSequence.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => colors[pickIndex % 2 === 0 ? 2 : 1].id
+      });
+    }
+
+    function buildKrokbragd() {
+      const colors = makePalette(
+        { value: "#56483d" },
+        { value: "#e4d2ac", thickness: 1.35 },
+        { value: "#bd693d", thickness: 1.35 },
+        { value: "#567277", thickness: 1.35 }
+      );
+      const colorRows = [
+        [1, 1, 1],
+        [2, 2, 1],
+        [2, 1, 2],
+        [1, 2, 2],
+        [3, 3, 1],
+        [3, 1, 3],
+        [1, 3, 3],
+        [2, 3, 1]
+      ];
+      const weftColorIds = colorRows.flatMap(row =>
+        row.map(colorIndex => colors[colorIndex].id)
+      );
+
+      return buildDraftFromTieup({
+        shafts: 3,
+        tieup: makeTieupFromLiftedShafts(3, [
+          [1, 2],
+          [0, 2],
+          [0, 1]
+        ]),
+        threadingSequence: [0, 1, 2, 1],
+        treadlingSequence: [0, 1, 2],
+        patternColors: colors,
+        warp: 24,
+        picks: weftColorIds.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => weftColorIds[pickIndex % weftColorIds.length]
+      });
+    }
+
+    function buildMockLeno() {
+      const colors = makePalette(
+        { value: "#50666a" },
+        { value: "#dbc89f" }
+      );
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [1, 2],
+          [0, 1],
+          [0, 3],
+          [2, 3]
+        ]),
+        threadingSequence: [0, 1, 1, 0, 2, 3, 3, 2],
+        treadlingSequence: [0, 1, 1, 0, 2, 3, 3, 2],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildWaffleWeave() {
+      const colors = makePalette(
+        { value: "#9f603d" },
+        { value: "#ddb978" }
+      );
+      const tieup = makeTieupFromLiftedShafts(4, [
+        [3],
+        [2],
+        [1, 3],
+        [0, 2, 3],
+        [1, 2, 3]
+      ]);
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup,
+        threadingSequence: [3, 2, 1, 0, 1, 0, 1, 2],
+        treadlingSequence: [0, 1, 2, 3, 4, 3, 2, 1],
+        patternColors: colors,
+        warp: 24,
+        picks: 24
+      });
+    }
+
+    function buildOvershot() {
+      const colors = makePalette(
+        { value: "#3f4d54" },
+        { value: "#d6c4a3" },
+        { value: "#b8523c", thickness: 2.4 }
+      );
+      const treadlingSequence = [4, 0, 5, 0, 4, 0, 5, 2, 4, 2, 5, 2];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0, 1],
+          [1, 2],
+          [2, 3],
+          [3, 0],
+          [0, 2],
+          [1, 3]
+        ]),
+        threadingSequence: [0, 1, 0, 1, 0, 1, 2, 3, 2, 3, 2, 3],
+        treadlingSequence,
+        patternColors: colors,
+        warp: 24,
+        picks: 24,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => pickIndex % 2 === 0 ? colors[1].id : colors[2].id
+      });
+    }
+
+    function buildEightShaftOvershot({
+      patternSequence = [0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 6, 5, 4, 3, 2, 1],
+      warpRepeats = 2
+    } = {}) {
+      const colors = makePalette(
+        { value: "#3f4d54" },
+        { value: "#d6c4a3" },
+        { value: "#b8523c", thickness: 2.4 }
+      );
+      const threadingSequence = [1, 0, 1, 2, 3, 4, 5, 6, 7, 0, 7, 6, 5, 4, 3, 2];
+      const tieup = makeTieupFromLiftedShafts(8, [
+        [2, 3, 5, 7],
+        [0, 3, 4, 6],
+        [1, 4, 5, 7],
+        [0, 2, 5, 6],
+        [1, 3, 6, 7],
+        [0, 2, 4, 7],
+        [0, 1, 3, 5],
+        [1, 2, 4, 6],
+        [0, 2, 4, 6],
+        [1, 3, 5, 7]
+      ]);
+      const treadlingSequence = patternSequence.flatMap((patternTreadle, index) => [
+        8 + (index % 2),
+        patternTreadle
+      ]);
+
+      return buildDraftFromTieup({
+        shafts: 8,
+        tieup,
+        threadingSequence,
+        treadlingSequence,
+        patternColors: colors,
+        warp: threadingSequence.length * warpRepeats,
+        picks: treadlingSequence.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => pickIndex % 2 === 0 ? colors[1].id : colors[2].id
+      });
+    }
+
+    function buildBrocade() {
+      const colors = makePalette(
+        { value: "#334f57" },
+        { value: "#ded2b7" },
+        { value: "#c39135", thickness: 2.2 },
+        { value: "#a7483f", thickness: 2.2 }
+      );
+      const treadlingUnit = [0, 1, 2, 0, 1, 3, 0, 1, 4, 0, 1, 5];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [
+          [0, 2],
+          [1, 3],
+          [0, 1],
+          [2, 3],
+          [0, 3],
+          [1, 2]
+        ]),
+        threadingSequence: [0, 1, 2, 3],
+        treadlingSequence: treadlingUnit,
+        patternColors: colors,
+        warp: 24,
+        picks: 24,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => {
+          if (pickIndex % 3 !== 2) {
+            return colors[1].id;
+          }
+
+          return Math.floor(pickIndex / 3) % 2 === 0 ? colors[2].id : colors[3].id;
+        }
+      });
+    }
+
+    function buildCrackle() {
+      const colors = makePalette(
+        { value: "#5b5f45" },
+        { value: "#d4b879" }
+      );
+      const crackleSequence = [
+        0, 1, 2, 1, 0,
+        1, 2, 3, 2, 1,
+        2, 3, 0, 3, 2,
+        1, 2, 3, 2, 1
+      ];
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeCircularTieup(4, 2),
+        threadingSequence: crackleSequence,
+        treadlingSequence: crackleSequence,
+        patternColors: colors,
+        warp: crackleSequence.length,
+        picks: crackleSequence.length
+      });
+    }
+
+    function buildMsAndOs() {
+      const colors = makePalette(
+        { value: "#48605e" },
+        { value: "#d7bd8d" },
+        { value: "#a9533d" }
+      );
+      const firstBlockPicks = Array.from({ length: 4 }, () => [0, 1]).flat();
+      const secondBlockPicks = Array.from({ length: 4 }, () => [2, 3]).flat();
+      const treadlingSequence = firstBlockPicks.concat(secondBlockPicks);
+
+      return buildDraftFromTieup({
+        shafts: 4,
+        tieup: makeTieupFromLiftedShafts(4, [[2, 3], [0, 1], [1, 3], [0, 2]]),
+        threadingSequence: [0, 1, 0, 1, 2, 3, 2, 3, 0, 2, 0, 2, 1, 3, 1, 3],
+        treadlingSequence,
+        patternColors: colors,
+        warp: 16,
+        picks: treadlingSequence.length,
+        warpColorAt: () => colors[0].id,
+        weftColorAt: pickIndex => pickIndex < firstBlockPicks.length ? colors[1].id : colors[2].id
+      });
+    }
+
+    const patterns = [
+      {
+        id: "plain-weave",
+        category: "Foundation",
+        title: "Plain Weave",
+        shortMeta: "2 shaft",
+        kicker: "Foundation · 2 shafts · 2 treadles",
+        description: "The foundational over-one, under-one structure. Alternating shafts and treadles produce the shortest possible floats and a firm, balanced cloth.",
+        draft: buildPlainWeave()
+      },
+      {
+        id: "basket-weave",
+        category: "Foundation",
+        title: "2×2 Basket Weave",
+        shortMeta: "2 shaft",
+        kicker: "Plain-weave derivative · 2 shafts · 2 treadles",
+        description: "Pairs of warp ends interlace with pairs of picks through plain-weave sheds. The resulting checker has longer floats, a more visible grid, and a softer hand than balanced tabby.",
+        draft: buildBasketWeave()
+      },
+      {
+        id: "basket-weave-three",
+        category: "Foundation",
+        title: "3×3 Basket Weave",
+        shortMeta: "2 shaft",
+        kicker: "Plain-weave derivative · 2 shafts · 2 treadles",
+        description: "Three adjacent ends share each plain-weave shed, and each shed repeats for three picks. The six-thread units create larger checks, longer floats, and a softer cloth than the 2×2 version.",
+        draft: buildThreeByThreeBasketWeave()
+      },
+      {
+        id: "warp-rib",
+        category: "Foundation",
+        title: "2/2 Warp Rib",
+        shortMeta: "2 shaft",
+        kicker: "Rib weave · 2 shafts · 2 treadles",
+        description: "Each plain-weave shed is held for two picks, lengthening the warp floats into a crosswise cord. A heavier weft makes the ribbed surface especially clear in the interlacement view.",
+        draft: buildWarpRib()
+      },
+      {
+        id: "weft-rib",
+        category: "Foundation",
+        title: "2/2 Weft Rib",
+        shortMeta: "2 shaft",
+        kicker: "Rib weave · 2 shafts · 2 treadles",
+        description: "Pairs of adjacent warp ends move together against single alternating picks. The grouped ends lengthen weft floats into lengthwise cords—the directional counterpart to the Warp Rib example.",
+        draft: buildWeftRib()
+      },
+      {
+        id: "warp-rep",
+        category: "Foundation",
+        title: "Warp Rep (Ripsmatta)",
+        shortMeta: "4 shaft",
+        kicker: "Two-block warp rep · 4 shafts · 2 treadles",
+        description: "Alternating dark and light ends form two shaft-controlled blocks. Thick and thin picks alternate; swapping which complementary shed receives the thick pick reverses the dominant warp color and builds ripsmatta’s ribbed geometry.",
+        draft: buildWarpRep()
+      },
+      {
+        id: "log-cabin",
+        category: "Color & Weave",
+        title: "Log Cabin",
+        shortMeta: "2 shaft",
+        kicker: "Color-and-weave plain weave · 2 shafts · 2 treadles",
+        description: "Balanced plain weave whose dark-and-light order reverses at eight-end and eight-pick block boundaries. Each reversal turns the pinstripes ninety degrees, building the characteristic interlocking log-cabin squares.",
+        draft: buildLogCabin()
+      },
+      {
+        id: "shadow-weave",
+        category: "Color & Weave",
+        title: "Shadow Weave",
+        shortMeta: "4 shaft",
+        kicker: "Atwater point color-and-weave · 4 shafts · 4 treadles",
+        description: "Alternating dark and light threads shadow a point-twill line on opposite shafts. The symmetric turning sequence produces nested diamonds and directional pinstripes in a mostly plain-weave cloth with short float accents.",
+        draft: buildShadowWeave()
+      },
+      {
+        id: "houndstooth",
+        category: "Color & Weave",
+        title: "Houndstooth",
+        shortMeta: "4 shaft",
+        kicker: "Color-and-weave 2/2 twill · 4 shafts · 4 treadles",
+        description: "Four dark and four light ends cross matching bands of picks over an ordinary 2/2 twill. The diagonal interlacement notches the checks into the classic houndstooth silhouette.",
+        draft: buildHoundstooth()
+      },
+      {
+        id: "one-two-twill",
+        category: "Twills",
+        title: "1/2 Twill",
+        shortMeta: "3 shaft",
+        kicker: "Twill · 3 shafts · 3 treadles",
+        description: "A three-shaft straight twill with one warp end raised over two. The weft-dominant face keeps the diagonal rhythm while showing more of the weft yarn.",
+        draft: buildTwill(1, makePalette({ value: "#477078" }, { value: "#e2d2b5" }))
+      },
+      {
+        id: "two-two-twill",
+        category: "Twills",
+        title: "2/2 Twill",
+        shortMeta: "4 shaft",
+        kicker: "Twill · 4 shafts · 4 treadles",
+        description: "A balanced straight twill. Two shafts rise and two stay down on each pick, creating the familiar diagonal line with equal warp and weft emphasis.",
+        draft: buildTwill(2, makePalette({ value: "#8d4d38" }, { value: "#e5cfa8" }))
+      },
+      {
+        id: "three-one-twill",
+        category: "Twills",
+        title: "3/1 Twill",
+        shortMeta: "4 shaft",
+        kicker: "Twill · 4 shafts · 4 treadles",
+        description: "A warp-dominant straight twill with three shafts raised on every pick. Its longer warp floats create a strong diagonal and a smooth face often associated with denim.",
+        draft: buildTwill(3, makePalette({ value: "#4e5b68" }, { value: "#cbb18a" }))
+      },
+      {
+        id: "point-twill",
+        category: "Twills",
+        title: "Point Twill",
+        shortMeta: "4 shaft",
+        kicker: "Balanced point twill · 4 shafts · 4 treadles",
+        description: "A 2/2 twill climbs from Shaft 1 to Shaft 4 and then reverses. Treadled as drawn in, the mirrored diagonals close into repeating diamonds and zigzags.",
+        draft: buildPointTwill()
+      },
+      {
+        id: "point-twill-chevron",
+        category: "Twills",
+        title: "Point Twill — Chevron",
+        shortMeta: "4 shaft",
+        kicker: "Straight-treadled point twill · 4 shafts · 4 treadles",
+        description: "The Point Twill threading and tie-up are unchanged, but the treadling runs straight instead of reversing. That one change opens the closed diamonds into continuous chevrons without rethreading.",
+        draft: buildPointTwillChevron()
+      },
+      {
+        id: "broken-twill",
+        category: "Twills",
+        title: "Broken Twill",
+        shortMeta: "4 shaft",
+        kicker: "Broken 2/2 twill · 4 shafts · 4 treadles",
+        description: "Deliberate jumps interrupt the straight shaft order while the treadling continues forward. The breaks fracture the continuous diagonal into a lively, offset rhythm.",
+        draft: buildBrokenTwill()
+      },
+      {
+        id: "herringbone",
+        category: "Twills",
+        title: "Herringbone",
+        shortMeta: "4 shaft",
+        kicker: "Reversing 2/2 twill · 4 shafts · 4 treadles",
+        description: "Forward and reversed twill runs meet at a deliberate break in the threading. Straight treadling turns those reversals into the familiar V-shaped fishbone line.",
+        draft: buildHerringbone()
+      },
+      {
+        id: "rosepath",
+        category: "Twills",
+        title: "Rosepath",
+        shortMeta: "4 shaft",
+        kicker: "Broken point twill · 4 shafts · 4 treadles",
+        description: "Rosepath inserts Shaft 1 between the ascending and descending halves of a point-twill repeat. Treadled as drawn in, that small break creates mirrored rose and diamond paths.",
+        draft: buildRosepath()
+      },
+      {
+        id: "advancing-twill-eight",
+        category: "Twills",
+        title: "Advancing Twill — 8 Shaft",
+        shortMeta: "8 shaft",
+        kicker: "3/1/1/3 advancing twill · 8 shafts · 8 treadles",
+        description: "Five-end twill runs begin one shaft later each time across all eight shafts. A circular 3/1/1/3 tie-up and matching advancing treadling turn the forty-end repeat into broad stepped ribbons.",
+        draft: buildAdvancingTwill()
+      },
+      {
+        id: "five-end-satin",
+        category: "Satins & Blocks",
+        title: "5-End Satin",
+        shortMeta: "5 shaft",
+        kicker: "Satin · 5 shafts · 5 treadles",
+        description: "A warp-faced 4/1 satin. One binding point per pick advances by a two-end move, distributing intersections so the surface reads as smooth rather than diagonally ribbed.",
+        draft: buildSatin(
+          5,
+          2,
+          makePalette({ value: "#a87334" }, { value: "#ead8ad" })
+        )
+      },
+      {
+        id: "eight-end-satin",
+        category: "Satins & Blocks",
+        title: "8-End Satin",
+        shortMeta: "8 shaft",
+        kicker: "Satin · 8 shafts · 8 treadles",
+        description: "A warp-faced 7/1 satin with binding points advanced by a three-end move. The larger repeat spaces intersections farther apart for a smoother, more lustrous surface than the five-end satin.",
+        draft: buildSatin(
+          8,
+          3,
+          makePalette({ value: "#47677a" }, { value: "#dfcfad" })
+        )
+      },
+      {
+        id: "ten-end-satin",
+        category: "Satins & Blocks",
+        title: "10-End Satin",
+        shortMeta: "10 shaft",
+        kicker: "Satin · 10 shafts · 10 treadles",
+        description: "A warp-faced 9/1 satin using a three-end move. Its widely scattered binding points suppress visible diagonals and create the longest, smoothest floats of the satin examples in this library.",
+        draft: buildSatin(
+          10,
+          3,
+          makePalette({ value: "#765268" }, { value: "#e4d5bb" })
+        )
+      },
+      {
+        id: "damask",
+        category: "Satins & Blocks",
+        title: "Satin Damask",
+        shortMeta: "10 shaft",
+        kicker: "Two-block satin damask · 10 shafts · 10 treadles",
+        description: "A shaft-loom block damask built from two five-shaft satin units. The blocks exchange warp-faced and weft-faced roles halfway through the repeat, creating a tone-on-tone checker through opposite satin faces.",
+        draft: buildBlockDamask()
+      },
+      {
+        id: "twill-damask",
+        category: "Satins & Blocks",
+        title: "3/1 Twill Damask",
+        shortMeta: "8 shaft",
+        kicker: "Two-block 3/1–1/3 damask · 8 shafts · 8 treadles",
+        description: "Two independent four-shaft blocks exchange warp-dominant 3/1 and weft-dominant 1/3 twill faces. The reversible value contrast works like damask while retaining visible diagonal texture; keeping both blocks independent requires eight shafts.",
+        draft: buildTwillDamask()
+      },
+      {
+        id: "double-weave-width",
+        category: "Double & Bound",
+        title: "Double Weave — Double Width",
+        shortMeta: "4 shaft",
+        kicker: "Two-layer plain weave · 4 shafts · 4 treadles",
+        description: "Two plain-weave layers share a straight four-shaft threading. This lift order joins alternating layer picks along one edge so the cloth can unfold to double width; the flat drawdown shows interlacement, not the layers’ physical separation.",
+        draft: buildDoubleWeave("double-width")
+      },
+      {
+        id: "double-weave-tube",
+        category: "Double & Bound",
+        title: "Double Weave — Tube",
+        shortMeta: "4 shaft",
+        kicker: "Closed two-layer plain weave · 4 shafts · 4 treadles",
+        description: "The Double Width threading and tie-up are unchanged. Reordering the final two lifts carries the weft between layers at both edges, closing the cloth into a tube; the flat drawdown cannot display that physical separation.",
+        draft: buildDoubleWeave("tube")
+      },
+      {
+        id: "turned-taquete",
+        category: "Double & Bound",
+        title: "Turned Taqueté",
+        shortMeta: "4 shaft",
+        kicker: "Warp-faced compound tabby · 4 shafts · 4 treadles",
+        description: "Alternating warp colors share a straight threading while two pattern treadles exchange 3/1 and 1/3 warp floats between blocks. The optimized ground sheds keep the pale weft mostly hidden beneath the warp-faced design.",
+        draft: buildTurnedTaquete()
+      },
+      {
+        id: "krokbragd",
+        category: "Double & Bound",
+        title: "Krokbragd",
+        shortMeta: "3 shaft",
+        kicker: "Weft-faced boundweave · 3 shafts · 3 treadles",
+        description: "A 1–2–3–2 point threading repeats beneath an unchanging three-pick treadling order. Each visual row is built from three colored picks, while complementary two-shaft sheds cover the warp and lock the angular motifs together.",
+        draft: buildKrokbragd()
+      },
+      {
+        id: "overshot",
+        category: "Pattern Weaves",
+        title: "Overshot — 4 Shaft",
+        shortMeta: "4 shaft",
+        kicker: "Two-block supplementary weft · 4 shafts · 6 treadles",
+        description: "A compact two-block overshot example. Fine alternating tabby picks stabilize the cloth while a much heavier pattern weft floats across opposing blocks to form the motif.",
+        draft: buildOvershot()
+      },
+      {
+        id: "overshot-eight",
+        category: "Pattern Weaves",
+        title: "Overshot — 8 Shaft",
+        shortMeta: "8 shaft",
+        kicker: "Eight-block supplementary weft · 8 shafts · 10 treadles",
+        description: "Eight adjacent overshot blocks advance and reverse in point order. Fine odd-and-even tabby picks secure a heavy pattern weft, while balanced 4/4 pattern sheds distribute pattern, background, and halftone areas without excessive reverse-side floats.",
+        draft: buildEightShaftOvershot()
+      },
+      {
+        id: "overshot-eight-dancing-diamonds",
+        category: "Pattern Weaves",
+        title: "Overshot — Dancing Diamonds",
+        shortMeta: "8 shaft",
+        kicker: "Multi-turn star-fashion overshot · 8 shafts · 10 treadles",
+        description: "The eight blocks travel around their circular order in both directions, then close with a smaller nested figure. Multiple turning blocks produce interlocking diamonds and stars from the same point threading and balanced tie-up as the Rose Medallions draft.",
+        draft: buildEightShaftOvershot({
+          patternSequence: [
+            0, 0, 1, 2, 3, 4, 5, 6,
+            7, 7, 6, 5, 4, 3, 2, 1,
+            0, 0, 7, 6, 5, 4, 3, 2,
+            1, 1, 2, 3, 4, 5, 6, 7,
+            0, 0, 1, 2, 3, 3, 2, 1
+          ],
+          warpRepeats: 3
+        })
+      },
+      {
+        id: "overshot-eight-rose-medallions",
+        category: "Pattern Weaves",
+        title: "Overshot — Rose Medallions",
+        shortMeta: "8 shaft",
+        kicker: "Paired-block rose-fashion overshot · 8 shafts · 10 treadles",
+        description: "The Dancing Diamonds threading and tie-up are unchanged. Exchanging adjacent treadling pairs removes the star treadling's direct diagonal and rounds the multi-turn figures into medallions—without rethreading or changing the tie-up.",
+        draft: buildEightShaftOvershot({
+          patternSequence: [
+            1, 1, 0, 3, 2, 5, 4, 7,
+            6, 6, 7, 4, 5, 2, 3, 0,
+            1, 1, 6, 7, 4, 5, 2, 3,
+            0, 0, 3, 2, 5, 4, 7, 6,
+            1, 1, 0, 3, 2, 2, 3, 0
+          ],
+          warpRepeats: 3
+        })
+      },
+      {
+        id: "brocade",
+        category: "Pattern Weaves",
+        title: "Brocade",
+        shortMeta: "4 shaft",
+        kicker: "Continuous supplementary weft · 4 shafts · 6 treadles",
+        description: "A shaft-controlled continuous brocade example. Two plain-weave ground picks support each heavier decorative pick, with alternating gold and red supplementary wefts traveling from selvedge to selvedge; discontinuous broché motifs require hand manipulation beyond a standard draft.",
+        draft: buildBrocade()
+      },
+      {
+        id: "monks-belt",
+        category: "Pattern Weaves",
+        title: "Monk’s Belt",
+        shortMeta: "4 shaft",
+        kicker: "Two-block supplementary weft · 4 shafts · 4 treadles",
+        description: "Paired Shaft 1–2 and Shaft 3–4 units form two independent blocks. A heavy pattern pick alternates with fine tabby, producing bold rectangular floats with a stable plain-weave ground and fewer pattern sheds than overshot.",
+        draft: buildMonksBelt()
+      },
+      {
+        id: "diversified-plain-weave",
+        category: "Pattern Weaves",
+        title: "Diversified Plain Weave",
+        shortMeta: "8 shaft",
+        kicker: "Six-block tied weave · 8 shafts · 8 treadles",
+        description: "Thin–thick–thin units alternate across two tie-down shafts while six pattern shafts carry a point-order motif. Heavy threads in both warp and weft stand against a fine plain-weave ground to create DPW’s graphic, pebbled blocks.",
+        draft: buildDiversifiedPlainWeave()
+      },
+      {
+        id: "crackle",
+        category: "Pattern Weaves",
+        title: "Crackle",
+        shortMeta: "4 shaft",
+        kicker: "Four-block crackle · 4 shafts · 4 treadles",
+        description: "Three-point twill units expand an A–B–C–B block profile. Treadled as drawn in on a balanced tie-up, their short float changes produce crackle’s characteristic dots and small crosses.",
+        draft: buildCrackle()
+      },
+      {
+        id: "ms-and-os",
+        category: "Pattern Weaves",
+        title: "M’s & O’s",
+        shortMeta: "4 shaft",
+        kicker: "Two-block texture weave · 4 shafts · 4 treadles",
+        description: "Two eight-end units place small O forms in one block and M forms in the opposite block. Long groups of alternating sheds build the puckered texture; this threading has no true tabby.",
+        draft: buildMsAndOs()
+      },
+      {
+        id: "waffle-weave",
+        category: "Texture & Lace",
+        title: "Waffle Weave",
+        shortMeta: "4 shaft",
+        kicker: "Cellular weave · 4 shafts · 5 treadles",
+        description: "A historical four-shaft cellular variation with graduated sheds and point-style treadling. Long floats frame stitched recesses that draw into raised, absorbent pockets after wet finishing.",
+        draft: buildWaffleWeave()
+      },
+      {
+        id: "honeycomb",
+        category: "Texture & Lace",
+        title: "Honeycomb",
+        shortMeta: "4 shaft",
+        kicker: "Two-block honeycomb · 4 shafts · 6 treadles",
+        description: "A two-block honeycomb variation with fine cell picks and a heavier outlining weft. Wet finishing and a firm beat draw the flat loom structure into raised cellular texture.",
+        draft: buildHoneycomb()
+      },
+      {
+        id: "summer-winter-four",
+        category: "Texture & Lace",
+        title: "Summer and Winter — 4 Shaft",
+        shortMeta: "4 shaft",
+        kicker: "Two-block unit weave · 4 shafts · 6 treadles",
+        description: "The classic two-block, single two-tie Summer and Winter threading. Thin tabby picks alternate with thicker pattern picks, keeping floats tied while Blocks A and B trade figure and ground.",
+        draft: buildSummerAndWinter(4)
+      },
+      {
+        id: "summer-winter-eight",
+        category: "Texture & Lace",
+        title: "Summer and Winter — 8 Shaft",
+        shortMeta: "8 shaft",
+        kicker: "Six-block unit weave · 8 shafts · 8 treadles",
+        description: "The same single two-tie system expanded to six independent pattern blocks. Shafts 1 and 2 remain the tie-downs while Shafts 3–8 each control a block, with exactly two treadles pressed on every pick.",
+        draft: buildSummerAndWinter(8)
+      },
+      {
+        id: "summer-winter-eight-diamonds",
+        category: "Texture & Lace",
+        title: "Summer and Winter — Pointed Diamonds",
+        shortMeta: "8 shaft",
+        kicker: "Six-block 3/3 profile · Pairs X · 8 shafts · 8 treadles",
+        description: "A pointed six-block threading is combined with a cyclic 3/3 profile tie-up. Treadling the profile as drawn in with Pairs X makes three blocks exchange figure and ground at once, producing nested diamonds and crisp crossing details.",
+        draft: buildAdvancedSummerAndWinter({
+          treadlingProfile: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0],
+          tieOrder: [1, 0, 0, 1]
+        })
+      },
+      {
+        id: "summer-winter-eight-waves",
+        category: "Texture & Lace",
+        title: "Summer and Winter — Advancing Waves",
+        shortMeta: "8 shaft",
+        kicker: "Six-block skip-step profile · Pairs O · 8 shafts · 8 treadles",
+        description: "The Pointed Diamonds threading and tie-up are unchanged. A symmetric skip-step treadling and Pairs O tie-down order reorganize those same six blocks into offset waves and rounded interlocking ribbons.",
+        draft: buildAdvancedSummerAndWinter({
+          treadlingProfile: [0, 2, 4, 5, 3, 1, 0, 1, 3, 5, 4, 2, 0],
+          tieOrder: [0, 1, 1, 0]
+        })
+      },
+      {
+        id: "spot-bronson",
+        category: "Texture & Lace",
+        title: "Spot Bronson",
+        shortMeta: "4 shaft",
+        kicker: "Three-block grouped weave · 4 shafts · 5 treadles",
+        description: "The original Bronson spot weave alternates every pattern end with Shaft 1 and moves through three float blocks. Each block remains isolated rather than repeating, producing small barleycorn-like spots surrounded by plain weave.",
+        draft: buildSpotBronson()
+      },
+      {
+        id: "bronson-lace",
+        category: "Texture & Lace",
+        title: "Atwater-Bronson Lace",
+        shortMeta: "4 shaft",
+        kicker: "Two-block unit lace · 4 shafts · 4 treadles",
+        description: "Repeatable six-thread units add a Shaft 2 tie-down end after each group. Paired Block A and B units place warp and weft floats beside plain weave so wet finishing can open stable, cross-shaped lace windows.",
+        draft: buildBronsonLace()
+      },
+      {
+        id: "huck",
+        category: "Texture & Lace",
+        title: "Huck — Regular",
+        shortMeta: "4 shaft",
+        kicker: "Four-way huck texture · 4 shafts · 6 treadles",
+        description: "One five-thread Block A group alternates with one Block B group in both threading and treadling. Isolated warp- and weft-float areas form the small circles and all-over texture of regular huck rather than open lace windows.",
+        draft: buildHuckTexture()
+      },
+      {
+        id: "huck-lace",
+        category: "Texture & Lace",
+        title: "Huck Lace",
+        shortMeta: "4 shaft",
+        kicker: "Two-block huck lace · 4 shafts · 4 treadles",
+        description: "Paired five-thread Block A and Block B units repeat in both threading and treadling. Where four float groups meet, wet finishing lets the yarns slide away from the intersection and open huck’s characteristic window without a central cross.",
+        draft: buildHuckLace()
+      },
+      {
+        id: "mock-leno",
+        category: "Texture & Lace",
+        title: "Mock Leno",
+        shortMeta: "4 shaft",
+        kicker: "Counterchanged openwork · 4 shafts · 4 treadles",
+        description: "Counterchanged four-shaft groups alternate short interlacements and controlled floats to suggest crossed-thread leno. Visible openings depend on sett, grouped denting, yarn mobility, and wet finishing rather than true warp twisting.",
+        draft: buildMockLeno()
+      }
+    ];
+
+    const familyDefinitions = [
+      {
+        id: "plain-weave",
+        category: "Foundation",
+        title: "Plain Weave",
+        memberIds: ["plain-weave"]
+      },
+      {
+        id: "basket-weave",
+        category: "Foundation",
+        title: "Basket Weaves",
+        memberIds: ["basket-weave", "basket-weave-three"]
+      },
+      {
+        id: "warp-rib",
+        category: "Foundation",
+        title: "Rib Weaves",
+        memberIds: ["warp-rib", "weft-rib"]
+      },
+      {
+        id: "warp-rep",
+        category: "Foundation",
+        title: "Warp Rep",
+        memberIds: ["warp-rep"]
+      },
+      {
+        id: "log-cabin",
+        category: "Color & Weave",
+        title: "Log Cabin",
+        memberIds: ["log-cabin"]
+      },
+      {
+        id: "shadow-weave",
+        category: "Color & Weave",
+        title: "Shadow Weave",
+        memberIds: ["shadow-weave"]
+      },
+      {
+        id: "houndstooth",
+        category: "Color & Weave",
+        title: "Houndstooth",
+        memberIds: ["houndstooth"]
+      },
+      {
+        id: "straight-twills",
+        category: "Twills",
+        title: "Straight Twills",
+        memberIds: ["one-two-twill", "two-two-twill", "three-one-twill"]
+      },
+      {
+        id: "point-twill",
+        category: "Twills",
+        title: "Point Twill",
+        memberIds: ["point-twill", "point-twill-chevron"]
+      },
+      {
+        id: "broken-twill",
+        category: "Twills",
+        title: "Broken Twill",
+        memberIds: ["broken-twill"]
+      },
+      {
+        id: "herringbone",
+        category: "Twills",
+        title: "Herringbone",
+        memberIds: ["herringbone"]
+      },
+      {
+        id: "rosepath",
+        category: "Twills",
+        title: "Rosepath",
+        memberIds: ["rosepath"]
+      },
+      {
+        id: "advancing-twill",
+        category: "Twills",
+        title: "Advancing Twill",
+        memberIds: ["advancing-twill-eight"]
+      },
+      {
+        id: "satins",
+        category: "Satins & Blocks",
+        title: "Satins",
+        memberIds: ["five-end-satin", "eight-end-satin", "ten-end-satin"]
+      },
+      {
+        id: "damask",
+        category: "Satins & Blocks",
+        title: "Damask",
+        memberIds: ["damask", "twill-damask"]
+      },
+      {
+        id: "double-weave",
+        category: "Double & Bound",
+        title: "Double Weave",
+        memberIds: ["double-weave-width", "double-weave-tube"]
+      },
+      {
+        id: "turned-taquete",
+        category: "Double & Bound",
+        title: "Turned Taqueté",
+        memberIds: ["turned-taquete"]
+      },
+      {
+        id: "krokbragd",
+        category: "Double & Bound",
+        title: "Krokbragd",
+        memberIds: ["krokbragd"]
+      },
+      {
+        id: "overshot",
+        category: "Pattern Weaves",
+        title: "Overshot",
+        memberIds: [
+          "overshot",
+          "overshot-eight",
+          "overshot-eight-dancing-diamonds",
+          "overshot-eight-rose-medallions"
+        ]
+      },
+      {
+        id: "brocade",
+        category: "Pattern Weaves",
+        title: "Brocade",
+        memberIds: ["brocade"]
+      },
+      {
+        id: "monks-belt",
+        category: "Pattern Weaves",
+        title: "Monk’s Belt",
+        memberIds: ["monks-belt"]
+      },
+      {
+        id: "diversified-plain-weave",
+        category: "Pattern Weaves",
+        title: "Diversified Plain Weave",
+        memberIds: ["diversified-plain-weave"]
+      },
+      {
+        id: "crackle",
+        category: "Pattern Weaves",
+        title: "Crackle",
+        memberIds: ["crackle"]
+      },
+      {
+        id: "ms-and-os",
+        category: "Pattern Weaves",
+        title: "M’s & O’s",
+        memberIds: ["ms-and-os"]
+      },
+      {
+        id: "waffle-weave",
+        category: "Texture & Lace",
+        title: "Waffle Weave",
+        memberIds: ["waffle-weave"]
+      },
+      {
+        id: "honeycomb",
+        category: "Texture & Lace",
+        title: "Honeycomb",
+        memberIds: ["honeycomb"]
+      },
+      {
+        id: "summer-winter",
+        category: "Texture & Lace",
+        title: "Summer and Winter",
+        memberIds: [
+          "summer-winter-four",
+          "summer-winter-eight",
+          "summer-winter-eight-diamonds",
+          "summer-winter-eight-waves"
+        ]
+      },
+      {
+        id: "bronson",
+        category: "Texture & Lace",
+        title: "Bronson",
+        memberIds: ["spot-bronson", "bronson-lace"]
+      },
+      {
+        id: "huck",
+        category: "Texture & Lace",
+        title: "Huck",
+        memberIds: ["huck", "huck-lace"]
+      },
+      {
+        id: "mock-leno",
+        category: "Texture & Lace",
+        title: "Mock Leno",
+        memberIds: ["mock-leno"]
+      }
+    ];
+
+    const patternFamilies = familyDefinitions.map(definition => ({
+      ...definition,
+      patterns: definition.memberIds.map(patternId =>
+        patterns.find(pattern => pattern.id === patternId)
+      ).filter(Boolean)
+    }));
+
+    function getPatternById(id) {
+      return patterns.find(pattern => pattern.id === id) || null;
+    }
+
+    function getYarn(draft, colorId) {
+      return draft.patternColors.find(color => color.id === colorId) || {
+        id: "fallback",
+        value: "#ffffff",
+        thickness: 1
+      };
+    }
+
+    function getWarpAssignment(draft, warpIndex) {
+      for (let shaftIndex = 0; shaftIndex < draft.shafts; shaftIndex++) {
+        const colorId = draft.threading[shaftIndex]?.[warpIndex];
+        if (colorId) {
+          return { shaftIndex, colorId };
+        }
+      }
+      return null;
+    }
+
+    function getPickColorId(draft, pickIndex) {
+      return draft.treadling[pickIndex]?.find(Boolean) || null;
+    }
+
+    function getDrawdownState(draft, pickIndex, warpIndex) {
+      const warpAssignment = getWarpAssignment(draft, warpIndex);
+      const weftColorId = getPickColorId(draft, pickIndex);
+      const warpYarn = getYarn(draft, warpAssignment?.colorId);
+      const weftYarn = getYarn(draft, weftColorId);
+      const warpColor = warpYarn.value;
+      const weftColor = weftYarn.value;
+      const warpVisible = Boolean(
+        warpAssignment &&
+        draft.treadling[pickIndex]?.some((colorId, treadleIndex) =>
+          colorId && draft.tieup[treadleIndex]?.[warpAssignment.shaftIndex]
+        )
+      );
+
+      return {
+        warpVisible,
+        warpVisibleOnFront: warpVisible,
+        hasWarp: Boolean(warpAssignment),
+        hasWeft: Boolean(weftColorId),
+        warpColor,
+        warpWeight: warpYarn.thickness || 1,
+        weftColor,
+        weftWeight: weftYarn.thickness || 1,
+        frontColor: warpVisible ? warpColor : weftColor,
+        backColor: warpVisible ? weftColor : warpColor
+      };
+    }
+
+    function setGridTracks(element, columns, rows) {
+      element.style.gridTemplateColumns = `repeat(${columns}, var(--draft-cell-size))`;
+      element.style.gridTemplateRows = `repeat(${rows}, var(--draft-cell-size))`;
+    }
+
+    function formatGridTrackList(sizes) {
+      return sizes.map(size => `${size}px`).join(" ");
+    }
+
+    function setCellHeight(cell, height) {
+      cell.style.height = `${height}px`;
+    }
+
+    function setCellWidth(cell, width) {
+      cell.style.width = `${width}px`;
+    }
+
+    function appendCell(fragment, className, color = null) {
+      const cell = document.createElement("div");
+      cell.className = `draft-cell ${className}`;
+      if (color) {
+        cell.style.backgroundColor = color;
+      }
+      fragment.appendChild(cell);
+      return cell;
+    }
+
+    function renderThreading(grid, draft, columnWidths) {
+      const fragment = document.createDocumentFragment();
+      setGridTracks(grid, draft.warp, draft.shafts);
+      grid.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+
+      for (let shaftIndex = draft.shafts - 1; shaftIndex >= 0; shaftIndex--) {
+        for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
+          const colorId = draft.threading[shaftIndex][warpIndex];
+          const cell = appendCell(
+            fragment,
+            `matrix-cell${colorId ? " is-active" : ""}`,
+            colorId ? getYarn(draft, colorId).value : "#ffffff"
+          );
+          setCellWidth(cell, columnWidths[warpIndex]);
+        }
+      }
+
+      grid.replaceChildren(fragment);
+    }
+
+    function renderTieup(grid, draft) {
+      const fragment = document.createDocumentFragment();
+      setGridTracks(grid, draft.treadles, draft.shafts);
+
+      for (let shaftIndex = draft.shafts - 1; shaftIndex >= 0; shaftIndex--) {
+        for (let treadleIndex = 0; treadleIndex < draft.treadles; treadleIndex++) {
+          appendCell(
+            fragment,
+            `tieup-cell${draft.tieup[treadleIndex][shaftIndex] ? " is-active" : ""}`
+          );
+        }
+      }
+
+      grid.replaceChildren(fragment);
+    }
+
+    function renderTreadling(grid, draft, rowHeights) {
+      const fragment = document.createDocumentFragment();
+      setGridTracks(grid, draft.treadles, draft.picks);
+      grid.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+      for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+        for (let treadleIndex = 0; treadleIndex < draft.treadles; treadleIndex++) {
+          const colorId = draft.treadling[pickIndex][treadleIndex];
+          const cell = appendCell(
+            fragment,
+            `matrix-cell${colorId ? " is-active" : ""}`,
+            colorId ? getYarn(draft, colorId).value : "#ffffff"
+          );
+          setCellHeight(cell, rowHeights[pickIndex]);
+        }
+      }
+
+      grid.replaceChildren(fragment);
+    }
+
+    function clampPreviewChannel(value) {
+      return Math.max(0, Math.min(255, Math.round(value)));
+    }
+
+    function normalizePreviewColor(colorValue) {
+      if (typeof colorValue !== "string") {
+        return "#ffffff";
+      }
+
+      const trimmed = colorValue.trim();
+
+      if (/^#[0-9a-f]{3}$/i.test(trimmed)) {
+        return `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`.toLowerCase();
+      }
+
+      if (/^#[0-9a-f]{6}$/i.test(trimmed)) {
+        return trimmed.toLowerCase();
+      }
+
+      return "#ffffff";
+    }
+
+    function getPreviewColorRgb(colorValue) {
+      if (typeof colorValue === "string") {
+        const rgbMatch = colorValue.trim().match(
+          /^rgba?\(\s*([0-9]+(?:\.[0-9]+)?)\s*,\s*([0-9]+(?:\.[0-9]+)?)\s*,\s*([0-9]+(?:\.[0-9]+)?)/i
+        );
+
+        if (rgbMatch) {
+          return {
+            r: clampPreviewChannel(Number.parseFloat(rgbMatch[1])),
+            g: clampPreviewChannel(Number.parseFloat(rgbMatch[2])),
+            b: clampPreviewChannel(Number.parseFloat(rgbMatch[3]))
+          };
+        }
+      }
+
+      const normalized = normalizePreviewColor(colorValue);
+
+      if (previewColorCache.has(normalized)) {
+        return previewColorCache.get(normalized);
+      }
+
+      const rgb = {
+        r: Number.parseInt(normalized.slice(1, 3), 16),
+        g: Number.parseInt(normalized.slice(3, 5), 16),
+        b: Number.parseInt(normalized.slice(5, 7), 16)
+      };
+
+      previewColorCache.set(normalized, rgb);
+      return rgb;
+    }
+
+    function mixPreviewColors(colorA, colorB, amount = 0.5) {
+      const ratio = Math.max(0, Math.min(1, amount));
+      const start = getPreviewColorRgb(colorA);
+      const end = getPreviewColorRgb(colorB);
+
+      return `rgb(${clampPreviewChannel(start.r + (end.r - start.r) * ratio)}, ${clampPreviewChannel(
+        start.g + (end.g - start.g) * ratio
+      )}, ${clampPreviewChannel(start.b + (end.b - start.b) * ratio)})`;
+    }
+
+    function lightenPreviewColor(colorValue, amount) {
+      return mixPreviewColors(colorValue, "#ffffff", amount);
+    }
+
+    function darkenPreviewColor(colorValue, amount) {
+      return mixPreviewColors(colorValue, "#000000", amount);
+    }
+
+    function previewAlphaColor(colorValue, alpha) {
+      const { r, g, b } = getPreviewColorRgb(colorValue);
+      return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
+    }
+
+    function getUsedPatternThicknesses(draft) {
+      const colorIds = new Set();
+
+      draft.threading.forEach(row => row.forEach(colorId => colorId && colorIds.add(colorId)));
+      draft.treadling.forEach(row => row.forEach(colorId => colorId && colorIds.add(colorId)));
+
+      const thicknesses = Array.from(colorIds, colorId => getYarn(draft, colorId).thickness)
+        .filter(thickness => Number.isFinite(thickness) && thickness > 0);
+
+      return thicknesses.length ? thicknesses : [1];
+    }
+
+    function getDraftTrackSizeForColor(draft, colorId, baseCellSize) {
+      if (!colorId) {
+        return baseCellSize;
+      }
+
+      const thicknessScale = Math.min(...getUsedPatternThicknesses(draft));
+      const normalizedThickness = getYarn(draft, colorId).thickness / thicknessScale;
+      return Math.max(1, baseCellSize * normalizedThickness);
+    }
+
+    function getRealisticColumnWidths(draft, baseCellSize) {
+      return Array.from({ length: draft.warp }, (_, warpIndex) =>
+        getDraftTrackSizeForColor(draft, getWarpAssignment(draft, warpIndex)?.colorId, baseCellSize)
+      );
+    }
+
+    function getRealisticRowHeights(draft, baseCellSize) {
+      return Array.from({ length: draft.picks }, (_, pickIndex) =>
+        getDraftTrackSizeForColor(draft, getPickColorId(draft, pickIndex), baseCellSize)
+      );
+    }
+
+    function getTrackEdges(sizes) {
+      const edges = [0];
+      let offset = 0;
+
+      sizes.forEach(size => {
+        offset += size;
+        edges.push(offset);
+      });
+
+      return edges;
+    }
+
+    function getDrawdownRealisticThreadThickness(crossSize, isTopLayer) {
+      const settRatio = defaultPreviewSett / 100;
+      const minRatio = isTopLayer ? 0.5 : 0.34;
+      const thicknessRatio = minRatio + (1 - minRatio) * settRatio;
+      return Math.max(1, Math.min(crossSize, crossSize * thicknessRatio * 1.06));
+    }
+
+    function isDrawdownOrientationRendered(cellState, orientation) {
+      if (orientation === "vertical") {
+        return Boolean(cellState?.hasWarp);
+      }
+
+      return Boolean(cellState?.hasWeft);
+    }
+
+    function isPreviewOrientationOnTop(cellState, orientation) {
+      return orientation === "vertical"
+        ? cellState.warpVisibleOnFront
+        : !cellState.warpVisibleOnFront;
+    }
+
+    function getDrawdownNeighborState(states, cellX, cellY, orientation, direction) {
+      const rowCount = states.length;
+      const columnCount = states[0]?.length || 0;
+
+      if (!rowCount || !columnCount) {
+        return null;
+      }
+
+      if (orientation === "vertical") {
+        const nextY = cellY + direction;
+        return nextY >= 0 && nextY < rowCount ? states[nextY]?.[cellX] || null : null;
+      }
+
+      const nextX = cellX + direction;
+      return nextX >= 0 && nextX < columnCount ? states[cellY]?.[nextX] || null : null;
+    }
+
+    function getDrawdownBorderThickness(
+      states,
+      cellX,
+      cellY,
+      orientation,
+      isTopLayer,
+      cellWidth,
+      cellHeight,
+      direction
+    ) {
+      const crossSize = orientation === "vertical" ? cellWidth : cellHeight;
+      const currentThickness = getDrawdownRealisticThreadThickness(crossSize, isTopLayer);
+      const neighborState = getDrawdownNeighborState(states, cellX, cellY, orientation, direction);
+
+      if (!neighborState || !isDrawdownOrientationRendered(neighborState, orientation)) {
+        return currentThickness;
+      }
+
+      const neighborIsTopLayer = isPreviewOrientationOnTop(neighborState, orientation);
+      const neighborThickness = getDrawdownRealisticThreadThickness(crossSize, neighborIsTopLayer);
+
+      return neighborIsTopLayer === isTopLayer
+        ? currentThickness
+        : (currentThickness + neighborThickness) / 2;
+    }
+
+    function buildDrawdownThreadPath(
+      x,
+      y,
+      cellWidth,
+      cellHeight,
+      orientation,
+      startThickness,
+      middleThickness,
+      endThickness
+    ) {
+      const sampleCount = 8;
+      const path = new Path2D();
+      const thicknessAt = position => {
+        if (position <= 0.5) {
+          const local = position / 0.5;
+          const exponent = startThickness > middleThickness ? 2.2 : 0.85;
+          const eased = Math.pow(local, exponent);
+          return startThickness + (middleThickness - startThickness) * eased;
+        }
+
+        const local = (position - 0.5) / 0.5;
+        const exponent = endThickness > middleThickness ? 2.2 : 0.85;
+        const eased = Math.pow(local, exponent);
+        return middleThickness + (endThickness - middleThickness) * eased;
+      };
+
+      if (orientation === "vertical") {
+        const topHalf = thicknessAt(0) / 2;
+        path.moveTo(x + cellWidth / 2 - topHalf, y);
+
+        for (let step = 1; step <= sampleCount; step++) {
+          const position = step / sampleCount;
+          const thickness = thicknessAt(position) / 2;
+          const sampleY = y + cellHeight * position;
+          path.lineTo(x + cellWidth / 2 - thickness, sampleY);
+        }
+
+        for (let step = sampleCount; step >= 0; step--) {
+          const position = step / sampleCount;
+          const thickness = thicknessAt(position) / 2;
+          const sampleY = y + cellHeight * position;
+          path.lineTo(x + cellWidth / 2 + thickness, sampleY);
+        }
+      } else {
+        const leftHalf = thicknessAt(0) / 2;
+        path.moveTo(x, y + cellHeight / 2 - leftHalf);
+
+        for (let step = 1; step <= sampleCount; step++) {
+          const position = step / sampleCount;
+          const thickness = thicknessAt(position) / 2;
+          const sampleX = x + cellWidth * position;
+          path.lineTo(sampleX, y + cellHeight / 2 - thickness);
+        }
+
+        for (let step = sampleCount; step >= 0; step--) {
+          const position = step / sampleCount;
+          const thickness = thicknessAt(position) / 2;
+          const sampleX = x + cellWidth * position;
+          path.lineTo(sampleX, y + cellHeight / 2 + thickness);
+        }
+      }
+
+      path.closePath();
+      return path;
+    }
+
+    function drawDrawdownRealisticBand(
+      ctx,
+      x,
+      y,
+      spanLength,
+      crossSize,
+      colorValue,
+      orientation,
+      isTopLayer,
+      thicknessOverride = null
+    ) {
+      if (spanLength <= 0 || crossSize <= 0) {
+        return;
+      }
+
+      const thickness = thicknessOverride === null
+        ? getDrawdownRealisticThreadThickness(crossSize, isTopLayer)
+        : thicknessOverride;
+      const inset = (crossSize - thickness) / 2;
+      const rect = orientation === "vertical"
+        ? { x: x + inset, y, width: thickness, height: spanLength }
+        : { x, y: y + inset, width: spanLength, height: thickness };
+      const gradient = orientation === "vertical"
+        ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+        : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+      const edgeShadow = orientation === "vertical"
+        ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+        : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+      const highlight = orientation === "vertical"
+        ? ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.width, rect.y)
+        : ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.height);
+
+      gradient.addColorStop(0, darkenPreviewColor(colorValue, 0.22));
+      gradient.addColorStop(0.2, darkenPreviewColor(colorValue, 0.1));
+      gradient.addColorStop(0.5, lightenPreviewColor(colorValue, 0.1));
+      gradient.addColorStop(0.8, darkenPreviewColor(colorValue, 0.08));
+      gradient.addColorStop(1, darkenPreviewColor(colorValue, 0.22));
+
+      edgeShadow.addColorStop(0, previewAlphaColor("#000000", 0.08));
+      edgeShadow.addColorStop(0.18, previewAlphaColor("#000000", 0));
+      edgeShadow.addColorStop(0.82, previewAlphaColor("#000000", 0));
+      edgeShadow.addColorStop(1, previewAlphaColor("#000000", 0.08));
+
+      highlight.addColorStop(0, previewAlphaColor("#ffffff", 0));
+      highlight.addColorStop(0.5, previewAlphaColor("#ffffff", 0.1));
+      highlight.addColorStop(1, previewAlphaColor("#ffffff", 0));
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+      ctx.fillStyle = edgeShadow;
+      ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+      ctx.fillStyle = highlight;
+      ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    function drawDrawdownAdaptiveYarn(
+      ctx,
+      x,
+      y,
+      cellWidth,
+      cellHeight,
+      colorValue,
+      orientation,
+      isTopLayer,
+      cellX,
+      cellY,
+      states
+    ) {
+      const middleThickness = getDrawdownRealisticThreadThickness(
+        orientation === "vertical" ? cellWidth : cellHeight,
+        isTopLayer
+      );
+      const startThickness = getDrawdownBorderThickness(
+        states, cellX, cellY, orientation, isTopLayer, cellWidth, cellHeight, -1
+      );
+      const endThickness = getDrawdownBorderThickness(
+        states, cellX, cellY, orientation, isTopLayer, cellWidth, cellHeight, 1
+      );
+      const renderThickness = Math.max(startThickness, middleThickness, endThickness);
+      const path = buildDrawdownThreadPath(
+        x,
+        y,
+        cellWidth,
+        cellHeight,
+        orientation,
+        startThickness,
+        middleThickness,
+        endThickness
+      );
+
+      ctx.save();
+      ctx.clip(path);
+      drawDrawdownRealisticBand(
+        ctx,
+        x,
+        y,
+        orientation === "vertical" ? cellHeight : cellWidth,
+        orientation === "vertical" ? cellWidth : cellHeight,
+        colorValue,
+        orientation,
+        isTopLayer,
+        renderThickness
+      );
+      ctx.restore();
+    }
+
+    function drawDrawdownIntersectionShadow(ctx, x, y, cellWidth, cellHeight, topOrientation) {
+      const crossSize = topOrientation === "vertical" ? cellWidth : cellHeight;
+      const topThickness = getDrawdownRealisticThreadThickness(crossSize, true);
+      const inset = (crossSize - topThickness) / 2;
+      const spread = crossSize * 0.12;
+      const shadow = topOrientation === "vertical"
+        ? ctx.createLinearGradient(x + inset - spread, y, x + inset + topThickness + spread, y)
+        : ctx.createLinearGradient(x, y + inset - spread, x, y + inset + topThickness + spread);
+
+      shadow.addColorStop(0, previewAlphaColor("#000000", 0));
+      shadow.addColorStop(0.2, previewAlphaColor("#000000", 0.06));
+      shadow.addColorStop(0.5, previewAlphaColor("#000000", 0.15));
+      shadow.addColorStop(0.8, previewAlphaColor("#000000", 0.06));
+      shadow.addColorStop(1, previewAlphaColor("#000000", 0));
+
+      ctx.fillStyle = shadow;
+      ctx.fillRect(x, y, cellWidth, cellHeight);
+    }
+
+    function drawDrawdownStructuredCell(
+      ctx,
+      x,
+      y,
+      cellWidth,
+      cellHeight,
+      cellState,
+      cellX,
+      cellY,
+      states
+    ) {
+      const topOrientation = cellState.warpVisibleOnFront ? "vertical" : "horizontal";
+      const underOrientation = topOrientation === "vertical" ? "horizontal" : "vertical";
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, cellWidth, cellHeight);
+
+      if (underOrientation === "vertical") {
+        if (isDrawdownOrientationRendered(cellState, "vertical")) {
+          drawDrawdownAdaptiveYarn(
+            ctx, x, y, cellWidth, cellHeight, cellState.warpColor || "#ffffff",
+            "vertical", false, cellX, cellY, states
+          );
+        }
+      } else if (isDrawdownOrientationRendered(cellState, "horizontal")) {
+        drawDrawdownAdaptiveYarn(
+          ctx, x, y, cellWidth, cellHeight, cellState.weftColor || "#ffffff",
+          "horizontal", false, cellX, cellY, states
+        );
+      }
+
+      if (cellState.hasWarp && cellState.hasWeft) {
+        drawDrawdownIntersectionShadow(ctx, x, y, cellWidth, cellHeight, topOrientation);
+      }
+
+      if (topOrientation === "vertical") {
+        if (isDrawdownOrientationRendered(cellState, "vertical")) {
+          drawDrawdownAdaptiveYarn(
+            ctx, x, y, cellWidth, cellHeight, cellState.warpColor || "#ffffff",
+            "vertical", true, cellX, cellY, states
+          );
+        }
+      } else if (isDrawdownOrientationRendered(cellState, "horizontal")) {
+        drawDrawdownAdaptiveYarn(
+          ctx, x, y, cellWidth, cellHeight, cellState.weftColor || "#ffffff",
+          "horizontal", true, cellX, cellY, states
+        );
+      }
+    }
+
+    function getRealisticDrawdownRenderScale(totalWidth, totalHeight) {
+      const safeWidth = Math.max(1, totalWidth);
+      const safeHeight = Math.max(1, totalHeight);
+      const safeArea = Math.max(1, safeWidth * safeHeight);
+      const dimensionLimit = Math.min(
+        maxRealisticDrawdownCanvasDimension / safeWidth,
+        maxRealisticDrawdownCanvasDimension / safeHeight
+      );
+      const pixelLimit = Math.sqrt(maxRealisticDrawdownCanvasPixels / safeArea);
+
+      return Math.max(0.1, Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit));
+    }
+
+    function renderRealisticDrawdown(grid, draft, columnWidths, rowHeights) {
+      const columnEdges = getTrackEdges(columnWidths);
+      const rowEdges = getTrackEdges(rowHeights);
+      const totalWidth = columnEdges[columnEdges.length - 1];
+      const totalHeight = rowEdges[rowEdges.length - 1];
+      const states = Array.from({ length: draft.picks }, (_, pickIndex) =>
+        Array.from({ length: draft.warp }, (_, warpIndex) =>
+          getDrawdownState(draft, pickIndex, warpIndex)
+        )
+      );
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+
+      if (!ctx) {
+        grid.className = "draft-grid";
+        grid.style.width = "";
+        grid.style.height = "";
+        grid.style.gridTemplateColumns = columnWidths.map(size => `${size}px`).join(" ");
+        grid.style.gridTemplateRows = rowHeights.map(size => `${size}px`).join(" ");
+        const fragment = document.createDocumentFragment();
+
+        states.forEach((row, pickIndex) => row.forEach((state, warpIndex) => {
+          const cell = appendCell(fragment, "drawdown-cell", state.frontColor);
+          cell.style.width = `${columnWidths[warpIndex]}px`;
+          cell.style.height = `${rowHeights[pickIndex]}px`;
+        }));
+
+        grid.replaceChildren(fragment);
+        return;
+      }
+
+      grid.className = "drawdown-realistic";
+      grid.style.width = `${totalWidth}px`;
+      grid.style.height = `${totalHeight}px`;
+      grid.style.gridTemplateColumns = "";
+      grid.style.gridTemplateRows = "";
+
+      canvas.className = "drawdown-realistic-canvas";
+      canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+      canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+      canvas.style.width = `${totalWidth}px`;
+      canvas.style.height = `${totalHeight}px`;
+
+      ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      if ("imageSmoothingQuality" in ctx) {
+        ctx.imageSmoothingQuality = "high";
+      }
+
+      ctx.clearRect(0, 0, totalWidth, totalHeight);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+      for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+        for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
+          drawDrawdownStructuredCell(
+            ctx,
+            columnEdges[warpIndex],
+            rowEdges[pickIndex],
+            columnWidths[warpIndex],
+            rowHeights[pickIndex],
+            states[pickIndex][warpIndex],
+            warpIndex,
+            pickIndex,
+            states
+          );
+        }
+      }
+
+      grid.replaceChildren(canvas);
+    }
+
+    function renderDrawdownCell(fragment, state, columnWidth, rowHeight) {
+      const cell = appendCell(fragment, "drawdown-cell");
+      setCellWidth(cell, columnWidth);
+      setCellHeight(cell, rowHeight);
+
+      if (renderStyle === "structure") {
+        cell.classList.toggle("structure-on", state.warpVisible);
+        return;
+      }
+
+      if (renderStyle === "color") {
+        cell.style.backgroundColor = state.frontColor;
+        return;
+      }
+
+      if (renderStyle === "warp-faced") {
+        cell.style.backgroundColor = state.warpColor;
+        if (!state.warpVisible) {
+          cell.classList.add("faced-warp");
+          cell.style.setProperty("--crossing-color", state.weftColor);
+        }
+        return;
+      }
+
+      if (renderStyle === "weft-faced") {
+        cell.style.backgroundColor = state.weftColor;
+        if (state.warpVisible) {
+          cell.classList.add("faced-weft");
+          cell.style.setProperty("--crossing-color", state.warpColor);
+        }
+        return;
+      }
+
+      cell.style.backgroundColor = state.frontColor;
+    }
+
+    function renderDrawdown(grid, draft, columnWidths, rowHeights) {
+      if (renderStyle === "realistic") {
+        renderRealisticDrawdown(grid, draft, columnWidths, rowHeights);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      grid.className = "draft-grid";
+      grid.style.width = "";
+      grid.style.height = "";
+      setGridTracks(grid, draft.warp, draft.picks);
+      grid.style.gridTemplateColumns = formatGridTrackList(columnWidths);
+      grid.style.gridTemplateRows = formatGridTrackList(rowHeights);
+
+      for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+        for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
+          renderDrawdownCell(
+            fragment,
+            getDrawdownState(draft, pickIndex, warpIndex),
+            columnWidths[warpIndex],
+            rowHeights[pickIndex]
+          );
+        }
+      }
+
+      grid.replaceChildren(fragment);
+    }
+
+    function createVariantArticle(pattern, isOnlyVariant) {
+      const article = document.createElement("article");
+      const headingId = `variant-title-${pattern.id}`;
+      const tieupGridId = `tieup-grid-${pattern.id}`;
+      const drawdownGridId = `drawdown-grid-${pattern.id}`;
+      article.id = `variant-${pattern.id}`;
+      article.className = "draft-variant";
+      article.dataset.patternId = pattern.id;
+      article.setAttribute("aria-labelledby", headingId);
+      article.innerHTML = `
+        <div class="variant-header">
+          <div>
+            <h3 id="${headingId}" class="variant-title${isOnlyVariant ? " visually-hidden" : ""}" data-role="variant-title"></h3>
+            <div class="pattern-kicker" data-role="variant-kicker"></div>
+          </div>
+          <div class="variant-actions">
+            <button
+              class="open-button"
+              type="button"
+              data-action="open"
+              data-pattern-id="${pattern.id}"
+            >Open in Drafter</button>
+          </div>
+        </div>
+
+        <div class="draft-frame">
+          <div class="draft-scroll">
+            <div class="draft-sheet" role="img" data-role="draft-sheet">
+              <section class="draft-pane">
+                <div class="draft-grid" data-role="threading-grid" aria-hidden="true"></div>
+              </section>
+              <section class="draft-pane">
+                <div id="${tieupGridId}" class="draft-grid" data-role="tieup-grid" aria-hidden="true"></div>
+              </section>
+              <section class="draft-pane">
+                <div id="${drawdownGridId}" class="draft-grid" data-role="drawdown-grid" aria-hidden="true"></div>
+              </section>
+              <section class="draft-pane">
+                <div class="draft-grid" data-role="treadling-grid" aria-hidden="true"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <div class="description-card">
+          <p class="pattern-description" data-role="variant-description"></p>
+          <div class="pattern-dimensions" data-role="variant-dimensions"></div>
+        </div>
+      `;
+
+      article.querySelector('[data-role="variant-kicker"]').textContent = pattern.kicker;
+      article.querySelector('[data-role="variant-title"]').textContent = pattern.title;
+      article.querySelector('[data-role="variant-description"]').textContent = pattern.description;
+      article.querySelector('[data-action="open"]').setAttribute(
+        "aria-label",
+        `Open ${pattern.title} in Drafter`
+      );
+
+      return article;
+    }
+
+    function renderPatternDraft(pattern, article) {
+      if (!pattern || !article) {
+        return;
+      }
+
+      const draft = pattern.draft;
+      const cellSize = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles) > 24 ? 14 : 18;
+      const draftSheet = article.querySelector('[data-role="draft-sheet"]');
+      draftSheet.style.setProperty("--draft-cell-size", `${cellSize}px`);
+      draftSheet.setAttribute(
+        "aria-label",
+        `${pattern.title} weaving draft with tie-up, threading, drawdown, and treadling`
+      );
+      article.querySelector('[data-role="variant-dimensions"]').textContent =
+        `${draft.warp} warp ends × ${draft.picks} picks`;
+
+      const columnWidths = getRealisticColumnWidths(draft, cellSize);
+      const rowHeights = getRealisticRowHeights(draft, cellSize);
+
+      renderThreading(article.querySelector('[data-role="threading-grid"]'), draft, columnWidths);
+      renderTieup(article.querySelector('[data-role="tieup-grid"]'), draft);
+      renderDrawdown(
+        article.querySelector('[data-role="drawdown-grid"]'),
+        draft,
+        columnWidths,
+        rowHeights
+      );
+      renderTreadling(article.querySelector('[data-role="treadling-grid"]'), draft, rowHeights);
+    }
+
+    function renderSelectedFamilyDrawdowns() {
+      if (!selectedFamily) {
+        return;
+      }
+
+      selectedFamily.patterns.forEach(pattern => {
+        const article = document.getElementById(`variant-${pattern.id}`);
+
+        if (!article) {
+          return;
+        }
+
+        const draft = pattern.draft;
+        const cellSize = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles) > 24 ? 14 : 18;
+        renderDrawdown(
+          article.querySelector('[data-role="drawdown-grid"]'),
+          draft,
+          getRealisticColumnWidths(draft, cellSize),
+          getRealisticRowHeights(draft, cellSize)
+        );
+      });
+    }
+
+    function renderSelectedFamily() {
+      if (!selectedFamily) {
+        return;
+      }
+
+      const container = document.getElementById("family-drafts");
+      const isOnlyVariant = selectedFamily.patterns.length === 1;
+      document.getElementById("pattern-kicker").textContent = selectedFamily.category;
+      document.getElementById("pattern-title").textContent = selectedFamily.title;
+      container.replaceChildren();
+
+      selectedFamily.patterns.forEach(pattern => {
+        const article = createVariantArticle(pattern, isOnlyVariant);
+        container.appendChild(article);
+        renderPatternDraft(pattern, article);
+      });
+    }
+
+    function resolveFamilyRoute(routeId) {
+      const directFamily = patternFamilies.find(family => family.id === routeId);
+
+      if (directFamily) {
+        return { family: directFamily, focusPattern: directFamily.patterns[0] };
+      }
+
+      const pattern = getPatternById(routeId);
+      const family = patternFamilies.find(candidate =>
+        candidate.patterns.some(member => member.id === pattern?.id)
+      ) || patternFamilies[0];
+
+      return {
+        family,
+        focusPattern: pattern || family.patterns[0]
+      };
+    }
+
+    function selectFamily(routeId, { updateHash = true, announce = true } = {}) {
+      const { family, focusPattern } = resolveFamilyRoute(routeId);
+      selectedFamily = family;
+
+      document.querySelectorAll(".pattern-button").forEach(button => {
+        const isActive = button.dataset.familyId === family.id;
+        button.setAttribute("aria-current", String(isActive));
+      });
+
+      if (updateHash && window.location.hash !== `#${family.id}`) {
+        window.history.replaceState({}, "", `#${family.id}`);
+      }
+
+      renderSelectedFamily();
+
+      if (!updateHash && routeId && routeId !== family.id && focusPattern) {
+        window.requestAnimationFrame(() => {
+          document.getElementById(`variant-${focusPattern.id}`)?.scrollIntoView({ block: "start" });
+        });
+      }
+
+      if (announce) {
+        const draftLabel = family.patterns.length === 1 ? "1 draft" : `${family.patterns.length} drafts`;
+        document.getElementById("selection-announcer").textContent =
+          `${family.title} selected, ${draftLabel}`;
+      }
+    }
+
+    function buildPatternList() {
+      const container = document.getElementById("pattern-list");
+      const categories = [];
+
+      patternFamilies.forEach(family => {
+        if (!categories.includes(family.category)) {
+          categories.push(family.category);
+        }
+      });
+
+      categories.forEach(category => {
+        const section = document.createElement("section");
+        section.className = "pattern-category";
+
+        const heading = document.createElement("h3");
+        heading.className = "pattern-category-title";
+        heading.textContent = category;
+        section.appendChild(heading);
+
+        patternFamilies.filter(family => family.category === category).forEach(family => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "pattern-button";
+          button.dataset.familyId = family.id;
+          button.setAttribute("aria-current", "false");
+          button.innerHTML = `
+            <span class="pattern-button-name">${family.title}</span>
+          `;
+          button.addEventListener("click", () => selectFamily(family.id));
+          button.addEventListener("keydown", event => {
+            const buttons = Array.from(container.querySelectorAll(".pattern-button"));
+            const currentIndex = buttons.indexOf(button);
+            let nextIndex = null;
+
+            if (event.key === "ArrowDown") nextIndex = Math.min(buttons.length - 1, currentIndex + 1);
+            if (event.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
+            if (event.key === "Home") nextIndex = 0;
+            if (event.key === "End") nextIndex = buttons.length - 1;
+
+            if (nextIndex !== null) {
+              event.preventDefault();
+              buttons[nextIndex].focus();
+              buttons[nextIndex].click();
+            }
+          });
+          section.appendChild(button);
+        });
+
+        container.appendChild(section);
+      });
+    }
+
+    function createTransferToken() {
+      if (typeof window.crypto?.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function pruneTransferPayloads() {
+      const maxAge = 60 * 60 * 1000;
+      const now = Date.now();
+
+      for (let index = window.localStorage.length - 1; index >= 0; index--) {
+        const key = window.localStorage.key(index);
+        if (!key?.startsWith(transferStoragePrefix)) {
+          continue;
+        }
+
+        try {
+          const entry = JSON.parse(window.localStorage.getItem(key) || "{}");
+          if (!entry.createdAt || now - entry.createdAt > maxAge) {
+            window.localStorage.removeItem(key);
+          }
+        } catch (error) {
+          window.localStorage.removeItem(key);
+        }
+      }
+    }
+
+    function buildTransferPayload(pattern) {
+      const draft = pattern.draft;
+      return {
+        format: "weaving-draft-data",
+        version: 3,
+        meta: {
+          draftName: pattern.title
+        },
+        draft: {
+          shafts: draft.shafts,
+          treadles: draft.treadles,
+          warp: draft.warp,
+          picks: draft.picks,
+          threading: draft.threading.map(row => row.slice()),
+          treadling: draft.treadling.map(row => row.slice()),
+          tieup: draft.tieup.map(row => row.slice()),
+          patternColors: draft.patternColors.map(color => ({ ...color })),
+          activePatternColorId: draft.activePatternColorId,
+          nextPatternColorNumber: draft.nextPatternColorNumber
+        },
+        preview: {
+          repeatX: 4,
+          repeatY: 4,
+          renderMode: "plain",
+          sett: 60,
+          backgroundColor: "#ffffff"
+        },
+        sett: {
+          wpi: 20,
+          reedDpi: 12
+        },
+        ui: {
+          draftCellSize: 20,
+          draftRenderStyle: renderStyle
+        }
+      };
+    }
+
+    function openPatternInDrafter(patternId) {
+      const pattern = getPatternById(patternId);
+
+      if (!pattern) {
+        return;
+      }
+
+      let storageKey = null;
+
+      try {
+        pruneTransferPayloads();
+        const token = createTransferToken();
+        storageKey = `${transferStoragePrefix}${token}`;
+        window.localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            createdAt: Date.now(),
+            payload: buildTransferPayload(pattern)
+          })
+        );
+
+        const opened = window.open(
+          `drafter.html?${transferQueryParam}=${encodeURIComponent(token)}`,
+          "_blank"
+        );
+
+        if (opened) {
+          try {
+            opened.opener = null;
+          } catch (error) {
+            // The transfer is already isolated by a one-time token.
+          }
+          return;
+        }
+
+        window.localStorage.removeItem(storageKey);
+        window.alert("Your browser blocked the new drafter tab.");
+      } catch (error) {
+        if (storageKey) {
+          try {
+            window.localStorage.removeItem(storageKey);
+          } catch (storageError) {
+            // Nothing else to clean up.
+          }
+        }
+        window.alert("Unable to send this pattern to the drafter in this browser.");
+      }
+    }
+
+    buildPatternList();
+
+    document.getElementById("render-style").addEventListener("change", event => {
+      renderStyle = event.target.value;
+      renderSelectedFamilyDrawdowns();
+    });
+    document.getElementById("family-drafts").addEventListener("click", event => {
+      const button = event.target.closest('button[data-action="open"][data-pattern-id]');
+
+      if (!button) {
+        return;
+      }
+
+      openPatternInDrafter(button.dataset.patternId);
+    });
+    window.addEventListener("hashchange", () => {
+      selectFamily(window.location.hash.slice(1), { updateHash: false });
+    });
+
+    const initialFamilyId = window.location.hash.slice(1);
+    selectFamily(initialFamilyId, { updateHash: false, announce: false });
+  </script>
+</body>
+</html>
