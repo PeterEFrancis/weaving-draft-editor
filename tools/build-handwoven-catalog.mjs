@@ -34,12 +34,15 @@ const coverageNote = omitted.length
 
 const groups = [];
 const patterns = [];
+const omittedManualIds = new Set(["hw-2015-09-10-p52-s01", "hw-2015-09-10-p67-s01"]);
 const ids = new Set();
 for (const expectedIssue of included) {
   const issue = byId.get(expectedIssue.id);
   if (!Array.isArray(issue.patterns) || !issue.patterns.length) throw new Error(`${issue.id}: no patterns`);
   groups.push({ id: issue.id, title: expectedIssue.title, year: Number(expectedIssue.year) });
-  const issuePatterns = issue.patterns.slice().sort((a, b) =>
+  const issuePatterns = issue.patterns.filter(entry =>
+    !entry.manualTechnique && !/hand.?worked/i.test(entry.kind || "") && !omittedManualIds.has(entry.id)
+  ).slice().sort((a, b) =>
     (Number.parseInt(a.pages, 10) || 0) - (Number.parseInt(b.pages, 10) || 0) || String(a.id).localeCompare(String(b.id))
   );
   for (const original of issuePatterns) {
@@ -66,8 +69,8 @@ const catalog = {
     year: "2015–2023",
     groupLabel: "issue",
     notesPath: "assets/patterns/handwoven.md",
-    note: `${patterns.length} editable drafts from ${groups.length} supplied issues. Each issue is a separate section; more source material can be added later.${coverageNote}`,
-    transcriptionNote: "Drafts follow the threading, tie-up or liftplan, treadling, and color information printed with each project. Repeated structures are represented by an editable design unit or the published full-width expansion. Project notes identify manual steps and source ambiguities. Colors approximate the published yarns."
+    note: `${patterns.length} editable drafts from ${groups.length} supplied issues. Each issue is a separate section; hand-manipulation-only ground drafts are omitted; more source material can be added later.${coverageNote}`,
+    transcriptionNote: "Drafts follow the threading, tie-up or liftplan, treadling, and color information printed with each project. Repeated structures are represented by an editable design unit or the published full-width expansion. Colors approximate the published yarns."
   },
   groups,
   patterns
@@ -82,6 +85,6 @@ const addedPatternNotes = groups.map(group => {
   const issuePatterns = patterns.filter(pattern => pattern.groupId === group.id);
   return `### ${group.title}\n${issuePatterns.map(pattern => `- ${pattern.title} — ${pattern.designer || "Handwoven contributor"}, pp. ${pattern.pages}`).join("\n")}`;
 }).join("\n\n");
-const notes = `# Handwoven\n\nThis catalog transcribes ${patterns.length} project drafts from ${groups.length} supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references.\n\nThreading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and manual manipulation remain important parts of the published instructions. Entries that need hand work say so directly.${coverageNote}\n\n| Issue | Patterns |\n| --- | ---: |\n${groups.map(group => `| ${group.title} | ${counts.get(group.id)} |`).join("\n")}\n\n## Added patterns\n\n${addedPatternNotes}\n`;
+const notes = `# Handwoven\n\nThis catalog transcribes ${patterns.length} project drafts from ${groups.length} supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.\n\nThreading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and finishing remain important parts of the published instructions.${coverageNote}\n\n| Issue | Patterns |\n| --- | ---: |\n${groups.map(group => `| ${group.title} | ${counts.get(group.id)} |`).join("\n")}\n\n## Added patterns\n\n${addedPatternNotes}\n`;
 fs.writeFileSync(path.join(root, "assets/patterns/handwoven.md"), notes);
 console.log(JSON.stringify({ issues: groups.length, patterns: patterns.length }));

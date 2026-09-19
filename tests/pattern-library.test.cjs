@@ -178,7 +178,7 @@ test('every Dixon entry has a source and belongs to exactly one section of its p
 });
 
 test('Dixon contains patterns only, without PDF or source-image entries', () => {
-  assert.ok(dixonCatalog.patterns.length >= 600);
+  assert.equal(dixonCatalog.patterns.length, 571);
   assert.ok(!fs.existsSync(path.join(root, 'assets/patterns/dixon-pages')));
   for (const entry of dixonCatalog.patterns) {
     assert.ok(!entry.referenceOnly && !entry.referenceImage, entry.id);
@@ -232,7 +232,7 @@ test('editable Dixon drafts preserve every source threading, lift, and color ass
   }
 });
 
-test('Dixon retains source exceptions, hand-work instructions, and expanded repeats', () => {
+test('Dixon retains source exceptions and expanded repeats', () => {
   const entry = id => dixonCatalog.patterns.find(pattern => pattern.id === id);
   assert.deepEqual(entry('dixon-p029-s01').lifts, [[1, 3], [2, 4]]);
   assert.equal(entry('dixon-p169-s01').threading.length, 42);
@@ -241,8 +241,8 @@ test('Dixon retains source exceptions, hand-work instructions, and expanded repe
   assert.equal(entry('dixon-p189-s03').lifts.length, 14);
   assert.match(entry('dixon-p189-s03').description, /caption/);
   assert.ok(entry('dixon-p037-s02'));
-  assert.ok(entry('dixon-p153-s01').manualTechnique);
-  assert.ok(entry('dixon-p155-s06').manualTechnique);
+  assert.equal(entry('dixon-p153-s01'), undefined);
+  assert.equal(entry('dixon-p155-s06'), undefined);
   assert.equal(entry('dixon-p176-s03').lifts.length, 46);
 });
 
@@ -288,4 +288,5 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
     assert.deepEqual(payload.draft, pattern.draft);
   }
   assert.equal(get(`filterPatternSearchEntries(buildPatternSearchIndex(), 'Handwoven').length`), handwovenCatalog.patterns.length);
+  assert.ok(handwovenCatalog.patterns.every(entry => !entry.manualTechnique));
 });
