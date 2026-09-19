@@ -9,13 +9,18 @@ const handwovenCatalog = {
     "year": "2015–2023",
     "groupLabel": "issue",
     "notesPath": "assets/patterns/handwoven.md",
-    "note": "421 editable drafts from 32 supplied issues. Each issue is a separate section; more source material can be added later. Issues not yet included: September/October 2015.",
+    "note": "432 editable drafts from 33 supplied issues. Each issue is a separate section; more source material can be added later.",
     "transcriptionNote": "Drafts follow the threading, tie-up or liftplan, treadling, and color information printed with each project. Repeated structures are represented by an editable design unit or the published full-width expansion. Project notes identify manual steps and source ambiguities. Colors approximate the published yarns."
   },
   "groups": [
     {
       "id": "handwoven-2015-05-06",
       "title": "May/June 2015",
+      "year": 2015
+    },
+    {
+      "id": "handwoven-2015-09-10",
+      "title": "September/October 2015",
       "year": 2015
     },
     {
@@ -17242,6 +17247,802 @@ const handwovenCatalog = {
         ]
       ],
       "groupId": "handwoven-2015-05-06"
+    },
+    {
+      "id": "hw-2015-09-10-p28-s01",
+      "title": "Mission-Style Dish Towels in Turned Taqueté",
+      "designer": "Sharon Campbell",
+      "pages": "28-30",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "description": "A reversible turned-taqueté towel draft with four-shaft paired-color blocks.",
+      "kind": "Turned taqueté",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p32-s01",
+      "title": "Four by Four Towels",
+      "designer": "Mette Frokjaer",
+      "pages": "32-34",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "description": "Four-shaft towels combining plain weave and basketweave blocks.",
+      "kind": "Plain weave and basketweave",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p36-s01",
+      "title": "Fiesta in My Kitchen Rug",
+      "designer": "Bonnie Wilker",
+      "pages": "36-37",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "description": "A four-shaft double-binding rag rug using upcycled T-shirt weft.",
+      "kind": "Double binding",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p38-s01",
+      "title": "Diamonds in Winter",
+      "designer": "Susan Porter",
+      "pages": "38-40",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          1,
+          8
+        ]
+      ],
+      "description": "An eight-shaft reversible twill runner with a diamond progression.",
+      "kind": "Twill",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p42-s01",
+      "title": "Easy Street Napkins and Runner",
+      "designer": "Jenny Sennott",
+      "pages": "42-43",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "A rigid-heddle plain-weave napkin and table-runner set with color stripes.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p44-s01",
+      "title": "Indigo and Alabaster Runner",
+      "designer": "Beth Mullins",
+      "pages": "44-46",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          3,
+          5,
+          7
+        ],
+        [
+          2,
+          4,
+          6,
+          8
+        ],
+        [
+          1,
+          2,
+          5,
+          6
+        ],
+        [
+          3,
+          4,
+          7,
+          8
+        ]
+      ],
+      "description": "An eight-shaft deflected-doubleweave and plain-weave table runner.",
+      "kind": "Deflected doubleweave and plain weave",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p48-s01",
+      "title": "Cozy Throws for Two",
+      "designer": "Robin Lynde",
+      "pages": "48-50",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          1,
+          8
+        ]
+      ],
+      "description": "An eight-shaft twill color-and-weave draft for two full-size throws.",
+      "kind": "Twill color-and-weave",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p52-s01",
+      "title": "Dukagang Pillow",
+      "designer": "Inga Marie Carmel",
+      "pages": "52-54",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "description": "A four-shaft dukagang inlay pillow with a plain-weave ground and pile-like pattern weft.",
+      "kind": "Dukagang pile",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p56-s01",
+      "title": "A Taos Classic Blanket",
+      "designer": "Kimberly Hamill",
+      "pages": "56-57",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          4
+        ]
+      ],
+      "description": "A four-shaft twill blanket draft inspired by Taos weaving.",
+      "kind": "Twill",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p60-s01",
+      "title": "Fringe Benefits Pillow",
+      "designer": "Deni Snyder-Burton",
+      "pages": "60-61",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "A rigid-heddle plain-weave pillow with weft floats and fringe detail.",
+      "kind": "Plain weave with weft floats",
+      "groupId": "handwoven-2015-09-10"
+    },
+    {
+      "id": "hw-2015-09-10-p67-s01",
+      "title": "Boutonné Snowflake Pillow",
+      "designer": "Sara Bixler",
+      "pages": "67-68",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "A two-shaft plain-weave pillow with hand-manipulated pile inlay; the snowflake chart is worked manually after each ground shed.",
+      "kind": "Plain weave with inlay",
+      "groupId": "handwoven-2015-09-10"
     },
     {
       "id": "hw-2015-11-12-p26-s01",

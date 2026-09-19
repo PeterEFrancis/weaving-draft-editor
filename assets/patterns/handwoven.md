@@ -1,12 +1,13 @@
 # Handwoven
 
-This catalog transcribes 421 project drafts from 32 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references.
+This catalog transcribes 432 project drafts from 33 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references.
 
-Threading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and manual manipulation remain important parts of the published instructions. Entries that need hand work say so directly. Issues not yet included: September/October 2015.
+Threading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and manual manipulation remain important parts of the published instructions. Entries that need hand work say so directly.
 
 | Issue | Patterns |
 | --- | ---: |
 | May/June 2015 | 18 |
+| September/October 2015 | 11 |
 | November/December 2015 | 12 |
 | January/February 2016 | 10 |
 | March/April 2016 | 12 |
@@ -60,6 +61,19 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Show Towel — bottom border — Tom Knisely, pp. 68
 - Show Towel — overshot band — Tom Knisely, pp. 68
 - Show Towel — top border — Tom Knisely, pp. 68
+
+### September/October 2015
+- Mission-Style Dish Towels in Turned Taqueté — Sharon Campbell, pp. 28-30
+- Four by Four Towels — Mette Frokjaer, pp. 32-34
+- Fiesta in My Kitchen Rug — Bonnie Wilker, pp. 36-37
+- Diamonds in Winter — Susan Porter, pp. 38-40
+- Easy Street Napkins and Runner — Jenny Sennott, pp. 42-43
+- Indigo and Alabaster Runner — Beth Mullins, pp. 44-46
+- Cozy Throws for Two — Robin Lynde, pp. 48-50
+- Dukagang Pillow — Inga Marie Carmel, pp. 52-54
+- A Taos Classic Blanket — Kimberly Hamill, pp. 56-57
+- Fringe Benefits Pillow — Deni Snyder-Burton, pp. 60-61
+- Boutonné Snowflake Pillow — Sara Bixler, pp. 67-68
 
 ### November/December 2015
 - Mermaid Freeform Overshot Scarf — Lisa Rayner, pp. 26–28
