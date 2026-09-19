@@ -4015,10 +4015,14 @@
       });
     }
 
+    function getPatternShaftCount(pattern) {
+      return Number(pattern.shafts ?? pattern.draft?.shafts);
+    }
+
     function filterPatternSearchEntries(entries, query, shaftCounts = new Set()) {
       const terms = normalizePatternSearch(query).split(/\s+/).filter(Boolean);
       return entries.filter(entry => terms.every(term => entry.searchText.includes(term))
-        && (!shaftCounts.size || shaftCounts.has(Number(entry.pattern.shafts))));
+        && (!shaftCounts.size || shaftCounts.has(getPatternShaftCount(entry.pattern))));
     }
 
     let patternSearchState = null;
@@ -4032,7 +4036,7 @@
       const pendingPreviews = new Set();
       const shaftCounts = new Set();
       const shaftOptions = document.getElementById("shaft-filter-options");
-      [...new Set(entries.map(entry => Number(entry.pattern.shafts)).filter(Number.isFinite))].sort((a, b) => a - b).forEach(shafts => {
+      [...new Set(entries.map(entry => getPatternShaftCount(entry.pattern)).filter(Number.isFinite))].sort((a, b) => a - b).forEach(shafts => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="checkbox" value="${shafts}"> ${shafts}`;
         const checkbox = label.querySelector("input");
