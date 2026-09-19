@@ -136,28 +136,90 @@
       backdrop-filter: blur(10px);
     }
 
-    .sidebar-card {
+    .library-sidebar {
       position: sticky;
       top: 1rem;
       max-height: calc(100vh - 2rem);
-      overflow: hidden;
+      overflow-y: auto;
+      scrollbar-color: rgba(170, 74, 43, 0.34) transparent;
+      scrollbar-gutter: stable;
+      padding: 0 0.2rem 0.25rem 0;
     }
 
-    .pattern-list {
-      max-height: calc(100vh - 2rem);
-      overflow-y: auto;
-      padding: 0.3rem;
-      scrollbar-color: rgba(170, 74, 43, 0.34) transparent;
+    .sidebar-card { padding: 0.55rem; }
+    .sidebar-card + .sidebar-card { margin-top: 0.85rem; }
+
+    .sidebar-card-title {
+      margin: 0;
+      padding: 0.5rem 0.5rem 0.65rem;
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
     }
 
     .pattern-category + .pattern-category {
-      margin-top: 0.28rem;
+      border-top: 1px solid rgba(47, 36, 29, 0.07);
     }
 
-    .pattern-category-title {
-      margin: 0;
-      padding: 0.4rem 0.48rem 0.18rem;
-      line-height: 1.15;
+    .pattern-category-title { margin: 0; }
+
+    .section-toggle,
+    .published-section-toggle {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.65rem 0.5rem;
+      border: 0;
+      border-radius: 0.6rem;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .section-toggle:hover,
+    .section-toggle[aria-expanded="true"],
+    .published-section-toggle:hover,
+    .published-section-toggle[aria-expanded="true"] {
+      background: rgba(170, 74, 43, 0.07);
+      color: var(--accent-dark);
+    }
+
+    .section-toggle::before,
+    .published-section-toggle::before {
+      content: "";
+      width: 0.42rem;
+      height: 0.42rem;
+      flex: 0 0 auto;
+      margin-right: 0.1rem;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(-45deg);
+    }
+
+    .section-toggle[aria-expanded="true"]::before,
+    .published-section-toggle[aria-expanded="true"]::before { transform: rotate(45deg); }
+    .section-name { flex: 1; }
+    .section-count { color: var(--sage); font-size: 0.76rem; font-weight: 600; }
+    .section-panel { padding: 0.25rem 0 0.55rem 0.75rem; }
+
+    .published-section-heading { margin: 0; }
+    .published-section-toggle { padding: 0.55rem 0.4rem; font-size: 0.87rem; }
+    .published-section-panel { padding: 0.15rem 0 0.55rem 0.65rem; }
+    .published-section + .published-section { border-top: 1px solid rgba(47, 36, 29, 0.05); }
+
+    [hidden] { display: none !important; }
+
+    .section-toggle:focus-visible,
+    .published-section-toggle:focus-visible,
+    .pattern-button:focus-visible {
+      outline: 2px solid var(--accent-dark);
+      outline-offset: -2px;
     }
 
     .pattern-button {
@@ -181,7 +243,6 @@
     .pattern-button:focus-visible {
       border-color: rgba(170, 74, 43, 0.2);
       background: rgba(170, 74, 43, 0.07);
-      outline: none;
     }
 
     .pattern-button[aria-current="true"] {
@@ -192,12 +253,78 @@
     }
 
     .pattern-button-name {
-      overflow: hidden;
-      font-weight: 750;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-weight: 400;
+      overflow-wrap: anywhere;
     }
 
+    .pattern-search-dialog {
+      width: min(1160px, calc(100% - 2rem));
+      max-width: none;
+      height: min(900px, 92dvh);
+      max-height: 92dvh;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 1.25rem;
+      background: #fdfaf4;
+      color: var(--ink);
+      box-shadow: 0 2rem 6rem rgba(47, 36, 29, 0.3);
+      overflow: hidden;
+    }
+
+    .pattern-search-dialog[open] { display: flex; flex-direction: column; }
+    .pattern-search-dialog::backdrop { background: rgba(35, 30, 24, 0.48); backdrop-filter: blur(4px); }
+    body:has(.pattern-search-dialog[open]) { overflow: hidden; }
+    .pattern-search-header { flex: 0 0 auto; padding: 1.4rem 1.5rem 1rem; border-bottom: 1px solid var(--line); }
+    .pattern-search-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+    .pattern-search-heading h2 { margin: 0.25rem 0 0; font-size: clamp(1.4rem, 3vw, 1.9rem); letter-spacing: -0.03em; }
+    .pattern-search-close { border: 0; background: transparent; border-radius: 0.5rem; width: 2.5rem; height: 2.5rem; font-size: 1.6rem; color: var(--ink); }
+    .pattern-search-close:hover { background: rgba(170, 74, 43, 0.08); }
+    .pattern-search-description { margin: 0.65rem 0 1rem; font-size: 0.9rem; color: #63594e; }
+    .pattern-search-label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .pattern-search-input-row { display: flex; gap: 0.5rem; }
+    .pattern-search-input { flex: 1; min-width: 0; width: 100%; padding: 0.7rem 0.85rem; border: 1px solid var(--line); border-radius: 0.65rem; background: #fff; color: var(--ink); font: inherit; }
+    .pattern-search-clear { border: 1px solid var(--line); border-radius: 0.65rem; background: #fff; color: var(--accent-dark); padding: 0.5rem 0.8rem; }
+    .pattern-search-count { margin: 0.65rem 0 0; color: #63594e; font-size: 0.8rem; }
+    .pattern-search-results { flex: 1; min-height: 0; overflow-y: auto; padding: 1.3rem 1.5rem 1.5rem; overscroll-behavior: contain; scrollbar-gutter: stable; }
+    .pattern-search-collection + .pattern-search-collection { margin-top: 1.8rem; }
+    .pattern-search-collection h3 { font-size: 1.08rem; margin: 0 0 0.8rem; }
+    .pattern-search-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 0.9rem; }
+    .pattern-search-card { display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden; text-align: left; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 0.8rem; }
+    .pattern-search-card:hover { border-color: var(--accent); box-shadow: 0 0.4rem 1rem rgba(47, 36, 29, 0.09); }
+    .pattern-search-card canvas { display: block; width: 100%; height: auto; aspect-ratio: 240 / 176; background: #eee8dc; border-bottom: 1px solid var(--line); }
+    .pattern-search-card-copy { display: flex; flex: 1; flex-direction: column; gap: 0.4rem; padding: 0.85rem; }
+    .pattern-search-card-title { font-size: 0.91rem; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+    .pattern-search-card-meta { color: #63594e; font-size: 0.77rem; line-height: 1.4; }
+    .pattern-search-card-note { color: var(--sage); font-size: 0.75rem; }
+    .pattern-search-card-action { margin-top: auto; padding-top: 0.6rem; color: var(--accent-dark); font-size: 0.8rem; font-weight: 600; }
+    .pattern-search-empty { padding: 2rem 0.5rem; text-align: center; color: #63594e; }
+    .pattern-search-dialog :is(button, input):focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+
+    @media (max-width: 520px) {
+      .pattern-search-dialog { width: calc(100% - 1rem); height: 95dvh; max-height: 95dvh; border-radius: 1rem; }
+      .pattern-search-header { padding: 1rem; }
+      .pattern-search-results { padding: 1rem; }
+      .pattern-search-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+      .pattern-search-card-copy { padding: 0.65rem; }
+      .pattern-search-card-title { font-size: 0.83rem; }
+    }
+
+    .book-intro {
+      margin: 0 0 1rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: rgba(255, 252, 245, 0.9);
+    }
+
+    .book-intro p { margin: 0.4rem 0 0; color: rgba(47, 36, 29, 0.76); }
+    .book-intro a { color: var(--accent-dark); }
+    .book-picker { display: block; margin-top: 1rem; }
+    .book-picker select { display: block; width: 100%; margin-top: 0.35rem; }
+    .pattern-source { margin: 0.5rem 0 0; font-size: 0.88rem; color: var(--sage); }
+    .book-draft .draft-frame { width: 100%; max-height: 78vh; overflow: auto; }
+    .book-draft .description-card { flex-wrap: wrap; }
+    .book-draft .pattern-description { flex: 1 1 20rem; }
     .detail-column {
       min-width: 0;
     }
@@ -394,6 +521,20 @@
       display: block;
     }
 
+    .drawdown-compact {
+      display: block;
+      width: fit-content;
+      line-height: 0;
+      border-top: 1px solid #000000;
+      border-left: 1px solid #000000;
+      background: #ffffff;
+    }
+
+    .drawdown-compact canvas {
+      display: block;
+      image-rendering: pixelated;
+    }
+
     .description-card {
       display: flex;
       justify-content: space-between;
@@ -441,20 +582,9 @@
         grid-template-columns: 1fr;
       }
 
-      .sidebar-card {
+      .library-sidebar {
         position: static;
-        max-height: none;
-      }
-
-      .pattern-list {
-        display: grid;
-        max-height: none;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.25rem 0.55rem;
-      }
-
-      .pattern-category + .pattern-category {
-        margin-top: 0;
+        max-height: min(65vh, 34rem);
       }
 
       .detail-header {
@@ -469,10 +599,6 @@
 
       .page-header {
         align-items: stretch;
-      }
-
-      .pattern-list {
-        grid-template-columns: 1fr;
       }
 
       .detail-header,
@@ -506,6 +632,10 @@
       .pattern-dimensions {
         white-space: normal;
       }
+
+      .book-draft .pattern-description {
+        flex: 0 1 auto;
+      }
     }
   </style>
 </head>
@@ -523,6 +653,10 @@
           </span>
           <span>Home</span>
         </a>
+        <button id="open-pattern-search" class="home-link" type="button" aria-haspopup="dialog" aria-controls="pattern-search-dialog">
+          <span class="toolbar-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
+          <span>Search patterns</span>
+        </button>
       </div>
 
       <div class="header-control-group header-render-group">
@@ -538,8 +672,17 @@
     </header>
 
     <div class="library-layout">
-      <aside class="sidebar-card">
-        <nav id="pattern-list" class="pattern-list" aria-label="Common weaving patterns"></nav>
+      <aside class="library-sidebar" aria-label="Pattern library navigation">
+        <div id="pattern-list">
+          <section class="sidebar-card" aria-labelledby="basic-patterns-title">
+            <h2 id="basic-patterns-title" class="sidebar-card-title">Basic patterns</h2>
+            <nav id="basic-pattern-list" aria-label="Basic patterns"></nav>
+          </section>
+          <section class="sidebar-card" aria-labelledby="published-patterns-title">
+            <h2 id="published-patterns-title" class="sidebar-card-title">Published patterns</h2>
+            <nav id="published-pattern-list" aria-label="Published patterns"></nav>
+          </section>
+        </div>
       </aside>
 
       <section class="detail-column" aria-labelledby="pattern-title">
@@ -549,12 +692,50 @@
             <h2 id="pattern-title" class="pattern-title"></h2>
           </div>
         </div>
+        <section id="book-intro" class="book-intro" aria-label="About this collection" hidden>
+          <strong id="book-source-title"></strong>
+          <p id="book-source-edition"></p>
+          <p id="book-source-note"></p>
+          <details>
+            <summary>About the transcriptions</summary>
+            <p id="book-transcription-note"></p>
+            <p id="book-notes-link-container"><a id="book-notes-link">Source and coverage notes</a></p>
+          </details>
+          <label class="book-picker" for="book-pattern">
+            <span id="book-picker-label" class="control-label">Pattern in this section</span>
+            <select id="book-pattern" class="form-select"></select>
+          </label>
+        </section>
         <div id="family-drafts" class="family-drafts"></div>
       </section>
     </div>
     <div id="selection-announcer" class="visually-hidden-live" aria-live="polite"></div>
   </main>
 
+  <dialog id="pattern-search-dialog" class="pattern-search-dialog" aria-labelledby="pattern-search-title" aria-describedby="pattern-search-description">
+    <div class="pattern-search-header">
+      <div class="pattern-search-heading">
+        <div><div class="control-label">The pattern library</div><h2 id="pattern-search-title">Find your next fabric.</h2></div>
+        <button id="close-pattern-search" class="pattern-search-close" type="button" aria-label="Close pattern search">×</button>
+      </div>
+      <p id="pattern-search-description" class="pattern-search-description">Explore every collection. Small drafts repeat to show the fabric; choose a preview to open its pattern.</p>
+      <label for="pattern-search-input" class="pattern-search-label">Search patterns</label>
+      <div class="pattern-search-input-row">
+        <input id="pattern-search-input" class="pattern-search-input" type="search" placeholder="Try twill, Dixon, overshot, or page 33" autocomplete="off" spellcheck="false" autofocus>
+        <button id="clear-pattern-search" class="pattern-search-clear" type="button" hidden>Clear</button>
+      </div>
+      <p id="pattern-search-count" class="pattern-search-count" role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
+    <div id="pattern-search-results" class="pattern-search-results">
+      <div id="pattern-search-collections"></div>
+      <p id="pattern-search-empty" class="pattern-search-empty" hidden>No patterns found. Try another weave, pattern name, or author.</p>
+    </div>
+  </dialog>
+
+  <script src="assets/patterns/learning-to-weave.js"></script>
+  <script src="assets/patterns/handweavers-pattern-directory.js"></script>
+  <script src="assets/patterns/handwoven.js"></script>
+  <script src="assets/patterns/search-previews.js"></script>
   <script>
     const yarnId = index => `pattern-color-${index + 1}`;
     const transferStoragePrefix = "weaving-cross-editor-transfer.v1.";
@@ -564,6 +745,10 @@
     const maxRealisticDrawdownCanvasPixels = 16000000;
     const previewColorCache = new Map();
     let selectedFamily = null;
+    let selectedBookPattern = null;
+    let selectedPatternId = null;
+    let expandedSectionId = null;
+    let expandedPublishedGroupId = null;
     let renderStyle = "color";
 
     function makePalette(...colors) {
@@ -2391,12 +2576,127 @@
       }
     ];
 
+    function buildBookDraft(entry) {
+      const hasTabby = Boolean(entry.tabby);
+      const values = entry.colors || (hasTabby ? ["#eee3cc", "#455d75"] : ["#455d75", "#eee3cc"]);
+      const colors = makePalette(...values.map((value, index) => ({
+        value,
+        thickness: entry.thickness?.[index] || (hasTabby && index === 1 ? 2 : 1)
+      })));
+      const pickLifts = [];
+      const pickColors = [];
+      entry.lifts.forEach((lift, index) => {
+        pickLifts.push(lift.map(shaft => shaft - 1));
+        pickColors.push(entry.weftColors?.[index % entry.weftColors.length] ?? 1);
+        if (hasTabby) {
+          pickLifts.push(entry.tabby[index % entry.tabby.length].map(shaft => shaft - 1));
+          pickColors.push(0);
+        }
+      });
+      // Consolidate identical sheds into treadles without changing the lift plan.
+      const sheds = [];
+      const treadlingSequence = pickLifts.map(lift => {
+        const sorted = [...lift].sort((a, b) => a - b);
+        let index = sheds.findIndex(shed => shed.length === sorted.length && shed.every((s, i) => s === sorted[i]));
+        if (index === -1) {
+          index = sheds.length;
+          sheds.push(sorted);
+        }
+        return index;
+      });
+      return buildDraftFromTieup({
+        shafts: entry.shafts,
+        tieup: makeTieupFromLiftedShafts(entry.shafts, sheds),
+        threadingSequence: entry.threading.map(shaft => shaft - 1),
+        treadlingSequence,
+        patternColors: colors,
+        warp: entry.threading.length,
+        picks: pickLifts.length,
+        warpColorAt: index => colors[entry.warpColors?.[index % entry.warpColors.length] ?? 0].id,
+        weftColorAt: index => colors[pickColors[index]].id
+      });
+    }
+
+    // Add publications here; sidebar sections, attribution, and draft selection use
+    // the catalog metadata so each book keeps its own chapter or lesson structure.
+    const bookCatalogs = [
+      {
+        ...learningToWeaveCatalog,
+        source: {
+          id: "learning-to-weave",
+          groupLabel: "lesson",
+          notesPath: "assets/patterns/learning-to-weave.md",
+          transcriptionNote: "Full drafts and specified color sequences are transcribed from the book. Block diagrams are expanded into editable drafts and labeled “Profile expansion.” Threading studies and technique samples identify choices needed to complete a draft. Photos without complete drafts and open-ended design assignments are not reconstructed.",
+          ...learningToWeaveCatalog.source
+        }
+      },
+      handweaversPatternDirectoryCatalog,
+      handwovenCatalog
+    ];
+
+    function getBookPublication(source) {
+      const parts = [];
+      [source.edition, source.publisher, source.year].forEach(value => {
+        if (value && !parts.join(", ").toLowerCase().includes(String(value).toLowerCase())) {
+          parts.push(String(value));
+        }
+      });
+      return parts.join(", ");
+    }
+
+    function getBookGroup(catalog, entry) {
+      return catalog.groups.find(group => group.id
+        ? entry.groupId === group.id
+        : entry.lesson === group.lesson);
+    }
+
+    bookCatalogs.forEach(catalog => {
+      const source = catalog.source;
+      const publication = getBookPublication(source);
+      catalog.patterns.forEach(entry => {
+        const group = getBookGroup(catalog, entry);
+        const groupLabel = group.lesson ? `Lesson ${group.lesson}` : group.title;
+        const pageLabel = /^\d+$/.test(String(entry.pages)) ? "p." : "pp.";
+        const creditedAuthor = entry.designer || source.author;
+        const pattern = {
+          id: entry.id,
+          publicationId: source.id,
+          category: source.title,
+          title: entry.title,
+          shortMeta: `${entry.shafts} shafts`,
+          kicker: `${groupLabel} · ${entry.shafts} shafts · ${entry.kind || "Book draft"}`,
+          description: entry.description,
+          source: `${creditedAuthor}, ${source.title}${group?.title ? `, ${group.title}` : ""}${publication ? `, ${publication}` : ""}, ${pageLabel} ${entry.pages}.`,
+          // Book excerpts can include balancing edges; do not imply seamless tiling.
+          previewRepeats: 1
+        };
+        let draft;
+        Object.defineProperty(pattern, "draft", {
+          enumerable: true,
+          get() { return draft || (draft = buildBookDraft(entry)); }
+        });
+        patterns.push(pattern);
+      });
+
+      catalog.groups.forEach(group => {
+        familyDefinitions.push({
+          // Preserve links to the original Learning to Weave lesson routes.
+          id: source.id === "learning-to-weave" ? `chandler-lesson-${group.lesson}` : `${source.id}-${group.id}`,
+          category: source.title,
+          title: group.lesson ? `${group.lesson}. ${group.title}` : group.title,
+          book: true,
+          publicationId: source.id,
+          memberIds: catalog.patterns.filter(entry => getBookGroup(catalog, entry) === group).map(entry => entry.id)
+        });
+      });
+    });
+
     const patternFamilies = familyDefinitions.map(definition => ({
       ...definition,
       patterns: definition.memberIds.map(patternId =>
         patterns.find(pattern => pattern.id === patternId)
       ).filter(Boolean)
-    }));
+    })).filter(family => family.patterns.length > 0);
 
     function getPatternById(id) {
       return patterns.find(pattern => pattern.id === id) || null;
@@ -3084,7 +3384,67 @@
       cell.style.backgroundColor = state.frontColor;
     }
 
+    function renderCompactDrawdown(grid, draft, columnWidths, rowHeights) {
+      const columnEdges = getTrackEdges(columnWidths);
+      const rowEdges = getTrackEdges(rowHeights);
+      const totalWidth = columnEdges[columnEdges.length - 1];
+      const totalHeight = rowEdges[rowEdges.length - 1];
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return false;
+      const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+      canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+      canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+      canvas.style.width = `${totalWidth}px`;
+      canvas.style.height = `${totalHeight}px`;
+      ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      const warp = Array.from({ length: draft.warp }, (_, index) => getWarpAssignment(draft, index));
+      const picks = Array.from({ length: draft.picks }, (_, pickIndex) => {
+        const raised = new Uint8Array(draft.shafts);
+        draft.treadling[pickIndex].forEach((colorId, treadleIndex) => {
+          if (!colorId) return;
+          draft.tieup[treadleIndex].forEach((active, shaftIndex) => { if (active) raised[shaftIndex] = 1; });
+        });
+        return { raised, colorId: getPickColorId(draft, pickIndex) };
+      });
+      for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+        const pick = picks[pickIndex];
+        const weftColor = getYarn(draft, pick.colorId).value;
+        const y = rowEdges[pickIndex];
+        const height = rowHeights[pickIndex];
+        for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
+          const assignment = warp[warpIndex];
+          const visible = Boolean(assignment && pick.raised[assignment.shaftIndex]);
+          const warpColor = getYarn(draft, assignment?.colorId).value;
+          const frontColor = visible ? warpColor : weftColor;
+          const x = columnEdges[warpIndex];
+          const width = columnWidths[warpIndex];
+          if (renderStyle === "realistic") {
+            ctx.fillStyle = visible ? weftColor : warpColor;
+            ctx.fillRect(x, y, width, height);
+            ctx.fillStyle = frontColor;
+            if (visible) ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
+            else ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
+          } else {
+            ctx.fillStyle = renderStyle === "structure" ? (visible ? "#2f241d" : "#ffffff") : frontColor;
+            ctx.fillRect(x, y, width, height);
+          }
+        }
+      }
+      grid.className = "drawdown-compact";
+      grid.style.width = `${totalWidth}px`;
+      grid.style.height = `${totalHeight}px`;
+      grid.style.gridTemplateColumns = "";
+      grid.style.gridTemplateRows = "";
+      grid.replaceChildren(canvas);
+      return true;
+    }
+
     function renderDrawdown(grid, draft, columnWidths, rowHeights) {
+      if (draft.warp * draft.picks > 60000 && renderCompactDrawdown(grid, draft, columnWidths, rowHeights)) {
+        return;
+      }
       if (renderStyle === "realistic") {
         renderRealisticDrawdown(grid, draft, columnWidths, rowHeights);
         return;
@@ -3118,7 +3478,7 @@
       const tieupGridId = `tieup-grid-${pattern.id}`;
       const drawdownGridId = `drawdown-grid-${pattern.id}`;
       article.id = `variant-${pattern.id}`;
-      article.className = "draft-variant";
+      article.className = `draft-variant${pattern.source ? " book-draft" : ""}`;
       article.dataset.patternId = pattern.id;
       article.setAttribute("aria-labelledby", headingId);
       article.innerHTML = `
@@ -3128,12 +3488,12 @@
             <div class="pattern-kicker" data-role="variant-kicker"></div>
           </div>
           <div class="variant-actions">
-            <button
-              class="open-button"
-              type="button"
-              data-action="open"
-              data-pattern-id="${pattern.id}"
-            >Open in Drafter</button>
+              <button
+                class="open-button"
+                type="button"
+                data-action="open"
+                data-pattern-id="${pattern.id}"
+              >Open in Drafter</button>
           </div>
         </div>
 
@@ -3165,11 +3525,16 @@
       article.querySelector('[data-role="variant-kicker"]').textContent = pattern.kicker;
       article.querySelector('[data-role="variant-title"]').textContent = pattern.title;
       article.querySelector('[data-role="variant-description"]').textContent = pattern.description;
-      article.querySelector('[data-action="open"]').setAttribute(
+      if (pattern.source) {
+        const source = document.createElement("p");
+        source.className = "pattern-source";
+        source.textContent = pattern.source;
+        article.querySelector(".variant-header > div").appendChild(source);
+      }
+      article.querySelector('[data-action="open"]')?.setAttribute(
         "aria-label",
         `Open ${pattern.title} in Drafter`
       );
-
       return article;
     }
 
@@ -3179,7 +3544,8 @@
       }
 
       const draft = pattern.draft;
-      const cellSize = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles) > 24 ? 14 : 18;
+      const largestDimension = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles);
+      const cellSize = largestDimension > 512 ? 3 : largestDimension > 192 ? 5 : largestDimension > 72 ? 9 : largestDimension > 24 ? 14 : 18;
       const draftSheet = article.querySelector('[data-role="draft-sheet"]');
       draftSheet.style.setProperty("--draft-cell-size", `${cellSize}px`);
       draftSheet.setAttribute(
@@ -3208,7 +3574,7 @@
         return;
       }
 
-      selectedFamily.patterns.forEach(pattern => {
+      getVisiblePatterns().forEach(pattern => {
         const article = document.getElementById(`variant-${pattern.id}`);
 
         if (!article) {
@@ -3216,7 +3582,8 @@
         }
 
         const draft = pattern.draft;
-        const cellSize = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles) > 24 ? 14 : 18;
+        const largestDimension = Math.max(draft.warp, draft.picks, draft.shafts, draft.treadles);
+        const cellSize = largestDimension > 512 ? 3 : largestDimension > 192 ? 5 : largestDimension > 72 ? 9 : largestDimension > 24 ? 14 : 18;
         renderDrawdown(
           article.querySelector('[data-role="drawdown-grid"]'),
           draft,
@@ -3226,18 +3593,56 @@
       });
     }
 
+    function getVisiblePatterns() {
+      return selectedFamily?.book ? [selectedBookPattern || selectedFamily.patterns[0]] : selectedFamily?.patterns || [];
+    }
+
+    function renderBookIntro(family) {
+      const source = bookCatalogs.find(catalog => catalog.source.id === family.publicationId).source;
+      const groupLabel = source.groupLabel || "section";
+      const publication = getBookPublication(source);
+      document.getElementById("book-source-title").textContent = `${source.title} · ${source.author}`;
+      document.getElementById("book-source-edition").textContent =
+        `${publication ? `${publication}. ` : ""}Browse this collection by ${groupLabel}, then choose an entry below.`;
+      const note = document.getElementById("book-source-note");
+      note.textContent = source.note || "";
+      note.hidden = !source.note;
+      const transcription = document.getElementById("book-transcription-note");
+      transcription.textContent = source.transcriptionNote || "";
+      transcription.hidden = !source.transcriptionNote;
+      const notesLink = document.getElementById("book-notes-link");
+      if (source.notesPath) notesLink.setAttribute("href", source.notesPath);
+      else notesLink.removeAttribute("href");
+      document.getElementById("book-notes-link-container").hidden = !source.notesPath;
+      transcription.closest("details").hidden = !source.transcriptionNote && !source.notesPath;
+      document.getElementById("book-picker-label").textContent = `Pattern in this ${groupLabel}`;
+    }
+
     function renderSelectedFamily() {
       if (!selectedFamily) {
         return;
       }
 
       const container = document.getElementById("family-drafts");
-      const isOnlyVariant = selectedFamily.patterns.length === 1;
+      const isOnlyVariant = !selectedFamily.book && selectedFamily.patterns.length === 1;
+      const bookIntro = document.getElementById("book-intro");
+      bookIntro.hidden = !selectedFamily.book;
+      if (selectedFamily.book) {
+        renderBookIntro(selectedFamily);
+        const picker = document.getElementById("book-pattern");
+        picker.replaceChildren(...selectedFamily.patterns.map(pattern => {
+          const option = document.createElement("option");
+          option.value = pattern.id;
+          option.textContent = pattern.title;
+          return option;
+        }));
+        picker.value = selectedBookPattern.id;
+      }
       document.getElementById("pattern-kicker").textContent = selectedFamily.category;
       document.getElementById("pattern-title").textContent = selectedFamily.title;
       container.replaceChildren();
 
-      selectedFamily.patterns.forEach(pattern => {
+      getVisiblePatterns().forEach(pattern => {
         const article = createVariantArticle(pattern, isOnlyVariant);
         container.appendChild(article);
         renderPatternDraft(pattern, article);
@@ -3262,22 +3667,31 @@
       };
     }
 
+    function updatePatternNavigation() {
+      document.querySelectorAll(".pattern-button[data-route-id]").forEach(button => {
+        const isActive = button.dataset.patternId
+          ? button.dataset.patternId === selectedPatternId
+          : button.dataset.familyId === selectedFamily?.id;
+        button.setAttribute("aria-current", String(isActive));
+      });
+    }
+
     function selectFamily(routeId, { updateHash = true, announce = true } = {}) {
       const { family, focusPattern } = resolveFamilyRoute(routeId);
       selectedFamily = family;
+      selectedBookPattern = family.book ? focusPattern : null;
+      selectedPatternId = focusPattern.id;
+      updatePatternNavigation();
 
-      document.querySelectorAll(".pattern-button").forEach(button => {
-        const isActive = button.dataset.familyId === family.id;
-        button.setAttribute("aria-current", String(isActive));
-      });
-
-      if (updateHash && window.location.hash !== `#${family.id}`) {
-        window.history.replaceState({}, "", `#${family.id}`);
+      const isPatternRoute = routeId === focusPattern.id && routeId !== family.id;
+      const selectionId = family.book || isPatternRoute ? focusPattern.id : family.id;
+      if (updateHash && window.location.hash !== `#${selectionId}`) {
+        window.history.replaceState({}, "", `#${selectionId}`);
       }
 
       renderSelectedFamily();
 
-      if (!updateHash && routeId && routeId !== family.id && focusPattern) {
+      if (!family.book && !updateHash && isPatternRoute) {
         window.requestAnimationFrame(() => {
           document.getElementById(`variant-${focusPattern.id}`)?.scrollIntoView({ block: "start" });
         });
@@ -3286,60 +3700,169 @@
       if (announce) {
         const draftLabel = family.patterns.length === 1 ? "1 draft" : `${family.patterns.length} drafts`;
         document.getElementById("selection-announcer").textContent =
-          `${family.title} selected, ${draftLabel}`;
+          family.book ? `${focusPattern.title} selected from ${family.title}` : `${family.title} selected, ${draftLabel}`;
       }
     }
 
-    function buildPatternList() {
-      const container = document.getElementById("pattern-list");
-      const categories = [];
+    function sectionSlug(value) {
+      return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    }
 
-      patternFamilies.forEach(family => {
-        if (!categories.includes(family.category)) {
-          categories.push(family.category);
+    function buildLibrarySections(families = patternFamilies) {
+      const sections = [];
+      families.forEach(family => {
+        const collection = family.book ? "published" : "basic";
+        const key = family.book ? family.publicationId || family.category : family.category;
+        const id = `${collection}-${sectionSlug(key)}`;
+        let section = sections.find(candidate => candidate.id === id);
+        if (!section) {
+          section = { id, title: family.category, collection, families: [] };
+          sections.push(section);
         }
+        section.families.push(family);
       });
+      return sections;
+    }
 
-      categories.forEach(category => {
-        const section = document.createElement("section");
-        section.className = "pattern-category";
+    const librarySections = buildLibrarySections();
 
+    function setExpandedPublishedGroup(groupId) {
+      expandedPublishedGroupId = groupId;
+      document.querySelectorAll(".published-section-toggle").forEach(button => {
+        const expanded = button.dataset.groupId === groupId;
+        button.setAttribute("aria-expanded", String(expanded));
+        document.getElementById(button.getAttribute("aria-controls")).hidden = !expanded;
+      });
+    }
+
+    function setExpandedSection(sectionId) {
+      if (expandedSectionId !== sectionId) setExpandedPublishedGroup(null);
+      expandedSectionId = sectionId;
+      document.querySelectorAll(".section-toggle").forEach(button => {
+        const expanded = button.dataset.sectionId === sectionId;
+        button.setAttribute("aria-expanded", String(expanded));
+        document.getElementById(button.getAttribute("aria-controls")).hidden = !expanded;
+      });
+    }
+
+    function createPatternButton({ title, familyId, patternId }) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "pattern-button";
+      button.dataset.familyId = familyId;
+      button.dataset.routeId = patternId || familyId;
+      if (patternId) {
+        button.dataset.patternId = patternId;
+        const label = `${title} · Editable draft`;
+        button.title = label;
+        button.setAttribute("aria-label", label);
+      }
+      button.setAttribute("aria-current", "false");
+      const name = document.createElement("span");
+      name.className = "pattern-button-name";
+      name.textContent = title;
+      button.appendChild(name);
+      button.addEventListener("click", () => selectFamily(button.dataset.routeId));
+      return button;
+    }
+
+    function createPatternCount(sectionPatterns) {
+      const count = document.createElement("span");
+      count.className = "section-count";
+      count.textContent = sectionPatterns.length;
+      count.title = `${sectionPatterns.length} drafts`;
+      count.setAttribute("aria-hidden", "true");
+      return count;
+    }
+
+    function createPublishedGroup(family) {
+      const group = document.createElement("section");
+      group.className = "published-section";
+      const heading = document.createElement("h4");
+      heading.className = "published-section-heading";
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.id = `toggle-group-${family.id}`;
+      toggle.className = "published-section-toggle";
+      toggle.dataset.groupId = family.id;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", `panel-group-${family.id}`);
+      const name = document.createElement("span");
+      name.className = "section-name";
+      name.textContent = family.title;
+      toggle.append(name, createPatternCount(family.patterns));
+      toggle.addEventListener("click", () => setExpandedPublishedGroup(
+        expandedPublishedGroupId === family.id ? null : family.id
+      ));
+      heading.appendChild(toggle);
+      const panel = document.createElement("div");
+      panel.id = `panel-group-${family.id}`;
+      panel.className = "published-section-panel";
+      panel.setAttribute("aria-labelledby", toggle.id);
+      panel.hidden = true;
+      family.patterns.forEach(pattern => panel.appendChild(createPatternButton({
+        title: pattern.title, familyId: family.id, patternId: pattern.id
+      })));
+      group.append(heading, panel);
+      return group;
+    }
+
+    function buildPatternList() {
+      const containers = {
+        basic: document.getElementById("basic-pattern-list"),
+        published: document.getElementById("published-pattern-list")
+      };
+      Object.values(containers).forEach(container => container.replaceChildren());
+      librarySections.forEach(section => {
+        const element = document.createElement("section");
+        element.className = "pattern-category";
         const heading = document.createElement("h3");
         heading.className = "pattern-category-title";
-        heading.textContent = category;
-        section.appendChild(heading);
-
-        patternFamilies.filter(family => family.category === category).forEach(family => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "pattern-button";
-          button.dataset.familyId = family.id;
-          button.setAttribute("aria-current", "false");
-          button.innerHTML = `
-            <span class="pattern-button-name">${family.title}</span>
-          `;
-          button.addEventListener("click", () => selectFamily(family.id));
-          button.addEventListener("keydown", event => {
-            const buttons = Array.from(container.querySelectorAll(".pattern-button"));
-            const currentIndex = buttons.indexOf(button);
-            let nextIndex = null;
-
-            if (event.key === "ArrowDown") nextIndex = Math.min(buttons.length - 1, currentIndex + 1);
-            if (event.key === "ArrowUp") nextIndex = Math.max(0, currentIndex - 1);
-            if (event.key === "Home") nextIndex = 0;
-            if (event.key === "End") nextIndex = buttons.length - 1;
-
-            if (nextIndex !== null) {
-              event.preventDefault();
-              buttons[nextIndex].focus();
-              buttons[nextIndex].click();
-            }
-          });
-          section.appendChild(button);
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.id = `toggle-${section.id}`;
+        toggle.className = "section-toggle";
+        toggle.dataset.sectionId = section.id;
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.setAttribute("aria-controls", `panel-${section.id}`);
+        const name = document.createElement("span");
+        name.className = "section-name";
+        name.textContent = section.title;
+        toggle.append(name, createPatternCount(section.families.flatMap(family => family.patterns)));
+        toggle.addEventListener("click", () => setExpandedSection(expandedSectionId === section.id ? null : section.id));
+        heading.appendChild(toggle);
+        const panel = document.createElement("div");
+        panel.id = `panel-${section.id}`;
+        panel.className = "section-panel";
+        panel.setAttribute("aria-labelledby", toggle.id);
+        panel.hidden = true;
+        section.families.forEach(family => {
+          if (section.collection === "published") {
+            panel.appendChild(createPublishedGroup(family));
+          } else {
+            panel.appendChild(createPatternButton({ title: family.title, familyId: family.id }));
+          }
         });
-
-        container.appendChild(section);
+        element.append(heading, panel);
+        containers[section.collection].appendChild(element);
       });
+      setExpandedSection(expandedSectionId);
+      setExpandedPublishedGroup(expandedPublishedGroupId);
+      updatePatternNavigation();
+    }
+
+    function handleSidebarKeys(event) {
+      const current = event.target.closest(".section-toggle, .published-section-toggle, .pattern-button");
+      if (!current || !["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+      const controls = Array.from(document.querySelectorAll(".library-sidebar .section-toggle, .library-sidebar .published-section-toggle, .library-sidebar .pattern-button"))
+        .filter(button => button.getClientRects().length > 0);
+      const index = controls.indexOf(current);
+      if (index < 0) return;
+      const next = event.key === "Home" ? 0 : event.key === "End" ? controls.length - 1
+        : Math.max(0, Math.min(controls.length - 1, index + (event.key === "ArrowDown" ? 1 : -1)));
+      event.preventDefault();
+      controls[next].focus();
     }
 
     function createTransferToken() {
@@ -3376,7 +3899,8 @@
         format: "weaving-draft-data",
         version: 3,
         meta: {
-          draftName: pattern.title
+          draftName: pattern.title,
+          ...(pattern.source ? { source: pattern.source } : {})
         },
         draft: {
           shafts: draft.shafts,
@@ -3391,8 +3915,8 @@
           nextPatternColorNumber: draft.nextPatternColorNumber
         },
         preview: {
-          repeatX: 4,
-          repeatY: 4,
+          repeatX: pattern.previewRepeats || 4,
+          repeatY: pattern.previewRepeats || 4,
           renderMode: "plain",
           sett: 60,
           backgroundColor: "#ffffff"
@@ -3457,8 +3981,196 @@
       }
     }
 
-    buildPatternList();
+    function normalizePatternSearch(value) {
+      return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9/]+/g, " ").trim();
+    }
 
+    function buildPatternSearchIndex() {
+      const familiesByPattern = new Map();
+      patternFamilies.forEach(family => family.patterns.forEach(pattern => familiesByPattern.set(pattern.id, family)));
+      const publications = new Map(bookCatalogs.map(catalog => [catalog.source.id, catalog.source]));
+      const bookEntries = new Map(bookCatalogs.flatMap(catalog => catalog.patterns.map(entry => [entry.id, entry])));
+      return patterns.map(pattern => {
+        const family = familiesByPattern.get(pattern.id);
+        const source = publications.get(pattern.publicationId);
+        const entry = bookEntries.get(pattern.id);
+        const collectionId = source?.id || "basic";
+        const collectionTitle = source?.title || "Basic patterns";
+        const caption = [family.title, pattern.shortMeta, entry?.pages ? `p. ${entry.pages}` : ""].filter(Boolean).join(" · ");
+        return {
+          pattern, family, collectionId, collectionTitle, caption,
+          manual: Boolean(entry?.manualTechnique || /ground draft|hand.worked/i.test(entry?.kind || "")),
+          searchText: normalizePatternSearch([
+            pattern.id, pattern.title, pattern.description, pattern.category, pattern.shortMeta,
+            family.title, collectionTitle, source?.author, entry?.designer, entry?.kind,
+            entry?.pages ? `page ${entry.pages}` : ""
+          ].join(" "))
+        };
+      });
+    }
+
+    function filterPatternSearchEntries(entries, query) {
+      const terms = normalizePatternSearch(query).split(/\s+/).filter(Boolean);
+      return entries.filter(entry => terms.every(term => entry.searchText.includes(term)));
+    }
+
+    let patternSearchState = null;
+
+    function buildPatternSearchGallery() {
+      const dialog = document.getElementById("pattern-search-dialog");
+      const results = document.getElementById("pattern-search-results");
+      const entries = buildPatternSearchIndex();
+      const cards = new Map();
+      const collections = new Map();
+      const pendingPreviews = new Set();
+      let previewFrame = null;
+
+      function paintPreviews() {
+        previewFrame = null;
+        if (!dialog.open) { pendingPreviews.clear(); return; }
+        const started = performance.now();
+        for (const canvas of pendingPreviews) {
+          pendingPreviews.delete(canvas);
+          if (!canvas.closest("[hidden]") && canvas.getClientRects().length) {
+            renderPatternSearchPreview(canvas, getPatternById(canvas.dataset.patternId));
+            canvas.dataset.previewReady = "true";
+            observer?.unobserve(canvas);
+          }
+          if (performance.now() - started > 8) break;
+        }
+        if (pendingPreviews.size) previewFrame = requestAnimationFrame(paintPreviews);
+      }
+
+      function queuePreview(canvas) {
+        if (canvas.dataset.previewReady) return;
+        pendingPreviews.add(canvas);
+        if (previewFrame === null) previewFrame = requestAnimationFrame(paintPreviews);
+      }
+
+      const observer = typeof IntersectionObserver === "function" ? new IntersectionObserver(changes => {
+        changes.forEach(change => { if (change.isIntersecting) queuePreview(change.target); });
+      }, { root: results, rootMargin: "260px 0px" }) : null;
+
+      const fragment = document.createDocumentFragment();
+      entries.forEach(entry => {
+        let collection = collections.get(entry.collectionId);
+        if (!collection) {
+          const section = document.createElement("section");
+          section.className = "pattern-search-collection";
+          section.dataset.collectionId = entry.collectionId;
+          const heading = document.createElement("h3");
+          heading.textContent = entry.collectionTitle;
+          const gallery = document.createElement("div");
+          gallery.className = "pattern-search-gallery";
+          section.append(heading, gallery);
+          fragment.appendChild(section);
+          collection = { section, gallery };
+          collections.set(entry.collectionId, collection);
+        }
+
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "pattern-search-card";
+        card.dataset.searchPatternId = entry.pattern.id;
+        const canvas = document.createElement("canvas");
+        canvas.width = 240;
+        canvas.height = 176;
+        canvas.dataset.patternId = entry.pattern.id;
+        canvas.setAttribute("aria-hidden", "true");
+        const copy = document.createElement("span");
+        copy.className = "pattern-search-card-copy";
+        const title = document.createElement("span");
+        title.className = "pattern-search-card-title";
+        title.textContent = entry.pattern.title;
+        const meta = document.createElement("span");
+        meta.className = "pattern-search-card-meta";
+        meta.textContent = entry.caption;
+        copy.append(title, meta);
+        if (entry.manual) {
+          const note = document.createElement("span");
+          note.className = "pattern-search-card-note";
+          note.textContent = "Ground draft · hand-worked design";
+          copy.appendChild(note);
+        }
+        const action = document.createElement("span");
+        action.className = "pattern-search-card-action";
+        action.textContent = "View pattern →";
+        copy.appendChild(action);
+        card.append(canvas, copy);
+        cards.set(entry.pattern.id, card);
+        collection.gallery.appendChild(card);
+        observer?.observe(canvas);
+      });
+      document.getElementById("pattern-search-collections").replaceChildren(fragment);
+      return { entries, cards, collections, observer, queuePreview, pendingPreviews };
+    }
+
+    function updatePatternSearch() {
+      if (!patternSearchState) return;
+      const input = document.getElementById("pattern-search-input");
+      const matches = filterPatternSearchEntries(patternSearchState.entries, input.value);
+      const ids = new Set(matches.map(entry => entry.pattern.id));
+      const collectionIds = new Set(matches.map(entry => entry.collectionId));
+      patternSearchState.cards.forEach((card, id) => { card.hidden = !ids.has(id); });
+      patternSearchState.collections.forEach((collection, id) => { collection.section.hidden = !collectionIds.has(id); });
+      document.getElementById("pattern-search-count").textContent = input.value.trim()
+        ? `${matches.length} of ${patternSearchState.entries.length} patterns`
+        : `${matches.length} patterns in the library`;
+      document.getElementById("pattern-search-empty").hidden = matches.length > 0;
+      document.getElementById("clear-pattern-search").hidden = !input.value;
+      document.getElementById("pattern-search-results").scrollTop = 0;
+      if (!patternSearchState.observer) {
+        matches.forEach(entry => patternSearchState.queuePreview(patternSearchState.cards.get(entry.pattern.id).querySelector("canvas")));
+      }
+    }
+
+    function initializePatternSearch() {
+      const dialog = document.getElementById("pattern-search-dialog");
+      const input = document.getElementById("pattern-search-input");
+      document.getElementById("open-pattern-search").addEventListener("click", () => {
+        if (!patternSearchState) patternSearchState = buildPatternSearchGallery();
+        dialog.showModal();
+        updatePatternSearch();
+        input.focus();
+      });
+      document.getElementById("close-pattern-search").addEventListener("click", () => dialog.close());
+      dialog.addEventListener("close", () => patternSearchState?.pendingPreviews.clear());
+      dialog.addEventListener("click", event => {
+        if (event.target !== dialog) return;
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+      });
+      input.addEventListener("input", updatePatternSearch);
+      document.getElementById("clear-pattern-search").addEventListener("click", () => {
+        input.value = "";
+        updatePatternSearch();
+        input.focus();
+      });
+      document.getElementById("pattern-search-collections").addEventListener("click", event => {
+        const card = event.target.closest("button[data-search-pattern-id]");
+        if (!card) return;
+        const id = card.dataset.searchPatternId;
+        const entry = patternSearchState.entries.find(candidate => candidate.pattern.id === id);
+        dialog.close();
+        selectFamily(id);
+        const section = librarySections.find(candidate => candidate.families.includes(entry.family));
+        setExpandedSection(section.id);
+        if (entry.family.book) setExpandedPublishedGroup(entry.family.id);
+        const heading = document.getElementById(`variant-title-${id}`);
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+        heading.scrollIntoView({ block: "start" });
+      });
+    }
+
+    buildPatternList();
+    initializePatternSearch();
+
+    document.querySelector(".library-sidebar").addEventListener("keydown", handleSidebarKeys);
+    document.getElementById("book-pattern").addEventListener("change", event => {
+      selectFamily(event.target.value);
+    });
     document.getElementById("render-style").addEventListener("change", event => {
       renderStyle = event.target.value;
       renderSelectedFamilyDrawdowns();
