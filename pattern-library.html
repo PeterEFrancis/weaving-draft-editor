@@ -285,6 +285,10 @@
     .pattern-search-input { flex: 1; min-width: 0; width: 100%; padding: 0.7rem 0.85rem; border: 1px solid var(--line); border-radius: 0.65rem; background: #fff; color: var(--ink); font: inherit; }
     .pattern-search-clear { border: 1px solid var(--line); border-radius: 0.65rem; background: #fff; color: var(--accent-dark); padding: 0.5rem 0.8rem; }
     .pattern-search-count { margin: 0.65rem 0 0; color: #63594e; font-size: 0.8rem; }
+    .shaft-filter { margin: 0.8rem 0 0; padding: 0.65rem 0.75rem; border: 1px solid var(--line); border-radius: 0.65rem; }
+    .shaft-filter legend { padding: 0 0.3rem; font-size: 0.78rem; font-weight: 600; }
+    .shaft-filter-options { display: flex; flex-wrap: wrap; gap: 0.45rem 0.8rem; }
+    .shaft-filter label { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: #63594e; }
     .pattern-search-results { flex: 1; min-height: 0; overflow-y: auto; padding: 1.3rem 1.5rem 1.5rem; overscroll-behavior: contain; scrollbar-gutter: stable; }
     .pattern-search-collection + .pattern-search-collection { margin-top: 1.8rem; }
     .pattern-search-collection h3 { font-size: 1.08rem; margin: 0 0 0.8rem; }
@@ -724,6 +728,7 @@
         <input id="pattern-search-input" class="pattern-search-input" type="search" placeholder="Try twill, Dixon, overshot, or page 33" autocomplete="off" spellcheck="false" autofocus>
         <button id="clear-pattern-search" class="pattern-search-clear" type="button" hidden>Clear</button>
       </div>
+      <fieldset class="shaft-filter"><legend>Number of shafts</legend><div id="shaft-filter-options"></div></fieldset>
       <p id="pattern-search-count" class="pattern-search-count" role="status" aria-live="polite" aria-atomic="true"></p>
     </div>
     <div id="pattern-search-results" class="pattern-search-results">
@@ -4010,9 +4015,10 @@
       });
     }
 
-    function filterPatternSearchEntries(entries, query) {
+    function filterPatternSearchEntries(entries, query, shaftCounts = new Set()) {
       const terms = normalizePatternSearch(query).split(/\s+/).filter(Boolean);
-      return entries.filter(entry => terms.every(term => entry.searchText.includes(term)));
+      return entries.filter(entry => terms.every(term => entry.searchText.includes(term))
+        && (!shaftCounts.size || shaftCounts.has(Number(entry.pattern.shafts))));
     }
 
     let patternSearchState = null;
@@ -4024,6 +4030,18 @@
       const cards = new Map();
       const collections = new Map();
       const pendingPreviews = new Set();
+      const shaftCounts = new Set();
+      const shaftOptions = document.getElementById("shaft-filter-options");
+      [...new Set(entries.map(entry => Number(entry.pattern.shafts)).filter(Number.isFinite))].sort((a, b) => a - b).forEach(shafts => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="checkbox" value="${shafts}"> ${shafts}`;
+        const checkbox = label.querySelector("input");
+        checkbox.addEventListener("change", () => {
+          checkbox.checked ? shaftCounts.add(shafts) : shaftCounts.delete(shafts);
+          updatePatternSearch();
+        });
+        shaftOptions.appendChild(label);
+      });
       let previewFrame = null;
 
       function paintPreviews() {
@@ -4103,13 +4121,13 @@
         observer?.observe(canvas);
       });
       document.getElementById("pattern-search-collections").replaceChildren(fragment);
-      return { entries, cards, collections, observer, queuePreview, pendingPreviews };
+      return { entries, cards, collections, observer, queuePreview, pendingPreviews, shaftCounts };
     }
 
     function updatePatternSearch() {
       if (!patternSearchState) return;
       const input = document.getElementById("pattern-search-input");
-      const matches = filterPatternSearchEntries(patternSearchState.entries, input.value);
+      const matches = filterPatternSearchEntries(patternSearchState.entries, input.value, patternSearchState.shaftCounts);
       const ids = new Set(matches.map(entry => entry.pattern.id));
       const collectionIds = new Set(matches.map(entry => entry.collectionId));
       patternSearchState.cards.forEach((card, id) => { card.hidden = !ids.has(id); });
