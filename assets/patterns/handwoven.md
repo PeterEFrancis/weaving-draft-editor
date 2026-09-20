@@ -1,6 +1,6 @@
 # Handwoven
 
-This catalog transcribes 416 project drafts from 39 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
+This catalog transcribes 436 project drafts from 39 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
 
 Threading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and finishing remain important parts of the published instructions.
 
@@ -37,14 +37,14 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 | May/June 2022 | 11 |
 | October/November 2022 | 10 |
 | March/April 2023 | 11 |
-| May/June 2023 | 11 |
+| May/June 2023 | 14 |
 | September/October 2023 | 8 |
 | November/December 2023 | 11 |
-| Winter 2024 | 12 |
+| Winter 2024 | 10 |
 | Spring 2024 | 14 |
-| Summer 2024 | 14 |
-| Summer 2025 | 11 |
-| Summer 2026 | 10 |
+| Summer 2024 | 9 |
+| Summer 2025 | 19 |
+| Summer 2026 | 26 |
 
 ## Added patterns
 
@@ -436,17 +436,20 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Craftsman Crackle Scarf — Deanna Deeds, pp. 70
 
 ### May/June 2023
-- Fulled Mug Rugs — Ellen Kardell, pp. 30
-- Mid-Century-Modern Runner — Merriel Miller, pp. 34
-- Subtle Shift Towels — Rebecca Morris, pp. 38
-- Eclectic Color-and-Weave — Deborah Jarchow, pp. 41
-- Prairie Bloom Towels — Malynda Allen, pp. 44
-- Pen and Ink Linen Towels — Christine Jablonski, pp. 48
-- Fraternal Twins — Annette Swan Schipf, pp. 51
-- Shifting Shadows — Barbara Mitchell, pp. 54
-- Violet Waves — Jannie Taylor, pp. 58
-- Square Fancy Chèche — Véronique Perrot, pp. 62
-- Light Sussex Color-and-Weave — Alison Irwin, pp. 68
+- Fulled Mug Rugs — Ellen Kardell, pp. 30-33
+- Mid-Century-Modern Runner — Merriel Miller, pp. 34-36
+- Subtle Shift Towels — Towel 1 — Rebecca Morris, pp. 38-40
+- Subtle Shift Towels — Towel 2 — Rebecca Morris, pp. 38-40
+- Eclectic Color-and-Weave — Towel 1 — Deborah Jarchow, pp. 41-43
+- Eclectic Color-and-Weave — Towel 2 — Deborah Jarchow, pp. 41-43
+- Prairie Bloom Towels — Malynda Allen, pp. 44-47
+- Pen and Ink Linen Towels — Christine Jablonski, pp. 48-50
+- Fraternal Twins — Shadow-Weave Blanket — Annette Swan Schipf, pp. 51-53
+- Fraternal Twins — Huck Blanket — Annette Swan Schipf, pp. 51-53
+- Square Fancy Chèche — Motif 1 — Véronique Perrot, pp. 62-65
+- Square Fancy Chèche — Motif 2 — Véronique Perrot, pp. 62-65
+- Square Fancy Chèche — Motif 3 — Véronique Perrot, pp. 62-65
+- Square Fancy Chèche — Motif 4 — Véronique Perrot, pp. 62-65
 
 ### September/October 2023
 - Shimmering Crackle Scarf — Bobbie Irwin, pp. 35
@@ -472,72 +475,89 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Menswear-Inspired Throw — Peggy Hart, pp. 71
 
 ### Winter 2024
-- Bluebird Towels — Cheryl White, pp. 22
-- Perpetual Pinwheels — Robin Lynde, pp. 34
-- Ikat and Ice Scarf — Natalie Drummond, pp. 42
-- Op Art Table Linens — Tien Chiu, pp. 46
-- Concentric Squares Scarf — Jeanne Ralston, pp. 50
-- Cascading Silk Blouse — Diane G. Crowder, pp. 54
-- Hargrove’s Dinner Party — Joe Wixted, pp. 60
-- Interlocking Block Towels — Regina McInnes, pp. 64
-- Alpaca in Your Lap Blanket — Jeff Smith, pp. 68
-- Celebration Romper — Malynda Allen, pp. 77
-- Inspired by Indigo Pillows — Tegan Frisino, pp. 77
-- Natural Charm Dish Towels — Melanie Smith, pp. 77
+- Bluebird Towels — Towel 2 Plain Weave — Cheryl M. White, pp. 22-26
+- Perpetual Pinwheels — Robin Lynde, pp. 34-36
+- Ikat and Ice Scarf — Natalie Drummond, pp. 42-44
+- Op Art Table Linens — Placemat — Tien Chiu, pp. 46-49
+- Op Art Table Linens — Runner — Tien Chiu, pp. 46-49
+- Concentric Squares Scarf — Jeanne Ralston, pp. 50-52
+- Cascading Silk Blouse — Diane G. Crowder, pp. 54-57
+- Interlocking Block Towels — Gobelin — Regina McInnes, pp. 64-66
+- Interlocking Block Towels — Peacock — Regina McInnes, pp. 64-66
+- Alpaca in Your Lap Blanket — Jeff Smith, pp. 68-70
 
 ### Spring 2024
-- Swift Serviettes — Véronique Perrot, pp. 30
+- Swift Serviettes — Napkin 1 — Véronique Perrot, pp. 30
+- Swift Serviettes — Napkin 2 — Véronique Perrot, pp. 30
+- Swift Serviettes — Napkin 3 — Véronique Perrot, pp. 30
+- Swift Serviettes — Napkin 4 — Véronique Perrot, pp. 30
 - Swedish Shetland Shawl — Bettie Zakon-Anderson, pp. 34
 - Take Flight Coverlet — Malynda Allen, pp. 38
-- Paper Airplanes Poncho — Jennifer Chapman, pp. 42
-- Tessellating Triangles Towels — Sheila O’Hara, pp. 46
-- Calling All Butterflies Runner — Sue Anne Sullivan, pp. 50
+- Tessellating Triangles Towels — Towel 1 — Sheila O’Hara, pp. 46
+- Tessellating Triangles Towels — Towel 2 — Sheila O’Hara, pp. 46
 - Monarch Scarf — Samantha Haring, pp. 54
 - Avian Elegance — Sydney Sogol, pp. 58
 - NYC Pigeon Scarf — Sophia Eller, pp. 62
-- Swans A-Swimming — Annette Swan Schipf, pp. 66
+- Swans A-Swimming — Towel 1 — Annette Swan Schipf, pp. 66
+- Swans A-Swimming — Towel 2 — Annette Swan Schipf, pp. 66
 - Call of the Crows Towels — Yvonne Ellsworth, pp. 74
-- Monk’s Belt Revisited — Susan A. Bloomfield, pp. 77
-- Fluttery Lace Curtain — Regina McInnes, pp. 77
-- When Pigs Fly — Margaret Stump, pp. 77
 
 ### Summer 2024
 - Tuscan Summer Rug — Sandi Lemons, pp. 24
-- Twice-Woven Rug — Catherine Marchant, pp. 32
 - Building Blocks Rug — Suzie Liles, pp. 34
 - Sand and Sky Stitched Double Cloth Rug — Tom Knisely, pp. 38
-- Core Spun Comfort Rug — Cynthia Cox, pp. 42
-- Salts Mill Rug — Frances Richardson, pp. 44
-- Summer Berry Towels — Malynda Allen, pp. 46
-- Eventide Elegance Scarf — Tien Chiu, pp. 51
-- Changing Lanes Scarf — Deborah Heyman, pp. 54
-- Zebras on the Serengeti — Carla Jeanne Hubbart, pp. 58
-- Cascading Colors Scarves — Robin Lynde, pp. 62
-- Tropical Waters Top — Rebecca Fox, pp. 64
-- Emerging Asymmetry Scarf — Brenda Gibson, pp. 66
-- A Slice of Layer Cake Runner — Rebecca Fox, pp. 77
+- Emerging Asymmetry Scarf — Brenda Gibson, pp. 54
+- Summer Berry Towels — Towel 1 — Malynda Allen, pp. 66
+- Summer Berry Towels — Towel 2 — Malynda Allen, pp. 66
+- Summer Berry Towels — Towel 3 — Malynda Allen, pp. 66
+- Summer Berry Towels — Towel 4 — Malynda Allen, pp. 66
+- Changing Lanes Scarf — Deborah Heyman, pp. 70
 
 ### Summer 2025
-- Sunset Fiesta Towels — Donna Flack Shadix, pp. 18
+- Sunset Fiesta Towels - Towel 1 — Donna Flack Shadix, pp. 18
+- Sunset Fiesta Towels - Towel 2 — Donna Flack Shadix, pp. 18
+- Sunset Fiesta Towels - Towel 3 — Donna Flack Shadix, pp. 18
+- Sunset Fiesta Towels - Towel 4 — Donna Flack Shadix, pp. 18
 - Blue Horizons Tunic — Katzy Luhring and Cynthia Newman, pp. 28
-- Perfect Potholders — Lois Herr, pp. 34
-- Splash of Lime Cabana Set — Deborah Sykes, pp. 38
+- Perfect Potholders - Potholder 1 — Lois Herr, pp. 34
+- Perfect Potholders - Potholder 2 — Lois Herr, pp. 34
+- Perfect Potholders - Potholder 3 — Lois Herr, pp. 34
+- Perfect Potholders - Potholder 4 — Lois Herr, pp. 34
+- Splash of Lime Cabana Set - Beach Towel — Deborah Sykes, pp. 38
+- Splash of Lime Cabana Set - Tote — Deborah Sykes, pp. 38
 - Scottish Summer Scarf — Jeremy Uden, pp. 42
-- Sea Breeze Cover-Up — Cathy Coatney, pp. 46
-- Adventure Utility Squares — Dorothy Tuthill, pp. 50
+- Sea Breeze Cover-Up - 8-Shaft — Cathy Coatney, pp. 46
+- Sea Breeze Cover-Up - 4-Shaft — Cathy Coatney, pp. 46
+- Adventure Utility Squares - 4-Shaft — Dorothy Tuthill, pp. 50
+- Adventure Utility Squares - 2-Shaft — Dorothy Tuthill, pp. 50
 - Floral Bouquet Napkins — Malynda Allen, pp. 54
-- Beach House Bread Cloths — Andrea Williams, pp. 60
-- Ripple Towel and Tote — Regina McInnes, pp. 64
-- Shoreline Shawl — Joy Pate, pp. 68
+- Shoreline Shawl — Joy Pate, pp. 60
+- Beach House Bread Cloths — Andrea Williams, pp. 64
 
 ### Summer 2026
-- Color Nuggets Towels — Véronique Perrot, pp. 22
-- Summer Day Bags — Katzy Luhring, pp. 28
-- Inner Glow Scarf — Tien Chiu, pp. 38
-- Gemstone Table Runner — Sheila O’Hara, pp. 42
-- Sunny Garden Towels — Robin Lynde, pp. 46
-- Tropical Waters Top — Rebecca Fox, pp. 50
-- Midnight Reflection Scarf — Sedona Rigsby, pp. 54
-- Blue Horizon Towels — Susan E. Horton, pp. 58
-- Sunrise Bloom Napkins — Lauren Erickson, pp. 64
-- Summer Sorbet Towels — Barbara Mitchell, pp. 68
+- Color Nuggets Towels — Towel 1 — Véronique Perrot, pp. 22–25
+- Color Nuggets Towels — Towel 2 — Véronique Perrot, pp. 22–25
+- Color Nuggets Towels — Towel 3 — Véronique Perrot, pp. 22–25
+- Color Nuggets Towels — Towel 4 — Véronique Perrot, pp. 22–25
+- Summer Day Bags — Hemmed bag — Katzy Luhring, pp. 28–31
+- Summer Day Bags — Fringed bag — Katzy Luhring, pp. 28–31
+- Inner Glow Scarf — Tien Chiu, pp. 38–40
+- Gemstone Table Runner — Sheila O’Hara, pp. 42–45
+- Sunny Garden Towels — Towel 1 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 2 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 3 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 4 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 5 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 6 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 7 — Robin Lynde, pp. 46–49
+- Sunny Garden Towels — Towel 8 — Robin Lynde, pp. 46–49
+- Tropical Waters Top - 4-Shaft — Rebecca Fox, pp. 50–52
+- Tropical Waters Top - 2-Shaft — Rebecca Fox, pp. 50–52
+- Blue Horizon Towels - Towel 1 — Susan E. Horton, pp. 58–62
+- Blue Horizon Towels - Towel 2 — Susan E. Horton, pp. 58–62
+- Blue Horizon Towels - Towel 3 — Susan E. Horton, pp. 58–62
+- Sunrise Bloom Napkins — Lauren Erickson, pp. 64–67
+- Summer Sorbet Towels - Towel 1 — Barbara Mitchell, pp. 68–71
+- Summer Sorbet Towels - Towel 2 — Barbara Mitchell, pp. 68–71
+- Summer Sorbet Towels - Towel 3 — Barbara Mitchell, pp. 68–71
+- Summer Sorbet Towels - Towel 4 — Barbara Mitchell, pp. 68–71

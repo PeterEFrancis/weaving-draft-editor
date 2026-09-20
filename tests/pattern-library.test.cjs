@@ -268,6 +268,30 @@ test('search covers every draft and finds matching weaves across all collections
 test('Handwoven is organized by issue and every entry is an editable credited draft', () => {
   assert.equal(handwovenCatalog.groups.length, 39);
   assert.ok(handwovenCatalog.patterns.length > 0);
+  const correctedIssueCounts = {
+    'handwoven-2023-05-06': 14,
+    'handwoven-2024-i-winter': 10,
+    'handwoven-2024-ii-spring': 14,
+    'handwoven-2024-iii-summer': 9,
+    'handwoven-2025-iii-summer': 19,
+    'handwoven-2026-iii-summer': 26
+  };
+  for (const [groupId, count] of Object.entries(correctedIssueCounts)) {
+    const entries = handwovenCatalog.patterns.filter(entry => entry.groupId === groupId);
+    assert.equal(entries.length, count, groupId);
+    assert.ok(entries.every(entry => entry.threading.length > 32), `${groupId}: full-width threading`);
+  }
+  for (const [id, ends, picks] of [
+    ['hw-2023-05-06-p48-s01', 527, 821],
+    ['hw-2023-05-06-p51-s01', 505, 579],
+    ['hw-2024-ii-spring-p38-s01', 951, 2713],
+    ['hw-2024-iii-summer-p24-s01', 121, 2049],
+    ['hw-2025-iii-summer-p18-s01', 660, 852],
+    ['hw-2026-iii-summer-p42-s01', 395, 910]
+  ]) {
+    const entry = handwovenCatalog.patterns.find(candidate => candidate.id === id);
+    assert.deepEqual([entry.threading.length, entry.lifts.length], [ends, picks], id);
+  }
   assert.equal(new Set(handwovenCatalog.patterns.map(entry => entry.id)).size, handwovenCatalog.patterns.length);
   const groupIds = new Set(handwovenCatalog.groups.map(group => group.id));
   for (const group of handwovenCatalog.groups) {
