@@ -269,8 +269,8 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
   assert.equal(handwovenCatalog.groups.length, 39);
   assert.ok(handwovenCatalog.patterns.length > 0);
   const correctedIssueCounts = {
-    'handwoven-2023-05-06': 14,
-    'handwoven-2024-i-winter': 10,
+    'handwoven-2023-05-06': 15,
+    'handwoven-2024-i-winter': 19,
     'handwoven-2024-ii-spring': 14,
     'handwoven-2024-iii-summer': 9,
     'handwoven-2025-iii-summer': 19,
@@ -284,6 +284,9 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
   for (const [id, ends, picks] of [
     ['hw-2023-05-06-p48-s01', 527, 821],
     ['hw-2023-05-06-p51-s01', 505, 579],
+    ['hw-2023-05-06-p54-s01', 255, 1657],
+    ['hw-2024-i-winter-p22-s01', 399, 895],
+    ['hw-2024-i-winter-p60-s06', 432, 1512],
     ['hw-2024-ii-spring-p38-s01', 951, 2713],
     ['hw-2024-iii-summer-p24-s01', 121, 2049],
     ['hw-2025-iii-summer-p18-s01', 660, 852],

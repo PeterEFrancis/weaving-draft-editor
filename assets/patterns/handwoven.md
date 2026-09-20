@@ -1,6 +1,6 @@
 # Handwoven
 
-This catalog transcribes 436 project drafts from 39 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
+This catalog transcribes 446 project drafts from 39 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
 
 Threading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and finishing remain important parts of the published instructions.
 
@@ -37,10 +37,10 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 | May/June 2022 | 11 |
 | October/November 2022 | 10 |
 | March/April 2023 | 11 |
-| May/June 2023 | 14 |
+| May/June 2023 | 15 |
 | September/October 2023 | 8 |
 | November/December 2023 | 11 |
-| Winter 2024 | 10 |
+| Winter 2024 | 19 |
 | Spring 2024 | 14 |
 | Summer 2024 | 9 |
 | Summer 2025 | 19 |
@@ -446,6 +446,7 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Pen and Ink Linen Towels — Christine Jablonski, pp. 48-50
 - Fraternal Twins — Shadow-Weave Blanket — Annette Swan Schipf, pp. 51-53
 - Fraternal Twins — Huck Blanket — Annette Swan Schipf, pp. 51-53
+- Shifting Shadows Scarf — Barbara Mitchell, pp. 54-56
 - Square Fancy Chèche — Motif 1 — Véronique Perrot, pp. 62-65
 - Square Fancy Chèche — Motif 2 — Véronique Perrot, pp. 62-65
 - Square Fancy Chèche — Motif 3 — Véronique Perrot, pp. 62-65
@@ -475,13 +476,22 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Menswear-Inspired Throw — Peggy Hart, pp. 71
 
 ### Winter 2024
+- Bluebird Towels — Towel 1 Overshot — Cheryl M. White, pp. 22-26
 - Bluebird Towels — Towel 2 Plain Weave — Cheryl M. White, pp. 22-26
+- Bluebird Towels — Towel 3 Borders — Cheryl M. White, pp. 22-26
+- Bluebird Towels — Towel 4 Plain Weave with Accents — Cheryl M. White, pp. 22-26
 - Perpetual Pinwheels — Robin Lynde, pp. 34-36
 - Ikat and Ice Scarf — Natalie Drummond, pp. 42-44
 - Op Art Table Linens — Placemat — Tien Chiu, pp. 46-49
 - Op Art Table Linens — Runner — Tien Chiu, pp. 46-49
 - Concentric Squares Scarf — Jeanne Ralston, pp. 50-52
 - Cascading Silk Blouse — Diane G. Crowder, pp. 54-57
+- Hargrove’s Dinner Party — Napkin 1 — Joe Wixted, pp. 60-62
+- Hargrove’s Dinner Party — Napkin 2 — Joe Wixted, pp. 60-62
+- Hargrove’s Dinner Party — Napkin 3 — Joe Wixted, pp. 60-62
+- Hargrove’s Dinner Party — Napkin 4 — Joe Wixted, pp. 60-62
+- Hargrove’s Dinner Party — Napkin 5 — Joe Wixted, pp. 60-62
+- Hargrove’s Dinner Party — Runner — Joe Wixted, pp. 60-62
 - Interlocking Block Towels — Gobelin — Regina McInnes, pp. 64-66
 - Interlocking Block Towels — Peacock — Regina McInnes, pp. 64-66
 - Alpaca in Your Lap Blanket — Jeff Smith, pp. 68-70
