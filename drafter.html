@@ -1382,8 +1382,16 @@
     background: #ffffff;
   }
 
-  .drawdown-realistic-canvas {
+  .drawdown-realistic-canvas,
+  .drawdown-compact-canvas {
     display: block;
+  }
+
+  .drawdown-compact {
+    display: block;
+    width: fit-content;
+    line-height: 0;
+    background: #ffffff;
   }
 
   .drawdown-thread {
@@ -2688,8 +2696,7 @@ const draftZoomStops = [
 ];
 const maxRealisticDrawdownCanvasDimension = 8192;
 const maxRealisticDrawdownCanvasPixels = 16000000;
-const maxWarpThreads = 1000;
-const maxDrawdownCells = 60000;
+const compactDrawdownCellThreshold = 60000;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
 const patternColorSeedValues = [
@@ -2825,68 +2832,11 @@ function setControlValues(nextValues) {
   document.getElementById("treadles").value = nextValues.treadles;
   document.getElementById("warp").value = nextValues.warp;
   document.getElementById("picks").value = nextValues.picks;
-  updateDraftDimensionLimitsUI(nextValues.warp, nextValues.picks);
 }
 
 function setPreviewRepeatValues(nextValues) {
   document.getElementById("preview-repeat-x").value = nextValues.repeatX;
   document.getElementById("preview-repeat-y").value = nextValues.repeatY;
-}
-
-function getMaxWarpForPicks(nextPicks) {
-  return Math.max(1, Math.min(maxWarpThreads, Math.floor(maxDrawdownCells / Math.max(1, nextPicks))));
-}
-
-function getMaxPicksForWarp(nextWarp) {
-  return Math.max(1, Math.floor(maxDrawdownCells / Math.max(1, nextWarp)));
-}
-
-function updateDraftDimensionLimitsUI(nextWarp = warp, nextPicks = picks) {
-  const warpInput = document.getElementById("warp");
-  const picksInput = document.getElementById("picks");
-
-  if (!warpInput || !picksInput) {
-    return;
-  }
-
-  warpInput.max = String(getMaxWarpForPicks(nextPicks));
-  picksInput.max = String(getMaxPicksForWarp(nextWarp));
-}
-
-function getDraftLimitMessage(prefix = "Draft size was limited to keep the page responsive.") {
-  return `${prefix} Warp threads max out at ${maxWarpThreads}, and warp × picks maxes out at ${maxDrawdownCells.toLocaleString()}.`;
-}
-
-function showDraftLimitAlert(prefix) {
-  window.alert(getDraftLimitMessage(prefix));
-}
-
-function applyDraftDimensionLimits(nextWarp, nextPicks, changedId = null) {
-  let limitedWarp = Math.max(1, Number.parseInt(nextWarp, 10) || 1);
-  let limitedPicks = Math.max(1, Number.parseInt(nextPicks, 10) || 1);
-  const originalWarp = limitedWarp;
-  const originalPicks = limitedPicks;
-
-  if (limitedWarp > maxWarpThreads) {
-    limitedWarp = maxWarpThreads;
-  }
-
-  if (changedId === "picks") {
-    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
-    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
-  } else if (changedId === "warp") {
-    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
-    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
-  } else {
-    limitedPicks = Math.min(limitedPicks, getMaxPicksForWarp(limitedWarp));
-    limitedWarp = Math.min(limitedWarp, getMaxWarpForPicks(limitedPicks));
-  }
-
-  return {
-    warp: limitedWarp,
-    picks: limitedPicks,
-    changed: limitedWarp !== originalWarp || limitedPicks !== originalPicks
-  };
 }
 
 function normalizePreviewBackgroundColor(value) {
@@ -2970,6 +2920,9 @@ function getDraftRenderStyle() {
 }
 
 function setDraftRenderStyle(style, shouldRender = true) {
+  const previousStyle = getDraftRenderStyle();
+  const previousColumnWidths = getDrawdownColumnWidthsForRender(previousStyle);
+  const previousRowHeights = getDrawdownRowHeightsForRender(previousStyle);
   draftRenderStyle = normalizeDraftRenderStyle(style);
   const select = document.getElementById("drawdown-render-style");
 
@@ -2978,7 +2931,16 @@ function setDraftRenderStyle(style, shouldRender = true) {
   }
 
   if (shouldRender) {
-    renderDraftStage();
+    const nextColumnWidths = getDrawdownColumnWidthsForRender(draftRenderStyle);
+    const nextRowHeights = getDrawdownRowHeightsForRender(draftRenderStyle);
+    if (
+      !haveTrackSizesChanged(previousColumnWidths, nextColumnWidths) &&
+      !haveTrackSizesChanged(previousRowHeights, nextRowHeights)
+    ) {
+      renderDrawdown();
+    } else {
+      renderDraftStage();
+    }
     scheduleDraftAutosave();
     commitDraftHistoryState();
   }
@@ -4083,9 +4045,8 @@ function applyLoadedDraftData(data, options = {}) {
 
   const nextShafts = Math.max(1, Number.parseInt(data.draft.shafts, 10) || 1);
   const nextTreadles = Math.max(1, Number.parseInt(data.draft.treadles, 10) || 1);
-  const nextDimensions = applyDraftDimensionLimits(data.draft.warp, data.draft.picks);
-  const nextWarp = nextDimensions.warp;
-  const nextPicks = nextDimensions.picks;
+  const nextWarp = Math.max(1, Number.parseInt(data.draft.warp, 10) || 1);
+  const nextPicks = Math.max(1, Number.parseInt(data.draft.picks, 10) || 1);
   const nextPatternColors = normalizePatternColors(data.draft.patternColors);
   const nextActivePatternColorId = nextPatternColors.some(color => color.id === data.draft.activePatternColorId)
     ? data.draft.activePatternColorId
@@ -4142,9 +4103,6 @@ function applyLoadedDraftData(data, options = {}) {
     updateDraftHistoryUI();
   }
 
-  if (nextDimensions.changed) {
-    showDraftLimitAlert("The loaded draft was reduced to fit the editor limits.");
-  }
 }
 
 function handleDraftFileChange(event) {
@@ -4953,15 +4911,8 @@ function expandDraftForThreadingText(assignments) {
     return true;
   }
 
-  const nextDimensions = applyDraftDimensionLimits(assignments.length, picks, "warp");
-
-  if (nextDimensions.warp < assignments.length) {
-    return false;
-  }
-
-  warp = nextDimensions.warp;
+  warp = assignments.length;
   document.getElementById("warp").value = warp;
-  updateDraftDimensionLimitsUI(warp, picks);
 
   return true;
 }
@@ -4971,15 +4922,8 @@ function expandDraftForTreadlingText(assignments) {
     return true;
   }
 
-  const nextDimensions = applyDraftDimensionLimits(warp, assignments.length, "picks");
-
-  if (nextDimensions.picks < assignments.length) {
-    return false;
-  }
-
-  picks = nextDimensions.picks;
+  picks = assignments.length;
   document.getElementById("picks").value = picks;
-  updateDraftDimensionLimitsUI(warp, picks);
 
   return true;
 }
@@ -6371,7 +6315,6 @@ function getFabricPreviewFallbackColor(cellState, renderStyle) {
 }
 
 function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, backgroundColor, renderStyle) {
-  const states = buildDrawdownStateGrid();
   const startColumn = Math.floor(-fabricPreviewPanX / cellSize) - 1;
   const endColumn = Math.ceil((viewportWidth - fabricPreviewPanX) / cellSize) + 1;
   const startRow = Math.floor(-fabricPreviewPanY / cellSize) - 1;
@@ -6386,7 +6329,10 @@ function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, b
       const sourceRow = positiveModulo(virtualRow, picks);
       for (let virtualColumn = startColumn; virtualColumn < endColumn; virtualColumn += sampleStep) {
         const sourceColumn = positiveModulo(virtualColumn, warp);
-        ctx.fillStyle = getFabricPreviewFallbackColor(states[sourceRow][sourceColumn], renderStyle);
+        ctx.fillStyle = getFabricPreviewFallbackColor(
+          getDrawdownCellState(sourceRow, sourceColumn),
+          renderStyle
+        );
         ctx.fillRect(
           fabricPreviewPanX + virtualColumn * cellSize,
           fabricPreviewPanY + virtualRow * cellSize,
@@ -6404,21 +6350,10 @@ function drawFabricPreviewDirect(ctx, viewportWidth, viewportHeight, cellSize, b
       const sourceColumn = positiveModulo(virtualColumn, warp);
       const x = fabricPreviewPanX + virtualColumn * cellSize;
       const y = fabricPreviewPanY + virtualRow * cellSize;
-      const state = states[sourceRow][sourceColumn];
+      const state = getDrawdownCellState(sourceRow, sourceColumn);
 
       if (renderStyle === "realistic") {
-        drawPreviewStructuredCell(
-          ctx,
-          x,
-          y,
-          cellSize,
-          state,
-          sourceColumn,
-          sourceRow,
-          states,
-          "realistic",
-          backgroundColor
-        );
+        drawPreviewWovenCell(ctx, x, y, cellSize, state, backgroundColor);
       } else {
         ctx.fillStyle = getFabricPreviewFallbackColor(state, renderStyle);
         ctx.fillRect(x, y, cellSize, cellSize);
@@ -9173,31 +9108,19 @@ function init() {
 
 function resetAll() {
   const values = getControlValues();
-  const nextDimensions = applyDraftDimensionLimits(values.warp, values.picks);
   shafts = values.shafts;
   treadles = values.treadles;
-  warp = nextDimensions.warp;
-  picks = nextDimensions.picks;
-  setControlValues({ ...values, warp, picks });
+  warp = values.warp;
+  picks = values.picks;
   init();
-
-  if (nextDimensions.changed) {
-    showDraftLimitAlert("Draft size was reduced before clearing to keep the page responsive.");
-  }
 }
 
 function resizeFromControls(changedId = null) {
   const values = getControlValues();
   const newShafts = values.shafts;
   const newTreadles = values.treadles;
-  const nextDimensions = applyDraftDimensionLimits(values.warp, values.picks, changedId);
-  const newWarp = nextDimensions.warp;
-  const newPicks = nextDimensions.picks;
-
-  if (nextDimensions.changed) {
-    setControlValues({ ...values, warp: newWarp, picks: newPicks });
-    showDraftLimitAlert("Draft size was reduced to keep the page responsive.");
-  }
+  const newWarp = values.warp;
+  const newPicks = values.picks;
 
   threading = resizeThreading(threading, shafts, newShafts, warp, newWarp);
   treadling = resizeTreadling(treadling, picks, newPicks, treadles, newTreadles);
@@ -10218,7 +10141,6 @@ window.addEventListener("resize", () => {
 
 function renderDraftStage() {
   hideDraftInsertPreview();
-  updateDraftDimensionLimitsUI();
   renderWarpRuler();
   renderPickRuler();
   renderWarpToolbar();
@@ -11528,7 +11450,7 @@ function getRealisticDrawdownRenderScale(totalWidth, totalHeight) {
   );
   const pixelLimit = Math.sqrt(maxRealisticDrawdownCanvasPixels / safeArea);
 
-  return Math.max(0.1, Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit));
+  return Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit);
 }
 
 function renderRealisticDrawdown(div, columnWidths, rowHeights) {
@@ -11642,13 +11564,6 @@ function renderWarpToolbar() {
     bindDraftInsertPreview(minus, { ...warpPreviewOptions, mode: "delete" });
 
     const insertWarpAt = insertIndex => {
-      const nextDimensions = applyDraftDimensionLimits(warp + 1, picks, "warp");
-
-      if (nextDimensions.warp !== warp + 1) {
-        showDraftLimitAlert("You can't add another warp thread.");
-        return;
-      }
-
       for (let s = 0; s < shafts; s++) {
         threading[s].splice(insertIndex, 0, 0);
       }
@@ -11847,13 +11762,6 @@ function renderPickToolbar() {
     bindDraftInsertPreview(minus, { ...pickPreviewOptions, mode: "delete" });
 
     const insertPickAt = insertIndex => {
-      const nextDimensions = applyDraftDimensionLimits(warp, picks + 1, "picks");
-
-      if (nextDimensions.picks !== picks + 1) {
-        showDraftLimitAlert("You can't add another pick.");
-        return;
-      }
-
       treadling.splice(insertIndex, 0, Array(treadles).fill(0));
       picks++;
       document.getElementById("picks").value = picks;
@@ -12089,11 +11997,162 @@ function renderTreadling() {
   }
 }
 
+function buildCompactDrawdownLookups() {
+  const warpAssignments = Array.from({ length: warp }, (_, warpIndex) => {
+    const assignment = getWarpAssignment(warpIndex);
+    return assignment
+      ? { ...assignment, color: getPatternColorValue(assignment.colorId) || "#ffffff" }
+      : null;
+  });
+  const pickRows = Array.from({ length: picks }, (_, pickIndex) => {
+    const raised = new Uint8Array(shafts);
+    let colorId = null;
+
+    for (let treadleIndex = 0; treadleIndex < treadles; treadleIndex++) {
+      const treadleColorId = treadling[pickIndex]?.[treadleIndex];
+      if (!treadleColorId) continue;
+      colorId ||= treadleColorId;
+      for (let shaftIndex = 0; shaftIndex < shafts; shaftIndex++) {
+        if (tieup[treadleIndex]?.[shaftIndex]) raised[shaftIndex] = 1;
+      }
+    }
+
+    return {
+      raised,
+      hasWeft: Boolean(colorId),
+      color: getPatternColorValue(colorId) || "#ffffff"
+    };
+  });
+
+  return { warpAssignments, pickRows };
+}
+
+function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false;
+
+  const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
+  const { warpAssignments, pickRows } = buildCompactDrawdownLookups();
+  const ink = getResolvedInkColor();
+
+  canvas.className = "drawdown-compact-canvas";
+  canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
+  canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
+  canvas.style.width = `${totalWidth}px`;
+  canvas.style.height = `${totalHeight}px`;
+  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+
+  if (renderStyle === "structure" || renderStyle === "color") {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const pick = pickRows[pickIndex];
+      let runStart = 0;
+      let runColor = null;
+
+      for (let warpIndex = 0; warpIndex <= warp; warpIndex++) {
+        let color = null;
+        if (warpIndex < warp) {
+          const assignment = warpAssignments[warpIndex];
+          const warpVisible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaft]));
+          color = renderStyle === "structure"
+            ? (warpVisible ? ink : "#ffffff")
+            : (warpVisible ? assignment.color : pick.color);
+        }
+
+        if (warpIndex === 0) {
+          runColor = color;
+          continue;
+        }
+        if (color === runColor) continue;
+
+        ctx.fillStyle = runColor;
+        ctx.fillRect(
+          columnEdges[runStart],
+          rowEdges[pickIndex],
+          columnEdges[warpIndex] - columnEdges[runStart],
+          rowHeights[pickIndex]
+        );
+        runStart = warpIndex;
+        runColor = color;
+      }
+    }
+  } else {
+    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+      const pick = pickRows[pickIndex];
+      const y = rowEdges[pickIndex];
+      const height = rowHeights[pickIndex];
+
+      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+        const assignment = warpAssignments[warpIndex];
+        const hasWarp = Boolean(assignment);
+        const warpVisible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaft]));
+        const warpColor = assignment?.color || "#ffffff";
+        const x = columnEdges[warpIndex];
+        const width = columnWidths[warpIndex];
+
+        if (renderStyle === "warp-faced") {
+          ctx.fillStyle = warpColor;
+          ctx.fillRect(x, y, width, height);
+          if (pick.hasWeft && !warpVisible) {
+            ctx.fillStyle = pick.color;
+            ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
+          }
+          continue;
+        }
+
+        if (renderStyle === "weft-faced") {
+          ctx.fillStyle = pick.color;
+          ctx.fillRect(x, y, width, height);
+          if (hasWarp && warpVisible) {
+            ctx.fillStyle = warpColor;
+            ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
+          }
+          continue;
+        }
+
+        const frontColor = warpVisible ? warpColor : pick.color;
+        const backColor = warpVisible ? pick.color : warpColor;
+        ctx.fillStyle = hasWarp && pick.hasWeft ? backColor : frontColor;
+        ctx.fillRect(x, y, width, height);
+        if (hasWarp && pick.hasWeft) {
+          ctx.fillStyle = frontColor;
+          if (warpVisible) ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
+          else ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
+        }
+      }
+    }
+  }
+
+  div.className = "drawdown-compact";
+  div.style.display = "block";
+  div.style.position = "relative";
+  div.style.width = `${totalWidth}px`;
+  div.style.height = `${totalHeight}px`;
+  div.style.background = "#ffffff";
+  div.style.overflow = "hidden";
+  div.style.gridTemplateColumns = "";
+  div.style.gridTemplateRows = "";
+  div.replaceChildren(canvas);
+  return true;
+}
+
 function renderDrawdown() {
   const div = document.getElementById("drawdown");
   const renderStyle = getDraftRenderStyle();
   const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
   const rowHeights = getDrawdownRowHeightsForRender(renderStyle);
+
+  if (
+    warp * picks > compactDrawdownCellThreshold &&
+    renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle)
+  ) {
+    return;
+  }
 
   if (renderStyle === "warp-faced" || renderStyle === "weft-faced") {
     renderFacedDrawdown(div, columnWidths, rowHeights, renderStyle);

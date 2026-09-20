@@ -748,6 +748,7 @@
     const defaultPreviewSett = 60;
     const maxRealisticDrawdownCanvasDimension = 8192;
     const maxRealisticDrawdownCanvasPixels = 16000000;
+    const compactDrawdownCellThreshold = 60000;
     const previewColorCache = new Map();
     let selectedFamily = null;
     let selectedBookPattern = null;
@@ -3277,7 +3278,7 @@
       );
       const pixelLimit = Math.sqrt(maxRealisticDrawdownCanvasPixels / safeArea);
 
-      return Math.max(0.1, Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit));
+      return Math.min(window.devicePixelRatio || 1, dimensionLimit, pixelLimit);
     }
 
     function renderRealisticDrawdown(grid, draft, columnWidths, rowHeights) {
@@ -3404,36 +3405,87 @@
       canvas.style.height = `${totalHeight}px`;
       ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
       ctx.imageSmoothingEnabled = false;
-      const warp = Array.from({ length: draft.warp }, (_, index) => getWarpAssignment(draft, index));
+      const warp = Array.from({ length: draft.warp }, (_, index) => {
+        const assignment = getWarpAssignment(draft, index);
+        return assignment
+          ? { ...assignment, color: getYarn(draft, assignment.colorId).value }
+          : null;
+      });
       const picks = Array.from({ length: draft.picks }, (_, pickIndex) => {
         const raised = new Uint8Array(draft.shafts);
         draft.treadling[pickIndex].forEach((colorId, treadleIndex) => {
           if (!colorId) return;
           draft.tieup[treadleIndex].forEach((active, shaftIndex) => { if (active) raised[shaftIndex] = 1; });
         });
-        return { raised, colorId: getPickColorId(draft, pickIndex) };
+        const colorId = getPickColorId(draft, pickIndex);
+        return { raised, hasWeft: Boolean(colorId), color: getYarn(draft, colorId).value };
       });
-      for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
-        const pick = picks[pickIndex];
-        const weftColor = getYarn(draft, pick.colorId).value;
-        const y = rowEdges[pickIndex];
-        const height = rowHeights[pickIndex];
-        for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
-          const assignment = warp[warpIndex];
-          const visible = Boolean(assignment && pick.raised[assignment.shaftIndex]);
-          const warpColor = getYarn(draft, assignment?.colorId).value;
-          const frontColor = visible ? warpColor : weftColor;
-          const x = columnEdges[warpIndex];
-          const width = columnWidths[warpIndex];
-          if (renderStyle === "realistic") {
-            ctx.fillStyle = visible ? weftColor : warpColor;
-            ctx.fillRect(x, y, width, height);
-            ctx.fillStyle = frontColor;
-            if (visible) ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
-            else ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
-          } else {
-            ctx.fillStyle = renderStyle === "structure" ? (visible ? "#2f241d" : "#ffffff") : frontColor;
-            ctx.fillRect(x, y, width, height);
+      if (renderStyle === "structure" || renderStyle === "color") {
+        for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+          const pick = picks[pickIndex];
+          let runStart = 0;
+          let runColor = null;
+          for (let warpIndex = 0; warpIndex <= draft.warp; warpIndex++) {
+            let color = null;
+            if (warpIndex < draft.warp) {
+              const assignment = warp[warpIndex];
+              const visible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaftIndex]));
+              color = renderStyle === "structure"
+                ? (visible ? "#2f241d" : "#ffffff")
+                : (visible ? assignment.color : pick.color);
+            }
+            if (warpIndex === 0) {
+              runColor = color;
+              continue;
+            }
+            if (color === runColor) continue;
+            ctx.fillStyle = runColor;
+            ctx.fillRect(
+              columnEdges[runStart],
+              rowEdges[pickIndex],
+              columnEdges[warpIndex] - columnEdges[runStart],
+              rowHeights[pickIndex]
+            );
+            runStart = warpIndex;
+            runColor = color;
+          }
+        }
+      } else {
+        for (let pickIndex = 0; pickIndex < draft.picks; pickIndex++) {
+          const pick = picks[pickIndex];
+          const y = rowEdges[pickIndex];
+          const height = rowHeights[pickIndex];
+          for (let warpIndex = 0; warpIndex < draft.warp; warpIndex++) {
+            const assignment = warp[warpIndex];
+            const hasWarp = Boolean(assignment);
+            const visible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaftIndex]));
+            const warpColor = assignment?.color || "#ffffff";
+            const x = columnEdges[warpIndex];
+            const width = columnWidths[warpIndex];
+            if (renderStyle === "warp-faced") {
+              ctx.fillStyle = warpColor;
+              ctx.fillRect(x, y, width, height);
+              if (pick.hasWeft && !visible) {
+                ctx.fillStyle = pick.color;
+                ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
+              }
+            } else if (renderStyle === "weft-faced") {
+              ctx.fillStyle = pick.color;
+              ctx.fillRect(x, y, width, height);
+              if (hasWarp && visible) {
+                ctx.fillStyle = warpColor;
+                ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
+              }
+            } else {
+              const frontColor = visible ? warpColor : pick.color;
+              ctx.fillStyle = hasWarp && pick.hasWeft ? (visible ? pick.color : warpColor) : frontColor;
+              ctx.fillRect(x, y, width, height);
+              if (hasWarp && pick.hasWeft) {
+                ctx.fillStyle = frontColor;
+                if (visible) ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
+                else ctx.fillRect(x, y + height * 0.18, width, height * 0.64);
+              }
+            }
           }
         }
       }
@@ -3447,7 +3499,10 @@
     }
 
     function renderDrawdown(grid, draft, columnWidths, rowHeights) {
-      if (draft.warp * draft.picks > 60000 && renderCompactDrawdown(grid, draft, columnWidths, rowHeights)) {
+      if (
+        draft.warp * draft.picks > compactDrawdownCellThreshold &&
+        renderCompactDrawdown(grid, draft, columnWidths, rowHeights)
+      ) {
         return;
       }
       if (renderStyle === "realistic") {
