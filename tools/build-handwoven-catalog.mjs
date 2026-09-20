@@ -20,7 +20,13 @@ const expected = fs.readdirSync(magazineDir)
   .sort()
   .map(name => {
     const stem = path.basename(name, ".pdf");
-    const [year, months] = stem.split(" ");
+    const parts = stem.split(" ");
+    const year = parts[0];
+    const months = parts[1];
+    if (/^[IV]+$/.test(months)) {
+      const season = parts.slice(2).join(" ");
+      return { id: `handwoven-${year}-${months.toLowerCase()}-${season.toLowerCase()}`, title: `${season} ${year}`, year, months };
+    }
     return { id: `handwoven-${year}-${months}`, title: `${monthNames[months]} ${year}`, year, months };
   });
 const supplied = inputs.flatMap(file => JSON.parse(fs.readFileSync(file, "utf8")));
@@ -66,7 +72,7 @@ const catalog = {
     author: "Handwoven editors and contributors",
     edition: "Selected issues",
     publisher: "Interweave / Long Thread Media",
-    year: "2015–2023",
+    year: "2015–2026",
     groupLabel: "issue",
     notesPath: "assets/patterns/handwoven.md",
     note: `${patterns.length} editable drafts from ${groups.length} supplied issues. Each issue is a separate section; hand-manipulation-only ground drafts are omitted; more source material can be added later.${coverageNote}`,
@@ -76,7 +82,7 @@ const catalog = {
   patterns
 };
 
-const js = `// Handwoven magazine project drafts, 2015–2023.\nconst handwovenCatalog = ${JSON.stringify(catalog, null, 2)};\n`;
+const js = `// Handwoven magazine project drafts, 2015–2026.\nconst handwovenCatalog = ${JSON.stringify(catalog, null, 2)};\n`;
 fs.writeFileSync(path.join(root, "assets/patterns/handwoven.js"), js);
 
 const counts = new Map(groups.map(group => [group.id, 0]));

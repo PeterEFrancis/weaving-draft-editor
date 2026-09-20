@@ -123,7 +123,7 @@ test('library sections separate basic categories from publications without losin
   assert.equal(dixon.title, dixonCatalog.source.title);
   assert.equal(dixon.families.length, dixonCatalog.groups.length);
   assert.equal(handwoven.title, 'Handwoven');
-  assert.equal(handwoven.families.length, 33);
+  assert.equal(handwoven.families.length, 39);
   assert.equal(new Set(sections.map(section => section.id)).size, sections.length);
   const sectionFamilies = sections.flatMap(section => section.families);
   assert.deepEqual(sectionFamilies.map(family => family.id).sort(), families.map(family => family.id).sort());
@@ -266,7 +266,7 @@ test('search covers every draft and finds matching weaves across all collections
 });
 
 test('Handwoven is organized by issue and every entry is an editable credited draft', () => {
-  assert.equal(handwovenCatalog.groups.length, 33);
+  assert.equal(handwovenCatalog.groups.length, 39);
   assert.ok(handwovenCatalog.patterns.length > 0);
   assert.equal(new Set(handwovenCatalog.patterns.map(entry => entry.id)).size, handwovenCatalog.patterns.length);
   const groupIds = new Set(handwovenCatalog.groups.map(group => group.id));

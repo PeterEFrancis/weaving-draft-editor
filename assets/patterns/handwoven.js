@@ -1,4 +1,4 @@
-// Handwoven magazine project drafts, 2015–2023.
+// Handwoven magazine project drafts, 2015–2026.
 const handwovenCatalog = {
   "source": {
     "id": "handwoven",
@@ -6,10 +6,10 @@ const handwovenCatalog = {
     "author": "Handwoven editors and contributors",
     "edition": "Selected issues",
     "publisher": "Interweave / Long Thread Media",
-    "year": "2015–2023",
+    "year": "2015–2026",
     "groupLabel": "issue",
     "notesPath": "assets/patterns/handwoven.md",
-    "note": "344 editable drafts from 33 supplied issues. Each issue is a separate section; hand-manipulation-only ground drafts are omitted; more source material can be added later.",
+    "note": "416 editable drafts from 39 supplied issues. Each issue is a separate section; hand-manipulation-only ground drafts are omitted; more source material can be added later.",
     "transcriptionNote": "Drafts follow the threading, tie-up or liftplan, treadling, and color information printed with each project. Repeated structures are represented by an editable design unit or the published full-width expansion. Colors approximate the published yarns."
   },
   "groups": [
@@ -169,6 +169,11 @@ const handwovenCatalog = {
       "year": 2023
     },
     {
+      "id": "handwoven-2023-05-06",
+      "title": "May/June 2023",
+      "year": 2023
+    },
+    {
       "id": "handwoven-2023-09-10",
       "title": "September/October 2023",
       "year": 2023
@@ -177,6 +182,31 @@ const handwovenCatalog = {
       "id": "handwoven-2023-11-12",
       "title": "November/December 2023",
       "year": 2023
+    },
+    {
+      "id": "handwoven-2024-i-winter",
+      "title": "Winter 2024",
+      "year": 2024
+    },
+    {
+      "id": "handwoven-2024-ii-spring",
+      "title": "Spring 2024",
+      "year": 2024
+    },
+    {
+      "id": "handwoven-2024-iii-summer",
+      "title": "Summer 2024",
+      "year": 2024
+    },
+    {
+      "id": "handwoven-2025-iii-summer",
+      "title": "Summer 2025",
+      "year": 2025
+    },
+    {
+      "id": "handwoven-2026-iii-summer",
+      "title": "Summer 2026",
+      "year": 2026
     }
   ],
   "patterns": [
@@ -449288,6 +449318,722 @@ const handwovenCatalog = {
       "groupId": "handwoven-2023-03-04"
     },
     {
+      "id": "hw-2023-05-06-p30-s01",
+      "title": "Fulled Mug Rugs",
+      "designer": "Ellen Kardell",
+      "pages": "30",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Deflected doubleweave project draft from the issue.",
+      "kind": "Deflected doubleweave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p34-s01",
+      "title": "Mid-Century-Modern Runner",
+      "designer": "Merriel Miller",
+      "pages": "34",
+      "shafts": 7,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ]
+      ],
+      "description": "Twill with color-and-weave project draft from the issue.",
+      "kind": "Twill with color-and-weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p38-s01",
+      "title": "Subtle Shift Towels",
+      "designer": "Rebecca Morris",
+      "pages": "38",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Huck lace with color-and-weave project draft from the issue.",
+      "kind": "Huck lace with color-and-weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p41-s01",
+      "title": "Eclectic Color-and-Weave",
+      "designer": "Deborah Jarchow",
+      "pages": "41",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave with color-and-weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p44-s01",
+      "title": "Prairie Bloom Towels",
+      "designer": "Malynda Allen",
+      "pages": "44",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Plain weave and huck with color-and-weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p48-s01",
+      "title": "Pen and Ink Linen Towels",
+      "designer": "Christine Jablonski",
+      "pages": "48",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill with color-and-weave project draft from the issue.",
+      "kind": "Twill with color-and-weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p51-s01",
+      "title": "Fraternal Twins",
+      "designer": "Annette Swan Schipf",
+      "pages": "51",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Shadow weave and huck project draft from the issue.",
+      "kind": "Shadow weave and huck",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p54-s01",
+      "title": "Shifting Shadows",
+      "designer": "Barbara Mitchell",
+      "pages": "54",
+      "shafts": 6,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ],
+      "description": "Plain weave and twill with color-and-weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p58-s01",
+      "title": "Violet Waves",
+      "designer": "Jannie Taylor",
+      "pages": "58",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Shadow weave project draft from the issue.",
+      "kind": "Shadow weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p62-s01",
+      "title": "Square Fancy Chèche",
+      "designer": "Véronique Perrot",
+      "pages": "62",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
+      "id": "hw-2023-05-06-p68-s01",
+      "title": "Light Sussex Color-and-Weave",
+      "designer": "Alison Irwin",
+      "pages": "68",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "description": "Twill and basketweave with color-and-weave project draft from the issue.",
+      "kind": "Twill and basketweave with color-and-weave",
+      "groupId": "handwoven-2023-05-06"
+    },
+    {
       "title": "Shimmering Crackle Scarf",
       "designer": "Bobbie Irwin",
       "pages": "35",
@@ -453774,6 +454520,3918 @@ const handwovenCatalog = {
       "kind": "Magazine draft",
       "id": "hw-2023-11-12-p71-s01",
       "groupId": "handwoven-2023-11-12"
+    },
+    {
+      "id": "hw-2024-i-winter-p22-s01",
+      "title": "Bluebird Towels",
+      "designer": "Cheryl White",
+      "pages": "22",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Overshot project draft from the issue.",
+      "kind": "Overshot",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p34-s01",
+      "title": "Perpetual Pinwheels",
+      "designer": "Robin Lynde",
+      "pages": "34",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Color-and-weave project draft from the issue.",
+      "kind": "Color-and-weave",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p42-s01",
+      "title": "Ikat and Ice Scarf",
+      "designer": "Natalie Drummond",
+      "pages": "42",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Plain weave with floats project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p46-s01",
+      "title": "Op Art Table Linens",
+      "designer": "Tien Chiu",
+      "pages": "46",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Doubleweave project draft from the issue.",
+      "kind": "Doubleweave",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p50-s01",
+      "title": "Concentric Squares Scarf",
+      "designer": "Jeanne Ralston",
+      "pages": "50",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Doubleweave project draft from the issue.",
+      "kind": "Doubleweave",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p54-s01",
+      "title": "Cascading Silk Blouse",
+      "designer": "Diane G. Crowder",
+      "pages": "54",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Advancing twill project draft from the issue.",
+      "kind": "Advancing twill",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p60-s01",
+      "title": "Hargrove’s Dinner Party",
+      "designer": "Joe Wixted",
+      "pages": "60",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "M’s and O’s project draft from the issue.",
+      "kind": "M’s and O’s",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p64-s01",
+      "title": "Interlocking Block Towels",
+      "designer": "Regina McInnes",
+      "pages": "64",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Summer and winter project draft from the issue.",
+      "kind": "Summer and winter",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p68-s01",
+      "title": "Alpaca in Your Lap Blanket",
+      "designer": "Jeff Smith",
+      "pages": "68",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p77-s01",
+      "title": "Celebration Romper",
+      "designer": "Malynda Allen",
+      "pages": "77",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Plain weave and M’s and O’s project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p77-s02",
+      "title": "Inspired by Indigo Pillows",
+      "designer": "Tegan Frisino",
+      "pages": "77",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Overshot project draft from the issue.",
+      "kind": "Overshot",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-i-winter-p77-s03",
+      "title": "Natural Charm Dish Towels",
+      "designer": "Melanie Smith",
+      "pages": "77",
+      "shafts": 3,
+      "threading": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-i-winter"
+    },
+    {
+      "id": "hw-2024-ii-spring-p30-s01",
+      "title": "Swift Serviettes",
+      "designer": "Véronique Perrot",
+      "pages": "30",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p34-s01",
+      "title": "Swedish Shetland Shawl",
+      "designer": "Bettie Zakon-Anderson",
+      "pages": "34",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Swedish lace project draft from the issue.",
+      "kind": "Swedish lace",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p38-s01",
+      "title": "Take Flight Coverlet",
+      "designer": "Malynda Allen",
+      "pages": "38",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Overshot project draft from the issue.",
+      "kind": "Overshot",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p42-s01",
+      "title": "Paper Airplanes Poncho",
+      "designer": "Jennifer Chapman",
+      "pages": "42",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p46-s01",
+      "title": "Tessellating Triangles Towels",
+      "designer": "Sheila O’Hara",
+      "pages": "46",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Turned Atwater-Bronson project draft from the issue.",
+      "kind": "Turned Atwater-Bronson",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p50-s01",
+      "title": "Calling All Butterflies Runner",
+      "designer": "Sue Anne Sullivan",
+      "pages": "50",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Plain weave with overshot inlay project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p54-s01",
+      "title": "Monarch Scarf",
+      "designer": "Samantha Haring",
+      "pages": "54",
+      "shafts": 6,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          6
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p58-s01",
+      "title": "Avian Elegance",
+      "designer": "Sydney Sogol",
+      "pages": "58",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p62-s01",
+      "title": "NYC Pigeon Scarf",
+      "designer": "Sophia Eller",
+      "pages": "62",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Echo weave—networked twill project draft from the issue.",
+      "kind": "Echo weave—networked twill",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p66-s01",
+      "title": "Swans A-Swimming",
+      "designer": "Annette Swan Schipf",
+      "pages": "66",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Turned summer and winter project draft from the issue.",
+      "kind": "Turned summer and winter",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p74-s01",
+      "title": "Call of the Crows Towels",
+      "designer": "Yvonne Ellsworth",
+      "pages": "74",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p77-s01",
+      "title": "Monk’s Belt Revisited",
+      "designer": "Susan A. Bloomfield",
+      "pages": "77",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Monk’s belt and plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p77-s02",
+      "title": "Fluttery Lace Curtain",
+      "designer": "Regina McInnes",
+      "pages": "77",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Huck lace with plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-ii-spring-p77-s03",
+      "title": "When Pigs Fly",
+      "designer": "Margaret Stump",
+      "pages": "77",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-ii-spring"
+    },
+    {
+      "id": "hw-2024-iii-summer-p24-s01",
+      "title": "Tuscan Summer Rug",
+      "designer": "Sandi Lemons",
+      "pages": "24",
+      "shafts": 3,
+      "threading": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "description": "Krokbragd project draft from the issue.",
+      "kind": "Krokbragd",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p32-s01",
+      "title": "Twice-Woven Rug",
+      "designer": "Catherine Marchant",
+      "pages": "32",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p34-s01",
+      "title": "Building Blocks Rug",
+      "designer": "Suzie Liles",
+      "pages": "34",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Taqueté project draft from the issue.",
+      "kind": "Taqueté",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p38-s01",
+      "title": "Sand and Sky Stitched Double Cloth Rug",
+      "designer": "Tom Knisely",
+      "pages": "38",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Stitched double cloth twill project draft from the issue.",
+      "kind": "Stitched double cloth twill",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p42-s01",
+      "title": "Core Spun Comfort Rug",
+      "designer": "Cynthia Cox",
+      "pages": "42",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p44-s01",
+      "title": "Salts Mill Rug",
+      "designer": "Frances Richardson",
+      "pages": "44",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Weft-faced plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p46-s01",
+      "title": "Summer Berry Towels",
+      "designer": "Malynda Allen",
+      "pages": "46",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p51-s01",
+      "title": "Eventide Elegance Scarf",
+      "designer": "Tien Chiu",
+      "pages": "51",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p54-s01",
+      "title": "Changing Lanes Scarf",
+      "designer": "Deborah Heyman",
+      "pages": "54",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p58-s01",
+      "title": "Zebras on the Serengeti",
+      "designer": "Carla Jeanne Hubbart",
+      "pages": "58",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave with color-and-weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p62-s01",
+      "title": "Cascading Colors Scarves",
+      "designer": "Robin Lynde",
+      "pages": "62",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill with clasped warp project draft from the issue.",
+      "kind": "Twill with clasped warp",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p64-s01",
+      "title": "Tropical Waters Top",
+      "designer": "Rebecca Fox",
+      "pages": "64",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "description": "Basketweave project draft from the issue.",
+      "kind": "Basketweave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p66-s01",
+      "title": "Emerging Asymmetry Scarf",
+      "designer": "Brenda Gibson",
+      "pages": "66",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Deflected doubleweave project draft from the issue.",
+      "kind": "Deflected doubleweave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2024-iii-summer-p77-s01",
+      "title": "A Slice of Layer Cake Runner",
+      "designer": "Rebecca Fox",
+      "pages": "77",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2024-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p18-s01",
+      "title": "Sunset Fiesta Towels",
+      "designer": "Donna Flack Shadix",
+      "pages": "18",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Turned Taqueté project draft from the issue.",
+      "kind": "Turned Taqueté",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p28-s01",
+      "title": "Blue Horizons Tunic",
+      "designer": "Katzy Luhring and Cynthia Newman",
+      "pages": "28",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Turned Summer and Winter project draft from the issue.",
+      "kind": "Turned Summer and Winter",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p34-s01",
+      "title": "Perfect Potholders",
+      "designer": "Lois Herr",
+      "pages": "34",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p38-s01",
+      "title": "Splash of Lime Cabana Set",
+      "designer": "Deborah Sykes",
+      "pages": "38",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p42-s01",
+      "title": "Scottish Summer Scarf",
+      "designer": "Jeremy Uden",
+      "pages": "42",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p46-s01",
+      "title": "Sea Breeze Cover-Up",
+      "designer": "Cathy Coatney",
+      "pages": "46",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p50-s01",
+      "title": "Adventure Utility Squares",
+      "designer": "Dorothy Tuthill",
+      "pages": "50",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Plain weave with color-and-weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p54-s01",
+      "title": "Floral Bouquet Napkins",
+      "designer": "Malynda Allen",
+      "pages": "54",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Overshot project draft from the issue.",
+      "kind": "Overshot",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p60-s01",
+      "title": "Beach House Bread Cloths",
+      "designer": "Andrea Williams",
+      "pages": "60",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Dimity project draft from the issue.",
+      "kind": "Dimity",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p64-s01",
+      "title": "Ripple Towel and Tote",
+      "designer": "Regina McInnes",
+      "pages": "64",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Shadow weave project draft from the issue.",
+      "kind": "Shadow weave",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2025-iii-summer-p68-s01",
+      "title": "Shoreline Shawl",
+      "designer": "Joy Pate",
+      "pages": "68",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2025-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p22-s01",
+      "title": "Color Nuggets Towels",
+      "designer": "Véronique Perrot",
+      "pages": "22",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Color-and-weave project draft from the issue.",
+      "kind": "Color-and-weave",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p28-s01",
+      "title": "Summer Day Bags",
+      "designer": "Katzy Luhring",
+      "pages": "28",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Turned Taqueté project draft from the issue.",
+      "kind": "Turned Taqueté",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p38-s01",
+      "title": "Inner Glow Scarf",
+      "designer": "Tien Chiu",
+      "pages": "38",
+      "shafts": 2,
+      "threading": [
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "description": "Plain weave project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p42-s01",
+      "title": "Gemstone Table Runner",
+      "designer": "Sheila O’Hara",
+      "pages": "42",
+      "shafts": 16,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          5,
+          9
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          7,
+          11
+        ],
+        [
+          8,
+          12
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p46-s01",
+      "title": "Sunny Garden Towels",
+      "designer": "Robin Lynde",
+      "pages": "46",
+      "shafts": 8,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "lifts": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "description": "Color-and-weave project draft from the issue.",
+      "kind": "Color-and-weave",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p50-s01",
+      "title": "Tropical Waters Top",
+      "designer": "Rebecca Fox",
+      "pages": "50",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "description": "Basketweave project draft from the issue.",
+      "kind": "Basketweave",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p54-s01",
+      "title": "Midnight Reflection Scarf",
+      "designer": "Sedona Rigsby",
+      "pages": "54",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Twill project draft from the issue.",
+      "kind": "Twill",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p58-s01",
+      "title": "Blue Horizon Towels",
+      "designer": "Susan E. Horton",
+      "pages": "58",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Plain weave and twill project draft from the issue.",
+      "kind": "Plain weave",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p64-s01",
+      "title": "Sunrise Bloom Napkins",
+      "designer": "Lauren Erickson",
+      "pages": "64",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "description": "Crackle project draft from the issue.",
+      "kind": "Crackle",
+      "groupId": "handwoven-2026-iii-summer"
+    },
+    {
+      "id": "hw-2026-iii-summer-p68-s01",
+      "title": "Summer Sorbet Towels",
+      "designer": "Barbara Mitchell",
+      "pages": "68",
+      "shafts": 4,
+      "threading": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ],
+      "lifts": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "description": "Basketweave project draft from the issue.",
+      "kind": "Basketweave",
+      "groupId": "handwoven-2026-iii-summer"
     }
   ]
 };
