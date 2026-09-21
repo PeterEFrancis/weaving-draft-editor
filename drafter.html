@@ -2697,6 +2697,8 @@ const draftZoomStops = [
 const maxRealisticDrawdownCanvasDimension = 8192;
 const maxRealisticDrawdownCanvasPixels = 16000000;
 const compactDrawdownCellThreshold = 60000;
+let compactDrawdownView = null;
+let compactDrawdownFrame = 0;
 const controlIds = ["shafts", "treadles", "warp", "picks"];
 const previewControlIds = ["preview-repeat-x", "preview-repeat-y"];
 const patternColorSeedValues = [
@@ -9679,6 +9681,7 @@ function syncDraftScrollMirrors() {
   });
 
   scheduleDraftInsertPreviewUpdate();
+  scheduleCompactDrawdownPaint();
 }
 
 function queueDraftOriginScroll() {
@@ -12027,36 +12030,68 @@ function buildCompactDrawdownLookups() {
   return { warpAssignments, pickRows };
 }
 
-function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
-  const columnEdges = getTrackEdges(columnWidths);
-  const rowEdges = getTrackEdges(rowHeights);
-  const totalWidth = columnEdges[columnEdges.length - 1];
-  const totalHeight = rowEdges[rowEdges.length - 1];
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return false;
+function scheduleCompactDrawdownPaint() {
+  if (!compactDrawdownView || compactDrawdownFrame) return;
+  compactDrawdownFrame = requestAnimationFrame(() => {
+    compactDrawdownFrame = 0;
+    paintCompactDrawdown();
+  });
+}
 
-  const renderScale = getRealisticDrawdownRenderScale(totalWidth, totalHeight);
-  const { warpAssignments, pickRows } = buildCompactDrawdownLookups();
-  const ink = getResolvedInkColor();
+function findCompactDrawdownTrack(edges, offset) {
+  let low = 0;
+  let high = edges.length - 1;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    if (edges[middle + 1] <= offset) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
 
-  canvas.className = "drawdown-compact-canvas";
-  canvas.width = Math.max(1, Math.round(totalWidth * renderScale));
-  canvas.height = Math.max(1, Math.round(totalHeight * renderScale));
-  canvas.style.width = `${totalWidth}px`;
-  canvas.style.height = `${totalHeight}px`;
-  ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+function paintCompactDrawdown() {
+  if (!compactDrawdownView || !drawdownScrollElement) return;
+  const {
+    canvas, ctx, columnWidths, rowHeights, columnEdges, rowEdges,
+    totalWidth, totalHeight, renderStyle, warpAssignments, pickRows, ink
+  } = compactDrawdownView;
+  // Keep the full scrollable draft, but rasterize only the viewport at screen resolution.
+  const renderScale = window.devicePixelRatio || 1;
+  const overscan = 128;
+  const left = Math.floor(Math.max(0, drawdownScrollElement.scrollLeft - overscan) * renderScale) / renderScale;
+  const top = Math.floor(Math.max(0, drawdownScrollElement.scrollTop - overscan) * renderScale) / renderScale;
+  const width = Math.max(1, Math.min(totalWidth - left,
+    Math.min(drawdownScrollElement.clientWidth || window.innerWidth, window.innerWidth) + overscan * 2));
+  const height = Math.max(1, Math.min(totalHeight - top,
+    Math.min(drawdownScrollElement.clientHeight || window.innerHeight, window.innerHeight) + overscan * 2));
+
+  const bitmapWidth = Math.ceil(width * renderScale);
+  const bitmapHeight = Math.ceil(height * renderScale);
+  if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
+  if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.style.left = `${left}px`;
+  canvas.style.top = `${top}px`;
+  canvas.style.width = `${canvas.width / renderScale}px`;
+  canvas.style.height = `${canvas.height / renderScale}px`;
+  ctx.setTransform(renderScale, 0, 0, renderScale, -left * renderScale, -top * renderScale);
   ctx.imageSmoothingEnabled = false;
 
+  const firstWarp = findCompactDrawdownTrack(columnEdges, left);
+  const lastWarp = Math.min(columnWidths.length, findCompactDrawdownTrack(columnEdges, left + width) + 1);
+  const firstPick = findCompactDrawdownTrack(rowEdges, top);
+  const lastPick = Math.min(rowHeights.length, findCompactDrawdownTrack(rowEdges, top + height) + 1);
+
   if (renderStyle === "structure" || renderStyle === "color") {
-    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let pickIndex = firstPick; pickIndex < lastPick; pickIndex++) {
       const pick = pickRows[pickIndex];
-      let runStart = 0;
+      let runStart = firstWarp;
       let runColor = null;
 
-      for (let warpIndex = 0; warpIndex <= warp; warpIndex++) {
+      for (let warpIndex = firstWarp; warpIndex <= lastWarp; warpIndex++) {
         let color = null;
-        if (warpIndex < warp) {
+        if (warpIndex < lastWarp) {
           const assignment = warpAssignments[warpIndex];
           const warpVisible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaft]));
           color = renderStyle === "structure"
@@ -12064,7 +12099,7 @@ function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
             : (warpVisible ? assignment.color : pick.color);
         }
 
-        if (warpIndex === 0) {
+        if (warpIndex === firstWarp) {
           runColor = color;
           continue;
         }
@@ -12082,12 +12117,12 @@ function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
       }
     }
   } else {
-    for (let pickIndex = 0; pickIndex < picks; pickIndex++) {
+    for (let pickIndex = firstPick; pickIndex < lastPick; pickIndex++) {
       const pick = pickRows[pickIndex];
       const y = rowEdges[pickIndex];
       const height = rowHeights[pickIndex];
 
-      for (let warpIndex = 0; warpIndex < warp; warpIndex++) {
+      for (let warpIndex = firstWarp; warpIndex < lastWarp; warpIndex++) {
         const assignment = warpAssignments[warpIndex];
         const hasWarp = Boolean(assignment);
         const warpVisible = Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaft]));
@@ -12127,6 +12162,24 @@ function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
       }
     }
   }
+}
+
+function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
+  const columnEdges = getTrackEdges(columnWidths);
+  const rowEdges = getTrackEdges(rowHeights);
+  const totalWidth = columnEdges[columnEdges.length - 1];
+  const totalHeight = rowEdges[rowEdges.length - 1];
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false;
+
+  canvas.className = "drawdown-compact-canvas";
+  canvas.style.position = "absolute";
+  compactDrawdownView = {
+    canvas, ctx, columnWidths, rowHeights, columnEdges, rowEdges,
+    totalWidth, totalHeight, renderStyle,
+    ...buildCompactDrawdownLookups(), ink: getResolvedInkColor()
+  };
 
   div.className = "drawdown-compact";
   div.style.display = "block";
@@ -12138,10 +12191,12 @@ function renderCompactDrawdown(div, columnWidths, rowHeights, renderStyle) {
   div.style.gridTemplateColumns = "";
   div.style.gridTemplateRows = "";
   div.replaceChildren(canvas);
+  scheduleCompactDrawdownPaint();
   return true;
 }
 
 function renderDrawdown() {
+  compactDrawdownView = null;
   const div = document.getElementById("drawdown");
   const renderStyle = getDraftRenderStyle();
   const columnWidths = getDrawdownColumnWidthsForRender(renderStyle);
