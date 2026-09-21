@@ -279,7 +279,7 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
   for (const [groupId, count] of Object.entries(correctedIssueCounts)) {
     const entries = handwovenCatalog.patterns.filter(entry => entry.groupId === groupId);
     assert.equal(entries.length, count, groupId);
-    assert.ok(entries.every(entry => entry.threading.length > 32), `${groupId}: full-width threading`);
+    assert.ok(entries.every(entry => entry.threading.length > 32), `${groupId}: usable threading sample`);
   }
   for (const [id, ends, picks] of [
     ['hw-2023-05-06-p48-s01', 527, 821],
@@ -293,7 +293,8 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
     ['hw-2026-iii-summer-p42-s01', 395, 910]
   ]) {
     const entry = handwovenCatalog.patterns.find(candidate => candidate.id === id);
-    assert.deepEqual([entry.threading.length, entry.lifts.length], [ends, picks], id);
+    assert.deepEqual(entry.originalSize ? [entry.originalSize.warp, entry.originalSize.picks]
+      : [entry.threading.length, entry.lifts.length], [ends, picks], id);
   }
   assert.equal(new Set(handwovenCatalog.patterns.map(entry => entry.id)).size, handwovenCatalog.patterns.length);
   const groupIds = new Set(handwovenCatalog.groups.map(group => group.id));
@@ -316,4 +317,48 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
   }
   assert.equal(get(`filterPatternSearchEntries(buildPatternSearchIndex(), 'Handwoven').length`), handwovenCatalog.patterns.length);
   assert.ok(handwovenCatalog.patterns.every(entry => !entry.manualTechnique));
+});
+
+test('reduced drafts retain usable samples and notes with original dimensions', () => {
+  const reduced = [...dixonCatalog.patterns, ...handwovenCatalog.patterns].filter(entry => entry.originalSize);
+  assert.equal(reduced.length, 60);
+  for (const entry of reduced) {
+    const pattern = patterns.find(p => p.id === entry.id);
+    const draft = pattern.draft;
+    for (const axis of ['warp', 'picks']) {
+      assert.ok(draft[axis] <= entry.originalSize[axis], entry.id);
+      if (draft[axis] < entry.originalSize[axis]) assert.ok(draft[axis] >= 96, entry.id);
+      assert.ok(pattern.repeatNote.includes(entry.originalSize[axis].toLocaleString('en-US')), entry.id);
+    }
+    const payload = get(`buildTransferPayload(getPatternById(${JSON.stringify(entry.id)}))`);
+    assert.equal(payload.meta.notes, pattern.repeatNote);
+    assert.deepEqual(payload.draft, draft);
+  }
+  const tropical = patterns.find(p => p.id === 'hw-2026-iii-summer-p50-s01');
+  assert.deepEqual([tropical.draft.warp, tropical.draft.picks], [368, 96]);
+  assert.match(tropical.repeatNote, /5,542 picks/);
+  assert.match(tropical.repeatNote, /partway/);
+});
+
+test('repeat reduction preserves colors, tabby phase, partial repeats, and unique borders', async () => {
+  const { reducePattern, repeatKeys } = await import('../tools/reduce-pattern-repeats.mjs');
+  const original = {
+    id: 'test', shafts: 4,
+    threading: Array.from({ length: 601 }, (_, i) => i % 4 + 1),
+    lifts: Array.from({ length: 501 }, (_, i) => [i % 3 + 1]),
+    warpColors: [0, 0, 1, 1, 2, 2], weftColors: [0, 1, 2, 3, 4], tabby: [[1, 3], [2, 4]]
+  };
+  const reduced = reducePattern(original);
+  assert.deepEqual(reduced.originalSize, { warp: 601, picks: 1002 });
+  assert.equal(reduced.threading.length, 96);
+  assert.equal(reduced.lifts.length, 60);
+  const before = repeatKeys(original), after = repeatKeys(reduced);
+  for (const axis of ['warp', 'picks']) {
+    assert.deepEqual(before[axis], before[axis].map((_, i) => after[axis][i % after[axis].length]));
+  }
+  const bordered = structuredClone(original);
+  bordered.threading[0] = 4;
+  bordered.lifts[0] = [1, 2, 3];
+  assert.equal(reducePattern(bordered), bordered);
+  assert.equal(reducePattern(reduced), reduced);
 });

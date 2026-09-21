@@ -2582,6 +2582,18 @@
       }
     ];
 
+    function getBookRepeatNote(entry) {
+      if (!entry.originalSize) return "";
+      const warp = entry.threading.length;
+      const picks = entry.lifts.length * (entry.tabby ? 2 : 1);
+      const count = value => value.toLocaleString("en-US");
+      const notes = [`Reduced repeat sample: ${count(warp)} warp ends × ${count(picks)} picks. Original intended draft: ${count(entry.originalSize.warp)} warp ends × ${count(entry.originalSize.picks)} picks.`];
+      if (warp < entry.originalSize.warp) notes.push(`Repeat the displayed threading and warp colors to ${count(entry.originalSize.warp)} ends (left to right as displayed).`);
+      if (picks < entry.originalSize.picks) notes.push(`Repeat the displayed treadling and weft colors to ${count(entry.originalSize.picks)} picks (top to bottom).`);
+      if (entry.originalSize.warp % warp || entry.originalSize.picks % picks) notes.push("Stop partway through the final repeat at the original count.");
+      return notes.join(" ");
+    }
+
     function buildBookDraft(entry) {
       const hasTabby = Boolean(entry.tabby);
       const values = entry.colors || (hasTabby ? ["#eee3cc", "#455d75"] : ["#455d75", "#eee3cc"]);
@@ -2672,6 +2684,7 @@
           shortMeta: `${entry.shafts} shafts`,
           kicker: `${groupLabel} · ${entry.shafts} shafts · ${entry.kind || "Book draft"}`,
           description: entry.description,
+          repeatNote: getBookRepeatNote(entry),
           source: `${creditedAuthor}, ${source.title}${group?.title ? `, ${group.title}` : ""}${publication ? `, ${publication}` : ""}, ${pageLabel} ${entry.pages}.`,
           // Book excerpts can include balancing edges; do not imply seamless tiling.
           previewRepeats: 1
@@ -3577,6 +3590,7 @@
         </div>
 
         <div class="description-card">
+          <p class="pattern-description" data-role="variant-repeat-note" hidden></p>
           <p class="pattern-description" data-role="variant-description"></p>
           <div class="pattern-dimensions" data-role="variant-dimensions"></div>
         </div>
@@ -3585,6 +3599,9 @@
       article.querySelector('[data-role="variant-kicker"]').textContent = pattern.kicker;
       article.querySelector('[data-role="variant-title"]').textContent = pattern.title;
       article.querySelector('[data-role="variant-description"]').textContent = pattern.description;
+      const repeatNote = article.querySelector('[data-role="variant-repeat-note"]');
+      repeatNote.textContent = pattern.repeatNote || "";
+      repeatNote.hidden = !pattern.repeatNote;
       if (pattern.source) {
         const source = document.createElement("p");
         source.className = "pattern-source";
@@ -3960,6 +3977,7 @@
         version: 3,
         meta: {
           draftName: pattern.title,
+          ...(pattern.repeatNote ? { notes: pattern.repeatNote } : {}),
           ...(pattern.source ? { source: pattern.source } : {})
         },
         draft: {

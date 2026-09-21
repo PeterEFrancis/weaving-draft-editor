@@ -12,6 +12,8 @@ Expand numbered picks and brackets before adding an entry. Optional `tabby` inse
 
 Optional `colors`, `thickness`, `warpColors`, and `weftColors` specify the palette and zero-based color sequences. The renderer consolidates identical sheds into treadles without changing the lift plan.
 
+Large repeating drafts may carry `originalSize: { warp, picks }` after reduction. The library shows several repeats and a note with the original counts and repetition directions. Counts include inserted tabby picks and describe the original catalog extent. Run `node tools/reduce-pattern-repeats.mjs --write` after adding catalogs to reduce exact repeats while retaining yarn order and unique borders; omit `--write` to audit only. The script verifies reconstruction of every original assignment and records changed drafts in [reduced-repeats.md](reduced-repeats.md).
+
 Hand-worked entries use `manualTechnique: true`, a descriptive `kind`, the supporting numeric draft, and manual instructions in `description`. Empty lifts can indicate closed-shed hand work. State which effects the drawdown cannot depict. Document source ambiguities without inventing missing data.
 
 Catalogs contain patterns, not PDF or page-image references. Omit groups that contain only introductory text. Keep stable pattern IDs when extending a publication.
