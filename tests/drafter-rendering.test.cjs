@@ -31,7 +31,13 @@ test('large drafts render visible crossings at native resolution throughout scro
   };
   const scroll = { clientWidth: 800, clientHeight: 600 };
   const window = { innerWidth: 1200, innerHeight: 900 };
-  const context = vm.createContext({ compactDrawdownView: view, drawdownScrollElement: scroll, window });
+  const context = vm.createContext({
+    compactDrawdownView: view, drawdownScrollElement: scroll, window,
+    drawDrawdownStructuredCell(ctx, x, y, width, height) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x, y, width, height);
+    }
+  });
   vm.runInContext(renderer, context);
   for (const dpr of [1, 1.25, 2]) {
     window.devicePixelRatio = dpr;
@@ -59,4 +65,70 @@ test('large drafts render visible crossings at native resolution throughout scro
       }
     }
   }
+});
+
+
+test('large interlacement uses structured yarns with viewport neighbors and white gaps', () => {
+  const edges = sizes => sizes.reduce((result, size) => [...result, result.at(-1) + size], [0]);
+  const columnWidths = Array(100).fill(20), rowHeights = Array(1000).fill(20);
+  const columnEdges = edges(columnWidths), rowEdges = edges(rowHeights);
+  const warpAssignments = columnWidths.map((_, i) => i % 7 ? { shaft: i % 2, color: '#123456' } : null);
+  const pickRows = rowHeights.map((_, i) => ({ raised: [i % 2, 1 - i % 2], hasWeft: i % 11 !== 0, color: '#abcdef' }));
+  const expectedState = (x, y) => ({
+    hasWarp: Boolean(warpAssignments[x]), hasWeft: pickRows[y].hasWeft,
+    warpVisibleOnFront: Boolean(warpAssignments[x] && (!pickRows[y].hasWeft || pickRows[y].raised[x % 2])),
+    warpColor: warpAssignments[x]?.color || null,
+    weftColor: pickRows[y].hasWeft ? pickRows[y].color : null
+  });
+  let yarns = [], backgrounds = [], crossings = [];
+  const ctx = { setTransform() {}, clearRect() {}, fillRect() { backgrounds.push(this.fillStyle); } };
+  const view = {
+    canvas: { style: {} }, ctx, columnWidths, rowHeights, columnEdges, rowEdges,
+    totalWidth: columnEdges.at(-1), totalHeight: rowEdges.at(-1),
+    warpAssignments, pickRows, renderStyle: 'realistic'
+  };
+  const context = vm.createContext({
+    compactDrawdownView: view,
+    drawdownScrollElement: { scrollLeft: 600, scrollTop: 6000, clientWidth: 40, clientHeight: 40 },
+    window: { innerWidth: 1200, innerHeight: 900, devicePixelRatio: 2 },
+    isDrawdownOrientationRendered: (state, orientation) => orientation === 'vertical' ? state.hasWarp : state.hasWeft,
+    drawDrawdownIntersectionShadow() {},
+    drawDrawdownAdaptiveYarn(ctx, x, y, width, height, color, orientation, onTop, cellX, cellY, states) {
+      yarns.push({ x, y, color, orientation, onTop });
+      assert.ok(states.length < 20 && states[0].length < 20, 'state grid stays scoped to the viewport');
+      for (const direction of [-1, 1]) {
+        const neighbor = context.getDrawdownNeighborState(states, cellX, cellY, orientation, direction);
+        const nx = x / 20 + (orientation === 'horizontal' ? direction : 0);
+        const ny = y / 20 + (orientation === 'vertical' ? direction : 0);
+        assert.deepEqual(JSON.parse(JSON.stringify(neighbor)), expectedState(nx, ny));
+      }
+    }
+  });
+  vm.runInContext(script.slice(script.indexOf('function getDrawdownNeighborState('),
+    script.indexOf('function getDrawdownBorderThickness(')), context);
+  vm.runInContext(script.slice(script.indexOf('function drawDrawdownStructuredCell('),
+    script.indexOf('function getRealisticDrawdownRenderScale(')), context);
+  const structuredCell = context.drawDrawdownStructuredCell;
+  context.drawDrawdownStructuredCell = (...args) => {
+    crossings.push({ x: args[1] / 20, y: args[2] / 20, state: args[5] });
+    structuredCell(...args);
+  };
+  vm.runInContext(renderer, context);
+  context.paintCompactDrawdown();
+  assert.ok(crossings.length > 0 && crossings.length < 400);
+  assert.ok(backgrounds.every(color => color === '#ffffff'), 'hidden yarn colors must not fill the background');
+  for (const { x, y, state } of crossings) {
+    assert.deepEqual(JSON.parse(JSON.stringify(state)), expectedState(x, y));
+    const bands = yarns.filter(band => band.x === x * 20 && band.y === y * 20);
+    const top = state.warpVisibleOnFront ? 'vertical' : 'horizontal';
+    const under = top === 'vertical' ? 'horizontal' : 'vertical';
+    const orientations = [under, top].filter(orientation => orientation === 'vertical' ? state.hasWarp : state.hasWeft);
+    assert.deepEqual(bands.map(band => band.orientation), orientations);
+    for (const band of bands) {
+      assert.equal(band.onTop, band.orientation === top);
+      assert.equal(band.color, band.orientation === 'vertical' ? state.warpColor : state.weftColor);
+    }
+  }
+  assert.ok(yarns.some(band => band.orientation === 'vertical' && band.onTop));
+  assert.ok(yarns.some(band => band.orientation === 'horizontal' && band.onTop));
 });

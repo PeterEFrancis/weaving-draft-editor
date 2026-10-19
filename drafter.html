@@ -12082,6 +12082,28 @@ function paintCompactDrawdown() {
   const lastWarp = Math.min(columnWidths.length, findCompactDrawdownTrack(columnEdges, left + width) + 1);
   const firstPick = findCompactDrawdownTrack(rowEdges, top);
   const lastPick = Math.min(rowHeights.length, findCompactDrawdownTrack(rowEdges, top + height) + 1);
+  const stateFirstWarp = Math.max(0, firstWarp - 1);
+  const stateFirstPick = Math.max(0, firstPick - 1);
+  // Include neighboring crossings so yarn widths join smoothly across viewport edges.
+  const states = renderStyle === "realistic" ? Array.from(
+    { length: Math.min(rowHeights.length, lastPick + 1) - stateFirstPick },
+    (_, row) => {
+      const pick = pickRows[stateFirstPick + row];
+      return Array.from(
+        { length: Math.min(columnWidths.length, lastWarp + 1) - stateFirstWarp },
+        (_, column) => {
+          const assignment = warpAssignments[stateFirstWarp + column];
+          return {
+            hasWarp: Boolean(assignment),
+            hasWeft: pick.hasWeft,
+            warpVisibleOnFront: Boolean(assignment && (!pick.hasWeft || pick.raised[assignment.shaft])),
+            warpColor: assignment?.color || null,
+            weftColor: pick.hasWeft ? pick.color : null
+          };
+        }
+      );
+    }
+  ) : null;
 
   if (renderStyle === "structure" || renderStyle === "color") {
     for (let pickIndex = firstPick; pickIndex < lastPick; pickIndex++) {
@@ -12147,6 +12169,13 @@ function paintCompactDrawdown() {
             ctx.fillStyle = warpColor;
             ctx.fillRect(x + width * 0.18, y, width * 0.64, height);
           }
+          continue;
+        }
+
+        if (states) {
+          const cellX = warpIndex - stateFirstWarp;
+          const cellY = pickIndex - stateFirstPick;
+          drawDrawdownStructuredCell(ctx, x, y, width, height, states[cellY][cellX], cellX, cellY, states);
           continue;
         }
 

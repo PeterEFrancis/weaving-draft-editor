@@ -3512,14 +3512,14 @@
     }
 
     function renderDrawdown(grid, draft, columnWidths, rowHeights) {
+      if (renderStyle === "realistic") {
+        renderRealisticDrawdown(grid, draft, columnWidths, rowHeights);
+        return;
+      }
       if (
         draft.warp * draft.picks > compactDrawdownCellThreshold &&
         renderCompactDrawdown(grid, draft, columnWidths, rowHeights)
       ) {
-        return;
-      }
-      if (renderStyle === "realistic") {
-        renderRealisticDrawdown(grid, draft, columnWidths, rowHeights);
         return;
       }
 

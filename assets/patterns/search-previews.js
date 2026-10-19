@@ -1,6 +1,6 @@
 /* renderPatternSearchPreview(canvas, pattern) draws the draft's front fabric.
- * Small drafts tile in both directions; complete large motifs fit without
- * stretching the yarn proportions. Rendering always uses a 240 × 176 bitmap.
+ * Small drafts tile in both directions; large drafts show a readable detail
+ * without stretching yarn proportions. Rendering always uses a 240 × 176 bitmap.
  * dataset.repeatX / repeatY include any partial repeat at the right/bottom edge.
  */
 function renderPatternSearchPreview(canvas, pattern) {
@@ -77,8 +77,8 @@ function renderPatternSearchPreview(canvas, pattern) {
   const weftWeights = weft.map(pick => pick.yarn.weight);
   const warpSize = warpWeights.reduce((sum, weight) => sum + weight, 0);
   const weftSize = weftWeights.reduce((sum, weight) => sum + weight, 0);
-  // At most five pixels per unit yarn; fit one whole motif on each axis.
-  const scale = Math.min(5, WIDTH / warpSize, HEIGHT / weftSize);
+  // Keep at least one pixel per unit yarn, cropping oversized motifs.
+  const scale = Math.max(1, Math.min(5, WIDTH / warpSize, HEIGHT / weftSize));
   const columns = trackMap(warpWeights, WIDTH, scale);
   const rows = trackMap(weftWeights, HEIGHT, scale);
   canvas.dataset.repeatX = String(Math.ceil(WIDTH / scale / warpSize - 1e-8));
