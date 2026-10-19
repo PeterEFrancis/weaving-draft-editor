@@ -18,6 +18,8 @@ Hand-worked entries use `manualTechnique: true`, a descriptive `kind`, the suppo
 
 Catalogs contain patterns, not PDF or page-image references. Omit groups that contain only introductory text. Keep stable pattern IDs when extending a publication.
 
+Extend the magazine catalog with `node tools/build-handwoven-catalog.mjs --append tools/handwoven-<issue>.json`. This preserves existing issues and replaces only supplied issue IDs. Reviewed issue JSON, extraction scripts, and source notes live in `tools/`; corresponding notes are linked from the magazine catalog documentation.
+
 `handweavers-pattern-book.js` contains the Marguerite Porter Davison catalog, organized by the book's chapters; its transcription and source notes live in `handweavers-pattern-book.md`.
 
 Run `node --test tests/pattern-library.test.cjs` to check membership, numeric assignments, and editor transfer. Check the nested sidebar and representative draft opening in the browser after UI changes.

@@ -8,7 +8,7 @@ const davisonManifest = JSON.parse(fs.readFileSync(path.join(root, 'tools/daviso
 const context = vm.createContext({});
 const html = fs.readFileSync(path.join(root, 'pattern-library.html'), 'utf8');
 const catalogScripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)]
-  .map(match => match[1]).filter(source => source.startsWith('assets/patterns/'));
+  .map(match => match[1].split('?')[0]).filter(source => source.startsWith('assets/patterns/'));
 for (const source of catalogScripts) {
   vm.runInContext(fs.readFileSync(path.join(root, source), 'utf8'), context, { filename: source });
 }
@@ -128,7 +128,7 @@ test('library sections separate basic categories from publications without losin
   assert.equal(davison.title, davisonCatalog.source.title);
   assert.equal(davison.families.length, davisonCatalog.groups.length);
   assert.equal(handwoven.title, 'Handwoven');
-  assert.equal(handwoven.families.length, 39);
+  assert.equal(handwoven.families.length, 43);
   assert.equal(new Set(sections.map(section => section.id)).size, sections.length);
   const sectionFamilies = sections.flatMap(section => section.families);
   assert.deepEqual(sectionFamilies.map(family => family.id).sort(), families.map(family => family.id).sort());
@@ -397,7 +397,7 @@ test('search covers every draft and finds matching weaves across all collections
 });
 
 test('Handwoven is organized by issue and every entry is an editable credited draft', () => {
-  assert.equal(handwovenCatalog.groups.length, 39);
+  assert.equal(handwovenCatalog.groups.length, 43);
   assert.ok(handwovenCatalog.patterns.length > 0);
   const correctedIssueCounts = {
     'handwoven-2023-05-06': 15,
@@ -411,6 +411,14 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
     const entries = handwovenCatalog.patterns.filter(entry => entry.groupId === groupId);
     assert.equal(entries.length, count, groupId);
     assert.ok(entries.every(entry => entry.threading.length > 32), `${groupId}: usable threading sample`);
+  }
+  for (const [groupId, count] of Object.entries({
+    'handwoven-2024-iv-fall': 37,
+    'handwoven-2025-i-winter': 24,
+    'handwoven-2025-ii-spring': 22,
+    'handwoven-2025-iv-fall': 32
+  })) {
+    assert.equal(handwovenCatalog.patterns.filter(entry => entry.groupId === groupId).length, count, groupId);
   }
   for (const [id, ends, picks] of [
     ['hw-2023-05-06-p48-s01', 527, 821],
@@ -452,7 +460,7 @@ test('Handwoven is organized by issue and every entry is an editable credited dr
 
 test('reduced drafts retain usable samples and notes with original dimensions', () => {
   const reduced = [...dixonCatalog.patterns, ...handwovenCatalog.patterns].filter(entry => entry.originalSize);
-  assert.equal(reduced.length, 60);
+  assert.equal(reduced.length, 80);
   for (const entry of reduced) {
     const pattern = patterns.find(p => p.id === entry.id);
     const draft = pattern.draft;

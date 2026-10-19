@@ -1,6 +1,6 @@
 # Reduced repeating drafts
 
-60 large drafts display several complete repeats instead of their expanded sequences. Repeating each displayed axis to its original count reconstructs every recorded shaft, lift, color, and tabby pick exactly. A final repeat may be partial. Nonrepeating borders and color sequences remain intact.
+80 large drafts display several complete repeats instead of their expanded sequences. Repeating each displayed axis to its original count reconstructs every recorded shaft, lift, color, and tabby pick exactly. A final repeat may be partial. Nonrepeating borders and color sequences remain intact.
 
 Counts describe the original catalog draft, including inserted tabby picks. Source descriptions still specify any additional floating selvedges, hems, or weaving lengths.
 
@@ -60,7 +60,27 @@ Counts describe the original catalog draft, including inserted tabby picks. Sour
 | Handwoven: Hargrove’s Dinner Party — Runner (hw-2024-i-winter-p60-s06) | 432 × 1512 | 144 × 144 |
 | Handwoven: Alpaca in Your Lap Blanket (hw-2024-i-winter-p68-s01) | 432 × 18 | 96 × 18 |
 | Handwoven: Sand and Sky Stitched Double Cloth Rug (hw-2024-iii-summer-p38-s01) | 200 × 339 | 112 × 339 |
+| Handwoven: Gilded Amethyst Scarf - advancing point (hw-2024-iv-fall-p66-s01) | 259 × 54 | 128 × 54 |
+| Handwoven: Gilded Amethyst Scarf - straight draw (hw-2024-iv-fall-p66-s02) | 259 × 16 | 128 × 16 |
+| Handwoven: Gilded Amethyst Scarf - point draw (hw-2024-iv-fall-p66-s03) | 259 × 32 | 128 × 32 |
+| Handwoven: Gilded Amethyst Scarf - rosepath (hw-2024-iv-fall-p66-s04) | 259 × 28 | 128 × 28 |
+| Handwoven: Garden Path Towels - Towel 1 (hw-2025-i-winter-p36-s01) | 366 × 196 | 96 × 196 |
+| Handwoven: Garden Path Towels - Towel 2 (hw-2025-i-winter-p36-s02) | 366 × 156 | 96 × 156 |
+| Handwoven: Garden Path Towels - Towel 3 (hw-2025-i-winter-p36-s03) | 366 × 954 | 96 × 954 |
+| Handwoven: Garden Path Towels - Towel 4 (hw-2025-i-winter-p36-s04) | 366 × 193 | 96 × 193 |
+| Handwoven: Garden Path Towels - Towel 5 (hw-2025-i-winter-p36-s05) | 366 × 868 | 96 × 868 |
+| Handwoven: Blueberry Waffle Towels - Striped (hw-2025-i-winter-p50-s02) | 504 × 48 | 96 × 48 |
+| Handwoven: Blueberry Waffle Towels - Variegated (hw-2025-i-winter-p50-s03) | 504 × 48 | 96 × 48 |
+| Handwoven: Sugar Plum Lace Scarf (hw-2025-ii-spring-p50-s01) | 413 × 107 | 140 × 107 |
 | Handwoven: Scottish Summer Scarf (hw-2025-iii-summer-p42-s01) | 640 × 88 | 96 × 88 |
+| Handwoven: Plaid About You Throw (hw-2025-iv-fall-p24-s01) | 608 × 864 | 304 × 288 |
+| Handwoven: Autumn Berries Cushion Cover (hw-2025-iv-fall-p32-s01) | 477 × 936 | 98 × 936 |
+| Handwoven: Choose a Path Pillows (hw-2025-iv-fall-p56-s01) | 360 × 121 | 100 × 121 |
+| Handwoven: Choose a Path — Twill circle (hw-2025-iv-fall-p60-s02) | 360 × 32 | 100 × 32 |
+| Handwoven: Choose a Path — Simple reversing twill (hw-2025-iv-fall-p60-s03) | 360 × 36 | 100 × 36 |
+| Handwoven: Choose a Path — Twill from a different start (hw-2025-iv-fall-p60-s04) | 360 × 36 | 100 × 36 |
+| Handwoven: Choose a Path — Longer twill (hw-2025-iv-fall-p60-s05) | 360 × 52 | 100 × 52 |
+| Handwoven: Choose a Path — Fancy twill (hw-2025-iv-fall-p60-s06) | 360 × 84 | 100 × 84 |
 | Handwoven: Sunny Garden Towels — Towel 4 (hw-2026-iii-summer-p46-s04) | 408 × 544 | 408 × 96 |
 | Handwoven: Sunny Garden Towels — Towel 7 (hw-2026-iii-summer-p46-s07) | 408 × 536 | 408 × 96 |
 | Handwoven: Sunny Garden Towels — Towel 8 (hw-2026-iii-summer-p46-s08) | 408 × 544 | 408 × 96 |

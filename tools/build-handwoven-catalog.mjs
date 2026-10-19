@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 
 const root = path.resolve(import.meta.dirname, "..");
 const magazineDir = "/Users/peterfrancis/Library/Mobile Documents/com~apple~CloudDocs/Books/Handwoven Magazine";
-const inputs = process.argv.slice(2);
+const append = process.argv.includes("--append");
+const inputs = process.argv.slice(2).filter(argument => argument !== "--append");
 
 if (!inputs.length) throw new Error("Pass one or more extracted Handwoven JSON files.");
 
@@ -29,7 +31,16 @@ const expected = fs.readdirSync(magazineDir)
     }
     return { id: `handwoven-${year}-${months}`, title: `${monthNames[months]} ${year}`, year, months };
   });
-const supplied = inputs.flatMap(file => JSON.parse(fs.readFileSync(file, "utf8")));
+const existing = append
+  ? vm.runInNewContext(`${fs.readFileSync(path.join(root, "assets/patterns/handwoven.js"), "utf8")}\nhandwovenCatalog`)
+  : null;
+const supplied = [
+  ...(existing?.groups.map(group => ({
+    id: group.id,
+    patterns: existing.patterns.filter(pattern => pattern.groupId === group.id)
+  })) || []),
+  ...inputs.flatMap(file => JSON.parse(fs.readFileSync(file, "utf8")))
+];
 const byId = new Map(supplied.map(issue => [issue.id, issue]));
 const included = expected.filter(issue => byId.has(issue.id));
 if (!included.length) throw new Error("No recognized Handwoven issues supplied.");
@@ -89,7 +100,11 @@ const counts = new Map(groups.map(group => [group.id, 0]));
 patterns.forEach(pattern => counts.set(pattern.groupId, counts.get(pattern.groupId) + 1));
 const addedPatternNotes = groups.map(group => {
   const issuePatterns = patterns.filter(pattern => pattern.groupId === group.id);
-  return `### ${group.title}\n${issuePatterns.map(pattern => `- ${pattern.title} — ${pattern.designer || "Handwoven contributor"}, pp. ${pattern.pages}`).join("\n")}`;
+  const notesFile = `tools/${group.id}-notes.md`;
+  const sourceNotes = fs.existsSync(path.join(root, notesFile))
+    ? `\n\n[Transcription and source notes](../../${notesFile}).`
+    : "";
+  return `### ${group.title}\n${issuePatterns.map(pattern => `- ${pattern.title} — ${pattern.designer || "Handwoven contributor"}, pp. ${pattern.pages}`).join("\n")}${sourceNotes}`;
 }).join("\n\n");
 const notes = `# Handwoven\n\nThis catalog transcribes ${patterns.length} project drafts from ${groups.length} supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.\n\nThreading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and finishing remain important parts of the published instructions.${coverageNote}\n\n| Issue | Patterns |\n| --- | ---: |\n${groups.map(group => `| ${group.title} | ${counts.get(group.id)} |`).join("\n")}\n\n## Added patterns\n\n${addedPatternNotes}\n`;
 fs.writeFileSync(path.join(root, "assets/patterns/handwoven.md"), notes);

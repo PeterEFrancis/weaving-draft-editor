@@ -1,6 +1,6 @@
 # Handwoven
 
-This catalog transcribes 446 project drafts from 39 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
+This catalog transcribes 561 project drafts from 43 supplied issues of *Handwoven* magazine. It contains patterns only: no magazine PDFs, page images, advertisements, or photo-only references. Hand-manipulation-only ground drafts are omitted.
 
 Threading and treadling follow each issue's printed reading direction. Repeats are stored as an editable design unit or as the published full-width expansion. Colors approximate the project yarns; sett, finishing, supplementary techniques, and finishing remain important parts of the published instructions.
 
@@ -43,7 +43,11 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 | Winter 2024 | 19 |
 | Spring 2024 | 14 |
 | Summer 2024 | 9 |
+| Fall 2024 | 37 |
+| Winter 2025 | 24 |
+| Spring 2025 | 22 |
 | Summer 2025 | 19 |
+| Fall 2025 | 32 |
 | Summer 2026 | 26 |
 
 ## Added patterns
@@ -523,6 +527,101 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Summer Berry Towels — Towel 4 — Malynda Allen, pp. 66
 - Changing Lanes Scarf — Deborah Heyman, pp. 70
 
+### Fall 2024
+- 3-shaft straight twill - 1/2 — Madelyn van der Hoogt, pp. 33
+- 4-shaft straight twill - 1/3 — Madelyn van der Hoogt, pp. 33
+- 4-shaft straight twill - 2/2 — Madelyn van der Hoogt, pp. 33
+- 4-shaft straight twill - 3/1 — Madelyn van der Hoogt, pp. 33
+- 6-shaft straight twill - 2/4 — Madelyn van der Hoogt, pp. 33
+- 6-shaft straight twill - 1/1/1/3 — Madelyn van der Hoogt, pp. 33
+- 8-shaft twill - 3/2/1/2 — Madelyn van der Hoogt, pp. 33
+- 8-shaft twill - 3/3/1/1 — Madelyn van der Hoogt, pp. 33
+- 4-shaft broken twill — Madelyn van der Hoogt, pp. 34
+- 4-shaft point twill — Madelyn van der Hoogt, pp. 34
+- 8-shaft point twill - 3/2/1/2 — Madelyn van der Hoogt, pp. 34
+- 4-shaft extended point twill — Madelyn van der Hoogt, pp. 34
+- 8-shaft extended point twill — Madelyn van der Hoogt, pp. 34
+- 4-shaft irregular twill — Madelyn van der Hoogt, pp. 35
+- 8-shaft irregular twill — Madelyn van der Hoogt, pp. 35
+- Twill blocks (turned twill) — Madelyn van der Hoogt, pp. 35
+- Double-two-tie (plaited) twill — Madelyn van der Hoogt, pp. 35
+- Vis-à-Vis Runner — Sheila O’Hara, pp. 36-38
+- Autumn Jewel Scarf — Véronique Perrot, pp. 40-42
+- Rainbow Sherbet Towels - Towel 1 — Malynda Allen, pp. 44-46
+- Rainbow Sherbet Towels - Towel 2 — Malynda Allen, pp. 44-46
+- Rainbow Sherbet Towels - Towel 3 — Malynda Allen, pp. 44-46
+- Rainbow Sherbet Towels - Towel 4 — Malynda Allen, pp. 44-46
+- Dizzy Drones Honeycomb Pillows - Pillow 1 — Rebecca Fox, pp. 48-50
+- Dizzy Drones Honeycomb Pillows - Pillow 2 — Rebecca Fox, pp. 48-50
+- A Taste of Sonoma Scarf — Robin Monogue, pp. 51-53
+- Blue Willow Towels — Susie Hodges, pp. 54-56
+- Corduroy Patch Pillow - front — Sue Anne Sullivan, pp. 57-59
+- Corduroy Patch Pillow - back — Sue Anne Sullivan, pp. 57-59
+- Taqueté All Day Tote — Annette Swan Schipf, pp. 60-62
+- Gilded Amethyst Scarf - advancing point — Laurie Brown, pp. 64-67
+- Gilded Amethyst Scarf - straight draw — Laurie Brown, pp. 64-67
+- Gilded Amethyst Scarf - point draw — Laurie Brown, pp. 64-67
+- Gilded Amethyst Scarf - rosepath — Laurie Brown, pp. 64-67
+- Mod Block Towels - Towel 1 — Tracy Kaestner, pp. 68-71
+- Mod Block Towels - Towel 2 — Tracy Kaestner, pp. 68-71
+- Mod Block Towels - Towel 3 — Tracy Kaestner, pp. 68-71
+
+[Transcription and source notes](../../tools/handwoven-2024-iv-fall-notes.md).
+
+### Winter 2025
+- Star of Bethlehem - Shadow Weave — Tom Knisely, pp. 14-15
+- Star of Bethlehem - Rep Weave — Tom Knisely, pp. 16
+- Star of Bethlehem - Complementary Plain Weave — Tom Knisely, pp. 16
+- Star of Bethlehem - Woven on Opposites — Tom Knisely, pp. 17
+- Daily Drafts - October 3, 2024 — Rebecca Winter, pp. 28
+- Daily Drafts - October 18, 2024 — Rebecca Winter, pp. 29
+- Magic Ruffles Scarf — Jennifer Sargent, pp. 32-34
+- Garden Path Towels - Towel 1 — Malynda Allen, pp. 36-39
+- Garden Path Towels - Towel 2 — Malynda Allen, pp. 36-39
+- Garden Path Towels - Towel 3 — Malynda Allen, pp. 36-39
+- Garden Path Towels - Towel 4 — Malynda Allen, pp. 36-39
+- Garden Path Towels - Towel 5 — Malynda Allen, pp. 36-39
+- Misty Mountains Runner — Dana Lutz, pp. 42-45
+- Secret Passage Scarf - Eight Shafts — Marcia Toms, pp. 46-49
+- Secret Passage Scarf - Four Shafts, Six Treadles — Marcia Toms, pp. 46-49
+- Secret Passage Scarf - Four Shafts, Eight Treadles — Marcia Toms, pp. 46-49
+- Blueberry Waffle Towels - Plaid — Claudia Tokola, pp. 50-53
+- Blueberry Waffle Towels - Striped — Claudia Tokola, pp. 50-53
+- Blueberry Waffle Towels - Variegated — Claudia Tokola, pp. 50-53
+- Making Waves Runner — Andrea Williams, pp. 54-57
+- Dicey Dish Towels - Blue Weft — Sheila O’Hara, pp. 58-62
+- Dicey Dish Towels - Gray Weft — Sheila O’Hara, pp. 58-62
+- Birds of a Feather Scarf - Six Shafts — Alison Stewart-Guinee, pp. 64-67
+- Birds of a Feather Scarf - Four Shafts — Alison Stewart-Guinee, pp. 64-67
+
+[Transcription and source notes](../../tools/handwoven-2025-i-winter-notes.md).
+
+### Spring 2025
+- Sweet Linen and Lace Towels - Towel 1 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 2 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 3 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 4 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 5 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 6 — Malynda Allen, pp. 28
+- Sweet Linen and Lace Towels - Towel 7 — Malynda Allen, pp. 28
+- Lighter than Air Shawl - 4 Shafts — Véronique Perrot, pp. 32
+- Lighter than Air Shawl - 2 Shafts — Véronique Perrot, pp. 32
+- Cherry Blossom Scarf — Yvonne Ellsworth, pp. 39
+- Create Sashiko Weaving Drafts with Ease - Worked Example — Mary McConnell, pp. 41
+- Sashiko Trails Table Linens - Placemat 1 — Mary McConnell, pp. 44
+- Sashiko Trails Table Linens - Placemat 2 — Mary McConnell, pp. 44
+- Sashiko Trails Table Linens - Placemat 3 — Mary McConnell, pp. 44
+- Sashiko Trails Table Linens - Placemat 4 — Mary McConnell, pp. 44
+- Sashiko Trails Table Linens - Five-panel Runner — Mary McConnell, pp. 45
+- Sugar Plum Lace Scarf — Susan Du Bois; woven by Robin Wilton, pp. 50
+- Shades of Flax Towels - Towel 1 — Dana Lutz, pp. 54
+- Shades of Flax Towels - Towel 2 — Dana Lutz, pp. 54
+- Shades of Flax Towels - Towel 3 — Dana Lutz, pp. 54
+- Mosaic Tiles Scarf — Eileen Lee, pp. 58
+- City Circuits Scarf — Kate Lange-McKibben, pp. 75
+
+[Transcription and source notes](../../tools/handwoven-2025-ii-spring-notes.md).
+
 ### Summer 2025
 - Sunset Fiesta Towels - Towel 1 — Donna Flack Shadix, pp. 18
 - Sunset Fiesta Towels - Towel 2 — Donna Flack Shadix, pp. 18
@@ -543,6 +642,42 @@ Threading and treadling follow each issue's printed reading direction. Repeats a
 - Floral Bouquet Napkins — Malynda Allen, pp. 54
 - Shoreline Shawl — Joy Pate, pp. 60
 - Beach House Bread Cloths — Andrea Williams, pp. 64
+
+### Fall 2025
+- Zigzag Basket — Annette Swan Schipf, pp. 20
+- Plaid About You Throw — Kathy Broughton, pp. 24
+- Shadow Play Dish Towels — Towel 1 — X — Dorothy Tuthill, pp. 28
+- Shadow Play Dish Towels — Towel 2 — O — Dorothy Tuthill, pp. 28
+- Shadow Play Dish Towels — Towel 3 — Dorothy Tuthill, pp. 28
+- Shadow Play Dish Towels — Towel 4 — X and O — Dorothy Tuthill, pp. 28
+- Autumn Berries Cushion Cover — Jeremy Uden, pp. 32
+- Stormy Skies Towels — Slate — Rebecca Logan, pp. 36
+- Stormy Skies Towels — Olive — Rebecca Logan, pp. 36
+- Stormy Skies Towels — Flax — Rebecca Logan, pp. 36
+- Stormy Skies Towels — Charcoal — Rebecca Logan, pp. 36
+- Stormy Skies Towels — Plaid — Rebecca Logan, pp. 36
+- Stormy Skies Wrap — Rebecca Logan, pp. 36
+- Prairie School Rug — Debra K. Sharpee, pp. 42
+- Turned Twill on Three Blocks — 8-shaft study — Véronique Perrot, pp. 48
+- Turned Twill on Three Blocks — 12-shaft study — Véronique Perrot, pp. 48
+- Ribbons and Blocks Runner — Runner 1 — Véronique Perrot, pp. 50
+- Ribbons and Blocks Runner — Runner 2 — Véronique Perrot, pp. 50
+- Choose a Path Pillows — Angela K. Schneider, pp. 56
+- Choose a Path — Twill circle — Angela K. Schneider, pp. 60
+- Choose a Path — Simple reversing twill — Angela K. Schneider, pp. 60
+- Choose a Path — Twill from a different start — Angela K. Schneider, pp. 60
+- Choose a Path — Longer twill — Angela K. Schneider, pp. 60
+- Choose a Path — Fancy twill — Angela K. Schneider, pp. 60
+- Family Dinner Napkins — Napkin 1 — Susan E. Horton, pp. 62
+- Family Dinner Napkins — Napkin 2 — Susan E. Horton, pp. 62
+- Family Dinner Napkins — Napkin 3 — Susan E. Horton, pp. 62
+- Family Dinner Napkins — Napkin 4 — Susan E. Horton, pp. 62
+- Family Dinner Napkins — Napkin 5 — Susan E. Horton, pp. 62
+- Family Dinner Napkins — Napkin 6 — Susan E. Horton, pp. 62
+- Family Dinner — Towel — Susan E. Horton, pp. 62
+- Falling Leaves Runner — Sue Anne Sullivan, pp. 68
+
+[Transcription and source notes](../../tools/handwoven-2025-iv-fall-notes.md).
 
 ### Summer 2026
 - Color Nuggets Towels — Towel 1 — Véronique Perrot, pp. 22–25
