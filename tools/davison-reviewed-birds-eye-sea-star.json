@@ -1,0 +1,3287 @@
+{
+  "source": "/Users/peterfrancis/Downloads/A handweaver's pattern book -- Marguerite Porter Davison -- 1944-01-01 -- Printed by Schlechter's -- 7eee7c958774929174722c5d3d838672 -- Anna\u2019s Archive.pdf",
+  "dpi": 360,
+  "sourceThreadingOrder": "right-to-left",
+  "sourceTreadleOrder": "right-to-left",
+  "sourceTieupMarks": "lowered shafts",
+  "pages": [
+    {
+      "pdfPage": 40,
+      "drafts": [
+        {
+          "id": "davison-p040-reviewed-d01",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up I and printed treadling 1",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                2
+              ],
+              [
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ],
+              [],
+              []
+            ],
+            "tieupLifted": [
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1,
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                3,
+                2,
+                1,
+                4,
+                2,
+                1
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 1
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d02",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up II and printed treadling 2",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                4
+              ],
+              [
+                3
+              ],
+              [
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [],
+              []
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2,
+                4
+              ],
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4,
+                3,
+                2
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 2
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d03",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up III and printed treadling 3",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                4
+              ],
+              [],
+              []
+            ],
+            "tieupLifted": [
+              [
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                1,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4,
+                3,
+                2
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 2
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d04",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up IV and printed treadling 4",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                2,
+                3,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2
+              ],
+              [],
+              []
+            ],
+            "tieupLifted": [
+              [
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                0,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4,
+                3,
+                2
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 2
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d05",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up V and printed treadling 5",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 4,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d06",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up V and printed treadling 6",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                4,
+                1,
+                2,
+                3,
+                4,
+                1,
+                4,
+                3,
+                2,
+                1
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 10,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 850,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 875,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 900,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 925,
+                    "treadle": 1
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d07",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up VII and printed treadling 7",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                1,
+                4,
+                3,
+                4
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 4
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d08",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up VII and printed treadling 8",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 6,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 6,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                5,
+                1,
+                6,
+                3,
+                5,
+                3,
+                6
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 8,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 6
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 850,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 875,
+                    "treadle": 6
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d09",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up IX and printed treadling 9",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 6,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1
+              ],
+              [
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ],
+              [
+                0,
+                0,
+                1,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                1,
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                1,
+                0,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 6
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d10",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up IX and printed treadling 10",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 6,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1
+              ],
+              [
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ],
+              [
+                0,
+                0,
+                1,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                1,
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                1,
+                0,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                6,
+                5,
+                4
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 6,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 6
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 4
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        },
+        {
+          "id": "davison-p040-reviewed-d11",
+          "chartGroup": "davison-p040-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [],
+          "review": {
+            "method": "glyph-reviewed tie-up XI and printed treadling 11",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 6,
+                "count": 1
+              },
+              {
+                "treadle": 5,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              }
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "threadingShown": [
+              1,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3,
+              2,
+              1,
+              2,
+              3,
+              4,
+              3
+            ],
+            "tieupLowered": [
+              [
+                1
+              ],
+              [
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                2,
+                3,
+                4
+              ]
+            ],
+            "tieupLifted": [
+              [
+                2,
+                3,
+                4
+              ],
+              [
+                1,
+                3,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2
+              ],
+              [
+                1
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                1,
+                1,
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                0,
+                1
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                5,
+                4,
+                3,
+                2
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 10,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 6
+                  },
+                  {
+                    "y": 850,
+                    "treadle": 5
+                  },
+                  {
+                    "y": 875,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 900,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 925,
+                    "treadle": 2
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        }
+      ],
+      "chartGroups": [
+        {
+          "id": "davison-p040-reviewed-g01",
+          "sourceBaseId": "davison-ch02-n004",
+          "draftIds": [
+            "davison-p040-reviewed-d01",
+            "davison-p040-reviewed-d02",
+            "davison-p040-reviewed-d03",
+            "davison-p040-reviewed-d04",
+            "davison-p040-reviewed-d05",
+            "davison-p040-reviewed-d06",
+            "davison-p040-reviewed-d07",
+            "davison-p040-reviewed-d08",
+            "davison-p040-reviewed-d09",
+            "davison-p040-reviewed-d10",
+            "davison-p040-reviewed-d11"
+          ],
+          "assignmentConfidence": "reviewed-source"
+        }
+      ]
+    },
+    {
+      "pdfPage": 204,
+      "drafts": [
+        {
+          "id": "davison-p204-reviewed-d01",
+          "chartGroup": "davison-p204-reviewed-g01",
+          "bbox": [
+            0,
+            0,
+            2869,
+            3799
+          ],
+          "pagePixelSize": [
+            2869,
+            3799
+          ],
+          "anchor": {
+            "staffY": [
+              500,
+              525,
+              550,
+              575,
+              600
+            ],
+            "tieupColumnsX": [
+              2600,
+              2625,
+              2650,
+              2675,
+              2700,
+              2725,
+              2750
+            ],
+            "threadingSpanX": [
+              200,
+              2700
+            ],
+            "score": 999,
+            "continuation": false,
+            "continuationOf": null
+          },
+          "annotations": [
+            {
+              "type": "tabby",
+              "mode": "required",
+              "scope": "all-treadlings",
+              "confidence": 1.0,
+              "raw": "USE TABBY"
+            }
+          ],
+          "review": {
+            "method": "glyph-reviewed Sea Star main rail; false edge chart and post-rail marks excluded",
+            "sourceVisibleTreadling": true,
+            "sourceTreadlingInstructions": [
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 4,
+                "count": 1
+              },
+              {
+                "treadle": 3,
+                "count": 1
+              },
+              {
+                "treadle": 2,
+                "count": 1
+              },
+              {
+                "treadle": 1,
+                "count": 1
+              }
+            ],
+            "sourceControlTreadling": [
+              5,
+              6
+            ]
+          },
+          "draft": {
+            "shafts": 4,
+            "treadles": 6,
+            "sourceThreadingOrder": "right-to-left",
+            "sourceTreadleOrder": "right-to-left",
+            "sourceTieupMarks": "lowered shafts",
+            "threading": [
+              1,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              3
+            ],
+            "threadingShown": [
+              1,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              2,
+              1,
+              3
+            ],
+            "tieupLowered": [
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "tieupLifted": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tieupVisualTopToBottom": [
+              [
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                0,
+                1,
+                1
+              ],
+              [
+                0,
+                1,
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "treadling": [
+              [
+                1,
+                3,
+                3,
+                3,
+                1,
+                3,
+                1,
+                3,
+                1,
+                3,
+                3,
+                1,
+                3,
+                1,
+                2,
+                3,
+                4,
+                3,
+                4,
+                3,
+                2,
+                1,
+                2,
+                3,
+                4,
+                3,
+                4,
+                3,
+                2,
+                1
+              ]
+            ],
+            "possibleTabbyControl": false,
+            "diagnostics": {
+              "reviewedSourceRail": true,
+              "markCount": 30,
+              "treadlingMarks": [
+                [
+                  {
+                    "y": 700,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 725,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 750,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 775,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 800,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 825,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 850,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 875,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 900,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 925,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 950,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 975,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 1000,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1025,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 1050,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 1075,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1100,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 1125,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1150,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 1175,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1200,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 1225,
+                    "treadle": 1
+                  },
+                  {
+                    "y": 1250,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 1275,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1300,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 1325,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1350,
+                    "treadle": 4
+                  },
+                  {
+                    "y": 1375,
+                    "treadle": 3
+                  },
+                  {
+                    "y": 1400,
+                    "treadle": 2
+                  },
+                  {
+                    "y": 1425,
+                    "treadle": 1
+                  }
+                ]
+              ],
+              "coordinatesRelativeToBbox": true
+            }
+          }
+        }
+      ],
+      "chartGroups": [
+        {
+          "id": "davison-p204-reviewed-g01",
+          "sourceBaseId": "davison-ch19-n006",
+          "draftIds": [
+            "davison-p204-reviewed-d01"
+          ],
+          "assignmentConfidence": "reviewed-source"
+        }
+      ]
+    }
+  ],
+  "diagnostics": {
+    "detected": 12,
+    "decoded": 12,
+    "failed": 0,
+    "manifestEntries": 2,
+    "variantCounts": {
+      "40": 11,
+      "204": 1
+    },
+    "pickCounts": {
+      "40": [
+        6,
+        6,
+        6,
+        6,
+        4,
+        10,
+        6,
+        8,
+        6,
+        6,
+        10
+      ],
+      "204": [
+        30
+      ]
+    }
+  }
+}

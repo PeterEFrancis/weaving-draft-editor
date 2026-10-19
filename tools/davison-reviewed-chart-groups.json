@@ -1,0 +1,165 @@
+{
+  "sequenceExclusions": {
+    "davison-p040-d03": [4],
+    "davison-p063-d01": [0],
+    "davison-p087-d01": [0],
+    "davison-p088-d02": [0],
+    "davison-p090-d01": [0],
+    "davison-p090-d03": [0],
+    "davison-p085-d01": [0, 2],
+    "davison-p085-d02": [0, 2],
+    "davison-p085-d03": [0],
+    "davison-p094-d01": [1, 2, 3, 4],
+    "davison-p094-d03": [3],
+    "davison-p096-d01": [2, 3, 4, 5, 6, 7, 8],
+    "davison-p096-d02": [2],
+    "davison-p120-d01": [0, 2, 3, 4, 5],
+    "davison-p121-d01": [0, 3],
+    "davison-p133-d03": [0],
+    "davison-p138-d01": [3],
+    "davison-p138-d02": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "davison-p140-d01": [2, 3, 4, 5],
+    "davison-p140-d02": [2]
+  },
+  "pages": {
+    "51": [
+      {"sourceBaseId": "davison-ch03-n003", "draftIds": ["davison-p051-d01", "davison-p051-d06"]},
+      {"sourceBaseId": "davison-ch03-n004", "draftIds": ["davison-p051-d02"]},
+      {"sourceBaseId": "davison-ch03-n005", "draftIds": ["davison-p051-d04"]},
+      {"sourceBaseId": "davison-ch03-n006", "draftIds": ["davison-p051-d03", "davison-p051-d05"]}
+    ],
+    "63": [
+      {"sourceBaseId": "davison-ch04-n007", "draftIds": ["davison-p063-d02", "davison-p063-d03"]},
+      {"sourceBaseId": "davison-ch04-n008", "draftIds": ["davison-p063-d01"]},
+      {"sourceBaseId": "davison-ch04-n009", "draftIds": ["davison-p063-d05"]},
+      {"sourceBaseId": "davison-ch04-n010", "draftIds": ["davison-p063-d04"]}
+    ],
+    "69": [
+      {"sourceBaseId": "davison-ch04-n021", "draftIds": ["davison-p069-d01", "davison-p069-d03"]},
+      {"sourceBaseId": "davison-ch04-n022", "draftIds": ["davison-p069-d02"]},
+      {"sourceBaseId": "davison-ch04-n023", "draftIds": ["davison-p069-d04"]}
+    ],
+    "72": [
+      {"sourceBaseId": "davison-ch04-n029", "draftIds": ["davison-p072-d01", "davison-p072-d02", "davison-p072-d03", "davison-p072-d04", "davison-p072-d05", "davison-p072-d06"]},
+      {"sourceBaseId": "davison-ch04-n030", "draftIds": ["davison-p072-d07", "davison-p072-d08"]}
+    ],
+    "80": [
+      {"sourceBaseId": "davison-ch05-n023", "draftIds": ["davison-p080-d01", "davison-p080-d02", "davison-p080-d03"]},
+      {"sourceBaseId": "davison-ch05-n024", "draftIds": ["davison-p080-d04"]}
+    ],
+    "93": [
+      {"sourceBaseId": "davison-ch07-n002", "draftIds": ["davison-p093-d02"]},
+      {"sourceBaseId": "davison-ch07-n003", "draftIds": ["davison-p093-d03"]}
+    ],
+    "85": [
+      {"sourceBaseId": "davison-ch06-n008", "draftIds": ["davison-p085-d01"]},
+      {"sourceBaseId": "davison-ch06-n009", "draftIds": ["davison-p085-d03"]},
+      {"sourceBaseId": "davison-ch06-n010", "draftIds": ["davison-p085-d02"]}
+    ],
+    "87": [
+      {"sourceBaseId": "davison-ch06-n013", "draftIds": ["davison-p087-d01", "davison-p087-d02"]},
+      {"sourceBaseId": "davison-ch06-n014", "draftIds": ["davison-p087-d03"]}
+    ],
+    "88": [
+      {"sourceBaseId": "davison-ch06-n015", "draftIds": ["davison-p088-d01", "davison-p088-d02"]},
+      {"sourceBaseId": "davison-ch06-n016", "draftIds": ["davison-p088-d03"]}
+    ],
+    "90": [
+      {"sourceBaseId": "davison-ch06-n020", "draftIds": ["davison-p090-d01"]},
+      {"sourceBaseId": "davison-ch06-n021", "draftIds": ["davison-p090-d02", "davison-p090-d03"]}
+    ],
+    "94": [
+      {"sourceBaseId": "davison-ch07-n004", "draftIds": ["davison-p094-d02"]},
+      {"sourceBaseId": "davison-ch07-n005", "draftIds": ["davison-p094-d01"]},
+      {"sourceBaseId": "davison-ch07-n006", "draftIds": ["davison-p094-d03"]},
+      {"sourceBaseId": "davison-ch07-n007", "draftIds": ["davison-p094-d04"]}
+    ],
+    "96": [
+      {"sourceBaseId": "davison-ch07-n012", "draftIds": ["davison-p096-d01"]},
+      {"sourceBaseId": "davison-ch07-n013", "draftIds": ["davison-p096-d02"]},
+      {"sourceBaseId": "davison-ch07-n014", "draftIds": ["davison-p096-d03"]}
+    ],
+    "98": [
+      {"sourceBaseId": "davison-ch08-n001", "draftIds": ["davison-p098-d02"]},
+      {"sourceBaseId": "davison-ch08-n002", "draftIds": ["davison-p098-d01"]},
+      {"sourceBaseId": "davison-ch08-n004", "draftIds": ["davison-p098-d03"]}
+    ],
+    "100": [
+      {"sourceBaseId": "davison-ch08-n007", "draftIds": ["davison-p100-d01"]},
+      {"sourceBaseId": "davison-ch08-n008", "draftIds": ["davison-p100-d04"]},
+      {"sourceBaseId": "davison-ch08-n009", "draftIds": ["davison-p100-d02"]},
+      {"sourceBaseId": "davison-ch08-n010", "draftIds": ["davison-p100-d03"]}
+    ],
+    "108": [
+      {"sourceBaseId": "davison-ch09-n010", "draftIds": ["davison-p108-d01"]},
+      {"sourceBaseId": "davison-ch09-n011", "draftIds": ["davison-p108-d02", "davison-p108-d03"]}
+    ],
+    "114": [
+      {"sourceBaseId": "davison-ch10-n014", "draftIds": ["davison-p114-d01"]},
+      {"sourceBaseId": "davison-ch10-n015", "draftIds": ["davison-p114-d04"]},
+      {"sourceBaseId": "davison-ch10-n016", "draftIds": ["davison-p114-d05"]}
+    ],
+    "116": [
+      {"sourceBaseId": "davison-ch10-n020", "draftIds": ["davison-p116-d01", "davison-p116-d02"]},
+      {"sourceBaseId": "davison-ch10-n021", "draftIds": ["davison-p116-d03"]}
+    ],
+    "120": [
+      {"sourceBaseId": "davison-ch11-n002", "draftIds": ["davison-p120-d01"]}
+    ],
+    "121": [
+      {"sourceBaseId": "davison-ch11-n004", "draftIds": ["davison-p121-d01"]},
+      {"sourceBaseId": "davison-ch11-n005", "draftIds": ["davison-p121-d02"]},
+      {"sourceBaseId": "davison-ch11-n006", "draftIds": ["davison-p121-d03"]}
+    ],
+    "130": [
+      {"sourceBaseId": "davison-ch12-n005", "draftIds": ["davison-p130-d02", "davison-p130-d03"]},
+      {"sourceBaseId": "davison-ch12-n006", "draftIds": ["davison-p130-d05", "davison-p130-d08"]},
+      {"sourceBaseId": "davison-ch12-n007", "draftIds": ["davison-p130-d01", "davison-p130-d04"]},
+      {"sourceBaseId": "davison-ch12-n008", "draftIds": ["davison-p130-d07"]}
+    ],
+    "133": [
+      {"sourceBaseId": "davison-ch12-n013", "draftIds": ["davison-p133-d01"]},
+      {"sourceBaseId": "davison-ch12-n014", "draftIds": ["davison-p133-d03", "davison-p133-d04"]}
+    ],
+    "138": [
+      {"sourceBaseId": "davison-ch13-n003", "draftIds": ["davison-p138-d01"]},
+      {"sourceBaseId": "davison-ch13-n004", "draftIds": ["davison-p138-d02"]}
+    ],
+    "140": [
+      {"sourceBaseId": "davison-ch13-n009", "draftIds": ["davison-p140-d01"]},
+      {"sourceBaseId": "davison-ch13-n010", "draftIds": ["davison-p140-d03"]},
+      {"sourceBaseId": "davison-ch13-n011", "draftIds": ["davison-p140-d02"]}
+    ],
+    "157": [
+      {"sourceBaseId": "davison-ch15-n009", "draftIds": ["davison-p157-d01"]},
+      {"sourceBaseId": "davison-ch15-n010", "draftIds": ["davison-p157-d02"]},
+      {"sourceBaseId": "davison-ch15-n011", "draftIds": ["davison-p157-d03", "davison-p157-d04"]},
+      {"sourceBaseId": "davison-ch15-n012", "draftIds": ["davison-p157-d05"]}
+    ],
+    "159": [
+      {"sourceBaseId": "davison-ch15-n014", "draftIds": ["davison-p159-d01"]},
+      {"sourceBaseId": "davison-ch15-n015", "draftIds": ["davison-p159-d02"]},
+      {"sourceBaseId": "davison-ch15-n016", "draftIds": ["davison-p159-d03", "davison-p159-d04", "davison-p159-d05"]}
+    ],
+    "168": [
+      {"sourceBaseId": "davison-ch17-n002", "draftIds": ["davison-p168-d01"]},
+      {"sourceBaseId": "davison-ch17-n003", "draftIds": ["davison-p168-d02"]}
+    ],
+    "173": [
+      {"sourceBaseId": "davison-ch17-n017", "draftIds": ["davison-p173-d01"]},
+      {"sourceBaseId": "davison-ch17-n018", "draftIds": ["davison-p173-d02"]},
+      {"sourceBaseId": "davison-ch17-n019", "draftIds": ["davison-p173-d04", "davison-p173-d05"]},
+      {"sourceBaseId": "davison-ch17-n020", "draftIds": ["davison-p173-d03", "davison-p173-d06", "davison-p173-d07"]}
+    ],
+    "180": [
+      {"sourceBaseId": "davison-ch18-n006", "draftIds": ["davison-p180-d01"]}
+    ],
+    "226": [
+      {"sourceBaseId": "davison-ch21-n015", "draftIds": ["davison-p226-d01"]},
+      {"sourceBaseId": "davison-ch21-n016", "draftIds": ["davison-p226-d02"]}
+    ],
+    "228": [
+      {"sourceBaseId": "davison-ch21-n020", "draftIds": ["davison-p228-d01"]}
+    ]
+  }
+}

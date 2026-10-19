@@ -18,4 +18,6 @@ Hand-worked entries use `manualTechnique: true`, a descriptive `kind`, the suppo
 
 Catalogs contain patterns, not PDF or page-image references. Omit groups that contain only introductory text. Keep stable pattern IDs when extending a publication.
 
+`handweavers-pattern-book.js` contains the Marguerite Porter Davison catalog, organized by the book's chapters; its transcription and source notes live in `handweavers-pattern-book.md`.
+
 Run `node --test tests/pattern-library.test.cjs` to check membership, numeric assignments, and editor transfer. Check the nested sidebar and representative draft opening in the browser after UI changes.

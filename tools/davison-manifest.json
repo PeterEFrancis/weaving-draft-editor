@@ -1,0 +1,4440 @@
+{
+  "schemaVersion": 1,
+  "id": "davison-handweavers-pattern-book",
+  "title": "A Handweaver’s Pattern Book",
+  "author": "Marguerite Porter Davison",
+  "sourceEdition": "Revised edition, eighteenth printing, 1977",
+  "sourceNote": "Normalized from the printed table of contents and Chapter I labels. IDs are numeric and remain stable if a title is later corrected.",
+  "counts": {
+    "chapters": 21,
+    "treadlings": 40,
+    "threadings": 377,
+    "entries": 417
+  },
+  "chapters": [
+    {
+      "id": "davison-ch01",
+      "number": 1,
+      "roman": "I",
+      "title": "Twill Treadlings",
+      "printedPages": [
+        1,
+        10
+      ],
+      "entries": [
+        {
+          "id": "davison-ch01-n001",
+          "order": 1,
+          "sourceNumber": "I",
+          "kind": "treadling",
+          "title": "Plain Weave, Cotton, or Taffeta, Alpaca Weave & Homespun Wool Weave and Tabby",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n002",
+          "order": 2,
+          "sourceNumber": "II",
+          "kind": "treadling",
+          "title": "Balanced Twill, Tweed Weave, & Joseph France’s ‘Double Genoa & Denim’",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n003",
+          "order": 3,
+          "sourceNumber": "III",
+          "kind": "treadling",
+          "title": "Vertical Pointed Twill",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n004",
+          "order": 4,
+          "sourceNumber": "IV",
+          "kind": "treadling",
+          "title": "Vertical Herringbone",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n005",
+          "order": 5,
+          "sourceNumber": "V",
+          "kind": "treadling",
+          "title": "Long and Short Pointed Twill",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n006",
+          "order": 6,
+          "sourceNumber": "VI",
+          "kind": "treadling",
+          "title": "Cord Weave — Reversible",
+          "printedPages": [
+            4
+          ]
+        },
+        {
+          "id": "davison-ch01-n007",
+          "order": 7,
+          "sourceNumber": "VII",
+          "kind": "treadling",
+          "title": "Halvorsen No. 5 Pebble Weave",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n008",
+          "order": 8,
+          "sourceNumber": "VIII",
+          "kind": "treadling",
+          "title": "Pebble Weave",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n009",
+          "order": 9,
+          "sourceNumber": "IX",
+          "kind": "treadling",
+          "title": "Vertical Skip Twill",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n010",
+          "order": 10,
+          "sourceNumber": "X",
+          "kind": "treadling",
+          "title": "Crepe Weave",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n011",
+          "order": 11,
+          "sourceNumber": "XI",
+          "kind": "treadling",
+          "title": "John Murphy’s No. 50, Fig. 24, p. 44, ‘Stockinett’",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n012",
+          "order": 12,
+          "sourceNumber": "XII",
+          "kind": "treadling",
+          "title": "Joseph France’s No. 14, ‘Stockinett’",
+          "printedPages": [
+            5
+          ]
+        },
+        {
+          "id": "davison-ch01-n013",
+          "order": 13,
+          "sourceNumber": "XIII",
+          "kind": "treadling",
+          "title": "Warp Surface Twill",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n014",
+          "order": 14,
+          "sourceNumber": "XIV",
+          "kind": "treadling",
+          "title": "Vertical Pointed Twill",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n015",
+          "order": 15,
+          "sourceNumber": "XV",
+          "kind": "treadling",
+          "title": "Novelty Twill",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n016",
+          "order": 16,
+          "sourceNumber": "XVI",
+          "kind": "treadling",
+          "title": "Same Yarn as Warp",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n017",
+          "order": 17,
+          "sourceNumber": "XVII",
+          "kind": "treadling",
+          "title": "Diagonal Rib — Collin No. 49",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n018",
+          "order": 18,
+          "sourceNumber": "XVIII",
+          "kind": "treadling",
+          "title": "France’s No. 18, ‘Satinett’",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n019",
+          "order": 19,
+          "sourceNumber": "XIX",
+          "kind": "treadling",
+          "title": "Tweel for Pillow Cases or Bed Ticking — No. 54, Fig. 26, p. 45, John Murphy",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n020",
+          "order": 20,
+          "sourceNumber": "XX",
+          "kind": "treadling",
+          "title": "Novelty Twill",
+          "printedPages": [
+            6
+          ]
+        },
+        {
+          "id": "davison-ch01-n021",
+          "order": 21,
+          "sourceNumber": "XXI",
+          "kind": "treadling",
+          "title": "‘Old Ribs’ — Joseph France No. 1 (Used Fine Weft)",
+          "printedPages": [
+            7
+          ]
+        },
+        {
+          "id": "davison-ch01-n022",
+          "order": 22,
+          "sourceNumber": "XXII",
+          "kind": "treadling",
+          "title": "Joseph France No. 20, ‘Velveree’",
+          "printedPages": [
+            7
+          ]
+        },
+        {
+          "id": "davison-ch01-n023",
+          "order": 23,
+          "sourceNumber": "XXIII",
+          "kind": "treadling",
+          "title": "Swiss Twill from Schöblinger",
+          "printedPages": [
+            7
+          ]
+        },
+        {
+          "id": "davison-ch01-n024",
+          "order": 24,
+          "sourceNumber": "XXIV",
+          "kind": "treadling",
+          "title": "Weft Surface Twill",
+          "printedPages": [
+            7
+          ]
+        },
+        {
+          "id": "davison-ch01-n025",
+          "order": 25,
+          "sourceNumber": "XXV",
+          "kind": "treadling",
+          "title": "Joseph France’s ‘Ribs Three & One’",
+          "printedPages": [
+            7
+          ]
+        },
+        {
+          "id": "davison-ch01-n026",
+          "order": 26,
+          "sourceNumber": "XXVI",
+          "kind": "treadling",
+          "title": "Double Faced Effect, Double Thickness — Henriksson No. 194",
+          "printedPages": [
+            8
+          ]
+        },
+        {
+          "id": "davison-ch01-n027",
+          "order": 27,
+          "sourceNumber": "XXVII",
+          "kind": "treadling",
+          "title": "Double Faced Effect, Double Thickness — Halvorsen No. 193",
+          "printedPages": [
+            8
+          ]
+        },
+        {
+          "id": "davison-ch01-n028",
+          "order": 28,
+          "sourceNumber": "XXVIII",
+          "kind": "treadling",
+          "title": "Double Faced Effect, Double Thickness — M.P.D.",
+          "printedPages": [
+            8
+          ]
+        },
+        {
+          "id": "davison-ch01-n029",
+          "order": 29,
+          "sourceNumber": "XXIX",
+          "kind": "treadling",
+          "title": "Horizontal Stripes",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n030",
+          "order": 30,
+          "sourceNumber": "XXX",
+          "kind": "treadling",
+          "title": "Halvorsen No. 175 — Plain Weave on Reverse Side",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n031",
+          "order": 31,
+          "sourceNumber": "XXXI",
+          "kind": "treadling",
+          "title": "Horizontal Stripes",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n032",
+          "order": 32,
+          "sourceNumber": "XXXII",
+          "kind": "treadling",
+          "title": "Fantasy",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n033",
+          "order": 33,
+          "sourceNumber": "XXXIII",
+          "kind": "treadling",
+          "title": "Basket Weave Variation",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n034",
+          "order": 34,
+          "sourceNumber": "XXXIV",
+          "kind": "treadling",
+          "title": "Halvorsen p. 100",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n035",
+          "order": 35,
+          "sourceNumber": "XXXV",
+          "kind": "treadling",
+          "title": "Same as Warp Yarn",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n036",
+          "order": 36,
+          "sourceNumber": "XXXVI",
+          "kind": "treadling",
+          "title": "Crepe Weave",
+          "printedPages": [
+            9
+          ]
+        },
+        {
+          "id": "davison-ch01-n037",
+          "order": 37,
+          "sourceNumber": "XXXVII",
+          "kind": "treadling",
+          "title": "Horizontal Stripes",
+          "printedPages": [
+            10
+          ]
+        },
+        {
+          "id": "davison-ch01-n038",
+          "order": 38,
+          "sourceNumber": "XXXVIII",
+          "kind": "treadling",
+          "title": "Crepe Weave",
+          "printedPages": [
+            10
+          ]
+        },
+        {
+          "id": "davison-ch01-n039",
+          "order": 39,
+          "sourceNumber": "XXXIX",
+          "kind": "treadling",
+          "title": "Double Weave Open at One Side for Weaving Twice the Width of the Warp — Oelsner & Dale p. 264; Perheentupa No. 212-b",
+          "printedPages": [
+            10
+          ]
+        },
+        {
+          "id": "davison-ch01-n040",
+          "order": 40,
+          "sourceNumber": "XL",
+          "kind": "treadling",
+          "title": "Double Weave Tubing — Perheentupa No. 212-a",
+          "printedPages": [
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch02",
+      "number": 2,
+      "roman": "II",
+      "title": "Bird’s Eye and Rose Path",
+      "printedPages": [
+        11,
+        22
+      ],
+      "entries": [
+        {
+          "id": "davison-ch02-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Four Thread Bird’s Eye",
+          "printedPages": [
+            12
+          ]
+        },
+        {
+          "id": "davison-ch02-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Six Thread Bird’s Eye",
+          "printedPages": [
+            12
+          ]
+        },
+        {
+          "id": "davison-ch02-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Traditional Bird’s Eye",
+          "printedPages": [
+            13
+          ]
+        },
+        {
+          "id": "davison-ch02-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "John Murphy’s Bird’s Eye No. 57",
+          "printedPages": [
+            14
+          ]
+        },
+        {
+          "id": "davison-ch02-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Joseph France’s Bird’s Eye No. 11 (1814)",
+          "printedPages": [
+            15
+          ]
+        },
+        {
+          "id": "davison-ch02-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Swedish Rose Path",
+          "printedPages": [
+            15
+          ]
+        },
+        {
+          "id": "davison-ch02-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Rose Path Project No. 1 (Sampler)",
+          "printedPages": [
+            16,
+            17
+          ]
+        },
+        {
+          "id": "davison-ch02-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Queen’s Cord",
+          "printedPages": [
+            18
+          ]
+        },
+        {
+          "id": "davison-ch02-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Finnish Bird’s Eye",
+          "printedPages": [
+            19
+          ]
+        },
+        {
+          "id": "davison-ch02-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Ten Thread Bird’s Eye",
+          "printedPages": [
+            19
+          ]
+        },
+        {
+          "id": "davison-ch02-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Bird’s Eye — Maria Collin’s No. 44",
+          "printedPages": [
+            20
+          ]
+        },
+        {
+          "id": "davison-ch02-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "A German Bird’s Eye",
+          "printedPages": [
+            20
+          ]
+        },
+        {
+          "id": "davison-ch02-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Triple Draught Bird’s Eye",
+          "printedPages": [
+            21
+          ]
+        },
+        {
+          "id": "davison-ch02-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Landis Valley Linen",
+          "printedPages": [
+            21
+          ]
+        },
+        {
+          "id": "davison-ch02-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Goose Eye, Chevron or Pointed Herringbone",
+          "printedPages": [
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch03",
+      "number": 3,
+      "roman": "III",
+      "title": "Modified Twills",
+      "printedPages": [
+        23,
+        32
+      ],
+      "entries": [
+        {
+          "id": "davison-ch03-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Broken Twill",
+          "printedPages": [
+            24
+          ]
+        },
+        {
+          "id": "davison-ch03-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Three Thread Herringbone",
+          "printedPages": [
+            24
+          ]
+        },
+        {
+          "id": "davison-ch03-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Four Thread Herringbone",
+          "printedPages": [
+            25
+          ]
+        },
+        {
+          "id": "davison-ch03-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Six Thread Herringbone",
+          "printedPages": [
+            25
+          ]
+        },
+        {
+          "id": "davison-ch03-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Eight Thread Herringbone",
+          "printedPages": [
+            25
+          ]
+        },
+        {
+          "id": "davison-ch03-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Large Herringbone",
+          "printedPages": [
+            25
+          ]
+        },
+        {
+          "id": "davison-ch03-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Herringbone and Twill",
+          "printedPages": [
+            26
+          ]
+        },
+        {
+          "id": "davison-ch03-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Herringbone Plaid",
+          "printedPages": [
+            26
+          ]
+        },
+        {
+          "id": "davison-ch03-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Interrupted Twill",
+          "printedPages": [
+            26
+          ]
+        },
+        {
+          "id": "davison-ch03-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Herringbone Plaid No. 2",
+          "printedPages": [
+            27
+          ]
+        },
+        {
+          "id": "davison-ch03-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Skip or Offset Twill",
+          "printedPages": [
+            27
+          ]
+        },
+        {
+          "id": "davison-ch03-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Offset or Skip Herringbone",
+          "printedPages": [
+            27
+          ]
+        },
+        {
+          "id": "davison-ch03-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Broken Twill",
+          "printedPages": [
+            28
+          ]
+        },
+        {
+          "id": "davison-ch03-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Broken Twill No. 2",
+          "printedPages": [
+            28
+          ]
+        },
+        {
+          "id": "davison-ch03-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "German Fancy Skip Herringbone",
+          "printedPages": [
+            28
+          ]
+        },
+        {
+          "id": "davison-ch03-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Hair Line Twill",
+          "printedPages": [
+            29
+          ]
+        },
+        {
+          "id": "davison-ch03-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Hair Line Effect",
+          "printedPages": [
+            29
+          ]
+        },
+        {
+          "id": "davison-ch03-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Broken Herringbone",
+          "printedPages": [
+            29
+          ]
+        },
+        {
+          "id": "davison-ch03-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Pebble Twill",
+          "printedPages": [
+            29
+          ]
+        },
+        {
+          "id": "davison-ch03-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Weaver Rose’s ‘Groton Twill’",
+          "printedPages": [
+            30
+          ]
+        },
+        {
+          "id": "davison-ch03-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Swarthmore Twill",
+          "printedPages": [
+            30
+          ]
+        },
+        {
+          "id": "davison-ch03-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Ginny’s Coat",
+          "printedPages": [
+            30
+          ]
+        },
+        {
+          "id": "davison-ch03-n023",
+          "order": 23,
+          "sourceNumber": "23",
+          "kind": "threading",
+          "title": "Herringbone Variation",
+          "printedPages": [
+            31
+          ]
+        },
+        {
+          "id": "davison-ch03-n024",
+          "order": 24,
+          "sourceNumber": "24",
+          "kind": "threading",
+          "title": "Twill Blocks No. 2",
+          "printedPages": [
+            31
+          ]
+        },
+        {
+          "id": "davison-ch03-n025",
+          "order": 25,
+          "sourceNumber": "25",
+          "kind": "threading",
+          "title": "Plain Back Cord",
+          "printedPages": [
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch04",
+      "number": 4,
+      "roman": "IV",
+      "title": "Twill Combinations",
+      "printedPages": [
+        33,
+        46
+      ],
+      "entries": [
+        {
+          "id": "davison-ch04-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Wall of Troy Twill",
+          "printedPages": [
+            34
+          ]
+        },
+        {
+          "id": "davison-ch04-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "A Swedish Border",
+          "printedPages": [
+            34
+          ]
+        },
+        {
+          "id": "davison-ch04-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Slub Twill",
+          "printedPages": [
+            34
+          ]
+        },
+        {
+          "id": "davison-ch04-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Pennsylvania Dutch Twill",
+          "printedPages": [
+            35
+          ]
+        },
+        {
+          "id": "davison-ch04-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Saterglantan Pattern",
+          "printedPages": [
+            35
+          ]
+        },
+        {
+          "id": "davison-ch04-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Goose-Eye Blocks",
+          "printedPages": [
+            36
+          ]
+        },
+        {
+          "id": "davison-ch04-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Pottery Twill",
+          "printedPages": [
+            37
+          ]
+        },
+        {
+          "id": "davison-ch04-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Finnish Twill",
+          "printedPages": [
+            37
+          ]
+        },
+        {
+          "id": "davison-ch04-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Rambler Rose",
+          "printedPages": [
+            37
+          ]
+        },
+        {
+          "id": "davison-ch04-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Twill & Knot",
+          "printedPages": [
+            37
+          ]
+        },
+        {
+          "id": "davison-ch04-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Diamonds & Twill",
+          "printedPages": [
+            38
+          ]
+        },
+        {
+          "id": "davison-ch04-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Indian March",
+          "printedPages": [
+            38
+          ]
+        },
+        {
+          "id": "davison-ch04-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Twill Miniature",
+          "printedPages": [
+            39
+          ]
+        },
+        {
+          "id": "davison-ch04-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Friendship Twill",
+          "printedPages": [
+            39
+          ]
+        },
+        {
+          "id": "davison-ch04-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Based on Halvorsen’s No. 215",
+          "printedPages": [
+            40
+          ]
+        },
+        {
+          "id": "davison-ch04-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Rose Path Blocks",
+          "printedPages": [
+            40
+          ]
+        },
+        {
+          "id": "davison-ch04-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Clermont Twill",
+          "printedPages": [
+            41
+          ]
+        },
+        {
+          "id": "davison-ch04-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Swiss Twill",
+          "printedPages": [
+            41
+          ]
+        },
+        {
+          "id": "davison-ch04-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Gothic Cross",
+          "printedPages": [
+            41
+          ]
+        },
+        {
+          "id": "davison-ch04-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Weaver’s Fancy",
+          "printedPages": [
+            42
+          ]
+        },
+        {
+          "id": "davison-ch04-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Marie Andree",
+          "printedPages": [
+            43
+          ]
+        },
+        {
+          "id": "davison-ch04-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Anna Henriksson’s No. 136-A",
+          "printedPages": [
+            43
+          ]
+        },
+        {
+          "id": "davison-ch04-n023",
+          "order": 23,
+          "sourceNumber": "23",
+          "kind": "threading",
+          "title": "Swedish Rose Twill",
+          "printedPages": [
+            43
+          ]
+        },
+        {
+          "id": "davison-ch04-n024",
+          "order": 24,
+          "sourceNumber": "24",
+          "kind": "threading",
+          "title": "Broken Twill Block",
+          "printedPages": [
+            44
+          ]
+        },
+        {
+          "id": "davison-ch04-n025",
+          "order": 25,
+          "sourceNumber": "25",
+          "kind": "threading",
+          "title": "Caroline Halvorsen’s No. 30",
+          "printedPages": [
+            44
+          ]
+        },
+        {
+          "id": "davison-ch04-n026",
+          "order": 26,
+          "sourceNumber": "26",
+          "kind": "threading",
+          "title": "Slub Twill & Rose",
+          "printedPages": [
+            44
+          ]
+        },
+        {
+          "id": "davison-ch04-n027",
+          "order": 27,
+          "sourceNumber": "27",
+          "kind": "threading",
+          "title": "Jewell",
+          "printedPages": [
+            45
+          ]
+        },
+        {
+          "id": "davison-ch04-n028",
+          "order": 28,
+          "sourceNumber": "28",
+          "kind": "threading",
+          "title": "Claire’s Twill",
+          "printedPages": [
+            45
+          ]
+        },
+        {
+          "id": "davison-ch04-n029",
+          "order": 29,
+          "sourceNumber": "29",
+          "kind": "threading",
+          "title": "Herringbone Mixture",
+          "printedPages": [
+            46
+          ]
+        },
+        {
+          "id": "davison-ch04-n030",
+          "order": 30,
+          "sourceNumber": "30",
+          "kind": "threading",
+          "title": "Twill Complication",
+          "printedPages": [
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch05",
+      "number": 5,
+      "roman": "V",
+      "title": "Grouped Warp Threads",
+      "printedPages": [
+        47,
+        54
+      ],
+      "entries": [
+        {
+          "id": "davison-ch05-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Four-Fold Basket Weave",
+          "printedPages": [
+            48
+          ]
+        },
+        {
+          "id": "davison-ch05-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Six-Fold Basket Weave",
+          "printedPages": [
+            48
+          ]
+        },
+        {
+          "id": "davison-ch05-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Eight-Fold Basket Weave",
+          "printedPages": [
+            48
+          ]
+        },
+        {
+          "id": "davison-ch05-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Basket Weave Stripes",
+          "printedPages": [
+            49
+          ]
+        },
+        {
+          "id": "davison-ch05-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Basket Weave and Herringbone",
+          "printedPages": [
+            49
+          ]
+        },
+        {
+          "id": "davison-ch05-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Basket Weave and Twill",
+          "printedPages": [
+            49
+          ]
+        },
+        {
+          "id": "davison-ch05-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Twill and Dot",
+          "printedPages": [
+            49
+          ]
+        },
+        {
+          "id": "davison-ch05-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Upholstery from Saterglantan",
+          "printedPages": [
+            49
+          ]
+        },
+        {
+          "id": "davison-ch05-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Oelsner & Dale Rib Weave",
+          "printedPages": [
+            50
+          ]
+        },
+        {
+          "id": "davison-ch05-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Ribbed Twill",
+          "printedPages": [
+            50
+          ]
+        },
+        {
+          "id": "davison-ch05-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Long Rib Weave",
+          "printedPages": [
+            50
+          ]
+        },
+        {
+          "id": "davison-ch05-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Pattern for Many Rib Weave Treadlings",
+          "printedPages": [
+            51
+          ]
+        },
+        {
+          "id": "davison-ch05-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Shaded Twill",
+          "printedPages": [
+            51
+          ]
+        },
+        {
+          "id": "davison-ch05-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Anna Henriksson’s Twill",
+          "printedPages": [
+            51
+          ]
+        },
+        {
+          "id": "davison-ch05-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "A Twill from Finland",
+          "printedPages": [
+            51
+          ]
+        },
+        {
+          "id": "davison-ch05-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Simplified Damask",
+          "printedPages": [
+            52
+          ]
+        },
+        {
+          "id": "davison-ch05-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Wide Basket Weave Stripes",
+          "printedPages": [
+            52
+          ]
+        },
+        {
+          "id": "davison-ch05-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Undulating Twill",
+          "printedPages": [
+            52
+          ]
+        },
+        {
+          "id": "davison-ch05-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Undulating Herringbone",
+          "printedPages": [
+            53
+          ]
+        },
+        {
+          "id": "davison-ch05-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Ester Perheentupa’s Block",
+          "printedPages": [
+            53
+          ]
+        },
+        {
+          "id": "davison-ch05-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Fancy Herringbone",
+          "printedPages": [
+            53
+          ]
+        },
+        {
+          "id": "davison-ch05-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Anna Henriksson’s Fancy",
+          "printedPages": [
+            53
+          ]
+        },
+        {
+          "id": "davison-ch05-n023",
+          "order": 23,
+          "sourceNumber": "23",
+          "kind": "threading",
+          "title": "Double Rose Path",
+          "printedPages": [
+            54
+          ]
+        },
+        {
+          "id": "davison-ch05-n024",
+          "order": 24,
+          "sourceNumber": "24",
+          "kind": "threading",
+          "title": "Upholstery Twill",
+          "printedPages": [
+            54
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch06",
+      "number": 6,
+      "roman": "VI",
+      "title": "M’s and O’s",
+      "printedPages": [
+        55,
+        64
+      ],
+      "entries": [
+        {
+          "id": "davison-ch06-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Two-Fold M’s and O’s",
+          "printedPages": [
+            56
+          ]
+        },
+        {
+          "id": "davison-ch06-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Two-Fold Large M’s and O’s",
+          "printedPages": [
+            56
+          ]
+        },
+        {
+          "id": "davison-ch06-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Four-Fold M’s and O’s",
+          "printedPages": [
+            56
+          ]
+        },
+        {
+          "id": "davison-ch06-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Upholstery from Finland",
+          "printedPages": [
+            56
+          ]
+        },
+        {
+          "id": "davison-ch06-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Five-Fold M’s and O’s",
+          "printedPages": [
+            57
+          ]
+        },
+        {
+          "id": "davison-ch06-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Large M’s and O’s",
+          "printedPages": [
+            58
+          ]
+        },
+        {
+          "id": "davison-ch06-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Forrest Crook’s Blanket Weave",
+          "printedPages": [
+            58
+          ]
+        },
+        {
+          "id": "davison-ch06-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "M’s and O’s Monk’s Belt",
+          "printedPages": [
+            59
+          ]
+        },
+        {
+          "id": "davison-ch06-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Betsy Dewey’s Pattern",
+          "printedPages": [
+            59
+          ]
+        },
+        {
+          "id": "davison-ch06-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "M’s and O’s Plaid No. 1",
+          "printedPages": [
+            59
+          ]
+        },
+        {
+          "id": "davison-ch06-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "M’s and O’s Plaid No. 2",
+          "printedPages": [
+            60
+          ]
+        },
+        {
+          "id": "davison-ch06-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Florence House’s Linen",
+          "printedPages": [
+            60
+          ]
+        },
+        {
+          "id": "davison-ch06-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "M’s and O’s Square with Border No. 1",
+          "printedPages": [
+            61
+          ]
+        },
+        {
+          "id": "davison-ch06-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Cynthia’s Heirloom",
+          "printedPages": [
+            61
+          ]
+        },
+        {
+          "id": "davison-ch06-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Trail Blazer",
+          "printedPages": [
+            62
+          ]
+        },
+        {
+          "id": "davison-ch06-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Weaver Rose No. 72",
+          "printedPages": [
+            62
+          ]
+        },
+        {
+          "id": "davison-ch06-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Primitive Linen",
+          "printedPages": [
+            63
+          ]
+        },
+        {
+          "id": "davison-ch06-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Modified M’s and O’s",
+          "printedPages": [
+            63
+          ]
+        },
+        {
+          "id": "davison-ch06-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Julia Larrabee’s Linen",
+          "printedPages": [
+            63
+          ]
+        },
+        {
+          "id": "davison-ch06-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "M’s and O’s Square with Border No. 2",
+          "printedPages": [
+            64
+          ]
+        },
+        {
+          "id": "davison-ch06-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "M’s and O’s Three by Three Plaid",
+          "printedPages": [
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch07",
+      "number": 7,
+      "roman": "VII",
+      "title": "Canvas-Weaves",
+      "printedPages": [
+        65,
+        70
+      ],
+      "entries": [
+        {
+          "id": "davison-ch07-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Canvas Weave",
+          "printedPages": [
+            66
+          ]
+        },
+        {
+          "id": "davison-ch07-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Mock Leno Curtains",
+          "printedPages": [
+            67
+          ]
+        },
+        {
+          "id": "davison-ch07-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Mock Leno Curtain Pattern",
+          "printedPages": [
+            67
+          ]
+        },
+        {
+          "id": "davison-ch07-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Mock Leno Curtain Cloth",
+          "printedPages": [
+            68
+          ]
+        },
+        {
+          "id": "davison-ch07-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Canvas Weave Spots",
+          "printedPages": [
+            68
+          ]
+        },
+        {
+          "id": "davison-ch07-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Oscar A. Beriau’s Canvas Weave",
+          "printedPages": [
+            68
+          ]
+        },
+        {
+          "id": "davison-ch07-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Jean Lilly",
+          "printedPages": [
+            68
+          ]
+        },
+        {
+          "id": "davison-ch07-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Myrtle Westola",
+          "printedPages": [
+            69
+          ]
+        },
+        {
+          "id": "davison-ch07-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Claire Freeman’s Blocks",
+          "printedPages": [
+            69
+          ]
+        },
+        {
+          "id": "davison-ch07-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Swarthmore Check",
+          "printedPages": [
+            69
+          ]
+        },
+        {
+          "id": "davison-ch07-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "A Czecho-Slovakian Pattern",
+          "printedPages": [
+            69
+          ]
+        },
+        {
+          "id": "davison-ch07-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Vertical Stripes of Canvas Weave",
+          "printedPages": [
+            70
+          ]
+        },
+        {
+          "id": "davison-ch07-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Ribbed Monk’s Cloth",
+          "printedPages": [
+            70
+          ]
+        },
+        {
+          "id": "davison-ch07-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Linen Weave",
+          "printedPages": [
+            70
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch08",
+      "number": 8,
+      "roman": "VIII",
+      "title": "Texture Weaves",
+      "printedPages": [
+        71,
+        78
+      ],
+      "entries": [
+        {
+          "id": "davison-ch08-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Seed",
+          "printedPages": [
+            72
+          ]
+        },
+        {
+          "id": "davison-ch08-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Double Seed",
+          "printedPages": [
+            72
+          ]
+        },
+        {
+          "id": "davison-ch08-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Ephrata Curtain Material",
+          "printedPages": [
+            72
+          ]
+        },
+        {
+          "id": "davison-ch08-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "‘Velverett Cord’",
+          "printedPages": [
+            72
+          ]
+        },
+        {
+          "id": "davison-ch08-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Satin Weave",
+          "printedPages": [
+            73
+          ]
+        },
+        {
+          "id": "davison-ch08-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Blanket Tweel",
+          "printedPages": [
+            73
+          ]
+        },
+        {
+          "id": "davison-ch08-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Irregular Basket Weave",
+          "printedPages": [
+            74
+          ]
+        },
+        {
+          "id": "davison-ch08-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Weaver Rose No. 1-A",
+          "printedPages": [
+            74
+          ]
+        },
+        {
+          "id": "davison-ch08-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Weaver Rose No. 1-B",
+          "printedPages": [
+            74
+          ]
+        },
+        {
+          "id": "davison-ch08-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Pinhook Twill",
+          "printedPages": [
+            74
+          ]
+        },
+        {
+          "id": "davison-ch08-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "John Murphy’s No. 10",
+          "printedPages": [
+            75
+          ]
+        },
+        {
+          "id": "davison-ch08-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Surface Weave",
+          "printedPages": [
+            75
+          ]
+        },
+        {
+          "id": "davison-ch08-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Linen Weave",
+          "printedPages": [
+            75
+          ]
+        },
+        {
+          "id": "davison-ch08-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Genoa Back Dice",
+          "printedPages": [
+            76
+          ]
+        },
+        {
+          "id": "davison-ch08-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Crepe Twill",
+          "printedPages": [
+            76
+          ]
+        },
+        {
+          "id": "davison-ch08-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Texture Stripes",
+          "printedPages": [
+            76
+          ]
+        },
+        {
+          "id": "davison-ch08-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Bolton Cord",
+          "printedPages": [
+            77
+          ]
+        },
+        {
+          "id": "davison-ch08-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Pique",
+          "printedPages": [
+            77
+          ]
+        },
+        {
+          "id": "davison-ch08-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Little Cord",
+          "printedPages": [
+            77
+          ]
+        },
+        {
+          "id": "davison-ch08-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Hairline Effect",
+          "printedPages": [
+            77
+          ]
+        },
+        {
+          "id": "davison-ch08-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Shadow Twill",
+          "printedPages": [
+            78
+          ]
+        },
+        {
+          "id": "davison-ch08-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Diagonal Twill",
+          "printedPages": [
+            78
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch09",
+      "number": 9,
+      "roman": "IX",
+      "title": "Huck-A-Back Weaves",
+      "printedPages": [
+        79,
+        82
+      ],
+      "entries": [
+        {
+          "id": "davison-ch09-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Traditional Huck-A-Back",
+          "printedPages": [
+            79
+          ]
+        },
+        {
+          "id": "davison-ch09-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Norse Huck-A-Back",
+          "printedPages": [
+            79
+          ]
+        },
+        {
+          "id": "davison-ch09-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Large Huck-A-Back",
+          "printedPages": [
+            80
+          ]
+        },
+        {
+          "id": "davison-ch09-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Princess Ingrid Table Cloth",
+          "printedPages": [
+            80
+          ]
+        },
+        {
+          "id": "davison-ch09-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Early Pennsylvania-German Huck-A-Back",
+          "printedPages": [
+            80
+          ]
+        },
+        {
+          "id": "davison-ch09-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Joseph France’s No. 19",
+          "printedPages": [
+            81
+          ]
+        },
+        {
+          "id": "davison-ch09-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Joseph France’s Huck-A-Back",
+          "printedPages": [
+            81
+          ]
+        },
+        {
+          "id": "davison-ch09-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "German Huck-A-Back — No. 1",
+          "printedPages": [
+            82
+          ]
+        },
+        {
+          "id": "davison-ch09-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "German Huck-A-Back — No. 2",
+          "printedPages": [
+            82
+          ]
+        },
+        {
+          "id": "davison-ch09-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Huck-A-Back Twill",
+          "printedPages": [
+            82
+          ]
+        },
+        {
+          "id": "davison-ch09-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Huck-A-Back Blocks",
+          "printedPages": [
+            82
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch10",
+      "number": 10,
+      "roman": "X",
+      "title": "Barley Corn",
+      "printedPages": [
+        83,
+        92
+      ],
+      "entries": [
+        {
+          "id": "davison-ch10-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Weaver Rose No. 2-B",
+          "printedPages": [
+            84
+          ]
+        },
+        {
+          "id": "davison-ch10-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Four-Leaf Barley Corn",
+          "printedPages": [
+            84
+          ]
+        },
+        {
+          "id": "davison-ch10-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "German Barley Corn",
+          "printedPages": [
+            84
+          ]
+        },
+        {
+          "id": "davison-ch10-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Detail from Flowers of Canaan",
+          "printedPages": [
+            85
+          ]
+        },
+        {
+          "id": "davison-ch10-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Bucien Huck-A-Back",
+          "printedPages": [
+            85
+          ]
+        },
+        {
+          "id": "davison-ch10-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Emmy Ann Stanton Diaper",
+          "printedPages": [
+            85
+          ]
+        },
+        {
+          "id": "davison-ch10-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Pennsylvania Diamond",
+          "printedPages": [
+            86
+          ]
+        },
+        {
+          "id": "davison-ch10-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Mildred Keyser’s Linen",
+          "printedPages": [
+            86
+          ]
+        },
+        {
+          "id": "davison-ch10-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Prusian Diaper No. 1",
+          "printedPages": [
+            86
+          ]
+        },
+        {
+          "id": "davison-ch10-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Rose Point Pattern",
+          "printedPages": [
+            86
+          ]
+        },
+        {
+          "id": "davison-ch10-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Wall of Troy",
+          "printedPages": [
+            87
+          ]
+        },
+        {
+          "id": "davison-ch10-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Highlander’s Delight",
+          "printedPages": [
+            87
+          ]
+        },
+        {
+          "id": "davison-ch10-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Gerstenkorn",
+          "printedPages": [
+            87
+          ]
+        },
+        {
+          "id": "davison-ch10-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Berea Linen",
+          "printedPages": [
+            88
+          ]
+        },
+        {
+          "id": "davison-ch10-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Margaret Langlands",
+          "printedPages": [
+            88
+          ]
+        },
+        {
+          "id": "davison-ch10-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Bachelor’s Button",
+          "printedPages": [
+            88
+          ]
+        },
+        {
+          "id": "davison-ch10-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Old Pennsylvania Dutch Design",
+          "printedPages": [
+            89
+          ]
+        },
+        {
+          "id": "davison-ch10-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Finnish Figure in Barley Corn",
+          "printedPages": [
+            89
+          ]
+        },
+        {
+          "id": "davison-ch10-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Roses and Diamonds",
+          "printedPages": [
+            89
+          ]
+        },
+        {
+          "id": "davison-ch10-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Weaver Rose No. 107",
+          "printedPages": [
+            90
+          ]
+        },
+        {
+          "id": "davison-ch10-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Keim Family Pattern",
+          "printedPages": [
+            90
+          ]
+        },
+        {
+          "id": "davison-ch10-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Pennypacker Linen",
+          "printedPages": [
+            90
+          ]
+        },
+        {
+          "id": "davison-ch10-n023",
+          "order": 23,
+          "sourceNumber": "23",
+          "kind": "threading",
+          "title": "Molly Pitcher",
+          "printedPages": [
+            91
+          ]
+        },
+        {
+          "id": "davison-ch10-n024",
+          "order": 24,
+          "sourceNumber": "24",
+          "kind": "threading",
+          "title": "Johann D—’s No. 27",
+          "printedPages": [
+            91
+          ]
+        },
+        {
+          "id": "davison-ch10-n025",
+          "order": 25,
+          "sourceNumber": "25",
+          "kind": "threading",
+          "title": "Schleelein’s No. 110",
+          "printedPages": [
+            91
+          ]
+        },
+        {
+          "id": "davison-ch10-n026",
+          "order": 26,
+          "sourceNumber": "26",
+          "kind": "threading",
+          "title": "Kirschbaum’s No. 18",
+          "printedPages": [
+            92
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch11",
+      "number": 11,
+      "roman": "XI",
+      "title": "Swedish Lace Weave",
+      "printedPages": [
+        93,
+        100
+      ],
+      "entries": [
+        {
+          "id": "davison-ch11-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Traditional Lace Unit",
+          "printedPages": [
+            94
+          ]
+        },
+        {
+          "id": "davison-ch11-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Swarthmore Lace Weave",
+          "printedPages": [
+            94
+          ]
+        },
+        {
+          "id": "davison-ch11-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Sara’s Lace Plaid",
+          "printedPages": [
+            94
+          ]
+        },
+        {
+          "id": "davison-ch11-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Netting",
+          "printedPages": [
+            95
+          ]
+        },
+        {
+          "id": "davison-ch11-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Very Open Lace Weave",
+          "printedPages": [
+            95
+          ]
+        },
+        {
+          "id": "davison-ch11-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Vertical Lace Stripes",
+          "printedPages": [
+            95
+          ]
+        },
+        {
+          "id": "davison-ch11-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "September Lace Block",
+          "printedPages": [
+            96
+          ]
+        },
+        {
+          "id": "davison-ch11-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Lace Stripe",
+          "printedPages": [
+            96
+          ]
+        },
+        {
+          "id": "davison-ch11-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Lace Square with Border",
+          "printedPages": [
+            97
+          ]
+        },
+        {
+          "id": "davison-ch11-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Johann D—’s No. 32",
+          "printedPages": [
+            97
+          ]
+        },
+        {
+          "id": "davison-ch11-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Finnish Lace Block Design",
+          "printedPages": [
+            97
+          ]
+        },
+        {
+          "id": "davison-ch11-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Swedish Lace Border",
+          "printedPages": [
+            98
+          ]
+        },
+        {
+          "id": "davison-ch11-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Massachusetts Heirloom Pattern",
+          "printedPages": [
+            98
+          ]
+        },
+        {
+          "id": "davison-ch11-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Kirschbaum’s Design No. 3",
+          "printedPages": [
+            99
+          ]
+        },
+        {
+          "id": "davison-ch11-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Forrest & Irene Lace",
+          "printedPages": [
+            100
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch12",
+      "number": 12,
+      "roman": "XII",
+      "title": "Monk’s Belt",
+      "printedPages": [
+        101,
+        108
+      ],
+      "entries": [
+        {
+          "id": "davison-ch12-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Traditional Monk’s Belt",
+          "printedPages": [
+            102
+          ]
+        },
+        {
+          "id": "davison-ch12-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Maria Collins",
+          "printedPages": [
+            102
+          ]
+        },
+        {
+          "id": "davison-ch12-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Swedish Valance",
+          "printedPages": [
+            102
+          ]
+        },
+        {
+          "id": "davison-ch12-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Swedish Point",
+          "printedPages": [
+            103
+          ]
+        },
+        {
+          "id": "davison-ch12-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Miniature Monk’s Belt",
+          "printedPages": [
+            104
+          ]
+        },
+        {
+          "id": "davison-ch12-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Italian Monk’s Belt",
+          "printedPages": [
+            104
+          ]
+        },
+        {
+          "id": "davison-ch12-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Musselman Linen",
+          "printedPages": [
+            104
+          ]
+        },
+        {
+          "id": "davison-ch12-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Ester Perheentupa’s No. 96",
+          "printedPages": [
+            104
+          ]
+        },
+        {
+          "id": "davison-ch12-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Johann D—’s No. 47-D",
+          "printedPages": [
+            105
+          ]
+        },
+        {
+          "id": "davison-ch12-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Monk’s Belt Blocks",
+          "printedPages": [
+            105
+          ]
+        },
+        {
+          "id": "davison-ch12-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "German Point",
+          "printedPages": [
+            106
+          ]
+        },
+        {
+          "id": "davison-ch12-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Large Monk’s Belt",
+          "printedPages": [
+            106
+          ]
+        },
+        {
+          "id": "davison-ch12-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Hulda Peter’s No. 47",
+          "printedPages": [
+            107
+          ]
+        },
+        {
+          "id": "davison-ch12-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Finnish Monk’s Belt",
+          "printedPages": [
+            107
+          ]
+        },
+        {
+          "id": "davison-ch12-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Crosswise Ireland",
+          "printedPages": [
+            108
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch13",
+      "number": 13,
+      "roman": "XIII",
+      "title": "Thousand Flowers",
+      "printedPages": [
+        109,
+        116
+      ],
+      "entries": [
+        {
+          "id": "davison-ch13-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "A Thousand Flowers",
+          "printedPages": [
+            110
+          ]
+        },
+        {
+          "id": "davison-ch13-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Maria Collin’s Linen Weave No. 194",
+          "printedPages": [
+            111
+          ]
+        },
+        {
+          "id": "davison-ch13-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Linen Weave Unit",
+          "printedPages": [
+            112
+          ]
+        },
+        {
+          "id": "davison-ch13-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Linen Weave Plaid",
+          "printedPages": [
+            112
+          ]
+        },
+        {
+          "id": "davison-ch13-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Quaker Ladies",
+          "printedPages": [
+            112
+          ]
+        },
+        {
+          "id": "davison-ch13-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Jasmine Estrella",
+          "printedPages": [
+            113
+          ]
+        },
+        {
+          "id": "davison-ch13-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Bluettes",
+          "printedPages": [
+            113
+          ]
+        },
+        {
+          "id": "davison-ch13-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Sylvia",
+          "printedPages": [
+            113
+          ]
+        },
+        {
+          "id": "davison-ch13-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Helen Cooley’s Bouquet",
+          "printedPages": [
+            114
+          ]
+        },
+        {
+          "id": "davison-ch13-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Anemone",
+          "printedPages": [
+            114
+          ]
+        },
+        {
+          "id": "davison-ch13-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Orange Blossoms",
+          "printedPages": [
+            114
+          ]
+        },
+        {
+          "id": "davison-ch13-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "T. Jefferson’s Fancy",
+          "printedPages": [
+            115
+          ]
+        },
+        {
+          "id": "davison-ch13-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Murphy’s ‘Diaper’ Weave",
+          "printedPages": [
+            115
+          ]
+        },
+        {
+          "id": "davison-ch13-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Finnish Table Linen",
+          "printedPages": [
+            116
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch14",
+      "number": 14,
+      "roman": "XIV",
+      "title": "Block Designs",
+      "printedPages": [
+        117,
+        124
+      ],
+      "entries": [
+        {
+          "id": "davison-ch14-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "New Canaan Check",
+          "printedPages": [
+            118
+          ]
+        },
+        {
+          "id": "davison-ch14-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Five after Eleven Check",
+          "printedPages": [
+            119
+          ]
+        },
+        {
+          "id": "davison-ch14-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Rosette",
+          "printedPages": [
+            119
+          ]
+        },
+        {
+          "id": "davison-ch14-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Elizabeth Jane’s Design",
+          "printedPages": [
+            120
+          ]
+        },
+        {
+          "id": "davison-ch14-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Johann D—’s No. 32",
+          "printedPages": [
+            120
+          ]
+        },
+        {
+          "id": "davison-ch14-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Maybaeth",
+          "printedPages": [
+            120
+          ]
+        },
+        {
+          "id": "davison-ch14-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Johann Schleelein’s No. 171",
+          "printedPages": [
+            121
+          ]
+        },
+        {
+          "id": "davison-ch14-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Johann Schleelein’s No. 110",
+          "printedPages": [
+            121
+          ]
+        },
+        {
+          "id": "davison-ch14-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "John Murphy No. 29",
+          "printedPages": [
+            121
+          ]
+        },
+        {
+          "id": "davison-ch14-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Rose and Block",
+          "printedPages": [
+            121
+          ]
+        },
+        {
+          "id": "davison-ch14-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Mary’s Pattern",
+          "printedPages": [
+            122
+          ]
+        },
+        {
+          "id": "davison-ch14-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "A Finnish Border",
+          "printedPages": [
+            122
+          ]
+        },
+        {
+          "id": "davison-ch14-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Eastern Wheels",
+          "printedPages": [
+            122
+          ]
+        },
+        {
+          "id": "davison-ch14-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Abigail Fairchild’s Legacy",
+          "printedPages": [
+            122
+          ]
+        },
+        {
+          "id": "davison-ch14-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Kutztown Flat Weave",
+          "printedPages": [
+            123
+          ]
+        },
+        {
+          "id": "davison-ch14-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Schleelein’s No. 41",
+          "printedPages": [
+            123
+          ]
+        },
+        {
+          "id": "davison-ch14-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "A German Pattern",
+          "printedPages": [
+            123
+          ]
+        },
+        {
+          "id": "davison-ch14-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Symmetry",
+          "printedPages": [
+            124
+          ]
+        },
+        {
+          "id": "davison-ch14-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "John Murphy’s No. 31",
+          "printedPages": [
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch15",
+      "number": 15,
+      "roman": "XV",
+      "title": "Diamonds",
+      "printedPages": [
+        125,
+        134
+      ],
+      "entries": [
+        {
+          "id": "davison-ch15-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Italian Diamond",
+          "printedPages": [
+            126,
+            127
+          ]
+        },
+        {
+          "id": "davison-ch15-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Four-Square Diamond",
+          "printedPages": [
+            128
+          ]
+        },
+        {
+          "id": "davison-ch15-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Four-Leaf Diamond",
+          "printedPages": [
+            128
+          ]
+        },
+        {
+          "id": "davison-ch15-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Modified Hop Vine",
+          "printedPages": [
+            128
+          ]
+        },
+        {
+          "id": "davison-ch15-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Finnish Diamond",
+          "printedPages": [
+            129
+          ]
+        },
+        {
+          "id": "davison-ch15-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Irish Chain",
+          "printedPages": [
+            130
+          ]
+        },
+        {
+          "id": "davison-ch15-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Double Diamond",
+          "printedPages": [
+            130
+          ]
+        },
+        {
+          "id": "davison-ch15-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "A Swedish Diamond",
+          "printedPages": [
+            130
+          ]
+        },
+        {
+          "id": "davison-ch15-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "‘Jacob’s Ladder’",
+          "printedPages": [
+            131
+          ]
+        },
+        {
+          "id": "davison-ch15-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Periwinkle",
+          "printedPages": [
+            131
+          ]
+        },
+        {
+          "id": "davison-ch15-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Johann Schleelein’s No. 123",
+          "printedPages": [
+            131
+          ]
+        },
+        {
+          "id": "davison-ch15-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Johann Schleelein’s No. 120",
+          "printedPages": [
+            131
+          ]
+        },
+        {
+          "id": "davison-ch15-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Honeysuckle Twill",
+          "printedPages": [
+            132
+          ]
+        },
+        {
+          "id": "davison-ch15-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Kirschbaum’s No. 4",
+          "printedPages": [
+            133
+          ]
+        },
+        {
+          "id": "davison-ch15-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "German Design",
+          "printedPages": [
+            133
+          ]
+        },
+        {
+          "id": "davison-ch15-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Blooming Leaf",
+          "printedPages": [
+            133
+          ]
+        },
+        {
+          "id": "davison-ch15-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Squares with Diamonds",
+          "printedPages": [
+            134
+          ]
+        },
+        {
+          "id": "davison-ch15-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Star of Bethlehem",
+          "printedPages": [
+            134
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch16",
+      "number": 16,
+      "roman": "XVI",
+      "title": "Rose Designs",
+      "printedPages": [
+        135,
+        140
+      ],
+      "entries": [
+        {
+          "id": "davison-ch16-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Rose Valley",
+          "printedPages": [
+            136
+          ]
+        },
+        {
+          "id": "davison-ch16-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "King’s Flower",
+          "printedPages": [
+            137
+          ]
+        },
+        {
+          "id": "davison-ch16-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Bachelor’s Button",
+          "printedPages": [
+            137
+          ]
+        },
+        {
+          "id": "davison-ch16-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Je Langer, Je Lieber",
+          "printedPages": [
+            137
+          ]
+        },
+        {
+          "id": "davison-ch16-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Old Linen Weave",
+          "printedPages": [
+            137
+          ]
+        },
+        {
+          "id": "davison-ch16-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Conestoga",
+          "printedPages": [
+            138
+          ]
+        },
+        {
+          "id": "davison-ch16-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Caroline King’s Pattern",
+          "printedPages": [
+            138
+          ]
+        },
+        {
+          "id": "davison-ch16-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Johann D—’s Design No. 2",
+          "printedPages": [
+            138
+          ]
+        },
+        {
+          "id": "davison-ch16-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Johann Ludwig Speck’s Design No. 1",
+          "printedPages": [
+            139
+          ]
+        },
+        {
+          "id": "davison-ch16-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Brookcroft",
+          "printedPages": [
+            139
+          ]
+        },
+        {
+          "id": "davison-ch16-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Yin & Yan",
+          "printedPages": [
+            139
+          ]
+        },
+        {
+          "id": "davison-ch16-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Hermosa",
+          "printedPages": [
+            139
+          ]
+        },
+        {
+          "id": "davison-ch16-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Rose of Sharon",
+          "printedPages": [
+            139
+          ]
+        },
+        {
+          "id": "davison-ch16-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "A Miniature",
+          "printedPages": [
+            140
+          ]
+        },
+        {
+          "id": "davison-ch16-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "A Kutztown Design No. 3",
+          "printedPages": [
+            140
+          ]
+        },
+        {
+          "id": "davison-ch16-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Pennsylvania Dutch Rose Fancy",
+          "printedPages": [
+            140
+          ]
+        },
+        {
+          "id": "davison-ch16-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Ancient Rose Design",
+          "printedPages": [
+            140
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch17",
+      "number": 17,
+      "roman": "XVII",
+      "title": "Overshot Novelties",
+      "printedPages": [
+        141,
+        148
+      ],
+      "entries": [
+        {
+          "id": "davison-ch17-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "China Leaves",
+          "printedPages": [
+            142
+          ]
+        },
+        {
+          "id": "davison-ch17-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Lucile’s Pattern",
+          "printedPages": [
+            142
+          ]
+        },
+        {
+          "id": "davison-ch17-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Friend Evelyn",
+          "printedPages": [
+            142
+          ]
+        },
+        {
+          "id": "davison-ch17-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Primavera",
+          "printedPages": [
+            143
+          ]
+        },
+        {
+          "id": "davison-ch17-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Bina and Vin",
+          "printedPages": [
+            143
+          ]
+        },
+        {
+          "id": "davison-ch17-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Walthena",
+          "printedPages": [
+            143
+          ]
+        },
+        {
+          "id": "davison-ch17-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Susan Hanes",
+          "printedPages": [
+            143
+          ]
+        },
+        {
+          "id": "davison-ch17-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Nappy’s Butterflies",
+          "printedPages": [
+            144
+          ]
+        },
+        {
+          "id": "davison-ch17-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Kay’s Design",
+          "printedPages": [
+            144
+          ]
+        },
+        {
+          "id": "davison-ch17-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Latticed Windows",
+          "printedPages": [
+            144
+          ]
+        },
+        {
+          "id": "davison-ch17-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Carol Porter",
+          "printedPages": [
+            145
+          ]
+        },
+        {
+          "id": "davison-ch17-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Maltese Cross",
+          "printedPages": [
+            145
+          ]
+        },
+        {
+          "id": "davison-ch17-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Bernice’s Garden",
+          "printedPages": [
+            146
+          ]
+        },
+        {
+          "id": "davison-ch17-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Mary Ann Ostrander Pattern",
+          "printedPages": [
+            146
+          ]
+        },
+        {
+          "id": "davison-ch17-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "‘Primrose in Diamonds’",
+          "printedPages": [
+            146
+          ]
+        },
+        {
+          "id": "davison-ch17-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Weaver Rose’s Coverlet No. 28",
+          "printedPages": [
+            146
+          ]
+        },
+        {
+          "id": "davison-ch17-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Note from John Landes Book",
+          "printedPages": [
+            147
+          ]
+        },
+        {
+          "id": "davison-ch17-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Jennifer’s Star",
+          "printedPages": [
+            147
+          ]
+        },
+        {
+          "id": "davison-ch17-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Martha Washington",
+          "printedPages": [
+            147
+          ]
+        },
+        {
+          "id": "davison-ch17-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Sun, Moon and Stars",
+          "printedPages": [
+            147
+          ]
+        },
+        {
+          "id": "davison-ch17-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Valley Forge Dogwood",
+          "printedPages": [
+            148
+          ]
+        },
+        {
+          "id": "davison-ch17-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Charity Beck",
+          "printedPages": [
+            148
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch18",
+      "number": 18,
+      "roman": "XVIII",
+      "title": "Large Overshot",
+      "printedPages": [
+        149,
+        170
+      ],
+      "entries": [
+        {
+          "id": "davison-ch18-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Pioneer Trail",
+          "printedPages": [
+            150
+          ]
+        },
+        {
+          "id": "davison-ch18-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Queen’s Delight",
+          "printedPages": [
+            151
+          ]
+        },
+        {
+          "id": "davison-ch18-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Double Irish Chain",
+          "printedPages": [
+            152
+          ]
+        },
+        {
+          "id": "davison-ch18-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Poor Man’s Damask",
+          "printedPages": [
+            153
+          ]
+        },
+        {
+          "id": "davison-ch18-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Isaac’s Favorite",
+          "printedPages": [
+            154
+          ]
+        },
+        {
+          "id": "davison-ch18-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Sara Liz Pattern",
+          "printedPages": [
+            154
+          ]
+        },
+        {
+          "id": "davison-ch18-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Sylvia’s Diamonds",
+          "printedPages": [
+            155
+          ]
+        },
+        {
+          "id": "davison-ch18-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "John Madison",
+          "printedPages": [
+            156
+          ]
+        },
+        {
+          "id": "davison-ch18-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Hancock Coverlet",
+          "printedPages": [
+            157
+          ]
+        },
+        {
+          "id": "davison-ch18-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Berea Sunflower",
+          "printedPages": [
+            158
+          ]
+        },
+        {
+          "id": "davison-ch18-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Lily of the West",
+          "printedPages": [
+            159
+          ]
+        },
+        {
+          "id": "davison-ch18-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Dolly Pratt Coverlet",
+          "printedPages": [
+            160
+          ]
+        },
+        {
+          "id": "davison-ch18-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Catalpa Flowers",
+          "printedPages": [
+            161
+          ]
+        },
+        {
+          "id": "davison-ch18-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Blooming Leaf of Mexico",
+          "printedPages": [
+            162
+          ]
+        },
+        {
+          "id": "davison-ch18-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Abigail Steadman Coverlet",
+          "printedPages": [
+            163
+          ]
+        },
+        {
+          "id": "davison-ch18-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "Johann Speck’s Design No. 33",
+          "printedPages": [
+            164
+          ]
+        },
+        {
+          "id": "davison-ch18-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Rose im Dorn",
+          "printedPages": [
+            165
+          ]
+        },
+        {
+          "id": "davison-ch18-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Wandering Vine",
+          "printedPages": [
+            166
+          ]
+        },
+        {
+          "id": "davison-ch18-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Gertrude’s Fancy",
+          "printedPages": [
+            167
+          ]
+        },
+        {
+          "id": "davison-ch18-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Traditional Roses and Rings",
+          "printedPages": [
+            168
+          ]
+        },
+        {
+          "id": "davison-ch18-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Compass and Square",
+          "printedPages": [
+            169
+          ]
+        },
+        {
+          "id": "davison-ch18-n022",
+          "order": 22,
+          "sourceNumber": "22",
+          "kind": "threading",
+          "title": "Susan Crane Prentiss Coverlet",
+          "printedPages": [
+            170
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch19",
+      "number": 19,
+      "roman": "XIX",
+      "title": "Squares with Border",
+      "printedPages": [
+        171,
+        186
+      ],
+      "entries": [
+        {
+          "id": "davison-ch19-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Poor Man’s Damask",
+          "printedPages": [
+            173
+          ]
+        },
+        {
+          "id": "davison-ch19-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Finnish Figure",
+          "printedPages": [
+            174
+          ]
+        },
+        {
+          "id": "davison-ch19-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Double Diamond Border",
+          "printedPages": [
+            175
+          ]
+        },
+        {
+          "id": "davison-ch19-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Whig Rose",
+          "printedPages": [
+            176
+          ]
+        },
+        {
+          "id": "davison-ch19-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "‘Queen Ann’s Lace’",
+          "printedPages": [
+            177
+          ]
+        },
+        {
+          "id": "davison-ch19-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Sea Star",
+          "printedPages": [
+            178
+          ]
+        },
+        {
+          "id": "davison-ch19-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Four Leaf Clover",
+          "printedPages": [
+            179
+          ]
+        },
+        {
+          "id": "davison-ch19-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Rose in the Wilderness",
+          "printedPages": [
+            180
+          ]
+        },
+        {
+          "id": "davison-ch19-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "‘Snowballs’",
+          "printedPages": [
+            181
+          ]
+        },
+        {
+          "id": "davison-ch19-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Wheel and Cross",
+          "printedPages": [
+            182
+          ]
+        },
+        {
+          "id": "davison-ch19-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Bachelor’s Fancy",
+          "printedPages": [
+            183
+          ]
+        },
+        {
+          "id": "davison-ch19-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Lee’s Surrender",
+          "printedPages": [
+            184
+          ]
+        },
+        {
+          "id": "davison-ch19-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "Flourishing Wave Border",
+          "printedPages": [
+            185
+          ]
+        },
+        {
+          "id": "davison-ch19-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Norse Kitchen",
+          "printedPages": [
+            186
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch20",
+      "number": 20,
+      "roman": "XX",
+      "title": "Summer and Winter",
+      "printedPages": [
+        187,
+        194
+      ],
+      "entries": [
+        {
+          "id": "davison-ch20-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Unit Treadlings",
+          "printedPages": [
+            188
+          ]
+        },
+        {
+          "id": "davison-ch20-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Diamond and Block Pattern",
+          "printedPages": [
+            188
+          ]
+        },
+        {
+          "id": "davison-ch20-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Johann D—’s No. 34 in Summer and Winter Weave",
+          "printedPages": [
+            189
+          ]
+        },
+        {
+          "id": "davison-ch20-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Summer & Winter Plaid",
+          "printedPages": [
+            189
+          ]
+        },
+        {
+          "id": "davison-ch20-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Ester Perheentupa’s No. 87",
+          "printedPages": [
+            190
+          ]
+        },
+        {
+          "id": "davison-ch20-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Summer & Winter Ripples",
+          "printedPages": [
+            190
+          ]
+        },
+        {
+          "id": "davison-ch20-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Monk’s Belt Blocks",
+          "printedPages": [
+            191
+          ]
+        },
+        {
+          "id": "davison-ch20-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Monk’s Belt Blocks",
+          "printedPages": [
+            191
+          ]
+        },
+        {
+          "id": "davison-ch20-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Summer & Winter Stripes",
+          "printedPages": [
+            191
+          ]
+        },
+        {
+          "id": "davison-ch20-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "A Narrow Border",
+          "printedPages": [
+            192
+          ]
+        },
+        {
+          "id": "davison-ch20-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "A Wide Border",
+          "printedPages": [
+            193
+          ]
+        },
+        {
+          "id": "davison-ch20-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Summer & Winter Plaid",
+          "printedPages": [
+            194
+          ]
+        }
+      ]
+    },
+    {
+      "id": "davison-ch21",
+      "number": 21,
+      "roman": "XXI",
+      "title": "Crackle Weave",
+      "printedPages": [
+        195,
+        202
+      ],
+      "entries": [
+        {
+          "id": "davison-ch21-n001",
+          "order": 1,
+          "sourceNumber": "1",
+          "kind": "threading",
+          "title": "Crackle Weave Twill",
+          "printedPages": [
+            195
+          ]
+        },
+        {
+          "id": "davison-ch21-n002",
+          "order": 2,
+          "sourceNumber": "2",
+          "kind": "threading",
+          "title": "Crackle Weave Diamond",
+          "printedPages": [
+            196
+          ]
+        },
+        {
+          "id": "davison-ch21-n003",
+          "order": 3,
+          "sourceNumber": "3",
+          "kind": "threading",
+          "title": "Crackle Weave Fantasy",
+          "printedPages": [
+            196
+          ]
+        },
+        {
+          "id": "davison-ch21-n004",
+          "order": 4,
+          "sourceNumber": "4",
+          "kind": "threading",
+          "title": "Finnish Towel",
+          "printedPages": [
+            197
+          ]
+        },
+        {
+          "id": "davison-ch21-n005",
+          "order": 5,
+          "sourceNumber": "5",
+          "kind": "threading",
+          "title": "Crackle Weave Plaid",
+          "printedPages": [
+            197
+          ]
+        },
+        {
+          "id": "davison-ch21-n006",
+          "order": 6,
+          "sourceNumber": "6",
+          "kind": "threading",
+          "title": "Crackle Weave Miniature",
+          "printedPages": [
+            197
+          ]
+        },
+        {
+          "id": "davison-ch21-n007",
+          "order": 7,
+          "sourceNumber": "7",
+          "kind": "threading",
+          "title": "Irregular Twill",
+          "printedPages": [
+            197
+          ]
+        },
+        {
+          "id": "davison-ch21-n008",
+          "order": 8,
+          "sourceNumber": "8",
+          "kind": "threading",
+          "title": "Rippled Diamond",
+          "printedPages": [
+            198
+          ]
+        },
+        {
+          "id": "davison-ch21-n009",
+          "order": 9,
+          "sourceNumber": "9",
+          "kind": "threading",
+          "title": "Simplicity",
+          "printedPages": [
+            198
+          ]
+        },
+        {
+          "id": "davison-ch21-n010",
+          "order": 10,
+          "sourceNumber": "10",
+          "kind": "threading",
+          "title": "Mary B.",
+          "printedPages": [
+            198
+          ]
+        },
+        {
+          "id": "davison-ch21-n011",
+          "order": 11,
+          "sourceNumber": "11",
+          "kind": "threading",
+          "title": "Medallion",
+          "printedPages": [
+            199
+          ]
+        },
+        {
+          "id": "davison-ch21-n012",
+          "order": 12,
+          "sourceNumber": "12",
+          "kind": "threading",
+          "title": "Wheel and Cross",
+          "printedPages": [
+            199
+          ]
+        },
+        {
+          "id": "davison-ch21-n013",
+          "order": 13,
+          "sourceNumber": "13",
+          "kind": "threading",
+          "title": "A French Pattern",
+          "printedPages": [
+            199
+          ]
+        },
+        {
+          "id": "davison-ch21-n014",
+          "order": 14,
+          "sourceNumber": "14",
+          "kind": "threading",
+          "title": "Anne Mueller’s Crackle Weave",
+          "printedPages": [
+            200
+          ]
+        },
+        {
+          "id": "davison-ch21-n015",
+          "order": 15,
+          "sourceNumber": "15",
+          "kind": "threading",
+          "title": "Scandinavian Favorite",
+          "printedPages": [
+            200
+          ]
+        },
+        {
+          "id": "davison-ch21-n016",
+          "order": 16,
+          "sourceNumber": "16",
+          "kind": "threading",
+          "title": "An Old Motif",
+          "printedPages": [
+            200
+          ]
+        },
+        {
+          "id": "davison-ch21-n017",
+          "order": 17,
+          "sourceNumber": "17",
+          "kind": "threading",
+          "title": "Blooming Leaf in Crackle Weave",
+          "printedPages": [
+            201
+          ]
+        },
+        {
+          "id": "davison-ch21-n018",
+          "order": 18,
+          "sourceNumber": "18",
+          "kind": "threading",
+          "title": "Mirrored Minorets",
+          "printedPages": [
+            201
+          ]
+        },
+        {
+          "id": "davison-ch21-n019",
+          "order": 19,
+          "sourceNumber": "19",
+          "kind": "threading",
+          "title": "Rhyme and Reason",
+          "printedPages": [
+            201
+          ]
+        },
+        {
+          "id": "davison-ch21-n020",
+          "order": 20,
+          "sourceNumber": "20",
+          "kind": "threading",
+          "title": "Garden Path",
+          "printedPages": [
+            202
+          ]
+        },
+        {
+          "id": "davison-ch21-n021",
+          "order": 21,
+          "sourceNumber": "21",
+          "kind": "threading",
+          "title": "Small Rose Crackle Weave",
+          "printedPages": [
+            202
+          ]
+        }
+      ]
+    }
+  ]
+}

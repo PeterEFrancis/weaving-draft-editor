@@ -739,6 +739,7 @@
 
   <script src="assets/patterns/learning-to-weave.js"></script>
   <script src="assets/patterns/handweavers-pattern-directory.js"></script>
+  <script src="assets/patterns/handweavers-pattern-book.js"></script>
   <script src="assets/patterns/handwoven.js"></script>
   <script src="assets/patterns/search-previews.js"></script>
   <script>
@@ -2649,6 +2650,13 @@
         }
       },
       handweaversPatternDirectoryCatalog,
+      {
+        ...handweaversPatternBookCatalog,
+        source: {
+          notesPath: "assets/patterns/handweavers-pattern-book.md",
+          ...handweaversPatternBookCatalog.source
+        }
+      },
       handwovenCatalog
     ];
 
@@ -2678,9 +2686,11 @@
         const creditedAuthor = entry.designer || source.author;
         const pattern = {
           id: entry.id,
+          sourceBaseId: entry.sourceBaseId || entry.id,
           publicationId: source.id,
           category: source.title,
           title: entry.title,
+          shafts: entry.shafts,
           shortMeta: `${entry.shafts} shafts`,
           kicker: `${groupLabel} · ${entry.shafts} shafts · ${entry.kind || "Book draft"}`,
           description: entry.description,
@@ -2719,6 +2729,24 @@
 
     function getPatternById(id) {
       return patterns.find(pattern => pattern.id === id) || null;
+    }
+
+    function getBookPatternTitle(pattern) {
+      return pattern.title.replace(/ · Treadling [IVXLCDM]+$/, "");
+    }
+
+    function getBookPatternGroups(family) {
+      const groups = new Map();
+      family.patterns.forEach(pattern => {
+        const key = pattern.sourceBaseId || pattern.id;
+        if (!groups.has(key)) groups.set(key, {
+          id: key,
+          title: getBookPatternTitle(pattern),
+          patterns: []
+        });
+        groups.get(key).patterns.push(pattern);
+      });
+      return [...groups.values()];
     }
 
     function getYarn(draft, colorId) {
@@ -3671,7 +3699,11 @@
     }
 
     function getVisiblePatterns() {
-      return selectedFamily?.book ? [selectedBookPattern || selectedFamily.patterns[0]] : selectedFamily?.patterns || [];
+      if (!selectedFamily?.book) return selectedFamily?.patterns || [];
+      const selected = selectedBookPattern || selectedFamily.patterns[0];
+      return getBookPatternGroups(selectedFamily).find(group =>
+        group.id === (selected.sourceBaseId || selected.id)
+      )?.patterns || [selected];
     }
 
     function renderBookIntro(family) {
@@ -3707,16 +3739,20 @@
       if (selectedFamily.book) {
         renderBookIntro(selectedFamily);
         const picker = document.getElementById("book-pattern");
-        picker.replaceChildren(...selectedFamily.patterns.map(pattern => {
+        const groups = getBookPatternGroups(selectedFamily);
+        picker.replaceChildren(...groups.map(group => {
           const option = document.createElement("option");
-          option.value = pattern.id;
-          option.textContent = pattern.title;
+          option.value = group.patterns[0].id;
+          option.textContent = group.title;
           return option;
         }));
-        picker.value = selectedBookPattern.id;
+        picker.value = groups.find(group => group.id === selectedBookPattern.sourceBaseId)?.patterns[0].id
+          || selectedBookPattern.id;
       }
       document.getElementById("pattern-kicker").textContent = selectedFamily.category;
-      document.getElementById("pattern-title").textContent = selectedFamily.title;
+      document.getElementById("pattern-title").textContent = selectedFamily.book
+        ? getBookPatternTitle(selectedBookPattern)
+        : selectedFamily.title;
       container.replaceChildren();
 
       getVisiblePatterns().forEach(pattern => {
@@ -3746,8 +3782,11 @@
 
     function updatePatternNavigation() {
       document.querySelectorAll(".pattern-button[data-route-id]").forEach(button => {
-        const isActive = button.dataset.patternId
-          ? button.dataset.patternId === selectedPatternId
+        const buttonPattern = button.dataset.patternId ? getPatternById(button.dataset.patternId) : null;
+        const isActive = buttonPattern
+          ? selectedFamily?.book
+            ? buttonPattern.sourceBaseId === selectedBookPattern?.sourceBaseId
+            : button.dataset.patternId === selectedPatternId
           : button.dataset.familyId === selectedFamily?.id;
         button.setAttribute("aria-current", String(isActive));
       });
@@ -3768,7 +3807,7 @@
 
       renderSelectedFamily();
 
-      if (!family.book && !updateHash && isPatternRoute) {
+      if (!updateHash && isPatternRoute) {
         window.requestAnimationFrame(() => {
           document.getElementById(`variant-${focusPattern.id}`)?.scrollIntoView({ block: "start" });
         });
@@ -3868,7 +3907,8 @@
       const name = document.createElement("span");
       name.className = "section-name";
       name.textContent = family.title;
-      toggle.append(name, createPatternCount(family.patterns));
+      const patternGroups = getBookPatternGroups(family);
+      toggle.append(name, createPatternCount(patternGroups));
       toggle.addEventListener("click", () => setExpandedPublishedGroup(
         expandedPublishedGroupId === family.id ? null : family.id
       ));
@@ -3878,8 +3918,8 @@
       panel.className = "published-section-panel";
       panel.setAttribute("aria-labelledby", toggle.id);
       panel.hidden = true;
-      family.patterns.forEach(pattern => panel.appendChild(createPatternButton({
-        title: pattern.title, familyId: family.id, patternId: pattern.id
+      patternGroups.forEach(group => panel.appendChild(createPatternButton({
+        title: group.title, familyId: family.id, patternId: group.patterns[0].id
       })));
       group.append(heading, panel);
       return group;
@@ -3906,7 +3946,9 @@
         const name = document.createElement("span");
         name.className = "section-name";
         name.textContent = section.title;
-        toggle.append(name, createPatternCount(section.families.flatMap(family => family.patterns)));
+        toggle.append(name, createPatternCount(section.families.flatMap(family =>
+          family.book ? getBookPatternGroups(family) : family.patterns
+        )));
         toggle.addEventListener("click", () => setExpandedSection(expandedSectionId === section.id ? null : section.id));
         heading.appendChild(toggle);
         const panel = document.createElement("div");

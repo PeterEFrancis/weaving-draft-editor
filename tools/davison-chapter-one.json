@@ -1,0 +1,2887 @@
+{
+  "schemaVersion": 1,
+  "chapterId": "davison-ch01",
+  "sourceThreadingOrder": "right-to-left",
+  "sourceTreadleOrder": "right-to-left",
+  "sourceTieupMarks": "lowered shafts",
+  "entryOrder": [
+    "davison-ch01-n001",
+    "davison-ch01-n002",
+    "davison-ch01-n003",
+    "davison-ch01-n004",
+    "davison-ch01-n005",
+    "davison-ch01-n006",
+    "davison-ch01-n007",
+    "davison-ch01-n008",
+    "davison-ch01-n009",
+    "davison-ch01-n010",
+    "davison-ch01-n011",
+    "davison-ch01-n012",
+    "davison-ch01-n013",
+    "davison-ch01-n014",
+    "davison-ch01-n015",
+    "davison-ch01-n016",
+    "davison-ch01-n017",
+    "davison-ch01-n018",
+    "davison-ch01-n019",
+    "davison-ch01-n020",
+    "davison-ch01-n021",
+    "davison-ch01-n022",
+    "davison-ch01-n023",
+    "davison-ch01-n024",
+    "davison-ch01-n025",
+    "davison-ch01-n026",
+    "davison-ch01-n027",
+    "davison-ch01-n028",
+    "davison-ch01-n029",
+    "davison-ch01-n030",
+    "davison-ch01-n031",
+    "davison-ch01-n032",
+    "davison-ch01-n033",
+    "davison-ch01-n034",
+    "davison-ch01-n035",
+    "davison-ch01-n036",
+    "davison-ch01-n037",
+    "davison-ch01-n038",
+    "davison-ch01-n039",
+    "davison-ch01-n040"
+  ],
+  "entries": {
+    "davison-ch01-n001": {
+      "id": "davison-ch01-n001",
+      "title": "Plain Weave, Cotton, or Taffeta, Alpaca Weave & Homespun Wool Weave and Tabby",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        5,
+        6,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n002": {
+      "id": "davison-ch01-n002",
+      "title": "Balanced Twill, Tweed Weave, & Joseph France’s ‘Double Genoa & Denim’",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n003": {
+      "id": "davison-ch01-n003",
+      "title": "Vertical Pointed Twill",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        3,
+        2
+      ]
+    },
+    "davison-ch01-n004": {
+      "id": "davison-ch01-n004",
+      "title": "Vertical Herringbone",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        4,
+        3,
+        2,
+        4,
+        1,
+        2,
+        3
+      ]
+    },
+    "davison-ch01-n005": {
+      "id": "davison-ch01-n005",
+      "title": "Long and Short Pointed Twill",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        3,
+        2,
+        1,
+        4,
+        3,
+        2,
+        1
+      ]
+    },
+    "davison-ch01-n006": {
+      "id": "davison-ch01-n006",
+      "title": "Cord Weave — Reversible",
+      "printedPage": 4,
+      "pdfPage": 30,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        4,
+        6,
+        4,
+        5
+      ]
+    },
+    "davison-ch01-n007": {
+      "id": "davison-ch01-n007",
+      "title": "Halvorsen No. 5 Pebble Weave",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        4,
+        5,
+        3,
+        6
+      ]
+    },
+    "davison-ch01-n008": {
+      "id": "davison-ch01-n008",
+      "title": "Pebble Weave",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        6,
+        5,
+        3,
+        1
+      ]
+    },
+    "davison-ch01-n009": {
+      "id": "davison-ch01-n009",
+      "title": "Vertical Skip Twill",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        1,
+        4,
+        2
+      ]
+    },
+    "davison-ch01-n010": {
+      "id": "davison-ch01-n010",
+      "title": "Crepe Weave",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        2,
+        3,
+        1
+      ]
+    },
+    "davison-ch01-n011": {
+      "id": "davison-ch01-n011",
+      "title": "John Murphy’s No. 50, Fig. 24, p. 44, ‘Stockinett’",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        1,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n012": {
+      "id": "davison-ch01-n012",
+      "title": "Joseph France’s No. 14, ‘Stockinett’",
+      "printedPage": 5,
+      "pdfPage": 31,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        2,
+        4,
+        1
+      ]
+    },
+    "davison-ch01-n013": {
+      "id": "davison-ch01-n013",
+      "title": "Warp Surface Twill",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n014": {
+      "id": "davison-ch01-n014",
+      "title": "Vertical Pointed Twill",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        3,
+        2
+      ]
+    },
+    "davison-ch01-n015": {
+      "id": "davison-ch01-n015",
+      "title": "Novelty Twill",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4,
+        3,
+        4,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n016": {
+      "id": "davison-ch01-n016",
+      "title": "Same Yarn as Warp",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        5,
+        6,
+        3,
+        4,
+        5,
+        6,
+        1,
+        3,
+        4,
+        2,
+        3,
+        1,
+        2,
+        4
+      ]
+    },
+    "davison-ch01-n017": {
+      "id": "davison-ch01-n017",
+      "title": "Diagonal Rib — Collin No. 49",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        3,
+        2,
+        4
+      ]
+    },
+    "davison-ch01-n018": {
+      "id": "davison-ch01-n018",
+      "title": "France’s No. 18, ‘Satinett’",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3
+      ]
+    },
+    "davison-ch01-n019": {
+      "id": "davison-ch01-n019",
+      "title": "Tweel for Pillow Cases or Bed Ticking — No. 54, Fig. 26, p. 45, John Murphy",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        4,
+        1,
+        2,
+        4,
+        3,
+        2,
+        1,
+        4,
+        3
+      ]
+    },
+    "davison-ch01-n020": {
+      "id": "davison-ch01-n020",
+      "title": "Novelty Twill",
+      "printedPage": 6,
+      "pdfPage": 32,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        6,
+        5,
+        4,
+        1,
+        2,
+        3
+      ]
+    },
+    "davison-ch01-n021": {
+      "id": "davison-ch01-n021",
+      "title": "‘Old Ribs’ — Joseph France No. 1 (Used Fine Weft)",
+      "printedPage": 7,
+      "pdfPage": 33,
+      "shafts": 4,
+      "treadles": 2,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        1,
+        2
+      ]
+    },
+    "davison-ch01-n022": {
+      "id": "davison-ch01-n022",
+      "title": "Joseph France No. 20, ‘Velveree’",
+      "printedPage": 7,
+      "pdfPage": 33,
+      "shafts": 4,
+      "treadles": 4,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        2,
+        3
+      ]
+    },
+    "davison-ch01-n023": {
+      "id": "davison-ch01-n023",
+      "title": "Swiss Twill from Schöblinger",
+      "printedPage": 7,
+      "pdfPage": 33,
+      "shafts": 4,
+      "treadles": 4,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n024": {
+      "id": "davison-ch01-n024",
+      "title": "Weft Surface Twill",
+      "printedPage": 7,
+      "pdfPage": 33,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n025": {
+      "id": "davison-ch01-n025",
+      "title": "Joseph France’s ‘Ribs Three & One’",
+      "printedPage": 7,
+      "pdfPage": 33,
+      "shafts": 4,
+      "treadles": 2,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        1,
+        2
+      ]
+    },
+    "davison-ch01-n026": {
+      "id": "davison-ch01-n026",
+      "title": "Double Faced Effect, Double Thickness — Henriksson No. 194",
+      "printedPage": 8,
+      "pdfPage": 34,
+      "shafts": 4,
+      "treadles": 8,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          3
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "davison-ch01-n027": {
+      "id": "davison-ch01-n027",
+      "title": "Double Faced Effect, Double Thickness — Halvorsen No. 193",
+      "printedPage": 8,
+      "pdfPage": 34,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n028": {
+      "id": "davison-ch01-n028",
+      "title": "Double Faced Effect, Double Thickness — M.P.D.",
+      "printedPage": 8,
+      "pdfPage": 34,
+      "shafts": 4,
+      "treadles": 8,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "davison-ch01-n029": {
+      "id": "davison-ch01-n029",
+      "title": "Horizontal Stripes",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 8,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "davison-ch01-n030": {
+      "id": "davison-ch01-n030",
+      "title": "Halvorsen No. 175 — Plain Weave on Reverse Side",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 3,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          3
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        2,
+        1
+      ]
+    },
+    "davison-ch01-n031": {
+      "id": "davison-ch01-n031",
+      "title": "Horizontal Stripes",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n032": {
+      "id": "davison-ch01-n032",
+      "title": "Fantasy",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          3,
+          4
+        ],
+        [
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n033": {
+      "id": "davison-ch01-n033",
+      "title": "Basket Weave Variation",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n034": {
+      "id": "davison-ch01-n034",
+      "title": "Halvorsen p. 100",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 3,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1
+        ]
+      ],
+      "treadling": [
+        1,
+        2,
+        1,
+        2,
+        3
+      ]
+    },
+    "davison-ch01-n035": {
+      "id": "davison-ch01-n035",
+      "title": "Same as Warp Yarn",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        1,
+        4,
+        2,
+        3,
+        5,
+        6,
+        3,
+        2,
+        4,
+        1,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n036": {
+      "id": "davison-ch01-n036",
+      "title": "Crepe Weave",
+      "printedPage": 9,
+      "pdfPage": 35,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        4,
+        6,
+        1,
+        5,
+        3,
+        6,
+        2,
+        5
+      ]
+    },
+    "davison-ch01-n037": {
+      "id": "davison-ch01-n037",
+      "title": "Horizontal Stripes",
+      "printedPage": 10,
+      "pdfPage": 36,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          4
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1
+        ],
+        [
+          4
+        ],
+        [
+          3
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        5,
+        6,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "davison-ch01-n038": {
+      "id": "davison-ch01-n038",
+      "title": "Crepe Weave",
+      "printedPage": 10,
+      "pdfPage": 36,
+      "shafts": 4,
+      "treadles": 6,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "treadling": [
+        3,
+        5,
+        6
+      ]
+    },
+    "davison-ch01-n039": {
+      "id": "davison-ch01-n039",
+      "title": "Double Weave Open at One Side for Weaving Twice the Width of the Warp — Oelsner & Dale p. 264; Perheentupa No. 212-b",
+      "printedPage": 10,
+      "pdfPage": 36,
+      "shafts": 4,
+      "treadles": 4,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          2,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          3
+        ]
+      ],
+      "treadling": [
+        4,
+        2,
+        3,
+        1
+      ]
+    },
+    "davison-ch01-n040": {
+      "id": "davison-ch01-n040",
+      "title": "Double Weave Tubing — Perheentupa No. 212-a",
+      "printedPage": 10,
+      "pdfPage": 36,
+      "shafts": 4,
+      "treadles": 4,
+      "threading": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "tieupLowered": [
+        [
+          4
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          2
+        ],
+        [
+          1,
+          2,
+          4
+        ]
+      ],
+      "tieupLifted": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1
+        ],
+        [
+          1,
+          3,
+          4
+        ],
+        [
+          3
+        ]
+      ],
+      "treadling": [
+        4,
+        3,
+        2,
+        1
+      ]
+    }
+  }
+}

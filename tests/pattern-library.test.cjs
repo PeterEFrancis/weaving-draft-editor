@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
+const davisonManifest = JSON.parse(fs.readFileSync(path.join(root, 'tools/davison-manifest.json'), 'utf8'));
 const context = vm.createContext({});
 const html = fs.readFileSync(path.join(root, 'pattern-library.html'), 'utf8');
 const catalogScripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)]
@@ -17,6 +18,7 @@ const get = expression => JSON.parse(JSON.stringify(vm.runInContext(expression, 
 const patterns = get('patterns');
 const catalog = get('learningToWeaveCatalog');
 const dixonCatalog = get('handweaversPatternDirectoryCatalog');
+const davisonCatalog = get('handweaversPatternBookCatalog');
 const handwovenCatalog = get('handwovenCatalog');
 const families = get('patternFamilies');
 const byId = id => patterns.find(p => p.id === `chandler-${id}`);
@@ -114,14 +116,17 @@ test('library sections separate basic categories from publications without losin
   const basic = sections.filter(section => section.collection === 'basic');
   const published = sections.filter(section => section.collection === 'published');
   assert.equal(basic.length, new Set(families.filter(family => !family.book).map(family => family.category)).size);
-  assert.equal(published.length, 3);
+  assert.equal(published.length, 4);
   const chandler = published.find(section => section.id === 'published-learning-to-weave');
   const dixon = published.find(section => section.id === 'published-handweavers-pattern-directory');
+  const davison = published.find(section => section.id === 'published-handweavers-pattern-book');
   const handwoven = published.find(section => section.id === 'published-handwoven');
   assert.equal(chandler.title, 'Learning to Weave');
   assert.equal(chandler.families.length, 11);
   assert.equal(dixon.title, dixonCatalog.source.title);
   assert.equal(dixon.families.length, dixonCatalog.groups.length);
+  assert.equal(davison.title, davisonCatalog.source.title);
+  assert.equal(davison.families.length, davisonCatalog.groups.length);
   assert.equal(handwoven.title, 'Handwoven');
   assert.equal(handwoven.families.length, 39);
   assert.equal(new Set(sections.map(section => section.id)).size, sections.length);
@@ -246,15 +251,141 @@ test('Dixon retains source exceptions and expanded repeats', () => {
   assert.equal(entry('dixon-p176-s03').lifts.length, 46);
 });
 
+test('Davison covers every named source entry while keeping treadling variants together', () => {
+  const sourceEntries = davisonManifest.chapters.flatMap(chapter =>
+    chapter.entries.map(entry => ({ ...entry, groupId: chapter.id }))
+  );
+  const sourceById = new Map(sourceEntries.map(entry => [entry.id, entry]));
+  assert.equal(davisonManifest.chapters.length, 21);
+  assert.equal(sourceEntries.length, 417);
+  assert.equal(sourceEntries.filter(entry => entry.kind === 'treadling').length, 40);
+  assert.equal(sourceEntries.filter(entry => entry.kind === 'threading').length, 377);
+  assert.equal(davisonCatalog.groups.length, 21);
+  assert.deepEqual(davisonCatalog.groups.map(group => group.id), davisonManifest.chapters.map(chapter => chapter.id));
+  assert.ok(davisonCatalog.patterns.length >= sourceEntries.length);
+  assert.equal(new Set(davisonCatalog.patterns.map(entry => entry.id)).size, davisonCatalog.patterns.length);
+  const represented = new Set();
+  for (const entry of davisonCatalog.patterns) {
+    const sourceBaseId = entry.sourceBaseId || entry.id;
+    const sourceEntry = sourceById.get(sourceBaseId);
+    assert.ok(sourceEntry, `${entry.id}: known named source entry`);
+    assert.equal(entry.groupId, sourceEntry.groupId, entry.id);
+    assert.ok(entry.title && entry.description && entry.pages, `${entry.id}: source context`);
+    represented.add(sourceBaseId);
+  }
+  assert.deepEqual([...represented].sort(), [...sourceById.keys()].sort());
+});
+
+test('Davison preserves the source-labeled sampler series and shared threadings', () => {
+  const expected = new Map([
+    ['davison-ch02-n003', 21],
+    ['davison-ch02-n004', 11],
+    ['davison-ch05-n008', 7],
+  ]);
+  for (const [sourceBaseId, count] of expected) {
+    const variants = davisonCatalog.patterns.filter(entry => entry.sourceBaseId === sourceBaseId);
+    assert.equal(variants.length, count, sourceBaseId);
+    assert.ok(variants.every(entry =>
+      JSON.stringify(entry.threading) === JSON.stringify(variants[0].threading)
+    ), `${sourceBaseId}: shared threading`);
+  }
+});
+
+test('Davison preserves every Swedish Lace and Quaker Ladies version', () => {
+  const expected = new Map([
+    ['davison-ch11-n001', { variants: 3, ends: 34 }],
+    ['davison-ch11-n003', { variants: 2, ends: 58 }],
+    ['davison-ch13-n005', { variants: 9, ends: 26 }],
+  ]);
+  for (const [sourceBaseId, source] of expected) {
+    const variants = davisonCatalog.patterns.filter(entry => entry.sourceBaseId === sourceBaseId);
+    assert.equal(variants.length, source.variants, sourceBaseId);
+    assert.ok(variants.every(entry => entry.threading.length === source.ends), sourceBaseId);
+  }
+  const quaker = davisonCatalog.patterns.filter(entry => entry.sourceBaseId === 'davison-ch13-n005');
+  assert.equal(quaker.filter(entry => entry.tabby).length, 7);
+  assert.notDeepEqual(quaker.at(-1).lifts, quaker.at(-2).lifts);
+});
+
+test('Davison alternate treadlings share one library choice and render together', () => {
+  const groups = get(`patternFamilies
+    .filter(family => family.publicationId === 'handweavers-pattern-book')
+    .flatMap(family => getBookPatternGroups(family))
+    .map(group => ({ id: group.id, title: group.title, ids: group.patterns.map(pattern => pattern.id) }))`);
+  assert.equal(groups.length, 417);
+  const birdseye = groups.find(group => group.id === 'davison-ch02-n003');
+  assert.equal(birdseye.ids.length, 21);
+  assert.equal(birdseye.title, 'Traditional Bird’s Eye');
+  const linkedVariant = birdseye.ids.at(-1);
+  const visible = get(`(() => {
+    const route = resolveFamilyRoute(${JSON.stringify(linkedVariant)});
+    selectedFamily = route.family;
+    selectedBookPattern = route.focusPattern;
+    return getVisiblePatterns().map(pattern => pattern.id);
+  })()`);
+  assert.deepEqual(visible, birdseye.ids);
+  assert.equal(get(`resolveFamilyRoute(${JSON.stringify(linkedVariant)}).focusPattern.id`), linkedVariant);
+  assert.ok(get(`patternFamilies.filter(family => family.book
+    && family.publicationId !== 'handweavers-pattern-book')
+    .every(family => getBookPatternGroups(family).length === family.patterns.length)`));
+});
+
+test('Davison keeps the full continued and multi-row threadings', () => {
+  const expectedEnds = new Map([
+    ['davison-ch11-n014', 209],
+    ['davison-ch18-n002', 332],
+    ['davison-ch18-n003', 340],
+    ['davison-ch18-n014', 292],
+    ['davison-ch19-n003', 480],
+    ['davison-ch17-n001', 77],
+    ['davison-ch17-n017', 82],
+    ['davison-ch18-n005', 142],
+    ['davison-ch21-n014', 90],
+    ['davison-ch21-n021', 82],
+  ]);
+  for (const [sourceBaseId, ends] of expectedEnds) {
+    const variants = davisonCatalog.patterns.filter(entry => entry.sourceBaseId === sourceBaseId);
+    assert.ok(variants.length > 0, sourceBaseId);
+    assert.ok(variants.every(entry => entry.threading.length === ends), sourceBaseId);
+  }
+});
+
+test('every Davison variant is numeric, editable, and preserved through transfer', () => {
+  for (const entry of davisonCatalog.patterns) {
+    const label = entry.id;
+    assert.ok(Number.isInteger(entry.shafts) && entry.shafts > 0, label);
+    assert.ok(entry.threading.length > 0 && entry.lifts.length > 0, label);
+    assert.ok(entry.threading.every(shaft => Number.isInteger(shaft) && shaft >= 1 && shaft <= entry.shafts), label);
+    for (const lift of entry.lifts) {
+      assert.ok(lift.length > 0 && lift.length < entry.shafts, `${label}: valid shed`);
+      assert.equal(new Set(lift).size, lift.length, `${label}: duplicate lifted shaft`);
+      assert.ok(lift.every(shaft => Number.isInteger(shaft) && shaft >= 1 && shaft <= entry.shafts), label);
+    }
+    const pattern = patterns.find(candidate => candidate.id === entry.id);
+    assert.ok(pattern, label);
+    assert.equal(pattern.publicationId, 'handweavers-pattern-book');
+    assert.match(pattern.source, /Marguerite Porter Davison/);
+    assert.equal(pattern.draft.warp, entry.threading.length, label);
+    assert.equal(pattern.draft.picks, entry.lifts.length * (entry.tabby ? 2 : 1), label);
+    assert.deepEqual(warpShafts(pattern.draft), entry.threading, label);
+    const payload = get(`buildTransferPayload(getPatternById(${JSON.stringify(entry.id)}))`);
+    assert.equal(payload.format, 'weaving-draft-data');
+    assert.equal(payload.version, 3);
+    assert.equal(payload.meta.source, pattern.source);
+    assert.deepEqual(payload.draft, pattern.draft, label);
+  }
+});
+
 test('search covers every draft and finds matching weaves across all collections', () => {
   const ids = get('buildPatternSearchIndex().map(entry => entry.pattern.id)');
   assert.deepEqual(ids.sort(), patterns.map(pattern => pattern.id).sort());
   assert.equal(new Set(ids).size, patterns.length);
+  assert.ok(get('patterns.filter(pattern => pattern.publicationId).every(pattern => Number.isInteger(pattern.shafts))'));
   const results = query => get(`filterPatternSearchEntries(buildPatternSearchIndex(), ${JSON.stringify(query)}).map(entry => ({id: entry.pattern.id, collection: entry.collectionId}))`);
   assert.equal(results('   ').length, patterns.length);
   const twills = results('twill');
   const twillCollections = new Set(twills.map(entry => entry.collection));
-  ['basic', 'handweavers-pattern-directory', 'learning-to-weave', 'handwoven'].forEach(collection =>
+  ['basic', 'handweavers-pattern-directory', 'handweavers-pattern-book', 'learning-to-weave', 'handwoven'].forEach(collection =>
     assert.ok(twillCollections.has(collection), collection)
   );
   assert.deepEqual(results('TWÍLL'), twills);
