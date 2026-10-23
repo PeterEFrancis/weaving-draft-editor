@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloth Simulation · Weaving Draft Editor</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: light; --ink: #2f241d; --muted: #76695e; --accent: #aa4a2b; --line: #dfd5c7; --warp: #49677c; --weft: #c57d50; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; color: var(--ink); font: 15px/1.5 system-ui, sans-serif; background: radial-gradient(ellipse at top left, #ead4c244, transparent 50%), linear-gradient(150deg, #f7f1e3, #fdfaf4 55%, #ead8bf); min-height: 100vh; }
+    button, select, input { font: inherit; }
+    button, select { cursor: pointer; }
+    button, select, .home { border: 1px solid var(--line); border-radius: 9px; background: #fffdf8; color: var(--ink); padding: 8px 13px; }
+    button:hover, .home:hover { background: #f0e7d9; }
+    button:disabled { cursor: default; opacity: .45; }
+    :focus-visible { outline: 3px solid #49677c; outline-offset: 3px; }
+    a { color: inherit; }
+    .shell { max-width: 1460px; padding: 25px clamp(16px, 3vw, 44px) 30px; margin: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 25px; }
+    h1 { font: 500 clamp(28px, 3vw, 39px)/1.15 Georgia, serif; letter-spacing: -.03em; margin: 4px 0 8px; }
+    h2 { font-size: 16px; margin: 0; font-weight: 650; }
+    p { margin: 0; }
+    .eyebrow { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; }
+    .home { text-decoration: none; white-space: nowrap; font-size: 13px; }
+    .workspace { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .panel { border: 1px solid var(--line); border-radius: 18px; background: #fffcf5dd; box-shadow: 0 12px 38px #47301b09; overflow: hidden; }
+    .controls { padding: 15px; }
+    .controls h2 { font-size: 14px; }
+    .section + .section { margin-top: 13px; border-top: 1px solid var(--line); padding-top: 12px; }
+    .heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .small { color: var(--muted); font-size: 12px; }
+    select { width: 100%; margin-bottom: 8px; padding: 6px 8px; font-size: 12px; }
+    .draft-counts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .draft-counts label { display: grid; gap: 3px; color: var(--muted); font-size: 12px; }
+    .draft-counts input { width: 100%; min-width: 0; padding: 4px 7px; color: var(--ink); border: 1px solid var(--line); border-radius: 7px; background: #fffdf8; }
+    .upload-draft { width: 100%; padding: 5px 8px; margin-bottom: 8px; font-size: 12px; }
+    .import-error { color: var(--accent); font-size: 12px; margin-bottom: 8px; }
+    .draft { display: grid; grid-template-columns: repeat(var(--draft-columns, 16), 1fr); gap: 2px; padding: 5px; background: #ded5c8; border: 1px solid #cfc4b5; border-radius: 5px; }
+    .draft button { padding: 0; border: 0; aspect-ratio: 1; background: var(--weft); border-radius: 1px; position: relative; min-width: 0; }
+    .draft button[aria-pressed="true"] { background: var(--warp); }
+    .draft button::after { content: ''; position: absolute; inset: 43% 0; background: #ffffff28; }
+    .draft button[aria-pressed="true"]::after { inset: 0 43%; }
+    .draft button:hover { outline: 2px solid var(--ink); z-index: 1; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--muted); margin-top: 7px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 50%; background: var(--warp); display: inline-block; }
+    .swatch.weft { background: var(--weft); }
+    .field { display: block; margin-top: 8px; font-size: 12px; }
+    .field-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .end-options { display: grid; gap: 7px; margin-top: 9px; }
+    .end-toggle, .end-choice { display: flex; align-items: center; gap: 8px; }
+    .end-toggle { justify-content: space-between; font-size: 12px; cursor: pointer; }
+    .end-toggle input { appearance: none; flex: 0 0 32px; width: 32px; height: 19px; margin: 0; border: 1px solid #c7bcad; border-radius: 20px; background: #dcd3c6; cursor: pointer; position: relative; }
+    .end-toggle input::after { content: ''; position: absolute; width: 13px; height: 13px; top: 2px; left: 2px; border-radius: 50%; background: #fffdf8; box-shadow: 0 1px 3px #30251d33; transition: transform .12s; }
+    .end-toggle input:checked { background: var(--accent); border-color: var(--accent); }
+    .end-toggle input:checked::after { transform: translateX(13px); }
+    output { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+    input[type="range"] { display: block; width: 100%; height: 17px; margin: 3px 0 0; accent-color: var(--accent); cursor: pointer; }
+    .stage-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+    .state { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+    .state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #8c8a71; }
+    .state[data-released="true"]::before { background: #6b895b; }
+    .state[data-pending="true"]::before { background: var(--accent); }
+    .viewport { position: relative; background: radial-gradient(ellipse at center, #fffef9, #f4ede0); }
+    #cloth { display: block; width: 100%; height: clamp(350px, 55vh, 620px); cursor: grab; touch-action: none; }
+    #cloth:active { cursor: grabbing; }
+    .view-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 0 20px 16px; }
+    .view-buttons { display: flex; gap: 5px; }
+    .view-buttons button { font-size: 12px; padding: 5px 10px; background: #ffffff90; }
+    .view-buttons button[aria-pressed="true"] { color: #fff; background: var(--warp); border-color: var(--warp); }
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); padding: 18px 0; }
+    .metric { padding: 0 22px; }
+    .metric + .metric { border-left: 1px solid var(--line); }
+    .metric strong { display: block; font-size: 23px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    @media (max-width: 800px) {
+      .workspace { grid-template-columns: 1fr; }
+      .controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 20px; }
+      .controls .section:first-child { grid-row: span 2; }
+      .section + .section { border: 0; padding: 0; margin: 0; }
+      .draft { max-width: 240px; }
+      header { align-items: flex-start; }
+      .metric { padding: 0 14px; }
+    }
+    @media (max-width: 430px) {
+      .shell { padding: 18px 12px; }
+      .home { padding: 7px 9px; }
+      .controls { gap: 12px; padding: 12px; }
+      .legend, .small { font-size: 11px; }
+      .stage-toolbar { padding: 14px; }
+      .metric strong { font-size: 20px; }
+      .metric span { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header>
+    <div>
+      <div class="eyebrow">Weaving Draft Editor / Experiment</div>
+      <h1>Cloth simulation</h1>
+    </div>
+    <a class="home" href="index.html">← Home</a>
+  </header>
+  <div class="workspace">
+    <aside class="panel controls" aria-label="Draft and yarn settings">
+      <section class="section">
+        <div class="heading"><h2>Drawdown</h2><span id="draft-size" class="small">16 ends × 16 picks</span></div>
+        <label class="small" for="pattern">Weave</label>
+        <select id="pattern">
+          <option value="plain">Plain weave</option>
+          <option value="twill">2/2 twill</option>
+          <option value="basket">2/2 basket</option>
+          <option value="huck">Huck · plain & float blocks</option>
+          <option value="double-cloth">Double cloth</option>
+          <option value="deflected-double-cloth">Deflected double cloth</option>
+          <option value="custom" disabled>Custom drawdown</option>
+        </select>
+        <div class="draft-counts">
+          <label for="warp-count">Warp ends<input id="warp-count" type="number" min="2" max="64" step="1" value="16" required></label>
+          <label for="weft-count">Weft picks<input id="weft-count" type="number" min="2" max="64" step="1" value="16" required></label>
+        </div>
+        <button id="upload-draft" class="upload-draft" type="button">Upload WDD / WDI draft</button>
+        <input id="draft-upload" type="file" accept=".wdd,.wdd.svg,.wdi,.wdi.svg,.svg,.json,application/json,image/svg+xml" hidden>
+        <p id="upload-error" class="import-error" role="alert" hidden></p>
+        <div id="draft" class="draft" role="group" aria-label="Drawdown. Toggle a crossing to change which yarn is on top."></div>
+        <div class="legend"><span><i class="swatch"></i>Warp on top</span><span><i class="swatch weft"></i>Weft on top</span></div>
+      </section>
+      <section class="section">
+        <h2>Thread ends</h2>
+        <div class="end-options">
+          <label class="end-toggle" for="warpEnds"><span>Warp</span><span class="end-choice"><output id="warpEnds-value" for="warpEnds">Fixed</output><input id="warpEnds" type="checkbox" role="switch" aria-label="Fix warp ends to loom" checked></span></label>
+          <label class="end-toggle" for="weftEnds"><span>Weft</span><span class="end-choice"><output id="weftEnds-value" for="weftEnds">Connected</output><input id="weftEnds" type="checkbox" role="switch" aria-label="Fix weft ends to loom"></span></label>
+        </div>
+      </section>
+      <section class="section">
+        <h2>Yarn & tension</h2>
+        <label class="field" for="diameter"><span class="field-row"><span id="diameter-label">Yarn diameter</span><output id="diameter-value" for="diameter"></output></span><input id="diameter" type="range" min="0.20" max="0.94" step="0.02" value="0.38"></label>
+        <label class="field" for="warpTension"><span class="field-row"><span>Warp tension</span><output id="warpTension-value" for="warpTension"></output></span><input id="warpTension" type="range" min="0" max="4" step="0.05" value="1"></label>
+        <label class="field" for="weftTension"><span class="field-row"><span>Weft tension</span><output id="weftTension-value" for="weftTension"></output></span><input id="weftTension" type="range" min="0" max="4" step="0.05" value="1"></label>
+        <label class="field" for="friction"><span class="field-row"><span>Yarn friction</span><output id="friction-value" for="friction"></output></span><input id="friction" type="range" min="0" max="1" step="0.05" value="0"></label>
+        <label class="field" for="bending"><span class="field-row"><span>Bending resistance</span><output id="bending-value" for="bending"></output></span><input id="bending" type="range" min="0.05" max="0.60" step="0.05" value="0.20"></label>
+      </section>
+    </aside>
+    <div>
+      <section id="viewer" class="panel" aria-label="Cloth relaxation viewer" aria-busy="true">
+        <div class="stage-toolbar">
+          <div id="state" class="state" role="status" data-released="false" data-pending="true">Updating cloth…</div>
+          <span id="update-timing" class="small">Updates automatically</span>
+        </div>
+        <div class="viewport">
+          <canvas id="cloth" tabindex="0" aria-label="3D yarn simulation. Drag or use arrow keys to rotate; plus and minus to zoom.">Your browser needs canvas support to display the cloth.</canvas>
+          <div class="view-toolbar">
+            <div class="view-buttons" role="group" aria-label="Camera view">
+              <button type="button" data-view="oblique" aria-pressed="false">Oblique</button>
+              <button type="button" data-view="top" aria-pressed="true">Top</button>
+              <button type="button" data-view="edge" aria-pressed="false">Edge</button>
+            </div>
+          </div>
+        </div>
+        <div class="metrics" aria-label="Sample dimensions relative to the loom">
+          <div class="metric"><strong id="warp-metric">—</strong><span>Warp contraction</span></div>
+          <div class="metric"><strong id="weft-metric">—</strong><span>Weft contraction</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="assets/cloth-renderer.js?v=wdi-yarns-1"></script>
+<script src="assets/cloth-weave-presets.js?v=double-cloth-1"></script>
+<script src="assets/cloth-draft-import.js?v=wdi-yarns-1"></script>
+<script src="assets/cloth-simulation-page.js?v=upload-controls-1"></script>
+</body>
+</html>
