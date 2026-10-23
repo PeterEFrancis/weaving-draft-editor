@@ -2194,6 +2194,15 @@
                   </span>
                   <span class="toolbar-action-label">To Inverse</span>
                 </button>
+                <button type="button" class="btn btn-soft toolbar-action" onclick="openCurrentDraftInClothSimulator()">
+                  <span class="toolbar-action-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 19 19 5"></path>
+                      <path d="M10 5h9v9"></path>
+                    </svg>
+                  </span>
+                  <span class="toolbar-action-label">To Cloth Simulator</span>
+                </button>
               </div>
 
               <div class="workspace-toolbar-actions">
@@ -3938,11 +3947,11 @@ function clearCrossEditorTransferQuery() {
   window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
 }
 
-function openCurrentDraftInInverseEditor() {
+function openCurrentDraftInEditor(page, name) {
   try {
     const token = storeCrossEditorTransferPayload(buildDraftSaveData({ historyLimit: 0 }));
     const opened = window.open(
-      `inverse-drafter.html?${crossEditorTransferQueryParam}=${encodeURIComponent(token)}`,
+      `${page}?${crossEditorTransferQueryParam}=${encodeURIComponent(token)}`,
       "_blank"
     );
 
@@ -3957,8 +3966,16 @@ function openCurrentDraftInInverseEditor() {
 
     window.alert("Your browser blocked the new tab.");
   } catch (error) {
-    window.alert("Unable to send this draft to the inverse editor in this browser.");
+    window.alert(`Unable to send this draft to the ${name} in this browser.`);
   }
+}
+
+function openCurrentDraftInInverseEditor() {
+  openCurrentDraftInEditor("inverse-drafter.html", "inverse editor");
+}
+
+function openCurrentDraftInClothSimulator() {
+  openCurrentDraftInEditor("simulation.html", "cloth simulator");
 }
 
 function consumeCrossEditorTransferIntoDraft() {

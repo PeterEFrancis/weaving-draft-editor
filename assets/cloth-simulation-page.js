@@ -210,6 +210,40 @@
     });
     $(id).addEventListener('change', () => $(id).reportValidity());
   }
+  function applyImportedDraft(imported, fallbackName) {
+    uploadedDraft = true;
+    sourceDraft = imported.draft;
+    sourceYarns = imported.yarns || null;
+    yarnScale = sourceYarns ? Math.max(...sourceYarns.warp.concat(sourceYarns.weft).map(yarn => yarn.thickness)) : 1;
+    draft = resizedDraft(sourceDraft.length, sourceDraft[0].length);
+    sizeEdited = true;
+    $('pattern').querySelector('[value="custom"]').textContent = 'Custom · ' + (imported.name || fallbackName);
+    $('pattern').value = 'custom';
+    refreshDraft();
+    requestResult();
+  }
+
+  function consumeDraftTransfer() {
+    const url = new URL(window.location.href), token = url.searchParams.get('transfer');
+    if (!token) return;
+    try {
+      const key = 'weaving-cross-editor-transfer.v1.' + token;
+      const raw = window.localStorage.getItem(key);
+      if (!raw) throw new Error('The transferred draft is unavailable. Send it from the Drafter again.');
+      const entry = JSON.parse(raw);
+      if (entry?.payload && (!Number.isFinite(entry.createdAt) || Date.now() - entry.createdAt > 60 * 60 * 1000)) {
+        throw new Error('The draft transfer has expired. Send it from the Drafter again.');
+      }
+      applyImportedDraft(ClothDraftImport.parse(JSON.stringify(entry?.payload ?? entry)), 'Drafter draft');
+      window.localStorage.removeItem(key);
+      url.searchParams.delete('transfer');
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+    } catch (error) {
+      $('upload-error').textContent = error.message || 'Could not open the transferred draft.';
+      $('upload-error').hidden = false;
+    }
+  }
+
   $('upload-draft').addEventListener('click', () => $('draft-upload').click());
   $('draft-upload').addEventListener('change', async event => {
     const file = event.target.files?.[0];
@@ -220,16 +254,7 @@
     try {
       const imported = ClothDraftImport.parse(await file.text());
       if (id !== uploadRevision) return;
-      uploadedDraft = true;
-      sourceDraft = imported.draft;
-      sourceYarns = imported.yarns || null;
-      yarnScale = sourceYarns ? Math.max(...sourceYarns.warp.concat(sourceYarns.weft).map(yarn => yarn.thickness)) : 1;
-      draft = resizedDraft(sourceDraft.length, sourceDraft[0].length);
-      sizeEdited = true;
-      $('pattern').querySelector('[value="custom"]').textContent = 'Custom · ' + (imported.name || file.name);
-      $('pattern').value = 'custom';
-      refreshDraft();
-      requestResult();
+      applyImportedDraft(imported, file.name);
     } catch (error) {
       if (id !== uploadRevision) return;
       $('upload-error').textContent = error.message || 'Could not read that draft.';
@@ -279,4 +304,5 @@
   new ResizeObserver(resize).observe(canvas);
   resize();
   selectPattern('plain');
+  consumeDraftTransfer();
 })();
